@@ -893,6 +893,7 @@ class ProductController extends Controller
         $productIds = TotalMonthQuantity::distinct('product_id')->pluck('product_id');
 
         // Khởi tạo mảng chứa dữ liệu gần nhất cho mỗi sản phẩm
+
         $productNearData = [];
         foreach ($productIds as $productId) {
             // Lấy dữ liệu gần nhất cho mỗi sản phẩm theo tháng
