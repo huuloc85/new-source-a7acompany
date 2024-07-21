@@ -1,0 +1,182 @@
+.table-bordered {
+    font-size: 11px
+}
+
+.table {
+    --bs-table-border-color: black;
+}
+.table tbody tr td {
+    padding: 2px !important
+}
+
+.required {
+    color: red
+}
+
+.title {
+    font-size: 20px;
+}
+
+.content {
+    font-size: 15px;
+}
+
+.barcode {
+    margin-top: 16px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 20px;
+    padding-left: 35px;
+    padding-right: 35px;
+}
+
+.grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    margin-bottom: 10px;
+    max-width: 435px !important;
+}
+
+@media (max-width: 600px) {
+    .col-5 {
+        width: 100% !important;
+    }
+
+    .col-4 {
+        width: 100% !important;
+    }
+}
+
+.table tbody tr:last-child td {
+    border-width: 1px;
+}
+
+.qrcode-img {
+    width: 200px;
+    padding-bottom: 10px !important;
+    padding-top: 10px !important;
+}
+
+.qrcode-img svg {
+    width: 80px;
+    height: 80px;
+}
+
+.qr-add {
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+    color: #4590fd;
+    margin-top: 5px
+}
+
+.container-gird {
+    margin-left: 60px;
+    margin-right: 60px;
+}
+
+.lot-end {
+    flex-grow: 1;
+    text-align: right;
+}
+
+.me-lot {
+    margin-right: 45px;
+}
+
+.lot-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.lot-container p {
+    margin: 0;
+}
+
+#barcode-image {
+    max-width: 250px;
+    height: 33px;
+}
+
+.square {
+    border: 1px solid;
+    width: 50px;
+    height: 70px;
+    position: absolute;
+    bottom: 0px;
+    right: 34px;
+}
+
+.under-moc-style {
+    border-top: none !important;
+}
+
+.under-moc-style td:nth-child(1) {
+    border-top: 1px solid;
+}
+
+.under-moc-style td:nth-child(2) {
+    border-top: 1px solid;
+}
+
+.moc-style {
+    border-bottom: none !important;
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 1mm;
+        size: landscape;
+    }
+
+    .container-gird {
+        margin: 0 !important;
+        padding: 0 !important;
+        .grid-container {
+            grid-template-columns: auto auto auto;
+            padding: 0 !important;
+            margin:  0 !important;
+        }
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+
+    body {
+        font-size: 5pt;
+        color: #000;
+        background: #fff;
+    }
+
+    header, footer {
+        display: none;
+    }
+
+    .container {
+        width: 45%;
+        font-size: 5px !important
+    }
+
+    .moc-style td:nth-child(3) {
+        border-right: 1px solid;
+
+    }
+
+    .print-container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
+

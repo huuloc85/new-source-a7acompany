@@ -436,7 +436,7 @@
     @include('layout.sidebar')
     <main class="main-content">
         <!-- ======= Header ======= -->
-        <div class="position-relative">
+        <div class="position-relative no-print">
             @include('layout.header')
         </div>
         <!-- End Header -->
