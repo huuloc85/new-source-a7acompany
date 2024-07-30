@@ -112,4 +112,8 @@ class Product extends Model
         }
         return $query;
     }
+    public function productionPlan()
+    {
+        return $this->hasOne(ProductionPlan::class);
+    }
 }

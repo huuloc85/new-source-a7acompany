@@ -7,15 +7,13 @@ use App\Http\Controllers\CheckEmployeeController;
 use App\Http\Controllers\DailyProductivityHistoryController;
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\IncreaseController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\LoginHistoryController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CheckPoController;
-use App\Models\LoginHistory;
-use App\Models\Product;
+use App\Http\Controllers\ProductionPlanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,6 +67,13 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/admin-view-employee-todo', [CheckEmployeeController::class, 'index'])->name('admin.checkemployee.view-employee-todo');
         Route::delete('/admin-view-employee-todo/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
         Route::post('/admin-check-employee-todo/edit/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
+    });
+
+    // Kế hoạch sản xuất
+    Route::middleware(['authAdmin'])->prefix('/product-plan')->group(function () {
+        Route::get('/index', [ProductionPlanController::class, 'index'])->name('admin.product-plan.index');
+        Route::get('/add-product-plan', [ProductionPlanController::class, 'addProductPlan'])->name('admin.product-plan.add');
+        Route::post('/add-product-plan', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
     });
 
     //quản lý chức vụ

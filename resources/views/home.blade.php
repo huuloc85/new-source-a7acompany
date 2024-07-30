@@ -119,6 +119,32 @@
                                 </li>
                                 <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
                                     <div class="card-body">
+                                        <a href="{{ route('admin.product-plan.index') }}">
+                                            <div class="progress-widget">
+                                                <div id="circle-progress-03"
+                                                    class="circle-progress-03 circle-progress circle-progress-primary text-center"
+                                                    data-min-value="0" data-max-value="100" data-value="90"
+                                                    data-type="percent">
+                                                </div>
+                                                <div class="progress-detail">
+                                                    <h6 class="text-sm mb-0 text-capitalize">
+                                                        <i class="fas fa-money-bill-wave fa-lg mr-2"></i>
+
+                                                        Kế hoạch sản xuất
+                                                    </h6>
+                                                    <h4 class="mb-0">{{ $totalRole }}</h4>
+                                                </div>
+                                            </div>
+                                        </a>
+                                        <div class="card-footer p-3">
+                                            <p class="mb-2">Đi đến <a href="{{ route('admin.product-plan.index') }}">Kế
+                                                    hoạch sản xuất
+                                                </a></p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
+                                    <div class="card-body">
                                         <a href="{{ route('admin.salary.home') }}">
                                             <div class="progress-widget">
                                                 <div id="circle-progress-03"
