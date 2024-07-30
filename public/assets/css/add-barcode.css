@@ -3,8 +3,10 @@
 }
 
 .table {
-    --bs-table-border-color: black;
+    --bs-table-border-color: black !important;
+    border-collapse: collapse !important;
 }
+
 .table tbody tr td {
     padding: 2px !important
 }
@@ -27,7 +29,7 @@
 
 .grid-container {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: repeat(3, 1fr);
     padding: 20px;
     padding-left: 35px;
     padding-right: 35px;
@@ -131,52 +133,76 @@
 
 @media print {
     @page {
-        size: A4;
-        margin: 1mm;
-        size: landscape;
+        size: A4 landscape;
     }
 
-    .container-gird {
-        margin: 0 !important;
+    .p-4,
+    .row,
+    .card,
+    .print-container,
+    .conatiner-fluid,
+    .container-gird,
+    .table-responsive{
         padding: 0 !important;
-        .grid-container {
-            grid-template-columns: auto auto auto;
-            padding: 0 !important;
-            margin:  0 !important;
-        }
+        margin: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .card
+    {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    .moc-style td[colspan="2"], .square {
+        color: black !important;
+        border: none 1px 1px 1px !important;
+    }
+
+    .grid-container{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        zoom: 62.5%;
+    }
+
+    .table {
+        transform: scaleX(1.28);
+        transform-origin: center !important;
+    }
+
+    .grid-item * {
+        margin: auto !important;
     }
 
     .no-print {
-        display: none;
+        display: none !important;
+    }
+
+    .main-content {
+        padding: 0 !important;
+        margin: 0 !important;
+        margin-top: -37px !important;
     }
 
     .page-break {
         page-break-before: always;
     }
 
-    body {
-        font-size: 5pt;
-        color: #000;
-        background: #fff;
-    }
-
-    header, footer {
+    header,
+    footer {
         display: none;
     }
 
     .container {
-        width: 45%;
-        font-size: 5px !important
+        width: 100%;
+        font-size: 5pt;
     }
 
     .moc-style td:nth-child(3) {
         border-right: 1px solid;
-
-    }
-
-    .print-container {
-        margin: 0 !important;
-        padding: 0 !important;
     }
 }
-
