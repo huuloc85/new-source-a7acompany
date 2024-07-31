@@ -74,6 +74,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/index', [ProductionPlanController::class, 'index'])->name('admin.product-plan.index');
         Route::get('/add-product-plan', [ProductionPlanController::class, 'addProductPlan'])->name('admin.product-plan.add');
         Route::post('/add-product-plan', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
+        Route::post('/update-product-plan', [ProductionPlanController::class, 'update'])->name('admin.product-plan.update');
     });
 
     //quản lý chức vụ
