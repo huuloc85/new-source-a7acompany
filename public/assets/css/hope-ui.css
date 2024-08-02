@@ -15174,6 +15174,8 @@ fieldset:disabled .btn {
 .table thead tr th {
   text-transform: Capitalize;
   letter-spacing: 0.2px;
+  padding: 10px;
+
 }
 
 .table tbody tr td {

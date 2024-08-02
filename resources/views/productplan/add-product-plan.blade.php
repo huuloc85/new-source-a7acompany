@@ -14,115 +14,112 @@
                         <form action="{{ route('admin.product-plan.store') }}" method="POST">
                             @csrf
 
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="product_id" id="product_id">Chọn Sản Phẩm</label>
-                                    <select class="form-control" style="height:35px; margin-right:10px" name="product_id"
-                                        id="product_select">
-                                        <option value="">Tất Cả Sản Phẩm</option>
-                                        @foreach ($products as $product)
-                                            <option value="{{ $product->id }}" data-bin-code="{{ $product->binCode }}"
-                                                data-quan-entity-bin="{{ $product->quanEntityBin }}">
-                                                {{ $product->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="form-group">
+                                <label for="product_id" id="product_id">Chọn Sản Phẩm</label>
+                                <select class="form-control" style="height:35px; margin-right:10px" name="product_id"
+                                    id="product_select">
+                                    <option value="">Tất Cả Sản Phẩm</option>
+                                    @foreach ($products as $product)
+                                        <option value="{{ $product->id }}" data-bin-code="{{ $product->binCode }}"
+                                            data-quan-entity-bin="{{ $product->quanEntityBin }}">
+                                            {{ $product->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="material_name" id="material_name">Chọn Nguyên Liệu</label>
-                                    <select class="form-control" style="height:35px; margin-right:10px"
-                                        name="material_name">
-                                        <option value="">Tất Cả Nguyên Liệu</option>
-                                        @foreach ($materials as $materialsplan)
-                                            <option>{{ $materialsplan }}</option>"
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="form-group">
+                                <label for="material_name" id="material_name">Chọn Nguyên Liệu</label>
+                                <select class="form-control" style="height:35px; margin-right:10px" name="material_name">
+                                    <option value="">Tất Cả Nguyên Liệu</option>
+                                    @foreach ($materials as $materialsplan)
+                                        <option>{{ $materialsplan }}</option>"
+                                    @endforeach
+                                </select>
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="production_plan">Kế Hoạch Sản Xuất (PCS)</label>
-                                    <input type="number" id="production_plan" name="production_plan" class="form-control"
-                                        required>
-                                </div>
+                            <div class="form-group">
+                                <label for="production_plan">Kế Hoạch Sản Xuất (PCS)</label>
+                                <input type="number" id="production_plan" name="production_plan" class="form-control"
+                                    required>
+                            </div>
 
-                                {{-- <div class="form-group">
+                            {{-- <div class="form-group">
                                     <label for="planned_material">Dự Định Vật Liệu (KG)</label>
                                     <input type="number" id="planned_material" name="planned_material" class="form-control"
                                         required>
                                 </div> --}}
-                                <div class="form-group">
-                                    <label for="packaging_type">Loại Bao Bì</label>
-                                    <select id="packaging_type" name="packaging_type" class="form-control" required>
-                                        <option value="">Tất Cả Bao Bì</option>
-                                        @foreach ($packagingTypes as $type)
-                                            <option value="{{ $type }}">{{ $type }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            <div class="form-group">
+                                <label for="packaging_type">Loại Bao Bì</label>
+                                <select id="packaging_type" name="packaging_type" class="form-control" required>
+                                    <option value="">Tất Cả Bao Bì</option>
+                                    @foreach ($packagingTypes as $type)
+                                        <option value="{{ $type }}">{{ $type }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="packaging_count_per_box">Số Bao Bì/Thùng</label>
-                                    <input type="number" id="packaging_count_per_box" name="packaging_count_per_box"
-                                        class="form-control" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="packaging_count_per_box">Số Bao Bì/Thùng</label>
+                                <input type="number" id="packaging_count_per_box" name="packaging_count_per_box"
+                                    class="form-control" required>
+                            </div>
 
-                                {{-- <div class="form-group">
+                            {{-- <div class="form-group">
                                     <label for="total_packaging">Tổng Bao Bì</label>
-                                    <input type="number" id="total_packaging" name="total_packaging" class="form-control"
+                                    <input type="number" id="total_packaging" name="total_packaging" clyass="form-control"
                                         required>
                                 </div> --}}
 
-                                <div class="form-group">
-                                    <label for="box_type">Loại Thùng</label>
-                                    <input type="text" id="box_type" name="box_type" class="form-control" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="box_type">Loại Thùng</label>
+                                <input type="text" id="box_type" name="box_type" class="form-control" required>
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="products_per_box">Sản Phẩm/Thùng</label>
-                                    <input type="number" id="products_per_box" name="products_per_box" class="form-control"
-                                        required>
-                                </div>
+                            <div class="form-group">
+                                <label for="products_per_box">Sản Phẩm/Thùng</label>
+                                <input type="number" id="products_per_box" name="products_per_box" class="form-control"
+                                    required>
+                            </div>
 
-                                {{-- <div class="form-group">
+                            {{-- <div class="form-group">
                                     <label for="box_quantity">Số Lượng Thùng</label>
                                     <input type="number" id="box_quantity" name="box_quantity" class="form-control"
                                         required>
                                 </div> --}}
 
-                                <div class="form-group">
-                                    <label for="product_density">Tỷ Trọng Sản Phẩm (G)</label>
-                                    <input id="product_density" name="product_density" class="form-control" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="product_density">Tỷ Trọng Sản Phẩm (G)</label>
+                                <input id="product_density" name="product_density" class="form-control" required>
+                            </div>
 
-                                {{-- <div class="form-group">
+                            {{-- <div class="form-group">
                                     <label for="daily_production_plan">Kế Hoạch SX/Ngày</label>
                                     <input type="number" id="daily_production_plan" name="daily_production_plan"
                                         class="form-control" required>
                                 </div> --}}
 
-                                <div class="form-group">
-                                    <label for="cavity_count">Số Cavity</label>
-                                    <input type="number" id="cavity_count" name="cavity_count" class="form-control"
-                                        required>
-                                </div>
+                            <div class="form-group">
+                                <label for="cavity_count">Số Cavity</label>
+                                <input type="number" id="cavity_count" name="cavity_count" class="form-control" required>
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="cycle">Chu Kỳ</label>
-                                    <input type="number" id="cycle" name="cycle" class="form-control" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="cycle">Chu Kỳ</label>
+                                <input type="number" id="cycle" name="cycle" class="form-control" required>
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="ton">Tấn</label>
-                                    <input type="number" id="ton" name="ton" class="form-control" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="ton">Tấn</label>
+                                <input type="number" id="ton" name="ton" class="form-control" required>
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="machine">Máy</label>
-                                    <input type="text" id="machine" name="machine" class="form-control" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="machine">Máy</label>
+                                <input type="text" id="machine" name="machine" class="form-control" required>
+                            </div>
 
-                                {{-- <div class="form-group">
+                            {{-- <div class="form-group">
                                     <label for="machine_run_days">Số Ngày Chạy Máy</label>
                                     <input type="number" id="machine_run_days" name="machine_run_days" class="form-control"
                                         required>
@@ -145,17 +142,17 @@
                                     <input type="number" id="produced_quantity" name="produced_quantity"
                                         class="form-control" required>
                                 </div> --}}
-                            </div>
-
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary">Lưu Kế Hoạch</button>
-                                <a href="{{ route('admin.product-plan.index') }}" class="btn btn-secondary">Hủy</a>
-                            </div>
-                        </form>
                     </div>
+
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary">Lưu Kế Hoạch</button>
+                        <a href="{{ route('admin.product-plan.index') }}" class="btn btn-secondary">Hủy</a>
+                    </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <script>
         document.getElementById('product_select').addEventListener('change', function() {
