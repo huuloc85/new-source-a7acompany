@@ -6,6 +6,7 @@ use App\Models\DailyQuantity;
 use App\Models\Product;
 use App\Models\ProductionPlan;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +17,8 @@ class ProductionPlanController extends Controller
     // Chức Năng Add vs Update (Hàm Chức Năng)
     private function setProductionPlanAttributes($productPlan, $request)
     {
+        $currenmonth = Carbon::now()->format('m-Y');
+        $productPlan->month = $currenmonth;
         // Kế hoạch sản xuất (PCS)
         $productionPlan = $request->input('production_plan');
         // Tỷ trọng sản phẩm (G)
@@ -27,6 +30,7 @@ class ProductionPlanController extends Controller
         $packagingCountPerBox = $request->input('packaging_count_per_box');
         // Sản phẩm/thùng
 
+        // Tính số lượng thùng (box_quantity)
         $productsPerBox = $request->input('products_per_box');
         $productPlan->products_per_box = $productsPerBox;
         // Tính số lượng thùng (box_quantity)
@@ -109,23 +113,67 @@ class ProductionPlanController extends Controller
         return compact('materials', 'packagingTypes');
     }
 
-    // View Kế Hoạch Sản Xuất
+    // // View Kế Hoạch Sản Xuất
     public function index(Request $request)
     {
-        $selectedDate = $request->input('date', Carbon::now()->format('Y-m'));
-        $month = Carbon::createFromFormat('Y-m', $selectedDate)->format('m');
-        $year = Carbon::createFromFormat('Y-m', $selectedDate)->format('Y');
+        // Lấy tháng hiện tại và tháng được chọn từ yêu cầu
+        $selectedMonth = $request->input('month', Carbon::now()->format('m-Y'));
+        $currentMonth = Carbon::now()->format('m-Y');
 
-        // Lấy danh sách các kế hoạch sản xuất cho tháng và năm được chọn
-        $productPlans = ProductionPlan::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->get();
+        // Kiểm tra nếu hôm nay là ngày đầu tháng
+        $today = Carbon::now();
+        if ($today->day === 1) {
+            // Kiểm tra nếu đã có dữ liệu cho tháng hiện tại
+            $dataExistsForCurrentMonth = ProductionPlan::where('month', $currentMonth)->exists();
 
-        // Lấy danh sách sản phẩm
+            // Nếu chưa có dữ liệu cho tháng hiện tại, sao chép dữ liệu từ tháng trước
+            if (!$dataExistsForCurrentMonth) {
+                $lastMonth = $today->subMonth()->format('m-Y');
+
+                // Lấy dữ liệu kế hoạch sản xuất cho tháng trước
+                $previousMonthPlans = ProductionPlan::where('month', $lastMonth)->get();
+
+                foreach ($previousMonthPlans as $plan) {
+                    // Tạo bản ghi mới với dữ liệu của tháng trước và cập nhật tháng mới
+                    $newPlan = $plan->replicate();
+                    $newPlan->month = $currentMonth;
+                    $newPlan->save();
+                }
+            }
+        }
+
+        // Tính toán và cập nhật các giá trị liên quan đến $producedQuantity
+        $plans = ProductionPlan::where('month', $selectedMonth)->get();
+
+        foreach ($plans as $plan) {
+            // Lấy số lượng đã sản xuất từ bảng DailyQuantity cho tháng hiện tại
+            $producedQuantity = DailyQuantity::where('status', 1)
+                ->where('product_id', $plan->product_id)
+                ->whereMonth('date', Carbon::createFromFormat('m-Y', $selectedMonth)->month)
+                ->whereYear('date', Carbon::createFromFormat('m-Y', $selectedMonth)->year)
+                ->sum('quantity');
+
+            $remainingProductionQuantity = $plan->production_plan - $producedQuantity;
+            $remainingProductionDays = $plan->daily_production_plan == 0 || $remainingProductionQuantity == 0 ? 0 : $remainingProductionQuantity / $plan->daily_production_plan;
+
+            // Cập nhật lại các thuộc tính của bản ghi
+            $plan->produced_quantity = $producedQuantity;
+            $plan->remaining_production_quantity = $remainingProductionQuantity;
+            $plan->remaining_production_days = $remainingProductionDays;
+            $plan->save();
+        }
+
+        // Lấy danh sách các tháng có trong bản ghi để sử dụng cho bộ lọc
+        $months = ProductionPlan::select('month')->distinct()->pluck('month');
+
+        // Lấy dữ liệu kế hoạch sản xuất cho tháng được chọn
+        $productPlans = ProductionPlan::where('month', $selectedMonth)->get();
+
+        // Lấy dữ liệu sản phẩm và nguyên vật liệu
         $products = Product::all();
         $materialsAndPackagingTypes = $this->getMaterialsAndPackagingTypes();
-        // Trả về view với dữ liệu cần thiết
-        return view('productplan.index', array_merge(compact('productPlans', 'selectedDate', 'month', 'products'), $materialsAndPackagingTypes));
+
+        return view('productplan.index', array_merge(compact('productPlans', 'products', 'months', 'selectedMonth', 'currentMonth'), $materialsAndPackagingTypes));
     }
 
     //View Add Kế Hoạch Sản Xuất
@@ -142,14 +190,24 @@ class ProductionPlanController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Kiểm tra sản phẩm đã tồn tại
+            $existingPlan = ProductionPlan::where('product_id', $request->input('product_id'))
+                ->whereMonth('created_at', date('m')) // Kiểm tra nếu là tháng hiện tại
+                ->first();
+
+            if ($existingPlan) {
+                toast('Sản phẩm đã có kế hoạch sản xuất trong tháng này!', 'error', 'top-right');
+                return redirect()->back();
+            }
+
+            // Nếu không có kế hoạch sản phẩm trong tháng hiện tại, tiếp tục thêm kế hoạch mới
             $productPlan = new ProductionPlan;
             $productPlan = $this->setProductionPlanAttributes($productPlan, $request);
-            // dd($productPlan);
             $productPlan->save();
 
             DB::commit();
             toast('Thêm kế hoạch sản phẩm mới thành công!', 'success', 'top-right');
-            return redirect()->route('admin.product-plan.add');
+            return redirect()->route('admin.product-plan.index');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
@@ -163,18 +221,86 @@ class ProductionPlanController extends Controller
     {
         DB::beginTransaction();
         try {
+            // Tìm kế hoạch sản phẩm bằng ID
             $productPlan = ProductionPlan::findOrFail($request->input('id'));
             $productPlan = $this->setProductionPlanAttributes($productPlan, $request);
             $productPlan->save();
 
             DB::commit();
             toast('Cập nhật kế hoạch sản phẩm thành công!', 'success', 'top-right');
-            return redirect()->route('admin.product-plan.index');
+            return redirect()->route('admin.product-plan.index', ['id' => $productPlan->id]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
             toast('Cập nhật kế hoạch sản phẩm không thành công!', 'error', 'top-right');
             return redirect()->back();
+        }
+    }
+
+    // Chức Năng Xoá Kế Hoạch Sản Xuất
+    public function deleteProductPlan($id)
+    {
+        DB::beginTransaction();
+        try {
+            $productPlan = ProductionPlan::findOrFail($id);
+            $productPlan->delete();
+
+            DB::commit();
+            toast('Xóa kế hoạch sản phẩm thành công!', 'success', 'top-right');
+            return redirect()->route('admin.product-plan.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
+            toast('Xóa kế hoạch sản phẩm không thành công!', 'error', 'top-right');
+            return redirect()->back();
+        }
+    }
+
+    // Chức Năng Thêm Số Lượng Cho Kế Hoạch Sản Xuất
+    public function configProductPlan()
+    {
+        // Lấy tất cả kế hoạch sản xuất trong tháng hiện tại
+        $productionPlans = ProductionPlan::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->get();
+
+        // Lấy danh sách sản phẩm để hiển thị trong dropdown
+        $products = Product::all();
+
+        // Trả về view chỉnh sửa với dữ liệu
+        return view('productplan.config-product-plan', [
+            'productionPlans' => $productionPlans,
+            'products' => $products,
+        ]);
+    }
+
+    // Xử lý cập nhật kế hoạch sản xuất
+    public function handleConfigProductPlan(Request $request)
+    {
+        try {
+            // Xác thực dữ liệu đầu vào
+            $plansData = $request->input('plans');
+
+            // Kiểm tra nếu mảng plans không rỗng
+            if (is_array($plansData)) {
+                foreach ($plansData as $planData) {
+                    // Kiểm tra nếu các key cần thiết tồn tại trong dữ liệu
+                    if (isset($planData['id']) && isset($planData['production_plan'])) {
+                        // Tìm kế hoạch sản xuất theo ID
+                        $productionPlan = ProductionPlan::findOrFail($planData['id']);
+
+                        // Cập nhật các thuộc tính kế hoạch sản xuất
+                        $productionPlan->updateProductionPlanAttributes($planData);
+                    }
+                }
+            }
+            toast('Cập nhật kế hoạch sản xuất thành công!', 'success', 'top-right');
+            return redirect()->route('admin.product-plan.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
+            toast('Cập nhật kế hoạch sản xuất không thành công!', 'error', 'top-right');
+            return redirect()->route('admin.product-plan.index');
         }
     }
 }
