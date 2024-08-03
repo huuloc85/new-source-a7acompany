@@ -102,121 +102,123 @@
                                         @if (isset($barcode) && isset($qrCode))
                                             @foreach ($binArray as $key => $bin)
                                                 <div class="container grid-item">
-                                                    <table class="table table-bordered">
-                                                        <tr>
-                                                            <td colspan="2" class="align-content-center">
-                                                                <img src="{{ asset('assets/img/logos/VVP.png') }}" alt="" width="110" title="VINH VINH PHAT ONE MEMBER CO.LTD">
-                                                                <div class="logo-text qr-add">VINH VINH PHAT ONE MEMBER CO. LTD</div>
-                                                            </td>
-                                                            <td colspan="4" class="align-content-center">
-                                                                <div class="qrcode-img">{!! $qrCode !!}</div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">
-                                                                Tên khách hàng<br>外メーカー名
-                                                            </td>
-                                                            <td colspan="5" class="text-center">
-                                                                <p class="fw-bold mb-0">
-                                                                    FURUKAWA AUTOMOTIVE PARTS<br>(VIET NAM)INC
-                                                                </p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">
-                                                                Tên sản phẩm<br>品名
-                                                            </td>
-                                                            <td  class="text-center">
-                                                                <p class="fw-bold mb-0">{{ $product->name }}</p>
-                                                            </td>
-                                                            <td colspan="2" class="align-content-center">
-                                                                CODE
-                                                            </td>
-                                                            <td colspan="2" class="text-center">
-                                                                <p class="fw-bold mb-0">{{ $product->code }}</p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">
-                                                                Nguyên liệu<br>原材料
-                                                            </td>
-                                                            <td class="text-center align-content-center">
-                                                                <p class="mb-0">PP ZS609</p>
-                                                            </td>
-                                                            <td colspan="2" class="text-center">
-                                                                Màu sắc 色
-                                                            </td>
-                                                            <td colspan="2" class="text-center align-content-center">
-                                                                <p class="mb-0">NATURAL</p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">
-                                                                Số lượng<br>数量
-                                                            </td>
-                                                            <td colspan="5" class="text-center align-content-center">
-                                                                <p class="fw-bold mb-0">{{ $product->quanEntityBin }}PCS</p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">
-                                                                Lotno<br>ロット No
-                                                            </td>
-                                                            <td colspan="4" class="text-center align-content-center">
-                                                                <div class="lot-container">
-                                                                    <p class="fw-bold mb-0">{{ $lotNo['lot'] }}</p>
-                                                                    <p class="fw-bold mb-0">-</p>
-                                                                    <p class="fw-bold mb-0">{{ $lotNo['date'] }}</p>
-                                                                    <p class="fw-bold mb-0">-</p>
-                                                                    <p class="fw-bold mb-0">{{ $lotNo['shift'] }}</p>
-                                                                    <p class="fw-bold mb-0">-</p>
-                                                                    <p class="fw-bold mb-0">{{ $bin['bin'] }}</p>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">
-                                                                Mã vạch<br>バーコード
-                                                            </td>
-                                                            <td colspan="5" class="text-center align-content-center">
-                                                                <img id="barcode-image"
-                                                                    src="data:image/png;base64,{{ $bin['barcode'] }}"
-                                                                    alt="Mã vạch">
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">
-                                                                Kiểm tra<br>検査
-                                                            </td>
-                                                            <td colspan="2" class="text-center align-content-center">
-                                                                Kiểm tra 200%<br>檢查(200%)
-                                                            </td>
-                                                            <td colspan="3" class="text-center align-content-center">
-                                                                Kiểm tra (Xuất hàng) 検査 (出荷)
-                                                            </td>
-                                                        </tr>
-                                                        <tr class="moc-style">
-                                                            <td class="text-start" style="height:100px !important">
-                                                                Mộc<br>合格印
+                                                    @if ($bin['bin'] != "xxxx")
+                                                        <table class="table table-bordered">
+                                                            <tr>
+                                                                <td colspan="2" class="align-content-center">
+                                                                    <img src="{{ asset('assets/img/logos/VVP.png') }}" alt="" width="110" title="VINH VINH PHAT ONE MEMBER CO.LTD">
+                                                                    <div class="logo-text qr-add">VINH VINH PHAT ONE MEMBER CO. LTD</div>
+                                                                </td>
+                                                                <td colspan="4" class="align-content-center">
+                                                                    <div class="qrcode-img">{!! $qrCode !!}</div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">
+                                                                    Tên khách hàng<br>外メーカー名
+                                                                </td>
+                                                                <td colspan="5" class="text-center">
+                                                                    <p class="fw-bold mb-0">
+                                                                        FURUKAWA AUTOMOTIVE PARTS<br>(VIET NAM)INC
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">
+                                                                    Tên sản phẩm<br>品名
+                                                                </td>
+                                                                <td  class="text-center">
+                                                                    <p class="fw-bold mb-0">{{ $product->name }}</p>
+                                                                </td>
+                                                                <td colspan="2" class="align-content-center">
+                                                                    CODE
+                                                                </td>
+                                                                <td colspan="2" class="text-center">
+                                                                    <p class="fw-bold mb-0">{{ $product->code }}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">
+                                                                    Nguyên liệu<br>原材料
+                                                                </td>
+                                                                <td class="text-center align-content-center">
+                                                                    <p class="mb-0">PP ZS609</p>
+                                                                </td>
+                                                                <td colspan="2" class="text-center">
+                                                                    Màu sắc 色
+                                                                </td>
+                                                                <td colspan="2" class="text-center align-content-center">
+                                                                    <p class="mb-0">NATURAL</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">
+                                                                    Số lượng<br>数量
+                                                                </td>
+                                                                <td colspan="5" class="text-center align-content-center">
+                                                                    <p class="fw-bold mb-0">{{ $product->quanEntityBin }}PCS</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">
+                                                                    Lotno<br>ロット No
+                                                                </td>
+                                                                <td colspan="4" class="text-center align-content-center">
+                                                                    <div class="lot-container">
+                                                                        <p class="fw-bold mb-0">{{ $lotNo['lot'] }}</p>
+                                                                        <p class="fw-bold mb-0">-</p>
+                                                                        <p class="fw-bold mb-0">{{ $lotNo['date'] }}</p>
+                                                                        <p class="fw-bold mb-0">-</p>
+                                                                        <p class="fw-bold mb-0">{{ $lotNo['shift'] }}</p>
+                                                                        <p class="fw-bold mb-0">-</p>
+                                                                        <p class="fw-bold mb-0">{{ $bin['bin'] }}</p>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">
+                                                                    Mã vạch<br>バーコード
+                                                                </td>
+                                                                <td colspan="5" class="text-center align-content-center">
+                                                                    <img id="barcode-image"
+                                                                        src="data:image/png;base64,{{ $bin['barcode'] }}"
+                                                                        alt="Mã vạch">
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">
+                                                                    Kiểm tra<br>検査
+                                                                </td>
+                                                                <td colspan="2" class="text-center align-content-center">
+                                                                    Kiểm tra 200%<br>檢查(200%)
+                                                                </td>
+                                                                <td colspan="3" class="text-center align-content-center">
+                                                                    Kiểm tra (Xuất hàng) 検査 (出荷)
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="moc-style">
+                                                                <td class="text-start" style="height:100px !important">
+                                                                    Mộc<br>合格印
 
-                                                            </td>
-                                                            <td colspan="3"></td>
-                                                            <td colspan="2" style="position: relative;">
-                                                                <div class="square"></div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr class="under-moc-style">
-                                                            <td class="text-start">
-                                                                Người kiểm<br>検査
-                                                            </td>
-                                                            <td colspan="3"> </td>
-                                                            <td colspan="2"> </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-start">(Thời gian)</td>
-                                                            <td colspan="5">{{ $lotNo['date_time'] }}</td>
-                                                        </tr>
-                                                    </table>
+                                                                </td>
+                                                                <td colspan="3"></td>
+                                                                <td colspan="2" style="position: relative;">
+                                                                    <div class="square"></div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="under-moc-style">
+                                                                <td class="text-start">
+                                                                    Người kiểm<br>検査
+                                                                </td>
+                                                                <td colspan="3"> </td>
+                                                                <td colspan="2"> </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="text-start">(Thời gian)</td>
+                                                                <td colspan="5">{{ $lotNo['date_time'] }}</td>
+                                                            </tr>
+                                                        </table>
+                                                    @endif
                                                 </div>
                                             @endforeach
                                         @endif

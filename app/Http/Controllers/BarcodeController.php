@@ -45,6 +45,7 @@ class BarCodeController extends Controller
             array_push($binArray, $data);
         };
 
+        $binArray = $this->mapKeyData($binArray);
         $lotNo = [
             'lot' => 'A',
             'date' => str_replace('/', '', $date),
@@ -53,6 +54,27 @@ class BarCodeController extends Controller
         ];
 
         return view('barcode.add', compact('qrCode', 'barcode', 'products', 'lotNo', 'binArray', 'product', 'request'));
+    }
+
+    //map key data
+    public function mapKeyData($binArray) {
+        $oddItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 !== 0);
+        $evenItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 === 0);
+
+        $rows = [];
+
+        while ($oddItems || $evenItems) {
+            $rowOdds = array_splice($oddItems, 0, 3);
+            $rowEvens = array_splice($evenItems, 0, 3);
+
+            $rowOdds = array_pad($rowOdds, 3, ['bin' => 'xxxx']);
+            $rowEvens = array_pad($rowEvens, 3, ['bin' => 'xxxx']);
+
+            $rows[] = array_merge($rowOdds, $rowEvens);
+        }
+
+        $binArray = array_merge(...$rows);
+        return $binArray;
     }
 
     //view scan
