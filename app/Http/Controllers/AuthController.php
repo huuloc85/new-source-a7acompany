@@ -56,8 +56,6 @@ class AuthController extends Controller
         return redirect()->back();
     }
 
-
-
     //logout
     public function logout()
     {
