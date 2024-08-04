@@ -19,7 +19,7 @@
                                 <div class="col-3">
                                     <div class="mb-3">
                                         <label class="form-label">Ngày<span class="required">*</span></label>
-                                        <input type="date" class="form-control @error('date') is-invalid @enderror"
+                                        <input id="date" type="date" class="form-control @error('date') is-invalid @enderror"
                                             placeholder="Ngày" name="date" value="{{ $request->date ?? '' }}" required>
                                         @error('date')
                                             <div class="text text-danger">{{ $message }}</div>
@@ -28,7 +28,7 @@
                                 </div>
                                 <div class="col-3">
                                     <label class="form-label">Ca<span class="required">*</span></label>
-                                    <select class="form-control @error('shift') is-invalid @enderror" name="shift"
+                                    <select id="shift" class="form-control @error('shift') is-invalid @enderror" name="shift"
                                         required>
                                         <option style="text-align: center" value="">----- Ca làm việc -----</option>
                                         <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value="1">Ca 1</option>
@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="col-3">
                                     <label class="form-label">Số lượng thùng(tem)<span class="required">*</span></label>
-                                    <input type="number" min="1" max="999"
+                                    <input id="binCount" type="number" min="1" max="999"
                                         class="form-control @error('binCount') is-invalid @enderror"
                                         placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}" required>
                                     @error('binCount')
@@ -49,7 +49,7 @@
                                 </div>
                                 <div class="col-3">
                                     <label class="form-label">Thùng bắt đầu<span class="required">*</span></label>
-                                    <input type="number" min="0"
+                                    <input id="binStart" type="number" min="0"
                                         class="form-control @error('binStart') is-invalid @enderror"
                                         placeholder="Thùng bắt đầu" name="binStart" value="{{ $request->binStart ?? '' }}" required>
                                     @error('binStart')
@@ -95,7 +95,9 @@
                                 <div class="col-12 no-print">
                                     <button type="submit" id="register-barcode" class="btn btn-success">Tạo tem</button>
                                     <a class="btn btn-primary" href="{{ route('admin.product.barcode') }}">Làm mới</a>
-                                    <a class="btn btn-secondary" href="javascript:window.print()">Print</a>
+                                    @if (isset($binArray))
+                                        <a class="btn btn-secondary" onclick="savePrint(event)" href="javascript:window.print()">Print</a>
+                                    @endif
                                 </div>
                                 <div class="container-gird">
                                     <div class="grid-container">
@@ -224,11 +226,11 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="no-print">
-                                    <a class="btn btn-primary" href="{{ route('admin.barcode.scan') }}">Quét mã vạch</a>
-                                    <a class="btn btn-danger" href="{{ route('admin.home') }}">Trang chủ</a>
-                                    <a class="btn btn-secondary" href="javascript:window.print()">Print</a>
-                                </div>
+                                @if (isset($binArray))
+                                    <div class="no-print">
+                                        <a class="btn btn-secondary" id="save-print" data-url="{{ route('admin.barcode.save.print')}}" onclick="savePrint(event)" href="javascript:window.print()">Print</a>
+                                    </div>
+                                @endif
                             </div>
                         </form>
                     </div>
@@ -241,6 +243,36 @@
             var data = event.target.value.split("-", 2);
             $('#product_code').val(data[0]);
             $('#product_pcs').val(data[1]);
+        }
+
+        function savePrint(event) {
+            var url = $('#save-print').data('url');
+            var productCode = $('#product_code').val();
+            var date = $('#date').val();
+            var shift = $('#shift').val();
+            var binCount = $('#binCount').val();
+            var binStart = $('#binStart').val();
+
+            if(productCode) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        productCode: productCode,
+                        date: date,
+                        shift: shift,
+                        binCount: binCount,
+                        binStart: binStart,
+                        _token: '{{ csrf_token() }}'
+                    },
+                        success: function(response) {
+                            console.log(response.status);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Đã xảy ra lỗi khi gửi lưu lịch sử print:", error);
+                        }
+                    });
+            }
         }
     </script>
 @endsection

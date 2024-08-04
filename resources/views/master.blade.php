@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/rtl.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('vendor/Leaflet/leaflet.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/total.css') }}">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
@@ -442,7 +443,7 @@
         </div>
         <!-- End Header -->
 
-        <div class="conatiner-fluid content-inner mt-n5 py-0">
+        <div class="container-fluid content-inner mt-n5 py-0">
             @include('sweetalert::alert')
             @yield('content')
         </div>

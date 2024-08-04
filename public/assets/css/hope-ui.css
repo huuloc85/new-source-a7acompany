@@ -15777,7 +15777,7 @@ th {
     height: 310px !important;
   }
 
-  .conatiner-fluid.content-inner.mt-n5 {
+  .container-fluid.content-inner.mt-n5 {
     margin-top: unset !important;
   }
 }
@@ -20864,7 +20864,7 @@ body {
 }
 
 /*
- * Background color 
+ * Background color
  */
 .bg-soft-primary {
   color: #344ed1;

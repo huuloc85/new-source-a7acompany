@@ -16,7 +16,7 @@
             transition: all 400ms;
             transform-origin: center left;
         }
-        
+
     }
 }
 
@@ -33,14 +33,14 @@
             height: 310px !important;
         }
     }
-    .conatiner-fluid{
+    .container-fluid{
         &.content-inner{
             &.mt-n5{
                 margin-top: unset !important;
             }
         }
     }
-  
+
 }
 
 
@@ -109,7 +109,7 @@
                         display: block;
                     }
                 }
-               
+
                 &.active{
                     >a {
                         color: var(--#{$variable-prefix}primary);
@@ -175,7 +175,7 @@
             }
         }
     }
-   
+
 }
 @keyframes menu-sub-dropdown-animation-fade-in {
     from {

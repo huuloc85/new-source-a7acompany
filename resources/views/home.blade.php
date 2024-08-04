@@ -61,7 +61,7 @@
     @if (Auth()->user()->role->role_name == 'admin' ||
             Auth()->user()->role->role_name == 'manager' ||
             Auth()->user()->role->role_name == 'accountant')
-        <div class="conatiner-fluid content-inner mt-n5 py-0">
+        <div class="container-fluid content-inner mt-n5 py-0">
             <div class="row">
                 <div class="col-md-12 col-lg-12">
                     <div class="row row-cols-1">

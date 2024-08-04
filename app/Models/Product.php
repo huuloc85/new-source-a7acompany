@@ -83,6 +83,12 @@ class Product extends Model
         return $this->hasMany(StorageProduct::class, 'product_id', 'id');
     }
 
+    //relationship HistoryPrints
+    public function historyPrints()
+    {
+        return $this->hasMany(HistoryPrint::class, 'product_id', 'id');
+    }
+
     //search by name
     public function scopeName($query, $request)
     {
