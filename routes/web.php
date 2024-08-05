@@ -13,6 +13,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CheckPoController;
+use App\Http\Controllers\StampController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\BarCodeController;
 use App\Models\LoginHistory;
@@ -156,14 +157,21 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     //barcode
     Route::middleware(['authAdmin'])->prefix('/barcode')->group(function () {
-        Route::get('/', [BarCodeController::class, 'index'])->name('admin.product.barcode');
-        Route::post('/register', [BarCodeController::class, 'barcode'])->name('admin.barcode.register');
+        Route::get('/', [StampController::class, 'index'])->name('admin.product.barcode');
+        Route::post('/register', [StampController::class, 'barcode'])->name('admin.barcode.register');
+        Route::post('/save-print', [StampController::class, 'savePrint'])->name('admin.barcode.save.print');
+    });
+
+    //packing-stamp
+    Route::middleware(['authAdmin'])->prefix('/packing')->group(function () {
+        Route::get('/', [StampController::class, 'packingStamp'])->name('admin.product.packing');
+        Route::post('/register', [StampController::class, 'StorePackingStamp'])->name('admin.packing.register');
     });
 
     //view check barcode for employee
     Route::prefix('/barcode/employee')->group(function () {
-        Route::get('/scan', [BarCodeController::class, 'scan'])->name('admin.barcode.scan');
-        Route::post('/check', [BarCodeController::class, 'checkBarCode'])->name('admin.barcode.check');
+        Route::get('/scan', [StampController::class, 'scan'])->name('admin.barcode.scan');
+        Route::post('/check', [StampController::class, 'checkBarCode'])->name('admin.barcode.check');
     });
 
     //check PO

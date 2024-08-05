@@ -83,6 +83,18 @@ class Product extends Model
         return $this->hasMany(StorageProduct::class, 'product_id', 'id');
     }
 
+    //relationship HistoryPrints
+    public function historyPrints()
+    {
+        return $this->hasMany(HistoryPrint::class, 'product_id', 'id');
+    }
+
+    //relationship productionPlan
+    public function productionPlans()
+    {
+        return $this->hasMany(ProductionPlan::class);
+    }
+
     //search by name
     public function scopeName($query, $request)
     {
@@ -117,9 +129,5 @@ class Product extends Model
             return $query->where('binCode', 'like', '%' . $request->binCode . '%');
         }
         return $query;
-    }
-    public function productionPlan()
-    {
-        return $this->hasOne(ProductionPlan::class);
     }
 }

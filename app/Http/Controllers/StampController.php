@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\Product;
 use App\Models\StorageProduct;
+use App\Models\HistoryPrint;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Carbon\Carbon;
 
-class BarCodeController extends Controller
+class StampController extends Controller
 {
     //view register barcode
     public function index()
@@ -128,5 +129,56 @@ class BarCodeController extends Controller
         }
 
         return response()->json($result, 200);
+    }
+
+    //save history print
+    public function savePrint(Request $request)
+    {
+        $product = Product::where('code', $request->productCode)->first();
+        if ($product != null) {
+            $history = new HistoryPrint();
+            $history->product_id = $product->id;
+            $history->employee_id = Auth()->user()->id;
+            $history->date = $request->date;
+            $history->shift = $request->shift;
+            $history->binCount = $request->binCount;
+            $history->binStart = $request->binStart;
+            $history->save();
+        }
+
+        return response()->json(200);
+    }
+
+    //view packing stamp
+    public function packingStamp() {
+        $products = Product::where('deleted_at', null)->get();
+        return view('packing-stamp.index', compact('products'));
+    }
+
+    //handle make packing stamp
+    public function StorePackingStamp(Request $request)
+    {
+        $products = Product::where('deleted_at', null)->get();
+        $product = Product::where('code', $request->code)->first();
+        $date = date('d/m/Y', strtotime($request->date));
+        $binCount = $request->binCount;
+        $binStart = $request->binStart;
+
+        $binArray = [];
+        for ($i = 0; $i < $binCount; $i++) {
+            $data = [
+                'bin' => sprintf('%03d', $binStart + $i),
+            ];
+            array_push($binArray, $data);
+        };
+
+        $lotNo = [
+            'lot' => 'A',
+            'date' => str_replace('/', '', $date),
+            'shift' => $request->shift,
+            'date_time' => Carbon::now()->format('d/m/Y H:i')
+        ];
+        
+        return view('packing-stamp.index', compact('products', 'lotNo', 'binArray', 'product', 'request'));
     }
 }

@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Log;
 
 class ProductionPlanController extends Controller
 {
-
     // Chức Năng Add vs Update (Hàm Chức Năng)
     private function setProductionPlanAttributes($productPlan, $request)
     {
