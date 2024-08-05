@@ -34,14 +34,59 @@
             border-radius: 15px;
         }
 
-        .product-tab {
-            max-width: 100%;
-            overflow-x: auto;
+        .table-wrapper {
+            width: 100%;
+            overflow-x: hidden;
         }
 
-        .product-tab-2 {
-            max-width: 50%;
-            overflow-x: auto;
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+        }
+
+        .table td[title] {
+            position: relative;
+        }
+
+        .table td[title]::after {
+            content: attr(title);
+            position: absolute;
+            left: 0;
+            bottom: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            z-index: 1000;
+            transform: translateY(-5px);
+        }
+
+        .table td[title]:hover::after {
+            visibility: visible;
+            opacity: 1;
         }
 
         @media screen and (max-width: 768px) {
@@ -236,155 +281,117 @@
                                         <div class="text-center text-uppercase font-weight-bolder text-lg">
                                             Tuần từ {{ $startOfWeek }} đến {{ $endOfWeek }}
                                         </div>
-                                        <div class="table-responsive p-0 d-flex">
-                                            <div class="col-10">
-                                                <table class="table align-items-center mb-0 table-hover">
-                                                    <thead>
-                                                        <tr>
-                                                            <th
-                                                                class="text-uppercase text-md font-weight-bolder text-center">
-                                                                STT</th>
-                                                            <th class="text-uppercase text-md font-weight-bolder">
-                                                                Tên linh kiện</th>
-                                                            <th class="text-uppercase text-md font-weight-bolder">
-                                                                Tổng số lượng tồn hiện tại</th>
-                                                            <th class="text-uppercase text-md font-weight-bolder">
-                                                                Còn lại trong tuần</th>
-                                                            <th class="text-uppercase text-md font-weight-bolder">Đã
-                                                                xuất trong tuần</th>
-                                                            <th class="text-uppercase text-md font-weight-bolder">
-                                                                Tồn đầu tuần</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($products as $product)
+                                        <div class="table-wrapper">
+                                            <table class="table align-items-center mb-0 table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th title="STT">STT</th>
+                                                        <th title="Tên linh kiện">Tên linh kiện</th>
+                                                        <th title="Tổng số lượng tồn hiện tại">Tổng số lượng tồn hiện tại
+                                                        </th>
+                                                        <th title="Còn lại trong tuần">Còn lại trong tuần</th>
+                                                        <th title="Đã xuất trong tuần">Đã xuất trong tuần</th>
+                                                        <th title="Tồn đầu tuần">Tồn đầu tuần</th>
+                                                        @foreach ($weekDays as $date)
                                                             @php
-                                                                $quan100 = 0;
-                                                                $quanExport = 0;
-                                                                $reamingOfWeek = 0;
-                                                                $beginningOfWeek = 0;
-                                                                $errorQuantity = 0;
-                                                                $previousReamingOfWeekValue = 0;
-
-                                                                if ($index === 0) {
-                                                                    $totalMonthQuantities = $product
-                                                                        ->TotalMonthQuantities()
-                                                                        ->where('status', 4)
-                                                                        ->where('month', $selectedMonth)
-                                                                        ->first();
-
-                                                                    if ($totalMonthQuantities) {
-                                                                        $beginningOfWeek =
-                                                                            $totalMonthQuantities->totalQuan;
-                                                                    }
-                                                                } else {
-                                                                    $previousReamingOfWeekValue =
-                                                                        $previousReamingOfWeek[$product->id] ?? 0;
-                                                                    $beginningOfWeek = $previousReamingOfWeekValue;
-                                                                }
-
-                                                                foreach ($weekArray as $date => $quantities) {
-                                                                    $quan100 +=
-                                                                        $quantities['quan100'][$product->id] ?? 0;
-                                                                    $quanExport +=
-                                                                        $quantities['quanExport'][$product->id] ?? 0;
-                                                                }
-
-                                                                $reamingOfWeek =
-                                                                    $quan100 - $quanExport + $beginningOfWeek;
-
-                                                                if ($index > 0) {
-                                                                    $previousReamingOfWeek[
-                                                                        $product->id
-                                                                    ] = $reamingOfWeek;
-                                                                } else {
-                                                                    $previousReamingOfWeek[
-                                                                        $product->id
-                                                                    ] = $reamingOfWeek;
-                                                                }
-
-                                                                $errorQuantity = $product
-                                                                    ->TotalMonthQuantities()
-                                                                    ->where('status', 6)
-                                                                    ->where('month', $selectedMonth)
-                                                                    ->sum('totalQuan');
-
-                                                                $total = $quan100 + $beginningOfWeek;
-                                                                $totalReamingOfWeek = $reamingOfWeek - $errorQuantity;
-
-                                                                session()->put("$index.$product->id.total", $total);
-                                                                session()->put(
-                                                                    "$index.$product->id.totalReamingOfWeek",
-                                                                    $totalReamingOfWeek,
-                                                                );
-                                                                session()->put(
-                                                                    "$index.$product->id.quanExport",
-                                                                    $quanExport,
-                                                                );
-                                                                session()->put(
-                                                                    "$index.$product->id.beginningOfWeek",
-                                                                    $beginningOfWeek,
+                                                                // Chỉ định định dạng của chuỗi ngày
+                                                                $carbonDate = \Carbon\Carbon::createFromFormat(
+                                                                    'd/m/Y',
+                                                                    $date,
                                                                 );
                                                             @endphp
-                                                            <tr>
-                                                                <td class="text-center">{{ $loop->iteration }}</td>
-                                                                <td>
-                                                                    <div
-                                                                        class="justify-content-start align-items-center ps-4">
-                                                                        {{ $product->name }}</a>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="text-center">{{ number_format($total) }}</td>
-                                                                <td class="text-center">
-                                                                    {{ number_format($totalReamingOfWeek) }}
-                                                                </td>
-                                                                <td class="text-center">{{ number_format($quanExport) }}
-                                                                </td>
-                                                                <td class="text-center">
-                                                                    {{ number_format($beginningOfWeek) }}
-                                                                </td>
-                                                            </tr>
+                                                            <th class="text-uppercase text-md font-weight-bolder text-center"
+                                                                title="{{ $carbonDate->toDateString() }}">
+                                                                {{ $carbonDate->format('d-m') }}
+                                                            </th>
                                                         @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="col-2 product-tab-2">
-                                                <table class="table align-items-center mb-0 table-hover">
-                                                    <thead>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($products as $product)
+                                                        @php
+                                                            $quan100 = 0;
+                                                            $quanExport = 0;
+                                                            $reamingOfWeek = 0;
+                                                            $beginningOfWeek = 0;
+                                                            $errorQuantity = 0;
+                                                            $previousReamingOfWeekValue = 0;
+
+                                                            if ($index === 0) {
+                                                                $totalMonthQuantities = $product
+                                                                    ->TotalMonthQuantities()
+                                                                    ->where('status', 4)
+                                                                    ->where('month', $selectedMonth)
+                                                                    ->first();
+
+                                                                if ($totalMonthQuantities) {
+                                                                    $beginningOfWeek = $totalMonthQuantities->totalQuan;
+                                                                }
+                                                            } else {
+                                                                $previousReamingOfWeekValue =
+                                                                    $previousReamingOfWeek[$product->id] ?? 0;
+                                                                $beginningOfWeek = $previousReamingOfWeekValue;
+                                                            }
+
+                                                            foreach ($weekArray as $date => $quantities) {
+                                                                $quan100 += $quantities['quan100'][$product->id] ?? 0;
+                                                                $quanExport +=
+                                                                    $quantities['quanExport'][$product->id] ?? 0;
+                                                            }
+
+                                                            $reamingOfWeek = $quan100 - $quanExport + $beginningOfWeek;
+
+                                                            if ($index > 0) {
+                                                                $previousReamingOfWeek[$product->id] = $reamingOfWeek;
+                                                            } else {
+                                                                $previousReamingOfWeek[$product->id] = $reamingOfWeek;
+                                                            }
+
+                                                            $errorQuantity = $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('status', 6)
+                                                                ->where('month', $selectedMonth)
+                                                                ->sum('totalQuan');
+
+                                                            $total = $quan100 + $beginningOfWeek;
+                                                            $totalReamingOfWeek = $reamingOfWeek - $errorQuantity;
+
+                                                            session()->put("$index.$product->id.total", $total);
+                                                            session()->put(
+                                                                "$index.$product->id.totalReamingOfWeek",
+                                                                $totalReamingOfWeek,
+                                                            );
+                                                            session()->put(
+                                                                "$index.$product->id.quanExport",
+                                                                $quanExport,
+                                                            );
+                                                            session()->put(
+                                                                "$index.$product->id.beginningOfWeek",
+                                                                $beginningOfWeek,
+                                                            );
+                                                        @endphp
                                                         <tr>
+                                                            <td>{{ $loop->iteration }}</td>
+                                                            <td title="{{ $product->name }}">
+                                                                {{ $product->name }}
+                                                            </td>
+                                                            <td>{{ number_format($total) }}</td>
+                                                            <td>{{ number_format($totalReamingOfWeek) }}</td>
+                                                            <td>{{ number_format($quanExport) }}</td>
+                                                            <td>{{ number_format($beginningOfWeek) }}</td>
                                                             @foreach ($weekDays as $date)
-                                                                <th
-                                                                    class="text-uppercase text-md font-weight-bolder text-center">
-                                                                    {{ $date }}
-                                                                </th>
+                                                                @php
+                                                                    $quanExport =
+                                                                        $weekArray[$date]['quanExport'][$product->id] ??
+                                                                        0;
+                                                                @endphp
+                                                                <td class="text-center bg-2">
+                                                                    {{ number_format($quanExport) }}</td>
                                                             @endforeach
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @foreach ($products as $product)
-                                                            <tr>
-
-                                                                @php
-                                                                    $toggleClass = 'bg-2';
-                                                                @endphp
-                                                                @foreach ($weekDays as $date)
-                                                                    @php
-                                                                        $quanExport =
-                                                                            $weekArray[$date]['quanExport'][
-                                                                                $product->id
-                                                                            ] ?? 0;
-                                                                        $toggleClass =
-                                                                            $toggleClass === 'bg-2' ? 'bg-3' : 'bg-2';
-                                                                    @endphp
-                                                                    <td class="text-center {{ $toggleClass }}">
-                                                                        {{ number_format($quanExport) }}
-                                                                    </td>
-                                                                @endforeach
-                                                            </tr>
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -438,8 +445,14 @@
                                                 <thead>
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
+                                                            @php
+                                                                $formattedDate = \Carbon\Carbon::parse($date)->format(
+                                                                    'd-m',
+                                                                ); // Định dạng ngày tháng
+                                                            @endphp
                                                             <th class="text-uppercase text-center text-md font-weight-bolder <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
-                                                                colspan="2">{{ $date }}</th>
+                                                                colspan="2" title="{{ $date }}">
+                                                                {{ $formattedDate }}</th>
                                                         @endforeach
                                                     </tr>
                                                     <tr>
@@ -483,7 +496,7 @@
                                                                         $nextDayEightAM = $formattedDate
                                                                             ->copy()
                                                                             ->addDay()
-                                                                            ->setHour(9);
+                                                                            ->setHour(10);
 
                                                                         // Phân biệt ca dựa vào thời gian trong cột created_at
                                                                         if ($created_at->isSameDay($formattedDate)) {
@@ -491,19 +504,12 @@
                                                                             $totalQuanDateCa1 +=
                                                                                 $dailyQuantity->quantity;
                                                                         } elseif ($created_at < $nextDayEightAM) {
-                                                                            // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date $totalQuanDateCa2 +=$dailyQuantity->quantity;
+                                                                            // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date
+                                                                            $totalQuanDateCa2 +=
+                                                                                $dailyQuantity->quantity;
                                                                         }
                                                                     }
-                                                                    session()->put(
-                                                                        "totalQuanDateCa1_{$date}_{$product->id}",
-                                                                        $totalQuanDateCa1,
-                                                                    );
-                                                                    session()->put(
-                                                                        "totalQuanDateCa2_{$date}_{$product->id}",
-                                                                        $totalQuanDateCa2,
-                                                                    );
                                                                 @endphp
-
                                                                 <td class="{{ $key % 2 == 0 ? 'bg-3' : 'bg-2' }}">
                                                                     <div class="d-flex px-3 py-1 justify-content-center">
                                                                         {{ number_format($totalQuanDateCa1) }}
@@ -574,8 +580,15 @@
                                                 <thead>
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
+                                                            @php
+                                                                // Sử dụng Carbon để định dạng ngày tháng theo 'd-m'
+                                                                $formattedDate = \Carbon\Carbon::parse($date)->format(
+                                                                    'd-m',
+                                                                );
+                                                            @endphp
                                                             <th class="text-uppercase text-center text-md font-weight-bolder col-3 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
-                                                                rowspan="2">{{ $date }}</th>
+                                                                rowspan="2" title="{{ $formattedDate }}">
+                                                                {{ $formattedDate }}</th>
                                                         @endforeach
 
                                                     </tr>

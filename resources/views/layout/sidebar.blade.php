@@ -108,14 +108,29 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.product-plan.index') }}"
+                                title="Kế hoạch sản xuất">
+                                <i class="icon-svg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        fill="currentColor" class="bi bi-bar-chart" viewBox="0 0 16 16">
+                                        <path
+                                            d="M0 0h16v16H0V0zm1 1v14h14V1H1zm2 2v10h2V3H3zm4 4v6h2V7H7zm4-2v8h2V5h-2z" />
+                                    </svg>
+                                </i>
+                                <span class="item-name">Kế hoạch sản xuất</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link route('admin.checkemployee.view-employee-todo')"
                                 href="{{ route('admin.checkemployee.view-employee-todo') }}"
                                 title="Lịch Hoạt Động Trong Ngày">
                                 <i class="icon-svg">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20"
                                         height="20" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2">
+                                        stroke-linecap="round" stroke-linejoin="round"
+                                        class="feather feather-calendar">
+                                        <rect x="3" y="4" width="18" height="18" rx="2"
+                                            ry="2">
                                         </rect>
                                         <line x1="16" y1="2" x2="16" y2="6"></line>
                                         <line x1="8" y1="2" x2="8" y2="6"></line>
