@@ -6,7 +6,7 @@
             max-width: 100%;
             padding: 0 1rem;
             /* display: flex;
-                        justify-content: center; */
+                            justify-content: center; */
         }
 
         .grid-container {
@@ -75,8 +75,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="production_plan">Kế Hoạch Sản Xuất (PCS)</label>
-                                    <input type="number" id="production_plan" name="production_plan" class="form-control"
-                                        required>
+                                    <input type="number" id="production_plan" name="production_plan" class="form-control">
                                 </div>
 
                                 <!-- Row 2 -->
@@ -118,7 +117,7 @@
                                 <!-- Row 4 -->
                                 <div class="form-group">
                                     <label for="cycle">Chu Kỳ</label>
-                                    <input type="number" id="cycle" name="cycle" class="form-control" required>
+                                    <input id="cycle" name="cycle" class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="ton">Tấn</label>

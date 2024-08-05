@@ -113,24 +113,25 @@
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $plan->product->name }}</td>
                                         <td class="text-center">{{ $plan->material_name }}</td>
-                                        <td class="text-center">{{ $plan->production_plan }}</td>
-                                        <td class="text-center">{{ $plan->planned_material }}</td>
+                                        <td class="text-center">{{ number_format($plan->production_plan) }}</td>
+                                        <td class="text-center">{{ number_format($plan->planned_material) }}</td>
                                         <td class="text-center">{{ $plan->packaging_type }}</td>
                                         <td class="text-center">{{ $plan->packaging_count_per_box }}</td>
-                                        <td class="text-center">{{ $plan->total_packaging }}</td>
+                                        <td class="text-center">{{ number_format($plan->total_packaging) }}</td>
                                         <td class="text-center">{{ $plan->box_type }}</td>
-                                        <td class="text-center">{{ $plan->products_per_box }}</td>
+                                        <td class="text-center">{{ number_format($plan->products_per_box) }}</td>
                                         <td class="text-center">{{ $plan->box_quantity }}</td>
                                         <td class="text-center">{{ $plan->product_density }}</td>
-                                        <td class="text-center">{{ $plan->daily_production_plan }}</td>
+                                        <td class="text-center">{{ number_format($plan->daily_production_plan) }}</td>
                                         <td class="text-center">{{ $plan->cavity_count }}</td>
                                         <td class="text-center">{{ $plan->cycle }}</td>
                                         <td class="text-center">{{ $plan->ton }}</td>
                                         <td class="text-center">{{ $plan->machine }}</td>
                                         <td class="text-center">{{ $plan->machine_run_days }}</td>
                                         <td class="text-center">{{ $plan->remaining_production_days }}</td>
-                                        <td class="text-center">{{ $plan->remaining_production_quantity }}</td>
-                                        <td class="text-center">{{ $plan->produced_quantity }}</td>
+                                        <td class="text-center">{{ number_format($plan->remaining_production_quantity) }}
+                                        </td>
+                                        <td class="text-center">{{ number_format($plan->produced_quantity) }}</td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#editModal{{ $plan->id }}">
@@ -224,7 +225,7 @@
                                     <input type="text"
                                         class="form-control @error('production_plan') is-invalid @enderror"
                                         id="production_plan" name="production_plan"
-                                        value="{{ old('production_plan', $plan->production_plan) }}" required>
+                                        value="{{ old('production_plan', $plan->production_plan) }}">
                                     @error('production_plan')
                                         <div class="invalid-feedback">
                                             {{ $message }}
@@ -302,8 +303,7 @@
 
                                 <div class="form-group">
                                     <label for="product_density">Tỷ Trọng Sản Phẩm (G)</label>
-                                    <input type="number"
-                                        class="form-control @error('product_density') is-invalid @enderror"
+                                    <input class="form-control @error('product_density') is-invalid @enderror"
                                         id="product_density" name="product_density"
                                         value="{{ old('product_density', $plan->product_density) }}" required>
                                     @error('product_density')
@@ -335,8 +335,8 @@
 
                                 <div class="form-group">
                                     <label for="cycle">Chu Kỳ</label>
-                                    <input type="number" class="form-control @error('cycle') is-invalid @enderror"
-                                        id="cycle" name="cycle" value="{{ old('cycle', $plan->cycle) }}" required>
+                                    <input class="form-control @error('cycle') is-invalid @enderror" id="cycle"
+                                        name="cycle" value="{{ old('cycle', $plan->cycle) }}" required>
                                     @error('cycle')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -418,4 +418,22 @@
             </div>
         </div>
     @endforeach
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var productSelect = document.getElementById('product_select');
+            var boxTypeInput = document.getElementById('box_type');
+            var productsPerBoxInput = document.getElementById('products_per_box');
+
+            productSelect.addEventListener('change', function() {
+                var selectedOption = productSelect.options[productSelect.selectedIndex];
+                var binCode = selectedOption.getAttribute('data-bin-code');
+                var quanEntityBin = selectedOption.getAttribute('data-quan-entity-bin');
+
+                boxTypeInput.value = binCode || '';
+                productsPerBoxInput.value = quanEntityBin || '';
+            });
+            var event = new Event('change');
+            productSelect.dispatchEvent(event);
+        });
+    </script>
 @endsection
