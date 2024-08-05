@@ -4,13 +4,18 @@
     <style>
         .container {
             margin-top: 20px;
-            width: 100% !important;
+            width: 100%;
+            padding: 0 15px;
+            /* Thêm padding để tránh bị dính vào mép */
         }
 
         .card {
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            /* Đảm bảo card chiếm toàn bộ chiều rộng của cột */
+            overflow: hidden;
         }
 
         .card-header {
@@ -23,6 +28,7 @@
             margin: 0;
             font-size: 1.25rem;
             font-weight: bold;
+            color: #333;
         }
 
         .card-body {
@@ -45,6 +51,7 @@
         .table th {
             background-color: #f8f9fa;
             font-weight: bold;
+            color: #333;
         }
 
         .form-control {
@@ -53,6 +60,7 @@
             padding: 8px;
             border: 1px solid #ced4da;
             border-radius: 4px;
+            font-size: 1rem;
         }
 
         .btn-primary {
@@ -63,20 +71,50 @@
             font-size: 1rem;
             border-radius: 4px;
             cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
         }
 
         .btn-primary:hover {
             background-color: #0056b3;
         }
 
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
         .form-group {
             margin-bottom: 1rem;
+        }
+
+        .form-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-buttons .btn {
+            margin: 0 5px;
         }
     </style>
 
     <div class="container">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">Nhập Kế Hoạch Sản Xuất</h4>
@@ -95,7 +133,6 @@
                                         <th>Số sản phẩm mỗi thùng</th>
                                         <th>Chu kỳ</th>
                                         <th>Số lượng cavity</th>
-                                        {{-- <th>Thao tác</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -139,9 +176,6 @@
                                                     value="{{ old('plans.' . $plan->id . '.cavity_count', $plan->cavity_count) }}"
                                                     required>
                                             </td>
-                                            {{-- <td>
-                                                <!-- Thao tác khác nếu cần -->
-                                            </td> --}}
                                         </tr>
                                     @endforeach
                                 </tbody>
