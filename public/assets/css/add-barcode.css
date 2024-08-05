@@ -209,4 +209,8 @@
     .moc-style td:nth-child(3) {
         border-right: 1px solid;
     }
+
+    .fs-13 {
+        font-size: 14px !important;
+    }
 }

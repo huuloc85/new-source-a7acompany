@@ -130,7 +130,7 @@
                                                                     Tên sản phẩm<br>品名
                                                                 </td>
                                                                 <td  class="text-center">
-                                                                    <p class="fw-bold mb-0">{{ $product->name }}</p>
+                                                                    <p class="fw-bold mb-0 fs-13">{{ $product->name }}</p>
                                                                 </td>
                                                                 <td colspan="2" class="align-content-center">
                                                                     CODE
