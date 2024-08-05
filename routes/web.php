@@ -14,6 +14,9 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CheckPoController;
 use App\Http\Controllers\ProductionPlanController;
+use App\Http\Controllers\BarCodeController;
+use App\Models\LoginHistory;
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -146,9 +149,21 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         // cập nhật moq
         Route::get('/update-moq', [ProductController::class, 'updateMOQ'])->name('admin.product.update-moq');
         Route::post('/handle-update-moq', [ProductController::class, 'handleUpdateMOQ'])->name('admin.product.handle-update-moq');
-        //thêm sản lượng 100 200 xuất hàng hàng lỗi admin 
+        //thêm sản lượng 100 200 xuất hàng hàng lỗi admin
         Route::get('/add-quantity-admin', [ProductController::class, 'viewUpdateQuantityAdmin'])->name('admin.product.add-quantity-admin');
         Route::post('/handle-add-quantity-admin', [ProductController::class, 'handleUpdateQuantityAdmin'])->name('admin.product.handle-add-quantity-admin');
+    });
+
+    //barcode
+    Route::middleware(['authAdmin'])->prefix('/barcode')->group(function () {
+        Route::get('/', [BarCodeController::class, 'index'])->name('admin.product.barcode');
+        Route::post('/register', [BarCodeController::class, 'barcode'])->name('admin.barcode.register');
+    });
+
+    //view check barcode for employee
+    Route::prefix('/barcode/employee')->group(function () {
+        Route::get('/scan', [BarCodeController::class, 'scan'])->name('admin.barcode.scan');
+        Route::post('/check', [BarCodeController::class, 'checkBarCode'])->name('admin.barcode.check');
     });
 
     //check PO

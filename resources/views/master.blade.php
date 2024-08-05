@@ -36,7 +36,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <!-- Styling css -->
     <style class="fslightbox-styles">
         .fslightbox-absoluted {
@@ -437,7 +437,7 @@
     @include('layout.sidebar')
     <main class="main-content">
         <!-- ======= Header ======= -->
-        <div class="position-relative">
+        <div class="position-relative no-print">
             @include('layout.header')
         </div>
         <!-- End Header -->

@@ -24,7 +24,7 @@
         }
     }
 </style>
-<nav class="nav navbar navbar-expand-lg navbar-light iq-navbar">
+<nav class="nav navbar navbar-expand-lg navbar-light iq-navbar no-print">
     <div class="container-fluid navbar-inner">
         <a href="{{ route('admin.home') }}" class="navbar-brand">
             <img src="{{ asset('assets/img/logos/VVP.png') }}" alt="" width="100">

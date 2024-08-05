@@ -77,6 +77,12 @@ class Product extends Model
         return $this->hasMany(TotalMonthQuantity::class, 'product_id', 'id');
     }
 
+    //relationship StorageProduct
+    public function StorageProducts()
+    {
+        return $this->hasMany(StorageProduct::class, 'product_id', 'id');
+    }
+
     //search by name
     public function scopeName($query, $request)
     {

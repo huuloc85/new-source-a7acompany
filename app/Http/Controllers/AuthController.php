@@ -29,7 +29,6 @@ class AuthController extends Controller
     }
 
     //handle loginuse Carbon\Carbon;
-
     public function handleLogin(Request $request)
     {
         $credentials = $request->only('phone', 'password');
@@ -56,8 +55,6 @@ class AuthController extends Controller
         toast('Số điện thoại hoặc mật khẩu không đúng!', 'error', 'top-right');
         return redirect()->back();
     }
-
-
 
     //logout
     public function logout()
