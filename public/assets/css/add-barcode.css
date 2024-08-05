@@ -95,6 +95,9 @@
 .lot-container {
     display: flex;
     justify-content: space-between;
+}
+
+.lot-container p {
     margin: 0;
 }
 
@@ -137,7 +140,7 @@
     .row,
     .card,
     .print-container,
-    .container-fluid,
+    .conatiner-fluid,
     .container-gird,
     .table-responsive{
         padding: 0 !important;
@@ -163,7 +166,7 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        zoom: 62.5%;
+        zoom: 59%;
     }
 
     .table {
@@ -173,6 +176,10 @@
 
     .grid-item * {
         margin: auto !important;
+    }
+
+    .grid-item {
+        margin-top: 20px !important;
     }
 
     .no-print {
