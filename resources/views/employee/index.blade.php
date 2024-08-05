@@ -9,22 +9,23 @@
                     </div>
                 </div>
                 <div class="p-4 pb-0 d-flex">
-                    <a href="{{ route('admin.employee.add') }}" type="button" class="btn btn-success btn-lg"
+                    <a href="{{ route('admin.employee.add') }}" type="button" class="btn btn-success btn-lg py-4"
                         title="Thêm Nhân Sự" data-bs-toggle="tooltip">
                         <i class="fas fa-user-plus fa-lg"></i>
                     </a>
                     <a href="{{ route('admin.employee.getTrash') }}" type="button"
-                        class="btn btn-warning btn-lg trash ms-2" title="Thùng Rác" data-bs-toggle="tooltip">
+                        class="btn btn-warning btn-lg trash ms-2 py-4" title="Thùng Rác" data-bs-toggle="tooltip">
                         <i class="fas fa-trash fa-lg"></i>
                     </a>
                     <a href="http://192.168.1.3/doc/index.html#/portal/login" type="button"
-                        class="btn btn-dark btn-lg ms-2" title="Thêm Nhân Sự Vào Máy Chấm Công" data-bs-toggle="tooltip">
+                        class="btn btn-dark btn-lg ms-2 py-4" title="Thêm Nhân Sự Vào Máy Chấm Công"
+                        data-bs-toggle="tooltip">
                         <i class="fas fa-fingerprint fa-lg"></i>
                     </a>
 
                     <div style="flex-grow: 1; display: flex; justify-content: end;">
                         <div>
-                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-primary btn-lg py-4" data-bs-toggle="modal"
                                 data-bs-target="#searchModal" title="Tìm kiếm" data-bs-toggle="tooltip">
                                 <i class="fas fa-search fa-lg"></i>
                             </button>

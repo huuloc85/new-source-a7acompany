@@ -105,16 +105,16 @@
                                                     <table class="table table-bordered">
                                                         <tr>
                                                             <td class="text-start w-120 w-5">
-                                                                Tên sản phẩm<br>品名
+                                                                Tên sản<br>phẩm<br>品名
                                                             </td>
-                                                            <td colspan="2" class="text-center">
-                                                                <p class="fw-bold mb-0 fs-20">{{ $product->name }}</p>
+                                                            <td colspan="2" class="text-center jtf-center">
+                                                                <p class="fw-bold mb-0 fs-20 fs-13">{{ $product->name }}</p>
                                                             </td>
-                                                            <td class="align-content-center w-120 w-5">
+                                                            <td class="align-content-center w-120 w-5 code">
                                                                 CODE
                                                             </td>
-                                                            <td colspan="2" class="text-center">
-                                                                <p class="fw-bold mb-0">{{ $product->code }}</p>
+                                                            <td colspan="2" class="text-center jtf-center">
+                                                                <p class="fw-bold mb-0 fs-13">{{ $product->code }}</p>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -122,13 +122,13 @@
                                                                 Nguyên liệu<br>原材料
                                                             </td>
                                                             <td colspan="2" class="text-center align-content-center">
-                                                                <p class="mb-0">PP ZS609</p>
+                                                                <p class="mb-0 fs-13">{{ $product?->productionPlans()?->firstOrFail()?->material_name ?? "NULL" }}</p>
                                                             </td>
                                                             <td class="text-center">
                                                                 Màu sắc<br>色
                                                             </td>
                                                             <td colspan="2" class="text-center align-content-center">
-                                                                <p class="mb-0">NATURAL</p>
+                                                                <p class="mb-0 fs-13">NATURAL</p>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -136,7 +136,7 @@
                                                                 Số lượng<br>数量
                                                             </td>
                                                             <td colspan="5" class="text-center align-content-center">
-                                                                <p class="fw-bold mb-0">{{ $product->quanEntityBin }}PCS</p>
+                                                                <p class="fw-bold mb-0 fs-13">{{ $product->quanEntityBin }}PCS</p>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -145,13 +145,13 @@
                                                             </td>
                                                             <td colspan="5" class="text-center align-content-center">
                                                                 <div class="lot-container">
-                                                                    <p class="fw-bold mb-0">{{ $lotNo['lot'] }}</p>
-                                                                    <p class="fw-bold mb-0">-</p>
-                                                                    <p class="fw-bold mb-0">{{ $lotNo['date'] }}</p>
-                                                                    <p class="fw-bold mb-0">-</p>
-                                                                    <p class="fw-bold mb-0">{{ $lotNo['shift'] }}</p>
-                                                                    <p class="fw-bold mb-0">-</p>
-                                                                    <p class="fw-bold mb-0">{{ $bin['bin'] }}</p>
+                                                                    <p class="fw-bold mb-0 fs-13">{{ $lotNo['lot'] }}</p>
+                                                                    <p class="fw-bold mb-0 fs-13">-</p>
+                                                                    <p class="fw-bold mb-0 fs-13">{{ $lotNo['date'] }}</p>
+                                                                    <p class="fw-bold mb-0 fs-13">-</p>
+                                                                    <p class="fw-bold mb-0 fs-13">{{ $lotNo['shift'] }}</p>
+                                                                    <p class="fw-bold mb-0 fs-13">-</p>
+                                                                    <p class="fw-bold mb-0 fs-13">{{ $bin['bin'] }}</p>
                                                                 </div>
                                                             </td>
                                                         </tr>

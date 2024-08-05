@@ -144,7 +144,7 @@
                                                                     Nguyên liệu<br>原材料
                                                                 </td>
                                                                 <td class="text-center align-content-center">
-                                                                    <p class="mb-0">PP ZS609</p>
+                                                                    <p class="mb-0">{{ $product?->productionPlans()?->firstOrFail()?->material_name ?? "NULL" }}</p>
                                                                 </td>
                                                                 <td colspan="2" class="text-center">
                                                                     Màu sắc 色

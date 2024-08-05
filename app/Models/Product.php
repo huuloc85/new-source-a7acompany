@@ -89,6 +89,12 @@ class Product extends Model
         return $this->hasMany(HistoryPrint::class, 'product_id', 'id');
     }
 
+    //relationship productionPlan
+    public function productionPlans()
+    {
+        return $this->hasMany(ProductionPlan::class);
+    }
+
     //search by name
     public function scopeName($query, $request)
     {
