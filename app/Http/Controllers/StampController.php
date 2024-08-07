@@ -25,9 +25,10 @@ class StampController extends Controller
         $products = Product::where('deleted_at', null)->get();
         $product = Product::where('code', $request->code)->first();
         $date = date('d/m/Y', strtotime($request->date));
+        $time = Carbon::createFromFormat('Y-m-d\TH:i', $request->date_time)->format('d/m/Y H:i');
 
         //tạo qrCode
-        $qrCodeString = $request->code.$request->pcs;
+        $qrCodeString = $request->code . $request->pcs;
         $qrCode = QrCode::generate($qrCodeString);
 
         $binCount = $request->binCount;
@@ -37,7 +38,7 @@ class StampController extends Controller
         $binArray = [];
         for ($i = 0; $i < $binCount; $i++) {
             //tạo barcode
-            $barcodeString = $product->id."a".str_replace('/', '', $date).$request->shift.sprintf('%03d', $binStart + $i);
+            $barcodeString = $product->id . "a" . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $binStart + $i);
             $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
             $data = [
                 'bin' => sprintf('%03d', $binStart + $i),
@@ -51,16 +52,18 @@ class StampController extends Controller
             'lot' => 'A',
             'date' => str_replace('/', '', $date),
             'shift' => $request->shift,
-            'date_time' => Carbon::now()->format('d/m/Y H:i')
+            'date_time' => $time,
+
         ];
 
         return view('barcode.add', compact('qrCode', 'barcode', 'products', 'lotNo', 'binArray', 'product', 'request'));
     }
 
     //map key data
-    public function mapKeyData($binArray) {
-        $oddItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 !== 0);
-        $evenItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 === 0);
+    public function mapKeyData($binArray)
+    {
+        $oddItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 !== 0);
+        $evenItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 === 0);
 
         $rows = [];
 
@@ -98,7 +101,7 @@ class StampController extends Controller
             $date = substr($data[1], 0, 8);
             $shift = substr($data[1], 8, 1);
             $bin = substr($data[1], 9);
-            $lot = "A-".$date."-".$shift."-".$bin;
+            $lot = "A-" . $date . "-" . $shift . "-" . $bin;
             $result = [
                 'barcode' => $request->barcode,
                 'date' => $date,
@@ -150,7 +153,8 @@ class StampController extends Controller
     }
 
     //view packing stamp
-    public function packingStamp() {
+    public function packingStamp()
+    {
         $products = Product::where('deleted_at', null)->get();
         return view('packing-stamp.index', compact('products'));
     }
@@ -161,6 +165,7 @@ class StampController extends Controller
         $products = Product::where('deleted_at', null)->get();
         $product = Product::where('code', $request->code)->first();
         $date = date('d/m/Y', strtotime($request->date));
+        $time = Carbon::createFromFormat('Y-m-d\TH:i', $request->date_time)->format('d/m/Y H:i');
         $binCount = $request->binCount;
         $binStart = $request->binStart;
 
@@ -176,9 +181,9 @@ class StampController extends Controller
             'lot' => 'A',
             'date' => str_replace('/', '', $date),
             'shift' => $request->shift,
-            'date_time' => Carbon::now()->format('d/m/Y H:i')
+            'date_time' => $time,
         ];
-        
+
         return view('packing-stamp.index', compact('products', 'lotNo', 'binArray', 'product', 'request'));
     }
 }

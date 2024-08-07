@@ -140,44 +140,41 @@
                                         <tr>
                                             <td>{{ $plan->product->name }}</td>
                                             <td>
+                                                <input type="hidden" name="plans[{{ $plan->id }}][id]"
+                                                    value="{{ $plan->id }}">
                                                 <input type="number" name="plans[{{ $plan->id }}][production_plan]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.production_plan', $plan->production_plan) }}"
-                                                    required>
+                                                    value="{{ old('plans.' . $plan->id . '.production_plan', $plan->production_plan) }}">
                                             </td>
                                             <td>
                                                 <input type="number" name="plans[{{ $plan->id }}][product_density]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.product_density', $plan->product_density) }}"
-                                                    required>
+                                                    value="{{ old('plans.' . $plan->id . '.product_density', $plan->product_density) }}">
                                             </td>
                                             <td>
                                                 <input type="number"
                                                     name="plans[{{ $plan->id }}][packaging_count_per_box]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.packaging_count_per_box', $plan->packaging_count_per_box) }}"
-                                                    required>
+                                                    value="{{ old('plans.' . $plan->id . '.packaging_count_per_box', $plan->packaging_count_per_box) }}">
                                             </td>
                                             <td>
                                                 <input type="number" name="plans[{{ $plan->id }}][products_per_box]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.products_per_box', $plan->products_per_box) }}"
-                                                    required>
+                                                    value="{{ old('plans.' . $plan->id . '.products_per_box', $plan->products_per_box) }}">
                                             </td>
                                             <td>
                                                 <input type="number" name="plans[{{ $plan->id }}][cycle]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.cycle', $plan->cycle) }}"
-                                                    required>
+                                                    value="{{ old('plans.' . $plan->id . '.cycle', $plan->cycle) }}">
                                             </td>
                                             <td>
                                                 <input type="number" name="plans[{{ $plan->id }}][cavity_count]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.cavity_count', $plan->cavity_count) }}"
-                                                    required>
+                                                    value="{{ old('plans.' . $plan->id . '.cavity_count', $plan->cavity_count) }}">
                                             </td>
                                         </tr>
                                     @endforeach
+
                                 </tbody>
                             </table>
                             <div class="form-buttons">

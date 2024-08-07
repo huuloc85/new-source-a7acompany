@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductPlan\ProductionPlansExport;
 use App\Models\DailyQuantity;
 use App\Models\Product;
 use App\Models\ProductionPlan;
+use App\Traits\CalenderTranslate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductionPlanController extends Controller
 {
+    use CalenderTranslate;
     // Chức Năng Add vs Update (Hàm Chức Năng)
     private function setProductionPlanAttributes($productPlan, $request)
     {
@@ -171,8 +175,9 @@ class ProductionPlanController extends Controller
         // Lấy dữ liệu sản phẩm và nguyên vật liệu
         $products = Product::all();
         $materialsAndPackagingTypes = $this->getMaterialsAndPackagingTypes();
+        $listDate = $this->handleDayInMonth($selectedMonth);
 
-        return view('productplan.index', array_merge(compact('productPlans', 'products', 'months', 'selectedMonth', 'currentMonth'), $materialsAndPackagingTypes));
+        return view('productplan.index', array_merge(compact('productPlans', 'products', 'months', 'selectedMonth', 'currentMonth', 'listDate'), $materialsAndPackagingTypes));
     }
 
     //View Add Kế Hoạch Sản Xuất
@@ -293,6 +298,7 @@ class ProductionPlanController extends Controller
                     }
                 }
             }
+
             toast('Cập nhật kế hoạch sản xuất thành công!', 'success', 'top-right');
             return redirect()->route('admin.product-plan.index');
         } catch (\Exception $e) {
@@ -301,5 +307,11 @@ class ProductionPlanController extends Controller
             toast('Cập nhật kế hoạch sản xuất không thành công!', 'error', 'top-right');
             return redirect()->route('admin.product-plan.index');
         }
+    }
+
+    public function export(Request $request)
+    {
+        $month = $request->input('month', Carbon::now()->format('m-Y'));
+        return Excel::download(new ProductionPlansExport($month), 'Kế Hoạch Sản Xuất Tháng ' . $month . '.xlsx');
     }
 }

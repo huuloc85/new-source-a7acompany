@@ -1,12 +1,12 @@
 @extends('master')
 @section('content')
-<link rel="stylesheet" href="{{ asset('assets/css/add-packing-stamp.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/add-packing-stamp.css') }}">
     <div class="row">
         <div class="col-12 print-container">
             <div class="card my-4">
-                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 no-print">
-                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                        <h6 class="text-white text-capitalize ps-3">Tạo Tem Bì</h6>
+                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Tạo Tem Bịch</h4>
                     </div>
                 </div>
                 <div class="px-0 pb-2">
@@ -30,8 +30,10 @@
                                     <select class="form-control @error('shift') is-invalid @enderror" name="shift"
                                         required>
                                         <option style="text-align: center" value="">----- Ca làm việc -----</option>
-                                        <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value="1">Ca 1</option>
-                                        <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value="2">Ca 2</option>
+                                        <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value="1">Ca 1
+                                        </option>
+                                        <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value="2">Ca 2
+                                        </option>
                                     </select>
                                     @error('shift')
                                         <div class="text text-danger">{{ $message }}</div>
@@ -41,7 +43,8 @@
                                     <label class="form-label">Số lượng thùng(tem)<span class="required">*</span></label>
                                     <input type="number" min="1" max="999"
                                         class="form-control @error('binCount') is-invalid @enderror"
-                                        placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}" required>
+                                        placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}"
+                                        required>
                                     @error('binCount')
                                         <div class="text text-danger">{{ $message }}</div>
                                     @enderror
@@ -50,7 +53,8 @@
                                     <label class="form-label">Thùng bắt đầu<span class="required">*</span></label>
                                     <input type="number" min="0"
                                         class="form-control @error('binStart') is-invalid @enderror"
-                                        placeholder="Thùng bắt đầu" name="binStart" value="{{ $request->binStart ?? '' }}" required>
+                                        placeholder="Thùng bắt đầu" name="binStart" value="{{ $request->binStart ?? '' }}"
+                                        required>
                                     @error('binStart')
                                         <div class="text text-danger">{{ $message }}</div>
                                     @enderror
@@ -63,7 +67,8 @@
                                         <option style="text-align: center" value="">----- Chọn sản phẩm -----</option>
                                         @foreach ($products as $pro)
                                             <option {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
-                                                value="{{ $pro->code }}-{{ $pro->quanEntityBin }}">{{ $pro->name }}</option>
+                                                value="{{ $pro->code }}-{{ $pro->quanEntityBin }}">{{ $pro->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('product_code')
@@ -88,6 +93,17 @@
                                         <div class="text text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="col-3">
+                                    <label class="form-label">Thời gian<span class="required">*</span></label>
+                                    <input id="date_time" type="datetime-local"
+                                        class="form-control @error('date_time') is-invalid @enderror"
+                                        placeholder="Thời gian" name="date_time"
+                                        value="{{ old('date_time', Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}"
+                                        required>
+                                    @error('date_time')
+                                        <div class="text text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div><br>
                             <div>
                                 <div class="col-12 no-print">
@@ -108,7 +124,8 @@
                                                                 Tên sản<br>phẩm<br>品名
                                                             </td>
                                                             <td colspan="2" class="text-center jtf-center">
-                                                                <p class="fw-bold mb-0 fs-20 fs-13">{{ $product->name }}</p>
+                                                                <p class="fw-bold mb-0 fs-20 fs-13">{{ $product->name }}
+                                                                </p>
                                                             </td>
                                                             <td class="align-content-center w-120 w-5 code">
                                                                 CODE
@@ -122,7 +139,9 @@
                                                                 Nguyên liệu<br>原材料
                                                             </td>
                                                             <td colspan="2" class="text-center align-content-center">
-                                                                <p class="mb-0 fs-13">{{ $product?->productionPlans()?->firstOrFail()?->material_name ?? "NULL" }}</p>
+                                                                <p class="mb-0 fs-13">
+                                                                    {{ $product?->productionPlans()?->firstOrFail()?->material_name ?? 'NULL' }}
+                                                                </p>
                                                             </td>
                                                             <td class="text-center">
                                                                 Màu sắc<br>色
@@ -136,7 +155,8 @@
                                                                 Số lượng<br>数量
                                                             </td>
                                                             <td colspan="5" class="text-center align-content-center">
-                                                                <p class="fw-bold mb-0 fs-13">{{ $product->quanEntityBin }}PCS</p>
+                                                                <p class="fw-bold mb-0 fs-13">
+                                                                    {{ $product->quanEntityBin }}PCS</p>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -149,7 +169,8 @@
                                                                     <p class="fw-bold mb-0 fs-13">-</p>
                                                                     <p class="fw-bold mb-0 fs-13">{{ $lotNo['date'] }}</p>
                                                                     <p class="fw-bold mb-0 fs-13">-</p>
-                                                                    <p class="fw-bold mb-0 fs-13">{{ $lotNo['shift'] }}</p>
+                                                                    <p class="fw-bold mb-0 fs-13">{{ $lotNo['shift'] }}
+                                                                    </p>
                                                                     <p class="fw-bold mb-0 fs-13">-</p>
                                                                     <p class="fw-bold mb-0 fs-13">{{ $bin['bin'] }}</p>
                                                                 </div>
