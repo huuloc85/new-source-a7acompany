@@ -156,14 +156,14 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     //barcode
-    Route::middleware(['authAdmin'])->prefix('/barcode')->group(function () {
+    Route::middleware(['packingStamp'])->prefix('/barcode')->group(function () {
         Route::get('/', [StampController::class, 'index'])->name('admin.product.barcode');
         Route::post('/register', [StampController::class, 'barcode'])->name('admin.barcode.register');
         Route::post('/save-print', [StampController::class, 'savePrint'])->name('admin.barcode.save.print');
     });
 
     //packing-stamp
-    Route::middleware(['authAdmin'])->prefix('/packing')->group(function () {
+    Route::middleware(['packingStamp'])->prefix('/packing')->group(function () {
         Route::get('/', [StampController::class, 'packingStamp'])->name('admin.product.packing');
         Route::post('/register', [StampController::class, 'StorePackingStamp'])->name('admin.packing.register');
     });
