@@ -312,6 +312,10 @@ class ProductionPlanController extends Controller
     public function export(Request $request)
     {
         $month = $request->input('month', Carbon::now()->format('m-Y'));
-        return Excel::download(new ProductionPlansExport($month), 'Kế Hoạch Sản Xuất Tháng ' . $month . '.xlsx');
+        $time = Carbon::createFromFormat('m-Y', $month)->startOfMonth();
+        $daysInMonth = $time->daysInMonth;
+        $daysInMonthYMD = $time->format('Y-m-d');
+
+        return Excel::download(new ProductionPlansExport($month, $time, $daysInMonth, $daysInMonthYMD), 'Kế Hoạch Sản Xuất Tháng ' . $month . '.xlsx');
     }
 }
