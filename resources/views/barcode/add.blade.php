@@ -11,7 +11,7 @@
                 </div> --}}
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Tạo Tem Bịch</h4>
+                        <h4 class="card-title mb-0">Tạo Tem Thùng</h4>
                     </div>
                 </div>
                 <div class="px-0 pb-2">

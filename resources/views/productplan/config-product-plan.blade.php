@@ -116,8 +116,13 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    {{-- <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">Nhập Kế Hoạch Sản Xuất</h4>
+                    </div> --}}
+                    <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                        <div class="border-radius-lg ps-2 pt-4 pb-3">
+                            <h4 class="card-title mb-0">Nhập Kế Hoạch Sản Xuất</h4>
+                        </div>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('admin.product-plan.handleConfig') }}">

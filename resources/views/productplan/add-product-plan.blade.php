@@ -44,8 +44,13 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    {{-- <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">Nhập Thông Tin Chi Tiết Kế Hoạch Sản Phẩm</h4>
+                    </div> --}}
+                    <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                        <div class="border-radius-lg ps-2 pt-4 pb-3">
+                            <h4 class="card-title mb-0">Nhập Thông Tin Chi Tiết Kế Hoạch Sản Phẩm</h4>
+                        </div>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('admin.product-plan.store') }}" method="POST">

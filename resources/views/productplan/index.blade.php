@@ -42,9 +42,14 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
+                {{-- <div class="card-header d-flex justify-content-between">
                     <div class="header-title">
                         <h4 class="card-title">Kế Hoạch Sản Xuất Tháng {{ $currentMonth }}</h4>
+                    </div>
+                </div> --}}
+                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Kế Hoạch Sản Xuất Tháng {{ $currentMonth }}</h4>
                     </div>
                 </div>
                 <div class="card-body">
