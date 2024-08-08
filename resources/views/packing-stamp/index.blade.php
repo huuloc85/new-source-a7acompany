@@ -128,7 +128,7 @@
                             <div>
                                 <div class="col-12 no-print">
                                     <button type="submit" id="register-barcode" class="btn btn-success">Tạo tem</button>
-                                    <a class="btn btn-primary" href="{{ route('admin.product.barcode') }}">Làm mới</a>
+                                    <a class="btn btn-primary" href="{{ route('admin.product.packing') }}">Làm mới</a>
                                     @if (isset($binArray))
                                         <a class="btn btn-secondary" href="javascript:window.print()">Print</a>
                                     @endif
