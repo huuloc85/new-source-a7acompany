@@ -27,13 +27,11 @@
                                 </div>
                                 <div class="col-3">
                                     <label class="form-label">Ca<span class="required">*</span></label>
-                                    <select class="form-control @error('shift') is-invalid @enderror" name="shift"
-                                        required>
+                                    <select id="shift" class="form-control @error('shift') is-invalid @enderror"
+                                        name="shift" required>
                                         <option style="text-align: center" value="">----- Ca làm việc -----</option>
-                                        <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value="1">Ca 1
-                                        </option>
-                                        <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value="2">Ca 2
-                                        </option>
+                                        <option value="1" {{ old('shift') == 1 ? 'selected' : '' }}>Ca 1</option>
+                                        <option value="2" {{ old('shift') == 2 ? 'selected' : '' }}>Ca 2</option>
                                     </select>
                                     @error('shift')
                                         <div class="text text-danger">{{ $message }}</div>
@@ -104,6 +102,28 @@
                                         <div class="text text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <script>
+                                    document.getElementById('shift').addEventListener('change', function() {
+                                        var shift = this.value;
+                                        var dateTimeInput = document.getElementById('date_time');
+                                        var now = new Date();
+
+                                        if (shift == '1') {
+                                            now.setHours(7, 30, 0); // 7:30 AM
+                                        } else if (shift == '2') {
+                                            now.setHours(19, 30, 0); // 7:30 PM
+                                        }
+
+                                        var year = now.getFullYear();
+                                        var month = (now.getMonth() + 1).toString().padStart(2, '0');
+                                        var day = now.getDate().toString().padStart(2, '0');
+                                        var hours = now.getHours().toString().padStart(2, '0');
+                                        var minutes = now.getMinutes().toString().padStart(2, '0');
+                                        var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                                        dateTimeInput.value = formattedDateTime;
+                                    });
+                                </script>
                             </div><br>
                             <div>
                                 <div class="col-12 no-print">
