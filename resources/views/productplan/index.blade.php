@@ -42,9 +42,14 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
+                {{-- <div class="card-header d-flex justify-content-between">
                     <div class="header-title">
                         <h4 class="card-title">Kế Hoạch Sản Xuất Tháng {{ $currentMonth }}</h4>
+                    </div>
+                </div> --}}
+                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Kế Hoạch Sản Xuất Tháng {{ $currentMonth }}</h4>
                     </div>
                 </div>
                 <div class="card-body">
@@ -76,35 +81,76 @@
                             </a>
                             <a href="{{ route('admin.product-plan.config') }}" class="btn btn-warning">Thêm Kế Hoạch Sản
                                 Xuất</a>
-                        </div>
-                    </div>
+                            <form action="{{ route('admin.product-plan.export') }}" method="GET">
+                                <input type="hidden" name="month" value="{{ $selectedMonth }}">
+                                <button type="submit" class="btn btn-primary">Xuất Excel</button>
+                            </form>
 
-                    <div class="table-responsive">
+                        </div>
+                    </div> <!-- Bảng kế hoạch sản xuất -->
+                    <div class="col-12 table-responsive">
                         <table class="table table-bordered table-hover table-striped">
                             <thead>
                                 <tr>
-                                    <th>STT</th>
-                                    <th class="text-center">Tên Sản Phẩm</th>
-                                    <th class="text-center">Nguyên Vật Liệu</th>
-                                    <th class="text-center">Kế Hoạch Sản Xuất</th>
-                                    <th class="text-center">Dự Định Vật Liệu (KG)</th>
-                                    <th class="text-center">Loại Bao Bì</th>
-                                    <th class="text-center">Số Bao Bì/Thùng</th>
-                                    <th class="text-center">Tổng Bao Bì</th>
-                                    <th class="text-center">Loại Thùng</th>
-                                    <th class="text-center">Sản Phẩm/Thùng</th>
-                                    <th class="text-center">Số Lượng Thùng</th>
-                                    <th class="text-center">Tỷ Trọng Sản Phẩm (G)</th>
-                                    <th class="text-center">Kế Hoạch Sản Xuất/Ngày</th>
-                                    <th class="text-center">Số Cavity</th>
-                                    <th class="text-center">Chu Kỳ</th>
-                                    <th class="text-center">Tấn</th>
-                                    <th class="text-center">Máy</th>
-                                    <th class="text-center">Số Ngày Chạy Máy</th>
-                                    <th class="text-center">Số Ngày Còn SX (Ngày)</th>
-                                    <th class="text-center">Số Lượng Còn SX (PCS)</th>
-                                    <th class="text-center">Số Lượng Đã SX (PCS)</th>
-                                    <th class="text-center">Hành Động</th>
+                                    <!-- Tiêu đề gộp cho Kế Hoạch Sản Xuất -->
+                                    <th colspan="21" class="text-center text-uppercase">Kế Hoạch Sản
+                                        Xuất</th>
+                                    <!-- Tiêu đề gộp cho Thông Tin Ngày -->
+                                    <th colspan="{{ 2 * count($listDate) }}" class="text-center text-uppercase">Bảng Sản
+                                        Xuất Hằng Ngày</th>
+                                    <th rowspan="3" class="text-center text-uppercases" style="vertical-align: middle;">
+                                        Hành Động</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">STT</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tên Sản Phẩm</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Nguyên Vật Liệu
+                                    </th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Kế Hoạch Sản Xuất
+                                    </th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Dự Định Vật Liệu
+                                        (KG)</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Loại Bao Bì</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Bao Bì/Thùng
+                                    </th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tổng Bao Bì</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Loại Thùng</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Sản Phẩm/Thùng
+                                    </th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Thùng
+                                    </th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tỷ Trọng Sản Phẩm
+                                        (G)</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Kế Hoạch Sản
+                                        Xuất/Ngày</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Cavity</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Chu Kỳ</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tấn</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Máy</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Ngày Chạy Máy
+                                    </th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Ngày Còn SX
+                                        (Ngày)</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Còn SX
+                                        (PCS)</th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Đã SX
+                                        (PCS)</th>
+
+                                    <!-- Tiêu đề cho các ngày -->
+                                    @foreach ($listDate as $date)
+                                        @php
+                                            $dateObj = Carbon\Carbon::parse($date);
+                                        @endphp
+                                        <th class="text-center text-md" colspan="2">Ngày
+                                            {{ $dateObj->format('d-m') }}</th>
+                                    @endforeach
+                                </tr>
+                                <tr>
+                                    <!-- Tiêu đề cho các ca -->
+                                    @foreach ($listDate as $date)
+                                        <th class="text-center text-md">Ca 1</th>
+                                        <th class="text-center text-md">Ca 2</th>
+                                    @endforeach
                                 </tr>
                             </thead>
                             <tbody>
@@ -132,11 +178,45 @@
                                         <td class="text-center">{{ number_format($plan->remaining_production_quantity) }}
                                         </td>
                                         <td class="text-center">{{ number_format($plan->produced_quantity) }}</td>
+
+                                        <!-- Thông tin ngày -->
+                                        @foreach ($listDate as $date)
+                                            @php
+                                                $formattedDate = Carbon\Carbon::parse($date)->startOfDay();
+                                                $dailyQuantitiesOfTheDay = $plan->product
+                                                    ->DailyQuantities()
+                                                    ->where('status', 1)
+                                                    ->whereDate('date', $formattedDate)
+                                                    ->get();
+
+                                                $totalQuanDateCa1 = 0;
+                                                $totalQuanDateCa2 = 0;
+
+                                                foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
+                                                    $created_at = Carbon\Carbon::parse($dailyQuantity->created_at);
+                                                    $nextDayEightAM = $formattedDate->copy()->addDay()->setHour(10);
+
+                                                    if ($created_at->isSameDay($formattedDate)) {
+                                                        $totalQuanDateCa1 += $dailyQuantity->quantity;
+                                                    } elseif (
+                                                        $created_at->isSameDay($formattedDate->copy()->addDay()) &&
+                                                        $created_at->lessThan($nextDayEightAM)
+                                                    ) {
+                                                        $totalQuanDateCa2 += $dailyQuantity->quantity;
+                                                    }
+                                                }
+                                            @endphp
+                                            <td class="text-center">{{ number_format($totalQuanDateCa1) }}</td>
+                                            <td class="text-center">{{ number_format($totalQuanDateCa2) }}</td>
+                                        @endforeach
+
+                                        <!-- Hành Động -->
                                         <td class="text-center">
                                             <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#editModal{{ $plan->id }}">
                                                 Sửa
                                             </button>
+                                            <!-- Form Xóa -->
                                             <form action="{{ route('admin.product-plan.delete', $plan->id) }}"
                                                 method="POST" style="display: inline;">
                                                 @csrf
@@ -152,11 +232,11 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal Edit -->
     @foreach ($productPlans as $plan)

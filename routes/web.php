@@ -76,12 +76,13 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     // Kế hoạch sản xuất
     Route::middleware(['authAdmin'])->prefix('/product-plan')->group(function () {
         Route::get('/index', [ProductionPlanController::class, 'index'])->name('admin.product-plan.index');
-        Route::get('/add-product-plan', [ProductionPlanController::class, 'addProductPlan'])->name('admin.product-plan.add');
-        Route::post('/add-product-plan', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
-        Route::post('/update-product-plan', [ProductionPlanController::class, 'updateProductPlan'])->name('admin.product-plan.update');
-        Route::delete('/delete-product-plan/{id}', [ProductionPlanController::class, 'deleteProductPlan'])->name('admin.product-plan.delete');
-        Route::get('/product-plan/edit', [ProductionPlanController::class, 'configProductPlan'])->name('admin.product-plan.config');
-        Route::post('/product-plan/update', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
+        Route::get('/add', [ProductionPlanController::class, 'addProductPlan'])->name('admin.product-plan.add');
+        Route::post('/add', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
+        Route::post('/update', [ProductionPlanController::class, 'updateProductPlan'])->name('admin.product-plan.update');
+        Route::delete('/delete/{id}', [ProductionPlanController::class, 'deleteProductPlan'])->name('admin.product-plan.delete');
+        Route::get('/export', [ProductionPlanController::class, 'export'])->name('admin.product-plan.export');
+        Route::get('/editConfig', [ProductionPlanController::class, 'configProductPlan'])->name('admin.product-plan.config');
+        Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
     });
 
     //quản lý chức vụ
