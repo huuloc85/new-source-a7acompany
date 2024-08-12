@@ -58,6 +58,7 @@ class Kernel extends HttpKernel
         'authAdmin' => \App\Http\Middleware\CheckAdmin::class,
         'authManager' => \App\Http\Middleware\CheckManager::class,
         'authAccountant' => \App\Http\Middleware\CheckAccountant::class,
+        'packingStamp' => \App\Http\Middleware\PackingStamp::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,

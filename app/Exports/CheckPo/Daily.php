@@ -45,8 +45,6 @@ class Daily extends DefaultValueBinder implements FromView, ShouldAutoSize, With
                 'totalQuantityMonth' => $totalQuantityMonth
             ];
         }
-
-
         return view('export/checkpo/daily', compact('data', 'products', 'daysInMonth'));
     }
 

@@ -3706,7 +3706,7 @@ fieldset:disabled .btn {
 
 .btn-lg,
 .btn-group-lg>.btn {
-  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-padding-y: 2rem;
   --bs-btn-padding-x: 1.5rem;
   --bs-btn-font-size: 1.25rem;
   --bs-btn-border-radius: 0.25rem;
@@ -14672,7 +14672,7 @@ fieldset:disabled .btn {
 
 .btn-lg,
 .btn-group-lg>.btn {
-  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-padding-y: 2rem;
   --bs-btn-padding-x: 1.5rem;
   --bs-btn-font-size: 1.25rem;
   --bs-btn-border-radius: 0.25rem;
@@ -15174,6 +15174,8 @@ fieldset:disabled .btn {
 .table thead tr th {
   text-transform: Capitalize;
   letter-spacing: 0.2px;
+  padding: 10px;
+
 }
 
 .table tbody tr td {
@@ -15777,7 +15779,7 @@ th {
     height: 310px !important;
   }
 
-  .conatiner-fluid.content-inner.mt-n5 {
+  .container-fluid.content-inner.mt-n5 {
     margin-top: unset !important;
   }
 }
@@ -20864,7 +20866,7 @@ body {
 }
 
 /*
- * Background color 
+ * Background color
  */
 .bg-soft-primary {
   color: #344ed1;

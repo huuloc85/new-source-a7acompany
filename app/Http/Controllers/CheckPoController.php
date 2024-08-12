@@ -229,8 +229,6 @@ class CheckPoController extends Controller
                         $totalDaily->employee_id = $employeeId;
                         $totalDaily->save();
 
-
-
                         $totalDailyPO = TotalDailyQuantityPO::where('product_id', $product->id)
                             ->where('date', $date)
                             ->where('status', $status)
@@ -369,6 +367,7 @@ class CheckPoController extends Controller
             'Content-Type' => 'text/xlsx',
         ]);
     }
+
     public function historyImport(Request $request)
     {
         // Lấy ngày từ request nếu có, nếu không thì lấy ngày hiện tại
@@ -392,8 +391,6 @@ class CheckPoController extends Controller
 
         return view('checkpo.history-import-quantity', compact('products', 'month', 'dailyQuantities', 'productId'));
     }
-
-
 
     public function updatePO(Request $request)
     {

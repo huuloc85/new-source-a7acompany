@@ -22,7 +22,6 @@
     <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
     <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.css?v=3.1.0') }}" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap JS (with Popper.js for dropdowns) -->
     <link rel="stylesheet" href="{{ asset('assets/css/libs.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/hope-ui.css?v=1.1.0') }}">
@@ -31,11 +30,14 @@
     <link rel="stylesheet" href="{{ asset('assets/css/rtl.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('vendor/Leaflet/leaflet.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('assets/css/total.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <!-- Styling css -->
     <style class="fslightbox-styles">
         .fslightbox-absoluted {
@@ -436,12 +438,12 @@
     @include('layout.sidebar')
     <main class="main-content">
         <!-- ======= Header ======= -->
-        <div class="position-relative">
+        <div class="position-relative no-print">
             @include('layout.header')
         </div>
         <!-- End Header -->
 
-        <div class="conatiner-fluid content-inner mt-n5 py-0">
+        <div class="container-fluid content-inner mt-n5 py-0">
             @include('sweetalert::alert')
             @yield('content')
         </div>

@@ -7,13 +7,16 @@ use App\Http\Controllers\CheckEmployeeController;
 use App\Http\Controllers\DailyProductivityHistoryController;
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\IncreaseController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\LoginHistoryController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CheckPoController;
+use App\Http\Controllers\StampController;
+use App\Http\Controllers\ProductionPlanController;
+use App\Http\Controllers\BarCodeController;
+use App\Http\Controllers\MaterialProductController;
 use App\Models\LoginHistory;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +73,31 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::delete('/admin-view-employee-todo/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
         Route::post('/admin-check-employee-todo/edit/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
     });
+
+    // Kế hoạch sản xuất
+    Route::middleware(['authAdmin'])->prefix('/product-plan')->group(function () {
+        Route::get('/index', [ProductionPlanController::class, 'index'])->name('admin.product-plan.index');
+        Route::get('/add', [ProductionPlanController::class, 'addProductPlan'])->name('admin.product-plan.add');
+        Route::post('/add', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
+        Route::post('/update', [ProductionPlanController::class, 'updateProductPlan'])->name('admin.product-plan.update');
+        Route::delete('/delete/{id}', [ProductionPlanController::class, 'deleteProductPlan'])->name('admin.product-plan.delete');
+        Route::get('/export', [ProductionPlanController::class, 'export'])->name('admin.product-plan.export');
+        Route::get('/editConfig', [ProductionPlanController::class, 'configProductPlan'])->name('admin.product-plan.config');
+        Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
+    });
+
+    // Kế hoạch Nguyên Liệu
+    Route::middleware(['authAdmin'])->prefix('/material')->group(function () {
+        Route::get('/index', [MaterialProductController::class, 'index'])->name('admin.material.index');
+        Route::get('/add', [MaterialProductController::class, 'add'])->name('admin.material.index.add');
+        // Route::post('/add', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
+        // Route::post('/update', [ProductionPlanController::class, 'updateProductPlan'])->name('admin.product-plan.update');
+        // Route::delete('/delete/{id}', [ProductionPlanController::class, 'deleteProductPlan'])->name('admin.product-plan.delete');
+        // Route::get('/export', [ProductionPlanController::class, 'export'])->name('admin.product-plan.export');
+        // Route::get('/editConfig', [ProductionPlanController::class, 'configProductPlan'])->name('admin.product-plan.config');
+        // Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
+    });
+
 
     //quản lý chức vụ
     Route::middleware(['authAdmin'])->prefix('/role')->group(function () {
@@ -137,9 +165,28 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         // cập nhật moq
         Route::get('/update-moq', [ProductController::class, 'updateMOQ'])->name('admin.product.update-moq');
         Route::post('/handle-update-moq', [ProductController::class, 'handleUpdateMOQ'])->name('admin.product.handle-update-moq');
-        //thêm sản lượng 100 200 xuất hàng hàng lỗi admin 
+        //thêm sản lượng 100 200 xuất hàng hàng lỗi admin
         Route::get('/add-quantity-admin', [ProductController::class, 'viewUpdateQuantityAdmin'])->name('admin.product.add-quantity-admin');
         Route::post('/handle-add-quantity-admin', [ProductController::class, 'handleUpdateQuantityAdmin'])->name('admin.product.handle-add-quantity-admin');
+    });
+
+    //barcode
+    Route::middleware(['packingStamp'])->prefix('/barcode')->group(function () {
+        Route::get('/', [StampController::class, 'index'])->name('admin.product.barcode');
+        Route::post('/register', [StampController::class, 'barcode'])->name('admin.barcode.register');
+        Route::post('/save-print', [StampController::class, 'savePrint'])->name('admin.barcode.save.print');
+    });
+
+    //packing-stamp
+    Route::middleware(['packingStamp'])->prefix('/packing')->group(function () {
+        Route::get('/', [StampController::class, 'packingStamp'])->name('admin.product.packing');
+        Route::post('/register', [StampController::class, 'StorePackingStamp'])->name('admin.packing.register');
+    });
+
+    //view check barcode for employee
+    Route::prefix('/barcode/employee')->group(function () {
+        Route::get('/scan', [StampController::class, 'scan'])->name('admin.barcode.scan');
+        Route::post('/check', [StampController::class, 'checkBarCode'])->name('admin.barcode.check');
     });
 
     //check PO
