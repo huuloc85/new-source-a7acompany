@@ -25,11 +25,13 @@ class StampController extends Controller
         $products = Product::where('deleted_at', null)->get();
         $product = Product::where('code', $request->code)->first();
         $date = date('d/m/Y', strtotime($request->date));
-        $time = Carbon::createFromFormat('Y-m-d\TH:i', $request->date_time)->format('d/m/Y H:i');
+        // $time = Carbon::createFromFormat('Y-m-d\TH:i', $request->date_time)->format('d/m/Y H:i');
 
-        //tạo qrCode
-        $qrCodeString = $request->code . $request->pcs;
+        // tạo qrCode
+        $firstFiveChars = substr($request->code, 0, 5);
+        $qrCodeString = $firstFiveChars . '-' . $request->pcs;
         $qrCode = QrCode::generate($qrCodeString);
+
 
         $binCount = $request->binCount;
         $binStart = $request->binStart;
@@ -52,11 +54,24 @@ class StampController extends Controller
             'lot' => 'A',
             'date' => str_replace('/', '', $date),
             'shift' => $request->shift,
-            'date_time' => $time,
+            'date_time' => $this->getDateTimeBasedOnShift($request->shift, $date)
 
         ];
 
         return view('barcode.add', compact('qrCode', 'barcode', 'products', 'lotNo', 'binArray', 'product', 'request'));
+    }
+
+    // format date time
+    private function getDateTimeBasedOnShift($shift, $date)
+    {
+        // Xử lý date để có định dạng chuẩn
+        $formattedDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+
+        // Cài đặt thời gian mặc định dựa trên shift
+        $time = ($shift == 1) ? '07:30' : '19:30';
+
+        // Kết hợp ngày và giờ
+        return Carbon::createFromFormat('Y-m-d H:i', $formattedDate . ' ' . $time)->format('d/m/Y H:i');
     }
 
     //map key data
@@ -165,7 +180,6 @@ class StampController extends Controller
         $products = Product::where('deleted_at', null)->get();
         $product = Product::where('code', $request->code)->first();
         $date = date('d/m/Y', strtotime($request->date));
-        $time = Carbon::createFromFormat('Y-m-d\TH:i', $request->date_time)->format('d/m/Y H:i');
         $binCount = $request->binCount;
         $binStart = $request->binStart;
 
@@ -181,7 +195,7 @@ class StampController extends Controller
             'lot' => 'A',
             'date' => str_replace('/', '', $date),
             'shift' => $request->shift,
-            'date_time' => $time,
+            'date_time' => $this->getDateTimeBasedOnShift($request->shift, $date)
         ];
 
         return view('packing-stamp.index', compact('products', 'lotNo', 'binArray', 'product', 'request'));

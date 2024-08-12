@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\ProductPlan\ProductionPlansExport;
 use App\Models\DailyQuantity;
+use App\Models\MaterialProduct;
 use App\Models\Product;
 use App\Models\ProductionPlan;
 use App\Traits\CalenderTranslate;
@@ -22,6 +23,7 @@ class ProductionPlanController extends Controller
     {
         $currenmonth = Carbon::now()->format('m-Y');
         $productPlan->month = $currenmonth;
+
         // Kế hoạch sản xuất (PCS)
         $productionPlan = $request->input('production_plan');
         // Tỷ trọng sản phẩm (G)
@@ -32,8 +34,6 @@ class ProductionPlanController extends Controller
         // Số bao bì/thùng
         $packagingCountPerBox = $request->input('packaging_count_per_box');
         // Sản phẩm/thùng
-
-        // Tính số lượng thùng (box_quantity)
         $productsPerBox = $request->input('products_per_box');
         $productPlan->products_per_box = $productsPerBox;
         // Tính số lượng thùng (box_quantity)
@@ -63,45 +63,39 @@ class ProductionPlanController extends Controller
         $remainingProductionDays = $dailyProductionPlan == 0 || $remainingProductionQuantity == 0 ? 0 : $remainingProductionQuantity / $dailyProductionPlan;
 
         // Cập nhật các thuộc tính của bản ghi
-        // ID sản phẩm
         $productPlan->product_id = $request->input('product_id');
-        // Tên nguyên vật liệu
         $productPlan->material_name = $request->input('material_name');
-        // Kế hoạch sản xuất (PCS)
         $productPlan->production_plan = $productionPlan;
-        // Dự định vật liệu (KG)
         $productPlan->planned_material = $plannedMaterial;
-        // Loại bao bì
         $productPlan->packaging_type = $request->input('packaging_type');
-        // Số bao bì/thùng
         $productPlan->packaging_count_per_box = $packagingCountPerBox;
-        // Loại thùng
         $productPlan->box_type = $request->input('box_type');
-
-        // Tỷ trọng sản phẩm (G)
         $productPlan->product_density = $productDensity;
-        // Số cavity
         $productPlan->cavity_count = $cavityCount;
-        // Kế hoạch sản xuất/ngày
         $productPlan->daily_production_plan = $dailyProductionPlan;
-        // Chu kỳ
         $productPlan->cycle = $cycle;
-        // Tấn
         $productPlan->ton = $request->input('ton');
-        // Máy
         $productPlan->machine = $request->input('machine');
-        // Số lượng thùng
         $productPlan->box_quantity = $boxQuantity;
-        // Tổng bao bì
         $productPlan->total_packaging = $totalPackaging;
-        // Số ngày chạy máy
         $productPlan->machine_run_days = $machineRunDays;
-        // Số Lượng Đã SX (PCS)
         $productPlan->produced_quantity = $producedQuantity;
-        // Số lượng còn sản xuất (PCS)
         $productPlan->remaining_production_quantity = $remainingProductionQuantity;
-        // Số ngày còn sản xuất (ngày)
         $productPlan->remaining_production_days = $remainingProductionDays;
+
+        // Lưu sản phẩm kế hoạch
+        $productPlan->save();
+
+        // Cập nhật dữ liệu vào bảng MaterialProduct
+        $materialProduct = MaterialProduct::firstOrNew([
+            'product_id' => $productPlan->product_id,
+            'production_plans_id' => $productPlan->id
+        ]);
+
+        // Cập nhật giá trị cho materialProduct
+        $materialProduct->quantity = $plannedMaterial;
+        $materialProduct->name = $productPlan->material_name;
+        $materialProduct->save();
 
         return $productPlan;
     }
