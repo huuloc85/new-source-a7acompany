@@ -32,6 +32,7 @@
                                         @enderror
                                     </div>
                                 </div>
+
                                 <div class="col-3">
                                     <label class="form-label">Ca<span class="required">*</span></label>
                                     <select id="shift" class="form-control @error('shift') is-invalid @enderror"
@@ -44,6 +45,32 @@
                                         <div class="text text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        const shiftSelect = document.getElementById('shift');
+                                        const dateTimeInput = document.getElementById(
+                                            'date_time'); // Thay đổi thành ID của trường date_time trong form của bạn
+
+                                        shiftSelect.addEventListener('change', function() {
+                                            const shiftValue = this.value;
+                                            let defaultTime;
+
+                                            if (shiftValue == 1) {
+                                                defaultTime = '07:30';
+                                            } else if (shiftValue == 2) {
+                                                defaultTime = '19:30';
+                                            }
+
+                                            if (defaultTime) {
+                                                const currentDate = new Date(); // Hoặc lấy ngày hiện tại từ input ngày
+                                                const formattedDateTime =
+                                                    `${currentDate.toISOString().split('T')[0]}T${defaultTime}`; // Format thành định dạng phù hợp
+                                                dateTimeInput.value = formattedDateTime;
+                                            }
+                                        });
+                                    });
+                                </script>
+
                                 <div class="col-3">
                                     <label class="form-label">Số lượng thùng(tem)<span class="required">*</span></label>
                                     <input id="binCount" type="number" min="1" max="999"
@@ -99,7 +126,7 @@
                                         <div class="text text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="col-3">
+                                {{-- <div class="col-3">
                                     <label class="form-label">Thời gian<span class="required">*</span></label>
                                     <input id="date_time" type="datetime-local"
                                         class="form-control @error('date_time') is-invalid @enderror"
@@ -131,7 +158,7 @@
 
                                         dateTimeInput.value = formattedDateTime;
                                     });
-                                </script>
+                                </script> --}}
                             </div><br>
                             <div>
                                 <div class="col-12 no-print">
@@ -254,7 +281,7 @@
                                                                 </td>
                                                             </tr>
                                                             <tr class="moc-style">
-                                                                <td class="text-start" style="height:100px !important">
+                                                                <td class="text-start">
                                                                     Mộc<br>合格印
 
                                                                 </td>

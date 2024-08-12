@@ -129,6 +129,8 @@
 
 .moc-style {
     border-bottom: none !important;
+    height: 100px !important;
+
 }
 
 @media print {
@@ -142,31 +144,31 @@
     .print-container,
     .conatiner-fluid,
     .container-gird,
-    .table-responsive{
+    .table-responsive {
         padding: 0 !important;
         margin: 0 !important;
         background: transparent !important;
         box-shadow: none !important;
     }
 
-    .card
-    {
+    .card {
         padding: 0 !important;
         margin: 0 !important;
         background: transparent !important;
         border: none !important;
     }
 
-    .moc-style td[colspan="2"], .square {
+    .moc-style td[colspan="2"],
+    .square {
         color: black !important;
         border: none 1px 1px 1px !important;
     }
 
-    .grid-container{
+    .grid-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        zoom: 59%;
+        zoom: 60%;
     }
 
     .table {
@@ -208,6 +210,7 @@
 
     .moc-style td:nth-child(3) {
         border-right: 1px solid;
+        height: 130px !important
     }
 
     .fs-13 {

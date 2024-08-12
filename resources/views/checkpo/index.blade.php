@@ -90,89 +90,64 @@
         }
 
         @media screen and (max-width: 768px) {
-
-            /* Thiết lập độ rộng cố định cho cột chứa bảng */
             .tab-pane .container-fluid {
                 width: 100%;
-                /* Đảm bảo rằng container-fluid chiếm toàn bộ chiều rộng của tab */
+                padding: 0;
+                /* Loại bỏ padding nếu có */
             }
 
-            /* Thiết lập độ rộng cố định cho các cột */
             .tab-pane .col-10,
-            .tab-pane .col-2 {
-                width: auto;
-                /* Thiết lập độ rộng tự động */
-                flex: 0 0 auto;
-                /* Không cho phép co giãn hoặc thu nhỏ */
+            .tab-pane .col-2,
+            .tab-pane .col-4,
+            .tab-pane .col-8 {
+                width: 100%;
+                /* Đặt cột chiếm toàn bộ chiều rộng */
+                flex: 1 1 auto;
+                /* Cột sẽ điều chỉnh kích thước tự động */
             }
 
-            /* Thiết lập overflow-x để cho phép cuộn ngang trên bảng */
             .tab-pane .table-responsive {
                 overflow-x: auto;
-                /* Cho phép cuộn ngang */
                 -webkit-overflow-scrolling: touch;
-                /* Cuộn mượt trên iOS */
             }
 
-            /* Thiết lập độ rộng cố định cho các bảng */
             .tab-pane .table-responsive .table {
-                min-width: 500px;
-                /* Độ rộng tối thiểu của bảng để tránh chèn ép */
+                min-width: 100%;
+                /* Điều chỉnh để phù hợp với chiều rộng của bảng */
             }
 
-            /* Thiết lập độ rộng cố định cho các cột trong bảng */
             .tab-pane .table-responsive .col-2 {
                 width: 150px;
-                /* Độ rộng cố định cho cột */
+                /* Điều chỉnh kích thước cột */
             }
 
             .tab-pane .col-4,
             .tab-pane .col-8 {
-                width: 120%;
-                /* Chiếm toàn bộ chiều rộng */
+                width: 100%;
+                /* Đảm bảo các cột có kích thước hợp lý trên thiết bị nhỏ */
             }
 
-            /* Thiết lập độ rộng cố định cho các cột trong bảng */
             .tab-pane table th,
             .tab-pane table td {
                 width: auto;
-                /* Thiết lập độ rộng tự động */
+                /* Đảm bảo ô bảng tự động điều chỉnh kích thước */
             }
 
-            /* Thiết lập overflow-x cho các bảng */
-            .tab-pane .table-responsive {
+            .table-wrapper {
                 overflow-x: auto;
-                /* Cho phép cuộn ngang */
-            }
-
-            /* Thiết lập độ rộng cột chứa bảng */
-            .tab-pane .col-2,
-            .tab-pane .col-10 {
-                width: auto;
-                /* Thiết lập độ rộng tự động */
-                flex: 0 0 auto;
-                /* Không cho phép co giãn hoặc thu nhỏ */
-            }
-
-            /* Thiết lập overflow-x cho các bảng */
-            .tab-pane .table-responsive {
-                overflow-x: auto;
-                /* Cho phép cuộn ngang */
                 -webkit-overflow-scrolling: touch;
-                /* Cuộn mượt trên iOS */
+                /* Đảm bảo cuộn mượt trên thiết bị cảm ứng */
+                padding-bottom: 1rem;
+                /* Tùy chọn để thêm khoảng cách */
             }
 
-            /* Thiết lập độ rộng cố định cho các bảng */
-            .tab-pane .table-responsive .table {
-                min-width: 500px;
-                /* Độ rộng tối thiểu của bảng để tránh chèn ép */
+            .table {
+                min-width: 1000px;
+                /* Điều chỉnh tùy theo nội dung bảng */
             }
 
-            /* Thiết lập độ rộng cố định cho các cột trong bảng */
-            .tab-pane .table-responsive .col-2 {
-                width: 80%;
-                /* Độ rộng cố định cho cột */
-            }
+
+
         }
     </style>
     <div class="row">
@@ -183,7 +158,7 @@
                         <h4 class="card-title">Danh sách PO</h4>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; padding-left: 30px; margin-top: 20px;">
+                <div style="display: flex; align-items: center; padding-left: 10px; margin-top: 20px;">
 
                     {{-- Thêm Sản Lượng --}}
                     <div style="margin-right: 10px;">
@@ -222,9 +197,14 @@
                         <input name="monthExport" id="monthExport" type="hidden" value="{{ $selectedMonth }}">
                     </form>
 
+
+                    <div style="margin-right: 10px;">
+                        <a href="{{ route('admin.history-import-quantity') }}" class="btn btn-primary tooltip-btn">
+                            <i class="fas fa-history"></i></a>
+                    </div>
                     {{-- Chọn tháng --}}
                     <form action="{{ route('admin.checkpo.index') }}" method="GET"
-                        style="flex-grow: 1; display: flex; align-items: center;">
+                        style="flex-grow: 1; display: flex; align-items: center; margin-right: 10px;">
                         <select name="monthFilter" id="monthFilter" onchange="this.form.submit()" class="form-control mt-0"
                             style="width: auto;" data-toggle="tooltip" title="Chọn tháng">
                             @foreach ($totalMonthQuantities as $month)
@@ -236,9 +216,10 @@
                     </form>
 
                     {{-- Lịch Sử Nhập PO --}}
-                    <div style="margin-right: 10px;">
-                        <a href="{{ route('admin.history-import-quantity') }}" class="btn btn-primary">Lịch Sử Nhập PO</a>
-                    </div>
+                    {{-- <div>
+                        <a href="{{ route('admin.history-import-quantity') }}" class="btn btn-primary tooltip-btn">
+                            <i class="fas fa-history"></i></a>
+                    </div> --}}
                 </div>
 
                 <div class="row">

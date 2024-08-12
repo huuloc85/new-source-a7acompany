@@ -95,6 +95,11 @@ class Product extends Model
         return $this->hasMany(ProductionPlan::class);
     }
 
+    public function materialProducts()
+    {
+        return $this->hasMany(MaterialProduct::class);
+    }
+
     //search by name
     public function scopeName($query, $request)
     {

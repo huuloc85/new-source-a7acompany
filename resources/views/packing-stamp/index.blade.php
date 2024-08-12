@@ -91,39 +91,6 @@
                                         <div class="text text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="col-3">
-                                    <label class="form-label">Thời gian<span class="required">*</span></label>
-                                    <input id="date_time" type="datetime-local"
-                                        class="form-control @error('date_time') is-invalid @enderror"
-                                        placeholder="Thời gian" name="date_time"
-                                        value="{{ old('date_time', Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}"
-                                        required>
-                                    @error('date_time')
-                                        <div class="text text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <script>
-                                    document.getElementById('shift').addEventListener('change', function() {
-                                        var shift = this.value;
-                                        var dateTimeInput = document.getElementById('date_time');
-                                        var now = new Date();
-
-                                        if (shift == '1') {
-                                            now.setHours(7, 30, 0); // 7:30 AM
-                                        } else if (shift == '2') {
-                                            now.setHours(19, 30, 0); // 7:30 PM
-                                        }
-
-                                        var year = now.getFullYear();
-                                        var month = (now.getMonth() + 1).toString().padStart(2, '0');
-                                        var day = now.getDate().toString().padStart(2, '0');
-                                        var hours = now.getHours().toString().padStart(2, '0');
-                                        var minutes = now.getMinutes().toString().padStart(2, '0');
-                                        var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-                                        dateTimeInput.value = formattedDateTime;
-                                    });
-                                </script>
                             </div><br>
                             <div>
                                 <div class="col-12 no-print">

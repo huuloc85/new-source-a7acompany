@@ -71,4 +71,9 @@ class ProductionPlan extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function materialProducts()
+    {
+        return $this->hasMany(MaterialProduct::class, 'production_plans_id');
+    }
 }

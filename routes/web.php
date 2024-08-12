@@ -16,6 +16,7 @@ use App\Http\Controllers\CheckPoController;
 use App\Http\Controllers\StampController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\BarCodeController;
+use App\Http\Controllers\MaterialProductController;
 use App\Models\LoginHistory;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
@@ -84,6 +85,19 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/editConfig', [ProductionPlanController::class, 'configProductPlan'])->name('admin.product-plan.config');
         Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
     });
+
+    // Kế hoạch Nguyên Liệu
+    Route::middleware(['authAdmin'])->prefix('/material')->group(function () {
+        Route::get('/index', [MaterialProductController::class, 'index'])->name('admin.material.index');
+        Route::get('/add', [MaterialProductController::class, 'add'])->name('admin.material.index.add');
+        // Route::post('/add', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
+        // Route::post('/update', [ProductionPlanController::class, 'updateProductPlan'])->name('admin.product-plan.update');
+        // Route::delete('/delete/{id}', [ProductionPlanController::class, 'deleteProductPlan'])->name('admin.product-plan.delete');
+        // Route::get('/export', [ProductionPlanController::class, 'export'])->name('admin.product-plan.export');
+        // Route::get('/editConfig', [ProductionPlanController::class, 'configProductPlan'])->name('admin.product-plan.config');
+        // Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
+    });
+
 
     //quản lý chức vụ
     Route::middleware(['authAdmin'])->prefix('/role')->group(function () {
