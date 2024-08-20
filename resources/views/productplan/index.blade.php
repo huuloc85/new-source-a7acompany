@@ -106,6 +106,8 @@
                                     <th class="text-center" rowspan="2" style="vertical-align: middle;">Tên Sản Phẩm</th>
                                     <th class="text-center" rowspan="2" style="vertical-align: middle;">Nguyên Vật Liệu
                                     </th>
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Màu Sắc
+                                    </th>
                                     <th class="text-center" rowspan="2" style="vertical-align: middle;">Kế Hoạch Sản Xuất
                                     </th>
                                     <th class="text-center" rowspan="2" style="vertical-align: middle;">Dự Định Vật Liệu
@@ -131,7 +133,8 @@
                                     </th>
                                     <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Ngày Còn SX
                                         (Ngày)</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Còn SX
+                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Còn
+                                        SX
                                         (PCS)</th>
                                     <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Đã SX
                                         (PCS)</th>
@@ -159,6 +162,7 @@
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $plan->product->name }}</td>
                                         <td class="text-center">{{ $plan->material_name }}</td>
+                                        <td class="text-center">{{ $plan->material_color }}</td>
                                         <td class="text-center">{{ number_format($plan->production_plan) }}</td>
                                         <td class="text-center">{{ number_format($plan->planned_material) }}</td>
                                         <td class="text-center">{{ $plan->packaging_type }}</td>

@@ -4,11 +4,6 @@
     <div class="row">
         <div class="col-12 print-container">
             <div class="card my-4">
-                {{-- <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 no-print">
-                    <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                        <h6 class="text-white text-capitalize ps-3">Tạo mã vạch</h6>
-                    </div> 
-                </div> --}}
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
                         <h4 class="card-title mb-0">Tạo Tem Thùng</h4>
@@ -20,21 +15,19 @@
                             @method('POST')
                             @csrf
                             <div class="row no-print">
-                                <div>QRCode</div>
-                                <div class="col-3">
-                                    <div class="mb-3">
-                                        <label class="form-label">Ngày<span class="required">*</span></label>
-                                        <input id="date" type="date"
-                                            class="form-control @error('date') is-invalid @enderror" placeholder="Ngày"
-                                            name="date" value="{{ $request->date ?? '' }}" required>
-                                        @error('date')
-                                            <div class="text text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                <!-- Ngày -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Ngày<span class="required text-danger">*</span></label>
+                                    <input type="date" class="form-control @error('date') is-invalid @enderror"
+                                        placeholder="Ngày" name="date" value="{{ $request->date ?? '' }}" required>
+                                    @error('date')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
-                                <div class="col-3">
-                                    <label class="form-label">Ca<span class="required">*</span></label>
+                                <!-- Ca -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Ca<span class="required text-danger">*</span></label>
                                     <select id="shift" class="form-control @error('shift') is-invalid @enderror"
                                         name="shift" required>
                                         <option style="text-align: center" value="">----- Ca làm việc -----</option>
@@ -42,58 +35,47 @@
                                         <option value="2" {{ old('shift') == 2 ? 'selected' : '' }}>Ca 2</option>
                                     </select>
                                     @error('shift')
-                                        <div class="text text-danger">{{ $message }}</div>
+                                        <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        const shiftSelect = document.getElementById('shift');
-                                        const dateTimeInput = document.getElementById(
-                                            'date_time'); // Thay đổi thành ID của trường date_time trong form của bạn
 
-                                        shiftSelect.addEventListener('change', function() {
-                                            const shiftValue = this.value;
-                                            let defaultTime;
-
-                                            if (shiftValue == 1) {
-                                                defaultTime = '07:30';
-                                            } else if (shiftValue == 2) {
-                                                defaultTime = '19:30';
-                                            }
-
-                                            if (defaultTime) {
-                                                const currentDate = new Date(); // Hoặc lấy ngày hiện tại từ input ngày
-                                                const formattedDateTime =
-                                                    `${currentDate.toISOString().split('T')[0]}T${defaultTime}`; // Format thành định dạng phù hợp
-                                                dateTimeInput.value = formattedDateTime;
-                                            }
-                                        });
-                                    });
-                                </script>
-
-                                <div class="col-3">
-                                    <label class="form-label">Số lượng thùng(tem)<span class="required">*</span></label>
-                                    <input id="binCount" type="number" min="1" max="999"
+                                <!-- Số lượng thùng (tem) -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Số lượng thùng (tem)<span
+                                            class="required text-danger">*</span></label>
+                                    <input min="1" max="999"
                                         class="form-control @error('binCount') is-invalid @enderror"
                                         placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}"
                                         required>
                                     @error('binCount')
-                                        <div class="text text-danger">{{ $message }}</div>
+                                        <div class="text-danger">{{ $message }}</div>
                                     @enderror
+                                    <small class="form-text text-muted">
+                                        <strong>Lưu ý: Trường hợp nếu cần in lại nhiều tem với số thùng khác nhau thì nhập
+                                            số lượng tem theo các số lượng cần in, ví dụ: cần in 2 tem lẻ 1,2 thì nhập số
+                                            lượng là 2</strong>
+                                    </small>
                                 </div>
-                                <div class="col-3">
-                                    <label class="form-label">Thùng bắt đầu<span class="required">*</span></label>
-                                    <input id="binStart" type="number" min="0"
-                                        class="form-control @error('binStart') is-invalid @enderror"
+
+                                <!-- Thùng bắt đầu -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Thùng bắt đầu<span
+                                            class="required text-danger">*</span></label>
+                                    <input min="0" class="form-control @error('binStart') is-invalid @enderror"
                                         placeholder="Thùng bắt đầu" name="binStart" value="{{ $request->binStart ?? '' }}"
                                         required>
                                     @error('binStart')
-                                        <div class="text text-danger">{{ $message }}</div>
+                                        <div class="text-danger">{{ $message }}</div>
                                     @enderror
+                                    <small class="form-text text-muted">
+                                        <strong>Lưu ý: Trường hợp nếu cần in lại nhiều tem với số thùng khác nhau thì nhập
+                                            cách mỗi số thùng ví dụ thùng 1 và 2 thì nhập, ví dụ: 1,2</strong>
+                                    </small>
                                 </div>
-                                <div>BarCode</div>
-                                <div class="col-3">
-                                    <label class="form-label">Sản phẩm<span class="required">*</span></label>
+
+                                <!-- Sản phẩm -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Sản phẩm<span class="required text-danger">*</span></label>
                                     <select onchange="selectProduct(event)"
                                         class="form-control @error('product_code') is-invalid @enderror" name="product_code"
                                         required>
@@ -105,61 +87,33 @@
                                         @endforeach
                                     </select>
                                     @error('product_code')
-                                        <div class="text text-danger">{{ $message }}</div>
+                                        <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="col-3">
-                                    <label class="form-label">Code<span class="required">*</span></label>
+
+                                <!-- Code -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Code<span class="required text-danger">*</span></label>
                                     <input type="text" id="product_code"
                                         class="form-control @error('code') is-invalid @enderror" placeholder="Code"
                                         name="code" value="{{ $product->code ?? '' }}" required readonly>
                                     @error('code')
-                                        <div class="text text-danger">{{ $message }}</div>
+                                        <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="col-3">
-                                    <label class="form-label">PCS<span class="required">*</span></label>
+
+                                <!-- PCS -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">PCS<span class="required text-danger">*</span></label>
                                     <input type="number" min="1" id="product_pcs"
                                         class="form-control @error('pcs') is-invalid @enderror" placeholder="PCS"
                                         name="pcs" value="{{ $product->quanEntityBin ?? '' }}" required readonly>
                                     @error('pcs')
-                                        <div class="text text-danger">{{ $message }}</div>
+                                        <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                {{-- <div class="col-3">
-                                    <label class="form-label">Thời gian<span class="required">*</span></label>
-                                    <input id="date_time" type="datetime-local"
-                                        class="form-control @error('date_time') is-invalid @enderror"
-                                        placeholder="Thời gian" name="date_time"
-                                        value="{{ old('date_time', Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}"
-                                        required>
-                                    @error('date_time')
-                                        <div class="text text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <script>
-                                    document.getElementById('shift').addEventListener('change', function() {
-                                        var shift = this.value;
-                                        var dateTimeInput = document.getElementById('date_time');
-                                        var now = new Date();
-
-                                        if (shift == '1') {
-                                            now.setHours(7, 30, 0); // 7:30 AM
-                                        } else if (shift == '2') {
-                                            now.setHours(19, 30, 0); // 7:30 PM
-                                        }
-
-                                        var year = now.getFullYear();
-                                        var month = (now.getMonth() + 1).toString().padStart(2, '0');
-                                        var day = now.getDate().toString().padStart(2, '0');
-                                        var hours = now.getHours().toString().padStart(2, '0');
-                                        var minutes = now.getMinutes().toString().padStart(2, '0');
-                                        var formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-                                        dateTimeInput.value = formattedDateTime;
-                                    });
-                                </script> --}}
                             </div><br>
+
                             <div>
                                 <div class="col-12 no-print">
                                     <button type="submit" id="register-barcode" class="btn btn-success">Tạo tem</button>
@@ -226,7 +180,9 @@
                                                                 </td>
                                                                 <td colspan="2"
                                                                     class="text-center align-content-center">
-                                                                    <p class="mb-0">NATURAL</p>
+                                                                    <p class="mb-0">
+                                                                        {{ $product?->productionPlans()?->firstOrFail()?->material_color ?? 'NULL' }}
+                                                                    </p>
                                                                 </td>
                                                             </tr>
                                                             <tr>

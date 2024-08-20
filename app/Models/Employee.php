@@ -133,6 +133,11 @@ class Employee extends Authenticatable
         return $this->hasMany(HistoryPrint::class, 'employee_id', 'id');
     }
 
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class, 'employee_code', 'code');
+    }
+
     //search by role
     public function scopeNameRole($query, $request)
     {

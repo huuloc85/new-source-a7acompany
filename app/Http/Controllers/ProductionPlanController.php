@@ -82,6 +82,7 @@ class ProductionPlanController extends Controller
         $productPlan->produced_quantity = $producedQuantity;
         $productPlan->remaining_production_quantity = $remainingProductionQuantity;
         $productPlan->remaining_production_days = $remainingProductionDays;
+        $productPlan->material_color = $request->input('material_color');
 
         // Lưu sản phẩm kế hoạch
         $productPlan->save();
@@ -105,9 +106,16 @@ class ProductionPlanController extends Controller
     {
         $materials = ['WS641-B50', 'EP540N', 'ZS609-N', 'J783-N'];
         $packagingTypes = [
-            "20X20", "25X25", "25X35", "35X50", "LÓT LỚN", "LÓT LỚNX2", "LÓT NHỎ"
+            "20X20",
+            "25X25",
+            "25X35",
+            "35X50",
+            "LÓT LỚN",
+            "LÓT LỚNX2",
+            "LÓT NHỎ"
         ];
-        return compact('materials', 'packagingTypes');
+        $materialcolor = ['Natural', 'Gray', 'Black'];
+        return compact('materials', 'packagingTypes', 'materialcolor');
     }
 
     // // View Kế Hoạch Sản Xuất
@@ -179,7 +187,7 @@ class ProductionPlanController extends Controller
     {
         $products = Product::all();
         $materialsAndPackagingTypes = $this->getMaterialsAndPackagingTypes();
-
+        $materialcolor = $this->getMaterialsAndPackagingTypes();
         return view('productplan.add-product-plan', array_merge(compact('products'), $materialsAndPackagingTypes));
     }
 
@@ -201,6 +209,7 @@ class ProductionPlanController extends Controller
             // Nếu không có kế hoạch sản phẩm trong tháng hiện tại, tiếp tục thêm kế hoạch mới
             $productPlan = new ProductionPlan;
             $productPlan = $this->setProductionPlanAttributes($productPlan, $request);
+            // dd($productPlan);
             $productPlan->save();
 
             DB::commit();
