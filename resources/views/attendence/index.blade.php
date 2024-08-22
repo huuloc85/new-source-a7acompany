@@ -32,21 +32,20 @@
                                 <label for="time_filter" class="form-label">Thời Gian:</label>
                                 <select id="time_filter" name="time_filter" class="form-select"
                                     onchange="this.form.submit()">
-                                    <option value="">Tất cả</option>
                                     <option value="working_hours"
-                                        {{ request('time_filter') === 'working_hours' ? 'selected' : '' }}>
-                                        Ca hành chính (6:30 - 18:30)
+                                        {{ request('time_filter', 'working_hours') === 'working_hours' ? 'selected' : '' }}>
+                                        Nhân viên hành chính (07:30 - 17:00)
                                     </option>
                                     <option value="qc_day" {{ request('time_filter') === 'qc_day' ? 'selected' : '' }}>
-                                        Nhân viên QC Ca Ngày (6:30 - 20:30)
+                                        Nhân viên QC Ca Ngày (07:30 - 19:30)
                                     </option>
-                                    <option value="category_5_and_6_shift_1"
-                                        {{ request('time_filter') === 'category_5_and_6_shift_1' ? 'selected' : '' }}>
-                                        Nhân Viên Làm Ca 1 (6:30 - 20:30)
+                                    <option value="nhan_vien_san_xuat_shift_1"
+                                        {{ request('time_filter') === 'nhan_vien_san_xuat_shift_1' ? 'selected' : '' }}>
+                                        Nhân Viên Sản Xuất Ca 1 (07:30 - 19:30)
                                     </option>
-                                    <option value="category_5_and_6_shift_2"
-                                        {{ request('time_filter') === 'category_5_and_6_shift_2' ? 'selected' : '' }}>
-                                        Nhân Viên Làm Ca 2 (18:30 - 08:30)
+                                    <option value="nhan_vien_san_xuat_shift_2"
+                                        {{ request('time_filter') === 'nhan_vien_san_xuat_shift_2' ? 'selected' : '' }}>
+                                        Nhân Viên Sản Xuất Ca 2 (19:30 - 07:30)
                                     </option>
                                 </select>
                             </div>
@@ -54,11 +53,11 @@
                     </form>
 
 
-                    <!-- Phần này để hiển thị dữ liệu chấm công -->
-                    <table class="table      table-hover mb-4">
+                    <table class="table table-hover mb-4">
                         <thead class="text-center">
                             <tr>
                                 <th>STT</th>
+                                <th>Mã Nhân Viên</th>
                                 <th>Tên Nhân Viên</th>
                                 <th>Ngày Chấm</th>
                                 <th>Ngày Trong Tuần</th>
@@ -70,18 +69,20 @@
                             @foreach ($records as $record)
                                 <tr class="text-center">
                                     <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $record->employee_code }}</td>
                                     <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
-                                    <td>{{ $record->formatted_date }}</td> <!-- Hiển thị ngày định dạng d-m-Y -->
-                                    <td>{{ $record->day_of_week }}</td> <!-- Hiển thị tên ngày trong tuần -->
-                                    <td>{{ $record->time_in }}</td>
-                                    <td>{{ $record->time_out }}</td>
+                                    <td>{{ $record->formatted_date }}</td>
+                                    <td>{{ $record->day_of_week }}</td>
+                                    <td class="{{ $record->time_in ? '' : 'text-danger' }}">
+                                        {{ $record->time_in ?: 'Chưa chấm công' }}
+                                    </td>
+                                    <td class="{{ $record->time_out ? '' : 'text-danger' }}">
+                                        {{ $record->time_out ?: 'Chưa chấm công' }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-
-
-
                 </div>
             </div>
         </div>
