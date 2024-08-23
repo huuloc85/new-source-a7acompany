@@ -121,13 +121,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.material.index') }}"
-                                title="Kế hoạch sản xuất">
+                            <a class="nav-link" href="{{ route('admin.material.index') }}" title="Kế hoạch sản xuất">
                                 <i class="icon-svg">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        fill="currentColor" class="bi bi-bar-chart" viewBox="0 0 16 16">
+                                        fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
                                         <path
-                                            d="M0 0h16v16H0V0zm1 1v14h14V1H1zm2 2v10h2V3H3zm4 4v6h2V7H7zm4-2v8h2V5h-2z" />
+                                            d="M8.473.018a.5.5 0 0 0-.446 0l-6.5 3.25A.5.5 0 0 0 1.5 4v8a.5.5 0 0 0 .277.447l6.5 3.25a.5.5 0 0 0 .446 0l6.5-3.25A.5.5 0 0 0 14.5 12V4a.5.5 0 0 0-.277-.447l-6.5-3.25zM7.5 1.223l5.036 2.518-2.5 1.25L5 2.473l2.5-1.25zm-1 0l-5.036 2.518 2.5 1.25L11 2.473l-2.5-1.25zm1 13.554V6.223L2 4v8l5.5 2.777zm1 0L14 12V4l-5.5 2.223v8.554z" />
                                     </svg>
                                 </i>
                                 <span class="item-name">Kế hoạch Nguyên Liệu</span>
@@ -159,12 +158,11 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Mã Vạch">
                                 <i class="icon-svg">
+                                    <!-- Biểu tượng máy in hoặc con tem -->
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="currentColor" class="bi bi-tags-fill" viewBox="0 0 16 16">
+                                        fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
                                         <path
-                                            d="M2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586zm3.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-                                        <path
-                                            d="M1.293 7.793A1 1 0 0 1 1 7.086V2a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l.043-.043z" />
+                                            d="M2 2a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm0 1h12a1 1 0 0 1 1 1v4H1V4a1 1 0 0 1 1-1zm11 10H3v-2h10v2zM2 12a1 1 0 0 1-1-1v-2h14v2a1 1 0 0 1-1 1H2zm9-7H5v2h6V5z" />
                                     </svg>
                                 </i>
                                 <span class="item-name">Tạo Tem</span>
@@ -172,33 +170,44 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="{{ route('admin.product.barcode') }}">
                                     <i class="icon-svg me-2">
+                                        <!-- Biểu tượng hộp hoặc thùng -->
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                                            fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
                                             <path
-                                                d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z" />
-                                            <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z" />
-                                            <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z" />
-                                            <path
-                                                d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
-                                            <path d="M12 9h2V8h-2z" />
+                                                d="M9.35 1.176a1 1 0 0 0-.7 0l-6.5 2.7A1 1 0 0 0 2 4.77v6.458a1 1 0 0 0 .65.939l6.5 2.7a1 1 0 0 0 .7 0l6.5-2.7a1 1 0 0 0 .65-.939V4.771a1 1 0 0 0-.65-.938l-6.5-2.7zM8 2.317L13.661 4.6 8 6.884 2.339 4.6 8 2.317zm6 9.84-5.5 2.286v-4.943l5.5-2.286v4.943zm-7-4.943v4.943L1.5 12.157V7.214l5.5 2.285z" />
                                         </svg>
                                     </i>
                                     <span class="item-name">Tạo Tem Thùng</span>
                                 </a>
                                 <a class="dropdown-item" href="{{ route('admin.product.packing') }}">
                                     <i class="icon-svg me-2">
+                                        <!-- Biểu tượng túi hoặc bịch -->
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-postage-fill" viewBox="0 0 16 16">
+                                            fill="currentColor" class="bi bi-bag-fill" viewBox="0 0 16 16">
                                             <path
-                                                d="M4.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z" />
-                                            <path
-                                                d="M3.5 1a1 1 0 0 0 1-1h1a1 1 0 0 0 2 0h1a1 1 0 0 0 2 0h1a1 1 0 1 0 2 0H15v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1h-1.5a1 1 0 1 0-2 0h-1a1 1 0 1 0-2 0h-1a1 1 0 1 0-2 0h-1a1 1 0 1 0-2 0H1v-1a1 1 0 1 0 0-2v-1a1 1 0 1 0 0-2V9a1 1 0 1 0 0-2V6a1 1 0 0 0 0-2V3a1 1 0 0 0 0-2V0h1.5a1 1 0 0 0 1 1M3 3v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1" />
+                                                d="M5.5 2a3.5 3.5 0 1 1 7 0h1a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h1zm7 0a2.5 2.5 0 1 0-5 0h5z" />
                                         </svg>
                                     </i>
                                     <span class="item-name">Tạo Tem Bịch</span>
                                 </a>
                             </div>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.attendence.index') }}" title="Bảng Chấm Công">
+                                <i class="icon-svg">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"
+                                            fill="currentColor" />
+                                        <path d="M13 7h-2v6l5.293 2.707.707-1.707-4-2V7z" fill="currentColor" />
+                                    </svg>
+                                </i>
+                                <span class="item-name">Bảng Chấm Công</span>
+                            </a>
+                        </li>
+
 
                         <li class="nav-item">
                             <a class="nav-link route('admin.checkpo.index')"
@@ -214,6 +223,8 @@
                                 <span class="item-name">Kiểm tra PO</span>
                             </a>
                         </li>
+
+
                         <li class="nav-item">
                             <a class="nav-link route('admin.history.home')" href="{{ route('admin.history.home') }}"
                                 title="Lịch Sử">

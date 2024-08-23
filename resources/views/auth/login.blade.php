@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
     <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
     <!-- CSS Files -->
     <link rel="stylesheet" href="{{ asset('assets/css/hope-ui.css?v=1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/libs.min.css') }}">
@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/hope-ui.css?v=1.1.0') }}">
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-    <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+    {{-- <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script> --}}
     <style>
         .form-check {
             padding-left: 0px !important;
