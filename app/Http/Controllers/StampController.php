@@ -36,27 +36,41 @@ class StampController extends Controller
         $generator = new BarcodeGeneratorPNG();
 
         $binArray = [];
-        // Kiểm tra nếu binStart là chuỗi có dạng số thập phân phân cách bằng dấu phẩy
-        if (is_string($binStart) && strpos($binStart, ',') !== false) {
-            $binStartArray = explode(',', $binStart); // Tách chuỗi thành mảng
-        } else {
-            $binStartArray = [$binStart];
-        }
-        // Chỉ sử dụng các giá trị trong binStartArray
-        foreach ($binStartArray as $index => $currentBinStart) {
-            if ($index >= $binCount) {
-                break; // Dừng khi đã đủ số lượng binCount
+
+        // Kiểm tra nếu binStart không phải là chuỗi hoặc không có dấu phẩy
+        if (!is_string($binStart) || strpos($binStart, ',') === false) {
+            // Nếu không phải chuỗi hoặc không có dấu phẩy, thực hiện theo cách này
+            for ($i = 0; $i < $binCount; $i++) {
+                // Tạo barcode
+                $barcodeString = $product->id . "a" . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $binStart + $i);
+                $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
+                $data = [
+                    'bin' => sprintf('%03d', $binStart + $i),
+                    'barcode' => $barcode
+                ];
+                array_push($binArray, $data);
             }
-            // Tạo barcode cho từng giá trị binStart
-            $barcodeString = $product->id . "a" . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $currentBinStart);
-            $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
+        } else {
+            // Nếu là chuỗi có dấu phẩy, xử lý như trước
+            $binStartArray = explode(',', $binStart); // Tách chuỗi thành mảng
+            foreach ($binStartArray as $index => $currentBinStart) {
+                if ($index >= $binCount) {
+                    break; // Dừng khi đã đủ số lượng binCount
+                }
+                if (is_numeric($currentBinStart)) {
+                    $currentBinStart = (int)$currentBinStart; // Chuyển đổi thành số nguyên
+                    // Tạo barcode cho từng giá trị binStart
+                    $barcodeString = $product->id . "a" . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $currentBinStart);
+                    $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
 
-            $data = [
-                'bin' => sprintf('%03d', $currentBinStart),
-                'barcode' => $barcode
-            ];
+                    $data = [
+                        'bin' => sprintf('%03d', $currentBinStart),
+                        'barcode' => $barcode
+                    ];
 
-            array_push($binArray, $data);
+                    array_push($binArray, $data);
+                }
+            }
         }
 
         $binArray = $this->mapKeyData($binArray);
@@ -70,6 +84,7 @@ class StampController extends Controller
 
         return view('barcode.add', compact('qrCode', 'barcode', 'products', 'lotNo', 'binArray', 'product', 'request'));
     }
+
 
     // format date time
     private function getDateTimeBasedOnShift($shift, $date)
@@ -199,7 +214,8 @@ class StampController extends Controller
         if (is_string($binStart) && strpos($binStart, ',') !== false) {
             $binStartArray = explode(',', $binStart); // Tách chuỗi thành mảng
         } else {
-            $binStartArray = [$binStart];
+            // Nếu binStart không phải chuỗi có dấu phẩy, chuyển đổi thành mảng có một giá trị
+            $binStartArray = is_numeric($binStart) ? range($binStart, $binStart + $binCount - 1) : [$binStart];
         }
 
         // Lặp qua từng giá trị trong binStartArray
