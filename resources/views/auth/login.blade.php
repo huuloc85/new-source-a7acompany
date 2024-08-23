@@ -49,7 +49,7 @@
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">Số điện thoại hoặc tài
                                                         khoản</label>
-                                                    <input type="text"
+                                                    <input type="text" id="email"
                                                         placeholder="Nhập số điện thoại hoặc tài khoản"
                                                         class="form-control" name="phone" required>
                                                 </div>

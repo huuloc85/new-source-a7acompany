@@ -13,9 +13,9 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between">
-                <div class="header-title">
-                    <h4 class="card-title">Import Bảng Lương</h4>
+            <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                <div class="border-radius-lg ps-2 pt-4 pb-3">
+                    <h4 class="card-title mb-0">Import Bảng Lương</h4>
                 </div>
             </div>
             <div class="px-0 pb-2">

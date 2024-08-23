@@ -13,9 +13,9 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>STT</th>
-                                <th>Tên Nguyên Liệu</th>
-                                <th>Tổng Số Lượng</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tên Nguyên Liệu</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tổng Số Lượng</th>
                             </tr>
                         </thead>
                         <tbody>

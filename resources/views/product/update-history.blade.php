@@ -1,4 +1,4 @@
-<div class="modal fade" id="updateDetail" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+<div class="modal fade" id="updateDetail" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form action="{{route('admin.product.update.detail')}}" method="post">
             @csrf
@@ -29,7 +29,7 @@
     </div>
 </div>
 <script>
-    $('#updateDetail').on('show.bs.modal', function (event) {
+    $('#updateDetail').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget);
         var dailyId = button.data('daily-id');
         var dailyQuan = button.data('daily-quan');

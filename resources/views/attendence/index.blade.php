@@ -56,13 +56,13 @@
                     <table class="table table-hover mb-4">
                         <thead class="text-center">
                             <tr>
-                                <th>STT</th>
-                                <th>Mã Nhân Viên</th>
-                                <th>Tên Nhân Viên</th>
-                                <th>Ngày Chấm</th>
-                                <th>Ngày Trong Tuần</th>
-                                <th>Giờ Vào</th>
-                                <th>Giờ Ra</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Mã Nhân Viên</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tên Nhân Viên</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Ngày Chấm</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Ngày Trong Tuần</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Giờ Vào</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Giờ Ra</th>
                             </tr>
                         </thead>
                         <tbody>
