@@ -6,7 +6,7 @@
             max-width: 100%;
             padding: 0 1rem;
             /* display: flex;
-                            justify-content: center; */
+                                                                    justify-content: center; */
         }
 
         .grid-container {
@@ -78,6 +78,17 @@
                                         @endforeach
                                     </select>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="material_color">Màu Sắc</label>
+                                    <select class="form-control" id="material_color" name="material_color">
+                                        <option value="">Tất Cả Nguyên Liệu</option>
+                                        @foreach ($materialcolor as $color)
+                                            <option>{{ $color }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <div class="form-group">
                                     <label for="production_plan">Kế Hoạch Sản Xuất (PCS)</label>
                                     <input type="number" id="production_plan" name="production_plan" class="form-control">

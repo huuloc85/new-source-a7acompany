@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryCelenderController;
 use App\Http\Controllers\CelenderController;
@@ -98,6 +99,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         // Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
     });
 
+    Route::middleware(['authAdmin'])->prefix('/attendence')->group(function () {
+        Route::get('/index', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
+        // Route::delete('/admin-view-employee-todo/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
+        // Route::post('/admin-check-employee-todo/edit/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
+    });
 
     //quản lý chức vụ
     Route::middleware(['authAdmin'])->prefix('/role')->group(function () {
