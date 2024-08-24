@@ -317,11 +317,11 @@ Auth()->user()->role->role_name == 'accountant')
                                     <thead>
                                         <tr>
                                             <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">
                                                 STT
                                             </th>
                                             <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4">
                                                 Tiêu đề</th>
                                             <th
                                                 class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
@@ -392,11 +392,11 @@ Auth()->user()->role->role_name == 'accountant')
                                     <thead>
                                         <tr>
                                             <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">
                                                 STT
                                             </th>
                                             <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4">
                                                 Tiêu đề</th>
                                             <th
                                                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">

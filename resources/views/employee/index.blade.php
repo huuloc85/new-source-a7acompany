@@ -44,11 +44,11 @@
                             <thead>
                                 <tr>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">STT</th>
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên/Điện thoại</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên/Điện thoại</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Chức vụ</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Mã nhân viên</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Danh mục lịch làm việc</th>
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Chức năng</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Chức năng</th>
                                 </tr>
                             </thead>
                             <tbody>
