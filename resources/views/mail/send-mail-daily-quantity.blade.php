@@ -128,12 +128,12 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>STT</th>
-                                <th>Tên linh kiện</th>
-                                <th>Số Lượng</th>
-                                <th>Người Nhập</th>
-                                <th>Ca Làm Việc</th>
-                                <th>Ngày Nhập</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tên linh kiện</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Số Lượng</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Người Nhập</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Ca Làm Việc</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Ngày Nhập</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -165,12 +165,12 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>STT</th>
-                                <th>Tên linh kiện</th>
-                                <th>Số Lượng</th>
-                                <th>Người Nhập</th>
-                                <th>Ca Làm Việc</th>
-                                <th>Ngày Nhập</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tên linh kiện</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Số Lượng</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Người Nhập</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Ca Làm Việc</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Ngày Nhập</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -202,10 +202,10 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th class="text-center text-secondary fw-bold">STT</th>
-                                <th class="text-center text-secondary fw-bold">Tên Nhân Viên</th>
-                                <th class="text-center text-secondary fw-bold">Ca Làm Việc</th>
-                                <th class="text-center text-secondary fw-bold">Trạng Thái</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Tên Nhân Viên</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Ca Làm Việc</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Trạng Thái</th>
                             </tr>
                         </thead>
                         <tbody>

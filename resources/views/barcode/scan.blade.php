@@ -5,9 +5,9 @@
 <div class="row">
     <div class="col-12">
         <div class="card my-4">
-            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                    <h6 class="text-white text-capitalize ps-3">Quét mã vạch</h6>
+            <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                <div class="border-radius-lg ps-2 pt-4 pb-3">
+                    <h4 class="card-title mb-0">Quét Mã Vạch</h4>
                 </div>
             </div>
             <div class="px-0 pb-2">
@@ -40,7 +40,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         var startApi = true;
         Quagga.init({
             inputStream: {
@@ -54,7 +54,7 @@
             decoder: {
                 readers: ["code_128_reader"]
             }
-        }, function (err) {
+        }, function(err) {
             if (err) {
                 console.log(err);
                 return;
@@ -63,7 +63,7 @@
             Quagga.start();
         });
 
-        Quagga.onDetected(function (result) {
+        Quagga.onDetected(function(result) {
             if (result && result.codeResult.code != "" && result.codeResult.code != "*!" && result.codeResult.code != "U8'48*(") {
                 var code = result.codeResult.code;
 
@@ -71,12 +71,12 @@
                     console.log(startApi);
                     var url = $('#interactive').data('url');
                     $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: {
-                        barcode: code,
-                        _token: '{{ csrf_token() }}'
-                    },
+                        url: url,
+                        method: 'POST',
+                        data: {
+                            barcode: code,
+                            _token: '{{ csrf_token() }}'
+                        },
                         success: function(response) {
                             console.log(response.status);
                             var status = response.status;
@@ -103,7 +103,7 @@
                     });
 
                     startApi = false;
-                    setTimeout(function () {
+                    setTimeout(function() {
                         console.log("Wait for 5s!!!");
                         startApi = true;
                     }, 5000);

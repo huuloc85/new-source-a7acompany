@@ -284,7 +284,8 @@
                                                         Danh sách PO
                                                     </h6>
                                                     <h5 class="text-md mb-0">Từ {{ $startOfMonth->format('d/m/Y') }} đến
-                                                        {{ $endOfMonth->format('d/m/Y') }}</h5>
+                                                        {{ $endOfMonth->format('d/m/Y') }}
+                                                    </h5>
                                                 </div>
                                             </div>
                                         </a>
@@ -380,6 +381,7 @@
                                 </div>
                             </div>
                         </div>
+<<<<<<< HEAD
                         <div class="col-lg-4 col-md-6">
                             <div class="card h-100">
                                 <div class="card-header pb-0">
@@ -436,10 +438,79 @@
                                         </table>
                                     </div>
                                 </div>
+=======
+                        <div class="card-body px-0 pb-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0 table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">
+                                                STT
+                                            </th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4">
+                                                Tiêu đề</th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Tổng(VND)</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Ngày bắt đầu</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Ngày kết thúc</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($salaryManagers as $key => $salaryManager)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex px-3 py-1">
+                                                    {{ $loop->iteration }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs font-weight-bold mb-0 px-3"><a
+                                                        href="{{ route('admin.salary.detail', $salaryManager->id) }}">{{ $salaryManager->title }}</a>
+                                                </p>
+                                            </td>
+                                            <td class="align-middle text-sm">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    {{ number_format($salaryManager->total, 2) }}
+                                                </p>
+                                            </td>
+                                            <td class="align-middle text-center text-sm">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    {{ $salaryManager->formatTimeDMY($salaryManager->start_date) }}
+                                                </p>
+                                            </td>
+                                            <td class="align-middle text-center text-sm">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    {{ $salaryManager->formatTimeDMY($salaryManager->end_date) }}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                        @if ($totalSalary == 0)
+                                        <tr>
+                                            <td colspan="4" class="text-center pt-4">Hiện tại chưa có bảng
+                                                lương
+                                                nào.<br>Vui lòng
+                                                <a class="href"
+                                                    href="{{ route('admin.salary.getimport') }}">Thêm bảng
+                                                    lương</a>
+                                            </td>
+                                        </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+>>>>>>> a3edb6487438ad9973df6162f9b0054c182d0b12
                             </div>
                         </div>
                     </div>
                 </div>
+<<<<<<< HEAD
             @else
                 <div class="row mb-4">
                     @if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18)
@@ -484,6 +555,36 @@
                                                     <p class="mb-0">Đi đến <a
                                                             href="{{ route('admin.celender.home') }}">lịch làm việc nhân
                                                             viên.</a></p>
+=======
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header pb-0">
+                            <h6>Danh sách 10 lịch làm việc gần nhất</h6>
+                        </div>
+                        <div class="card-body px-0 pb-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0 table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">
+                                                STT
+                                            </th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4">
+                                                Tiêu đề</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Ngày bắt đầu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($celenders as $key => $celender)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex px-3 py-1">
+                                                    {{ $loop->iteration }}
+>>>>>>> a3edb6487438ad9973df6162f9b0054c182d0b12
                                                 </div>
                                             </div>
                                         </li>
@@ -651,12 +752,16 @@
                                                     data-min-value="0" data-max-value="100" data-value="90"
                                                     data-type="percent">
                                                     <i class="icon-svg">
-                                                        <svg style="color:#323232" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
-                                                            <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"/>
-                                                            <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"/>
-                                                            <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"/>
-                                                            <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"/>
-                                                            <path d="M12 9h2V8h-2z"/>
+                                                        <svg style="color:#323232" xmlns="http://www.w3.org/2000/svg"
+                                                            width="50" height="50" fill="currentColor"
+                                                            class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z" />
+                                                            <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z" />
+                                                            <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z" />
+                                                            <path
+                                                                d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
+                                                            <path d="M12 9h2V8h-2z" />
                                                         </svg>
                                                     </i>
                                                 </div>
@@ -666,7 +771,8 @@
                                             </div>
                                         </a>
                                         <div class="card-footer p-3">
-                                            <p class="mb-0">Đi đến <a href="{{ route('admin.barcode.scan') }}">quét mã vạch.</a>
+                                            <p class="mb-0">Đi đến <a href="{{ route('admin.barcode.scan') }}">quét mã
+                                                    vạch.</a>
                                             </p>
                                         </div>
                                     </div>

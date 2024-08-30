@@ -45,8 +45,8 @@
                 {{-- <div class="card-header d-flex justify-content-between">
                     <div class="header-title">
                         <h4 class="card-title">Kế Hoạch Sản Xuất Tháng {{ $currentMonth }}</h4>
-                    </div>
-                </div> --}}
+        </div>
+    </div> --}}
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
                         <h4 class="card-title mb-0">Kế Hoạch Sản Xuất Tháng {{ $currentMonth }}</h4>
@@ -93,7 +93,7 @@
                             <thead>
                                 <tr>
                                     <!-- Tiêu đề gộp cho Kế Hoạch Sản Xuất -->
-                                    <th colspan="21" class="text-center text-uppercase">Kế Hoạch Sản
+                                    <th colspan="22" class="text-center text-uppercase">Kế Hoạch Sản
                                         Xuất</th>
                                     <!-- Tiêu đề gộp cho Thông Tin Ngày -->
                                     <th colspan="{{ 2 * count($listDate) }}" class="text-center text-uppercase">Bảng Sản
@@ -102,41 +102,63 @@
                                         Hành Động</th>
                                 </tr>
                                 <tr>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">STT</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tên Sản Phẩm</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Nguyên Vật Liệu
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">STT</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Tên Sản Phẩm</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Nguyên Vật Liệu
                                     </th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Màu Sắc
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Màu Sắc
                                     </th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Kế Hoạch Sản Xuất
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Kế Hoạch Sản Xuất
                                     </th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Dự Định Vật Liệu
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Dự Định Vật Liệu
                                         (KG)</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Loại Bao Bì</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Bao Bì/Thùng
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Loại Bao Bì</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Số Bao Bì/Thùng
                                     </th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tổng Bao Bì</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Loại Thùng</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Sản Phẩm/Thùng
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Tổng Bao Bì</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Loại Thùng</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Sản Phẩm/Thùng
                                     </th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Thùng
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Số Lượng Thùng
                                     </th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tỷ Trọng Sản Phẩm
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Tỷ Trọng Sản Phẩm
                                         (G)</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Kế Hoạch Sản
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Kế Hoạch Sản
                                         Xuất/Ngày</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Cavity</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Chu Kỳ</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Tấn</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Máy</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Ngày Chạy Máy
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Số Cavity</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Chu Kỳ</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Tấn</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Máy</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Số Ngày Chạy Máy
                                     </th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Ngày Còn SX
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Số Ngày Còn SX
                                         (Ngày)</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Còn
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Số Lượng Còn
                                         SX
                                         (PCS)</th>
-                                    <th class="text-center" rowspan="2" style="vertical-align: middle;">Số Lượng Đã SX
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        rowspan="2" style="vertical-align: middle;">Số Lượng Đã SX
                                         (PCS)</th>
 
                                     <!-- Tiêu đề cho các ngày -->
@@ -145,7 +167,8 @@
                                             $dateObj = Carbon\Carbon::parse($date);
                                         @endphp
                                         <th class="text-center text-md" colspan="2">Ngày
-                                            {{ $dateObj->format('d-m') }}</th>
+                                            {{ $dateObj->format('d-m') }}
+                                        </th>
                                     @endforeach
                                 </tr>
                                 <tr>
@@ -161,8 +184,8 @@
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $plan->product->name }}</td>
-                                        <td class="text-center">{{ $plan->material_name }}</td>
-                                        <td class="text-center">{{ $plan->material_color }}</td>
+                                        <td class="text-center">{{ $plan->product->material }}</td>
+                                        <td class="text-center">{{ $plan->product->color }}</td>
                                         <td class="text-center">{{ number_format($plan->production_plan) }}</td>
                                         <td class="text-center">{{ number_format($plan->planned_material) }}</td>
                                         <td class="text-center">{{ $plan->packaging_type }}</td>
@@ -263,28 +286,33 @@
                                         @foreach ($products as $product)
                                             <option value="{{ $product->id }}" data-bin-code="{{ $product->binCode }}"
                                                 data-quan-entity-bin="{{ $product->quanEntityBin }}"
+                                                data-material="{{ $product->material }}"
+                                                data-color="{{ $product->color }}"
                                                 {{ $plan->product_id == $product->id ? 'selected' : '' }}>
                                                 {{ $product->name }}
                                             </option>
                                         @endforeach
                                     </select>
+
                                     @error('product_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
+                                    <label for="material">Nguyên Vật Liệu</label>
+                                    <input type="text" class="form-control @error('material') is-invalid @enderror"
+                                        id="material" name="material" value="{{ old('material', $plan->material) }}"
+                                        required>
+                                    @error('material')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="material_name">Nguyên Vật Liệu</label>
-                                    <select class="form-select @error('material_name') is-invalid @enderror"
-                                        id="material_name" name="material_name" required>
-                                        @foreach ($materials as $material)
-                                            <option value="{{ $material }}"
-                                                {{ old('material_name', $plan->material_name) == $material ? 'selected' : '' }}>
-                                                {{ $material }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('material_name')
+                                    <label for="color">Màu Sắc</label>
+                                    <input type="text" class="form-control @error('color') is-invalid @enderror"
+                                        id="color" name="color" value="{{ old('color', $plan->color) }}" required>
+                                    @error('color')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -507,14 +535,20 @@
             var productSelect = document.getElementById('product_select');
             var boxTypeInput = document.getElementById('box_type');
             var productsPerBoxInput = document.getElementById('products_per_box');
+            var materialInput = document.getElementById('material');
+            var colorInput = document.getElementById('color');
 
             productSelect.addEventListener('change', function() {
                 var selectedOption = productSelect.options[productSelect.selectedIndex];
                 var binCode = selectedOption.getAttribute('data-bin-code');
                 var quanEntityBin = selectedOption.getAttribute('data-quan-entity-bin');
+                var material = selectedOption.getAttribute('data-material');
+                var color = selectedOption.getAttribute('data-color');
 
                 boxTypeInput.value = binCode || '';
                 productsPerBoxInput.value = quanEntityBin || '';
+                materialInput.value = material || '';
+                colorInput.value = color || '';
             });
             var event = new Event('change');
             productSelect.dispatchEvent(event);

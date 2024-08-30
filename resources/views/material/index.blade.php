@@ -13,17 +13,17 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>STT</th>
-                                <th>Tên Nguyên Liệu</th>
-                                <th>Tổng Số Lượng</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Mã Nguyên Liệu</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($materials as $index => $material)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $material->name }}</td>
-                                    <td>{{ $material->total_quantity }}</td>
+                                    <td>{{ $material }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
