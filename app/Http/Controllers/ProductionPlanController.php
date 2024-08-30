@@ -64,7 +64,7 @@ class ProductionPlanController extends Controller
 
         // Cập nhật các thuộc tính của bản ghi
         $productPlan->product_id = $request->input('product_id');
-        $productPlan->material_name = $request->input('material_name');
+        $productPlan->material_name = $request->input('material');
         $productPlan->production_plan = $productionPlan;
         $productPlan->planned_material = $plannedMaterial;
         $productPlan->packaging_type = $request->input('packaging_type');
@@ -82,7 +82,7 @@ class ProductionPlanController extends Controller
         $productPlan->produced_quantity = $producedQuantity;
         $productPlan->remaining_production_quantity = $remainingProductionQuantity;
         $productPlan->remaining_production_days = $remainingProductionDays;
-        $productPlan->material_color = $request->input('material_color');
+        $productPlan->material_color = $request->input('color');
 
         // Lưu sản phẩm kế hoạch
         $productPlan->save();
@@ -95,7 +95,7 @@ class ProductionPlanController extends Controller
 
         // Cập nhật giá trị cho materialProduct
         $materialProduct->quantity = $plannedMaterial;
-        $materialProduct->name = $productPlan->material_name;
+        // $materialProduct->name = $productPlan->material_name;
         $materialProduct->save();
 
         return $productPlan;
@@ -104,7 +104,7 @@ class ProductionPlanController extends Controller
     // Chức Năng Nguyên Liệu vs Loại Bao Bì (Hàm Chức Năng)
     private function getMaterialsAndPackagingTypes()
     {
-        $materials = ['WS641-B50', 'EP540N', 'ZS609-N', 'J783-N'];
+        // $materials = ['WS641-B50', 'EP540N', 'ZS609-N', 'J783-N'];
         $packagingTypes = [
             "20X20",
             "25X25",
@@ -114,8 +114,8 @@ class ProductionPlanController extends Controller
             "LÓT LỚNX2",
             "LÓT NHỎ"
         ];
-        $materialcolor = ['Natural', 'Gray', 'Black'];
-        return compact('materials', 'packagingTypes', 'materialcolor');
+        // $materialcolor = ['Natural', 'Gray', 'Black'];
+        return compact('packagingTypes');
     }
 
     // // View Kế Hoạch Sản Xuất

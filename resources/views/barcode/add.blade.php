@@ -17,9 +17,10 @@
                             <div class="row no-print">
                                 <!-- Ngày -->
                                 <div class="col-md-3 mb-3">
-                                    <label for="date" class="form-label">Ngày<span class="required text-danger">*</span></label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror"
-                                        placeholder="Ngày" name="date" id="date" value="{{ $request->date ?? '' }}" required>
+                                    <label class="form-label">Ngày<span class="required text-danger">*</span></label>
+                                    <input type="date" id="date"
+                                        class="form-control @error('date') is-invalid @enderror" placeholder="Ngày"
+                                        name="date" value="{{ $request->date ?? '' }}" required>
                                     @error('date')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -27,12 +28,14 @@
 
                                 <!-- Ca -->
                                 <div class="col-md-3 mb-3">
-                                    <label for="shift" class="form-label">Ca<span class="required text-danger">*</span></label>
+                                    <label class="form-label">Ca<span class="required text-danger">*</span></label>
                                     <select id="shift" class="form-control @error('shift') is-invalid @enderror"
                                         name="shift" required>
                                         <option style="text-align: center" value="">----- Ca làm việc -----</option>
-                                        <option value="1" {{ old('shift') == 1 ? 'selected' : '' }}>Ca 1</option>
-                                        <option value="2" {{ old('shift') == 2 ? 'selected' : '' }}>Ca 2</option>
+                                        <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value ="1">Ca 1
+                                        </option>
+                                        <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value ="2">Ca 2
+                                        </option>
                                     </select>
                                     @error('shift')
                                         <div class="text-danger">{{ $message }}</div>
@@ -41,11 +44,11 @@
 
                                 <!-- Số lượng thùng (tem) -->
                                 <div class="col-md-3 mb-3">
-                                    <label for="binCount" class="form-label">Số lượng thùng (tem)<span
+                                    <label class="form-label">Số lượng thùng (tem)<span
                                             class="required text-danger">*</span></label>
-                                    <input min="1" max="999"
+                                    <input min="1" max="999" id="binCount"
                                         class="form-control @error('binCount') is-invalid @enderror"
-                                        placeholder="Số lượng thùng" name="binCount" id="binCount" value="{{ $request->binCount ?? '' }}"
+                                        placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}"
                                         required>
                                     @error('binCount')
                                         <div class="text-danger">{{ $message }}</div>
@@ -59,10 +62,11 @@
 
                                 <!-- Thùng bắt đầu -->
                                 <div class="col-md-3 mb-3">
-                                    <label for="binStart" class="form-label">Thùng bắt đầu<span
+                                    <label class="form-label">Thùng bắt đầu<span
                                             class="required text-danger">*</span></label>
-                                    <input min="0" class="form-control @error('binStart') is-invalid @enderror"
-                                        placeholder="Thùng bắt đầu" name="binStart" id="binStart" value="{{ $request->binStart ?? '' }}"
+                                    <input min="0" id="binStart"
+                                        class="form-control @error('binStart') is-invalid @enderror"
+                                        placeholder="Thùng bắt đầu" name="binStart" value="{{ $request->binStart ?? '' }}"
                                         required>
                                     @error('binStart')
                                         <div class="text-danger">{{ $message }}</div>
@@ -75,9 +79,9 @@
 
                                 <!-- Sản phẩm -->
                                 <div class="col-md-3 mb-3">
-                                    <label for="product_code" class="form-label">Sản phẩm<span class="required text-danger">*</span></label>
+                                    <label class="form-label">Sản phẩm<span class="required text-danger">*</span></label>
                                     <select onchange="selectProduct(event)"
-                                        class="form-control @error('product_code') is-invalid @enderror" name="product_code" id="product_code"
+                                        class="form-control @error('product_code') is-invalid @enderror" name="product_code"
                                         required>
                                         <option style="text-align: center" value="">----- Chọn sản phẩm -----</option>
                                         @foreach ($products as $pro)
@@ -93,10 +97,10 @@
 
                                 <!-- Code -->
                                 <div class="col-md-3 mb-3">
-                                    <label for="code" class="form-label">Code<span class="required text-danger">*</span></label>
+                                    <label class="form-label">Code<span class="required text-danger">*</span></label>
                                     <input type="text" id="product_code"
                                         class="form-control @error('code') is-invalid @enderror" placeholder="Code"
-                                        name="code" id="code" value="{{ $product->code ?? '' }}" required readonly>
+                                        name="code" value="{{ $product->code ?? '' }}" required readonly>
                                     @error('code')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -104,14 +108,16 @@
 
                                 <!-- PCS -->
                                 <div class="col-md-3 mb-3">
-                                    <label for="pcs" class="form-label">PCS<span class="required text-danger">*</span></label>
+                                    <label class="form-label">PCS<span class="required text-danger">*</span></label>
                                     <input type="number" min="1" id="product_pcs"
                                         class="form-control @error('pcs') is-invalid @enderror" placeholder="PCS"
-                                        name="pcs" id="pcs" value="{{ $product->quanEntityBin ?? '' }}" required readonly>
+                                        name="pcs" value="{{ $product->quanEntityBin ?? '' }}" required readonly>
                                     @error('pcs')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <input type="hidden" id="type" name="type" value="Tem Thùng">
+
                             </div><br>
 
                             <div>
@@ -292,6 +298,9 @@
             var shift = $('#shift').val();
             var binCount = $('#binCount').val();
             var binStart = $('#binStart').val();
+            var type = $('#type').val();
+
+            console.log(date, shift, binCount, binStart, product_code, product_pcs, type);
 
             if (productCode) {
                 $.ajax({
@@ -303,6 +312,7 @@
                         shift: shift,
                         binCount: binCount,
                         binStart: binStart,
+                        type: type,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {

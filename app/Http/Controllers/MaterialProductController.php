@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MaterialProduct;
+use App\Models\Product;
 use App\Models\ProductionPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,10 +12,9 @@ class MaterialProductController extends Controller
 {
     public function index()
     {
-        // Nhóm các MaterialProduct theo name và tính tổng quantity
-        $materials = MaterialProduct::select('name', DB::raw('SUM(quantity) as total_quantity'))
-            ->groupBy('name')
-            ->get();
+        $materials = Product::whereNotNull('material')
+            ->groupBy('material')
+            ->pluck('material');
 
         // Truyền dữ liệu đến view
         return view('material.index', compact('materials'));
