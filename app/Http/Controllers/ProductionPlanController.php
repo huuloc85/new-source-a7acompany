@@ -64,7 +64,7 @@ class ProductionPlanController extends Controller
 
         // Cập nhật các thuộc tính của bản ghi
         $productPlan->product_id = $request->input('product_id');
-        $productPlan->material_name = $request->input('material');
+        // $productPlan->material_name = $request->input('material');
         $productPlan->production_plan = $productionPlan;
         $productPlan->planned_material = $plannedMaterial;
         $productPlan->packaging_type = $request->input('packaging_type');
@@ -82,7 +82,7 @@ class ProductionPlanController extends Controller
         $productPlan->produced_quantity = $producedQuantity;
         $productPlan->remaining_production_quantity = $remainingProductionQuantity;
         $productPlan->remaining_production_days = $remainingProductionDays;
-        $productPlan->material_color = $request->input('color');
+        // $productPlan->material_color = $request->input('color');
 
         // Lưu sản phẩm kế hoạch
         $productPlan->save();

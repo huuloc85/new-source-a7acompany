@@ -211,9 +211,9 @@
                                     <table class="table align-items-center mb-0 table-hover">
                                         <thead>
                                             <tr>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3"
                                                     rowspan="2">&nbsp;<br>STT<br>&nbsp;</th>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4"
                                                     rowspan="2">&nbsp;<br>Tên linh kiện<br>&nbsp;</th>
                                                 {{-- <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
                                                     rowspan="2">&nbsp;<br>Tên linh kiện<br>&nbsp;</th> --}}
@@ -462,9 +462,9 @@
                 <table class="table align-items-center mb-0 table-hover">
                     <thead>
                         <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                rowspan="2">STT<br>&nbsp;</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                            <th class="text-uppercase text-secondary text-xxs fw-bold opacity-7 px-3 align-middle"
+                                rowspan="2">&nbsp;STT<br>&nbsp;</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4"
                                 rowspan="2">Tên linh kiện<br>&nbsp;</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center text-center"
                                 rowspan="2">Tổng cộng<br>&nbsp;</th>
@@ -587,7 +587,7 @@
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
                                 rowspan="2">STT</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4"
                                 rowspan="2">Tên Linh Kiện</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-1"
                                 rowspan="2">Tồn đầu kỳ<br>hàng 200%</th>
@@ -688,12 +688,12 @@
                 <table class="table align-items-center mb-0 table-hover">
                     <thead>
                         <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                rowspan="2">STT<br>&nbsp;</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                rowspan="2">Tên linh kiện<br>&nbsp;</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-1"
-                                rowspan="2">Tổng cộng<br>&nbsp;</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3 align-center"
+                                rowspan="2">STT</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4 align-center"
+                                rowspan="2">Tên linh kiện</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-1 align-center"
+                                rowspan="2">Tổng cộng</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -784,12 +784,12 @@
                 <table class="table align-items-center mb-0 table-hover">
                     <thead>
                         <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                rowspan="2">STT<br>&nbsp;</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                rowspan="2">Tên linh kiện<br>&nbsp;</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-1"
-                                rowspan="2">Tổng cộng<br>&nbsp;</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3 align-center"
+                                rowspan="2">STT</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4 align-center"
+                                rowspan="2">Tên linh kiện</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-1 align-center"
+                                rowspan="2">Tổng cộng</th>
                         </tr>
                     </thead>
                     <tbody>

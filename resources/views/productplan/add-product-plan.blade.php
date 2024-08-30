@@ -6,7 +6,7 @@
             max-width: 100%;
             padding: 0 1rem;
             /* display: flex;
-                                                                                                                        justify-content: center; */
+                                                                                                                            justify-content: center; */
         }
 
         .grid-container {
@@ -70,14 +70,14 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <label for="material">Nguyên Liệu</label>
                                     <input type="text" id="material" name="material" class="form-control" required>
-                                </div>
-                                <div class="form-group">
+                                </div> --}}
+                                {{-- <div class="form-group">
                                     <label for="color">Màu Sắc</label>
                                     <input type="text" id="color" name="color" class="form-control" required>
-                                </div>
+                                </div> --}}
 
                                 <div class="form-group">
                                     <label for="production_plan">Kế Hoạch Sản Xuất (PCS)</label>

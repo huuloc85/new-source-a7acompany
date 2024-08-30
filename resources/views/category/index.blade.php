@@ -46,16 +46,16 @@
                     <table class="table align-items-center mb-0 table-hover ">
                         <thead>
                             <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">STT</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3">
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3 px-4">
                                     Tên danh mục</th>
                                 <th
                                     class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
                                     Ngày tạo</th>
                                 <th
-                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
+                                    class="text-uppercase text-secondary text-xxs fw-bold opacity-7 ps-2 col-3">
                                     Ngày cập nhật</th>
-                                <th class="text-secondary opacity-7"></th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">Chức Năng</th>
                             </tr>
                         </thead>
                         <tbody>

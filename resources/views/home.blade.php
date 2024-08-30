@@ -381,6 +381,7 @@
                                 </div>
                             </div>
                         </div>
+<<<<<<< HEAD
                         <div class="col-lg-4 col-md-6">
                             <div class="card h-100">
                                 <div class="card-header pb-0">
@@ -437,10 +438,79 @@
                                         </table>
                                     </div>
                                 </div>
+=======
+                        <div class="card-body px-0 pb-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0 table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">
+                                                STT
+                                            </th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4">
+                                                Tiêu đề</th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Tổng(VND)</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Ngày bắt đầu</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Ngày kết thúc</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($salaryManagers as $key => $salaryManager)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex px-3 py-1">
+                                                    {{ $loop->iteration }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p class="text-xs font-weight-bold mb-0 px-3"><a
+                                                        href="{{ route('admin.salary.detail', $salaryManager->id) }}">{{ $salaryManager->title }}</a>
+                                                </p>
+                                            </td>
+                                            <td class="align-middle text-sm">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    {{ number_format($salaryManager->total, 2) }}
+                                                </p>
+                                            </td>
+                                            <td class="align-middle text-center text-sm">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    {{ $salaryManager->formatTimeDMY($salaryManager->start_date) }}
+                                                </p>
+                                            </td>
+                                            <td class="align-middle text-center text-sm">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    {{ $salaryManager->formatTimeDMY($salaryManager->end_date) }}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                        @if ($totalSalary == 0)
+                                        <tr>
+                                            <td colspan="4" class="text-center pt-4">Hiện tại chưa có bảng
+                                                lương
+                                                nào.<br>Vui lòng
+                                                <a class="href"
+                                                    href="{{ route('admin.salary.getimport') }}">Thêm bảng
+                                                    lương</a>
+                                            </td>
+                                        </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+>>>>>>> a3edb6487438ad9973df6162f9b0054c182d0b12
                             </div>
                         </div>
                     </div>
                 </div>
+<<<<<<< HEAD
             @else
                 <div class="row mb-4">
                     @if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18)
@@ -485,6 +555,36 @@
                                                     <p class="mb-0">Đi đến <a
                                                             href="{{ route('admin.celender.home') }}">lịch làm việc nhân
                                                             viên.</a></p>
+=======
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header pb-0">
+                            <h6>Danh sách 10 lịch làm việc gần nhất</h6>
+                        </div>
+                        <div class="card-body px-0 pb-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0 table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">
+                                                STT
+                                            </th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-4">
+                                                Tiêu đề</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Ngày bắt đầu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($celenders as $key => $celender)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex px-3 py-1">
+                                                    {{ $loop->iteration }}
+>>>>>>> a3edb6487438ad9973df6162f9b0054c182d0b12
                                                 </div>
                                             </div>
                                         </li>

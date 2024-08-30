@@ -93,7 +93,7 @@
                             <thead>
                                 <tr>
                                     <!-- Tiêu đề gộp cho Kế Hoạch Sản Xuất -->
-                                    <th colspan="21" class="text-center text-uppercase">Kế Hoạch Sản
+                                    <th colspan="22" class="text-center text-uppercase">Kế Hoạch Sản
                                         Xuất</th>
                                     <!-- Tiêu đề gộp cho Thông Tin Ngày -->
                                     <th colspan="{{ 2 * count($listDate) }}" class="text-center text-uppercase">Bảng Sản
@@ -184,8 +184,8 @@
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $plan->product->name }}</td>
-                                        <td class="text-center">{{ $plan->material_name }}</td>
-                                        <td class="text-center">{{ $plan->material_color }}</td>
+                                        <td class="text-center">{{ $plan->product->material }}</td>
+                                        <td class="text-center">{{ $plan->product->color }}</td>
                                         <td class="text-center">{{ number_format($plan->production_plan) }}</td>
                                         <td class="text-center">{{ number_format($plan->planned_material) }}</td>
                                         <td class="text-center">{{ $plan->packaging_type }}</td>

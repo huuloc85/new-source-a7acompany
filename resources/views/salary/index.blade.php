@@ -57,16 +57,17 @@
                 <table class="table align-items-center mb-0 table-hover ">
                     <thead>
                         <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">STT</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3">Tiêu
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">STT</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3 px-4">Tiêu
                                 đề</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3">
-                                Tổng(VND)</th>
+                                Tổng (VND)</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
                                 Ngày bắt đầu</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
                                 Ngày kết thúc</th>
-                            <th class="text-secondary opacity-7"></th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
+                                Chức Năng</th>
                         </tr>
                     </thead>
                     <tbody>
