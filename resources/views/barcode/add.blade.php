@@ -178,7 +178,7 @@
                                                                 </td>
                                                                 <td class="text-center align-content-center">
                                                                     <p class="mb-0">
-                                                                        {{ $product?->productionPlans()?->firstOrFail()?->material_name ?? 'NULL' }}
+                                                                        {{ $product->material }}
                                                                     </p>
                                                                 </td>
                                                                 <td colspan="2" class="text-center">
@@ -187,7 +187,7 @@
                                                                 <td colspan="2"
                                                                     class="text-center align-content-center">
                                                                     <p class="mb-0">
-                                                                        {{ $product?->productionPlans()?->firstOrFail()?->material_color ?? 'NULL' }}
+                                                                        {{ $product->color }}
                                                                     </p>
                                                                 </td>
                                                             </tr>
