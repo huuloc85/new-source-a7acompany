@@ -291,7 +291,7 @@
             $('#product_pcs').val(data[1]);
         }
 
-        function savePrint(event) {
+        function savePrint() {
             var url = $('#save-print').data('url');
             var productCode = $('#product_code').val();
             var date = $('#date').val();
@@ -300,7 +300,7 @@
             var binStart = $('#binStart').val();
             var type = $('#type').val();
 
-            console.log(date, shift, binCount, binStart, product_code, product_pcs, type);
+            console.log(date, shift, binCount, binStart, productCode, productPcs, type);
 
             if (productCode) {
                 $.ajax({
@@ -324,5 +324,15 @@
                 });
             }
         }
+
+        $(document).ready(function() {
+            $(document).keydown(function(event) {
+                if (event.ctrlKey && event.key === 'p') {
+                    event.preventDefault(); // Ngăn chặn hành động in mặc định của trình duyệt
+                    savePrint(); // Gọi hàm savePrint khi Ctrl+P được nhấn
+                }
+            });
+        });
     </script>
+
 @endsection
