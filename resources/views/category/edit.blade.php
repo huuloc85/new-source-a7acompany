@@ -9,9 +9,9 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between">
-                <div class="header-title">
-                    <h4 class="card-title">Cập Nhật Danh Mục</h4>
+        <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                <div class="border-radius-lg ps-2 pt-4 pb-3">
+                    <h4 class="card-title mb-0">Cập Nhật Danh Mục</h4>
                 </div>
             </div>
             <div class="px-0 pb-2">
@@ -21,10 +21,10 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <label  class="form-label">Tên danh mục</label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror" placeholder="Tên danh mục" name="name" value="{{ old('name') ?? $category->name }}" required>
+                                    <label for="category-name" class="form-label">Tên danh mục</label>
+                                    <input type="text" id="category-name" class="form-control @error('name') is-invalid @enderror" placeholder="Tên danh mục" name="name" value="{{ old('name') ?? $category->name }}" required>
                                     @error('name')
-                                        <div class="text text-danger">{{ $message }}</div>
+                                    <div class="text text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>

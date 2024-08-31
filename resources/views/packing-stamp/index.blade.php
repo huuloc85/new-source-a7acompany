@@ -18,8 +18,9 @@
                                 <!-- Ngày -->
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Ngày<span class="required text-danger">*</span></label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror"
-                                        placeholder="Ngày" name="date" value="{{ $request->date ?? '' }}" required>
+                                    <input type="date" id="date"
+                                        class="form-control @error('date') is-invalid @enderror" placeholder="Ngày"
+                                        name="date" value="{{ $request->date ?? '' }}" required>
                                     @error('date')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -31,8 +32,10 @@
                                     <select id="shift" class="form-control @error('shift') is-invalid @enderror"
                                         name="shift" required>
                                         <option style="text-align: center" value="">----- Ca làm việc -----</option>
-                                        <option value="1" {{ old('shift') == 1 ? 'selected' : '' }}>Ca 1</option>
-                                        <option value="2" {{ old('shift') == 2 ? 'selected' : '' }}>Ca 2</option>
+                                        <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value ="1">Ca 1
+                                        </option>
+                                        <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value ="2">Ca 2
+                                        </option>
                                     </select>
                                     @error('shift')
                                         <div class="text-danger">{{ $message }}</div>
@@ -43,7 +46,7 @@
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Số lượng thùng (tem)<span
                                             class="required text-danger">*</span></label>
-                                    <input min="1" max="999"
+                                    <input min="1" max="999" id="binCount"
                                         class="form-control @error('binCount') is-invalid @enderror"
                                         placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}"
                                         required>
@@ -61,7 +64,8 @@
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Thùng bắt đầu<span
                                             class="required text-danger">*</span></label>
-                                    <input min="0" class="form-control @error('binStart') is-invalid @enderror"
+                                    <input min="0" id="binStart"
+                                        class="form-control @error('binStart') is-invalid @enderror"
                                         placeholder="Thùng bắt đầu" name="binStart" value="{{ $request->binStart ?? '' }}"
                                         required>
                                     @error('binStart')
@@ -82,7 +86,8 @@
                                         <option style="text-align: center" value="">----- Chọn sản phẩm -----</option>
                                         @foreach ($products as $pro)
                                             <option {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
-                                                value="{{ $pro->code }}-{{ $pro->quanEntityBin }}">{{ $pro->name }}
+                                                value="{{ $pro->code }}-{{ $pro->quantity_per_package }}">
+                                                {{ $pro->name }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -107,18 +112,21 @@
                                     <label class="form-label">PCS<span class="required text-danger">*</span></label>
                                     <input type="number" min="1" id="product_pcs"
                                         class="form-control @error('pcs') is-invalid @enderror" placeholder="PCS"
-                                        name="pcs" value="{{ $product->quanEntityBin ?? '' }}" required readonly>
+                                        name="pcs" value="{{ $product->quantity_per_package ?? '' }}" required
+                                        readonly>
                                     @error('pcs')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <input type="hidden" id="type" name="type" value="Tem Bịch">
                             </div><br>
                             <div>
                                 <div class="col-12 no-print">
                                     <button type="submit" id="register-barcode" class="btn btn-success">Tạo tem</button>
                                     <a class="btn btn-primary" href="{{ route('admin.product.packing') }}">Làm mới</a>
                                     @if (isset($binArray))
-                                        <a class="btn btn-secondary" href="javascript:window.print()">Print</a>
+                                        <a class="btn btn-secondary" onclick="savePrint(event)"
+                                            href="javascript:window.print()">Print</a>
                                     @endif
                                 </div>
                                 <div class="container-gird">
@@ -148,7 +156,7 @@
                                                             </td>
                                                             <td colspan="2" class="text-center align-content-center">
                                                                 <p class="mb-0 fs-13">
-                                                                    {{ $product?->productionPlans()?->firstOrFail()?->material_name ?? 'NULL' }}
+                                                                    {{ $product->material }}
                                                                 </p>
                                                             </td>
                                                             <td class="text-center">
@@ -156,7 +164,7 @@
                                                             </td>
                                                             <td colspan="2" class="text-center align-content-center">
                                                                 <p class="mb-0 fs-13">
-                                                                    {{ $product?->productionPlans()?->firstOrFail()?->material_color ?? 'NULL' }}
+                                                                    {{ $product->color }}
                                                                 </p>
                                                             </td>
                                                         </tr>
@@ -166,7 +174,7 @@
                                                             </td>
                                                             <td colspan="5" class="text-center align-content-center">
                                                                 <p class="fw-bold mb-0 fs-13">
-                                                                    {{ $product->quanEntityBin }}PCS</p>
+                                                                    {{ $product->quantity_per_package }}PCS</p>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -223,7 +231,9 @@
                                 </div>
                                 @if (isset($binArray))
                                     <div class="no-print">
-                                        <a class="btn btn-secondary" href="javascript:window.print()">Print</a>
+                                        <a class="btn btn-secondary" id="save-print"
+                                            data-url="{{ route('admin.barcode.save.print') }}" onclick="savePrint(event)"
+                                            href="javascript:window.print()">Print</a>
                                     </div>
                                 @endif
                             </div>
@@ -239,5 +249,47 @@
             $('#product_code').val(data[0]);
             $('#product_pcs').val(data[1]);
         }
+
+        function savePrint(event) {
+            var url = $('#save-print').data('url');
+            var productCode = $('#product_code').val();
+            var date = $('#date').val();
+            var shift = $('#shift').val();
+            var binCount = $('#binCount').val();
+            var binStart = $('#binStart').val();
+            var type = $('#type').val();
+
+            console.log(date, shift, binCount, binStart, product_code, product_pcs, type);
+
+            if (productCode) {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        productCode: productCode,
+                        date: date,
+                        shift: shift,
+                        binCount: binCount,
+                        binStart: binStart,
+                        type: type,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        console.log(response.status);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Đã xảy ra lỗi khi gửi lưu lịch sử print:", error);
+                    }
+                });
+            }
+        }
+        $(document).ready(function() {
+            $(document).keydown(function(event) {
+                if (event.ctrlKey && event.key === 'p') {
+                    event.preventDefault(); // Ngăn chặn hành động in mặc định của trình duyệt
+                    savePrint(); // Gọi hàm savePrint khi Ctrl+P được nhấn
+                }
+            });
+        });
     </script>
 @endsection

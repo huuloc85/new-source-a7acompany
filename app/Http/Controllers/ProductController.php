@@ -102,6 +102,41 @@ class ProductController extends Controller
         return view('product.add', compact('models', 'modelSizes'));
     }
 
+    //Test Product View
+    public function viewtest(Request $request)
+    {
+        $products = Product::all();
+        return view('product.test', compact('products'));
+    }
+
+    public function editTest($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('product.edit-test', compact('product'));
+    }
+
+    public function updateTest(Request $request, $id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->update($request->all());
+            // dd($product);
+            // Hiển thị thông báo toast thành công
+            toast('Sửa sản phẩm mới thành công!', 'success', 'top-right');
+
+            return redirect()->route('admin.product.test');
+        } catch (\Exception $e) {
+            // Ghi log lỗi
+            Log::error('Error updating product: ' . $e->getMessage());
+
+            // Hiển thị thông báo toast lỗi
+            toast('Đã xảy ra lỗi khi sửa sản phẩm!', 'error', 'top-right');
+
+            return redirect()->route('admin.product.test')->withInput();
+        }
+    }
+    // Kêt thúc Test
+
     //store
     public function store(ProductStoreRequest $request)
     {

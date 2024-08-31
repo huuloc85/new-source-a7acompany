@@ -59,18 +59,18 @@
                                 <div class="row">
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Tên</label>
+                                            <label for="name" class="form-label" for="">Tên</label>
                                             <input type="text" value="{{ old('name') ?? (Auth()->user()->name ?? '') }}"
-                                                name="name" class="form-control @error('name') is-invalid @enderror"
+                                                name="name" id="name" class="form-control @error('name') is-invalid @enderror"
                                                 placeholder="Tên" disabled>
                                             @error('name')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Tên đăng nhập</label>
+                                            <label for="phone" class="form-label" for="">Tên đăng nhập</label>
                                             <input type="text" value="{{ old('phone') ?? (Auth()->user()->phone ?? '') }}"
-                                                name="phone" class="form-control @error('phone') is-invalid @enderror"
+                                                name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror"
                                                 placeholder="Tên đăng nhập" disabled>
                                             @error('phone')
                                                 <div class="text text-danger">{{ $message }}</div>
@@ -79,8 +79,8 @@
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Ảnh</label>
-                                            <input accept="image/*" type='file' id="inputFile" name="photo"
+                                            <label class="form-label" for="photo">Ảnh</label>
+                                            <input accept="image/*" type='file' id="inputFile" name="photo" id="photo"
                                                 class="form-control">
                                             <img type="hidden" width="66px" height="66px" id="blah1"
                                                 src="{{ asset('storage/admin/' . Auth()->user()->photo) }}"
@@ -98,46 +98,46 @@
                                     @csrf
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Tên</label>
-                                            <input type="text" value="{{ Auth()->user()->name ?? '' }}" name="name"
+                                            <label class="form-label" for="name">Tên</label>
+                                            <input type="text" value="{{ Auth()->user()->name ?? '' }}" name="name" id="name"
                                                 class="form-control">
                                             @error('name')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Số điện thoại</label>
-                                            <input type="text" value="{{ Auth()->user()->phone ?? '' }}" name="phone"
+                                            <label class="form-label" for="phone">Số điện thoại</label>
+                                            <input type="text" value="{{ Auth()->user()->phone ?? '' }}" name="phone" id="phone"
                                                 class="form-control">
                                             @error('phone')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Email</label>
-                                            <input type="text" value="{{ Auth()->user()->email ?? '' }}" name="email"
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="text" value="{{ Auth()->user()->email ?? '' }}" name="email" id="email"
                                                 class="form-control">
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Mã nhân viên</label>
-                                            <input type="text" value="{{ Auth()->user()->code ?? '' }}" name="code"
+                                            <label class="form-label" for="code">Mã nhân viên</label>
+                                            <input type="text" value="{{ Auth()->user()->code ?? '' }}" name="code" id="code"
                                                 class="form-control">
                                             @error('code')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Ngày tháng năm sinh</label>
+                                            <label class="form-label" for="birthday">Ngày tháng năm sinh</label>
                                             <input type="date" value="{{ Auth()->user()->birthday ?? '' }}"
-                                                name="birthday" class="form-control">
+                                                name="birthday" class="form-control" id="birthday">
                                             @error('birthday')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Ngày vào công ty</label>
+                                            <label class="form-label" for="date_joining">Ngày vào công ty</label>
                                             <input type="date" value="{{ Auth()->user()->date_joining ?? '' }}"
-                                                name="date_joining" class="form-control">
+                                                name="date_joining" id="date_joining" class="form-control">
                                             @error('date_joining')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
@@ -151,39 +151,39 @@
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Tạm trú</label>
-                                            <textarea name="address" class="form-control" id="" cols="30" rows="3">{{ Auth()->user()->address ?? '' }}</textarea>
+                                            <label class="form-label" for="address">Tạm trú</label>
+                                            <textarea name="address" class="form-control" id="address" cols="30" rows="3">{{ Auth()->user()->address ?? '' }}</textarea>
                                             @error('address')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Quê quán</label>
-                                            <textarea name="home_town" class="form-control" id="" cols="30" rows="3">{{ Auth()->user()->home_town ?? '' }}</textarea>
+                                            <label class="form-label" for="home_town">Quê quán</label>
+                                            <textarea name="home_town" class="form-control" id="home_town" cols="30" rows="3">{{ Auth()->user()->home_town ?? '' }}</textarea>
                                             @error('home_town')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Số CCCD</label>
+                                            <label class="form-label" for="CCCD">Số CCCD</label>
                                             <input type="text" value="{{ Auth()->user()->CCCD ?? '' }}"
-                                                name="CCCD" class="form-control">
+                                                name="CCCD" class="form-control" id="CCCD">
                                             @error('CCCD')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Giới tính</label>
+                                            <label class="form-label" for="gender">Giới tính</label>
                                             <input type="text" value="{{ Auth()->user()->gender ?? '' }}"
-                                                name="gender" class="form-control">
+                                                name="gender" class="form-control" id="gender">
                                             @error('gender')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Tình trạng hôn nhân</label>
+                                            <label class="form-label" for="marital_status">Tình trạng hôn nhân</label>
                                             <input type="text" value="{{ Auth()->user()->marital_status ?? '' }}"
-                                                name="marital_status" class="form-control">
+                                                name="marital_status" class="form-control" id="marital_status">
                                             @error('marital_status')
                                                 <div class="text text-danger">{{ $message }}</div>
                                             @enderror
@@ -213,19 +213,19 @@
                             <div class="row">
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="">Mật khẩu mới</label>
+                                        <label class="form-label" for="newpassword">Mật khẩu mới</label>
                                         <input type="password" value="" name="newpassword"
                                             class="form-control @error('newpassword') is-invalid @enderror"
-                                            placeholder="Mật khẩu mới" required>
+                                            placeholder="Mật khẩu mới" id="newpassword" required>
                                         @error('newpassword')
                                             <div class="text text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="">Nhập lại mật khẩu mới</label>
+                                        <label class="form-label" for="renewpassword">Nhập lại mật khẩu mới</label>
                                         <input type="password" value="" name="renewpassword"
                                             class="form-control @error('renewpassword') is-invalid @enderror"
-                                            placeholder="Nhập lại mật khẩu mới" required>
+                                            placeholder="Nhập lại mật khẩu mới" id="renewpassword" required>
                                         @error('renewpassword')
                                             <div class="text text-danger">{{ $message }}</div>
                                         @enderror
@@ -233,10 +233,10 @@
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="">Mật khẩu cũ</label>
+                                        <label class="form-label" for="password">Mật khẩu cũ</label>
                                         <input type="password" value="" name="password"
                                             class="form-control @error('password') is-invalid @enderror"
-                                            placeholder="Mật khẩu cũ" required>
+                                            placeholder="Mật khẩu cũ" required id="password">
                                         @error('password')
                                             <div class="text text-danger">{{ $message }}</div>
                                         @enderror

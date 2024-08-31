@@ -190,6 +190,17 @@
                                     </i>
                                     <span class="item-name">Tạo Tem Bịch</span>
                                 </a>
+                                <a class="dropdown-item" href="{{ route('admin.product.barcode.history') }}">
+                                    <i class="icon-svg me-2">
+                                        <!-- Biểu tượng túi hoặc bịch -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-archive-fill" viewBox="0 0 16 16">
+                                            <path
+                                                d="M12.643 0H3.357C2.4 0 1.643.743 1.643 1.657V3h12.714V1.657C14.357.743 13.6 0 12.643 0zM0 4v10.5C0 15.327.673 16 1.5 16h13c.827 0 1.5-.673 1.5-1.5V4H0zm4.5 4h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1zm0 2h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z" />
+                                        </svg>
+                                    </i>
+                                    <span class="item-name">Lịch Sử In Tem</span>
+                                </a>
                             </div>
                         </li>
 
@@ -368,6 +379,26 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link route('admin.employee.attendence_record')"
+                            href="{{ route('admin.employee.attendence_record') }}" title="Bảng Chấm Công">
+                            <i class="icon-svg"><svg width="20" height="20" id="Layer_1"
+                                    data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 122.88 120.1">
+                                    <defs>
+                                        <style>
+                                            .cls-1 {
+                                                fill-rule: evenodd;
+                                            }
+                                        </style>
+                                    </defs>
+                                    {{-- <title>payday</title> --}}
+                                    <path class="cls-1"
+                                        d="M65.82,3.83C65.82,1.73,67.9,0,70.49,0s4.67,1.71,4.67,3.83V20.57c0,2.1-2.07,3.83-4.67,3.83s-4.67-1.71-4.67-3.83V3.83Zm57.06,53L81,120.1,48.52,99.26h-41A7.55,7.55,0,0,1,0,91.72V17.35A7.55,7.55,0,0,1,7.54,9.81h9.1a2.59,2.59,0,0,1,0,5.17H7.54a2.33,2.33,0,0,0-1.66.69,2.36,2.36,0,0,0-.69,1.66V36.61H68.3l-3.41,5.16H5.14V91.69a2.35,2.35,0,0,0,.69,1.66A2.41,2.41,0,0,0,7.49,94H46.41l3.42,0,24.44,15.52.3.21a5,5,0,0,0,6.86-1.58L82.77,106l.07,0L89.15,95.8l28.7-42.22,5,3.22ZM13.56,73.65h10.7a1.24,1.24,0,0,1,1.24,1.23v7.91A1.24,1.24,0,0,1,24.26,84H13.56a1.24,1.24,0,0,1-1.24-1.23V74.88a1.23,1.23,0,0,1,1.24-1.23Zm41-22.54H58.7L53.29,59.3V52.36a1.25,1.25,0,0,1,1.24-1.25ZM34,51.11h10.7A1.25,1.25,0,0,1,46,52.35v7.91a1.24,1.24,0,0,1-1.24,1.23H34a1.23,1.23,0,0,1-1.23-1.23V52.35A1.24,1.24,0,0,1,34,51.11Zm-20.48,0h10.7a1.25,1.25,0,0,1,1.24,1.24v7.91a1.24,1.24,0,0,1-1.24,1.23H13.56a1.24,1.24,0,0,1-1.24-1.23V52.35a1.25,1.25,0,0,1,1.24-1.24ZM34,73.65H43.8l-5.29,8a6.19,6.19,0,0,0-.9,2.38H34a1.23,1.23,0,0,1-1.23-1.23V74.88A1.22,1.22,0,0,1,34,73.65ZM23.9,3.83C23.9,1.73,26,0,28.57,0s4.67,1.71,4.67,3.83V20.57c0,2.1-2.08,3.83-4.67,3.83s-4.67-1.71-4.67-3.83V3.83ZM94,19.78V17.33a2.34,2.34,0,0,0-.68-1.66A2.41,2.41,0,0,0,91.69,15H83.17a2.59,2.59,0,1,1,0-5.17h8.52a7.55,7.55,0,0,1,7.54,7.54v5.76L94,19.78ZM40.7,15a2.59,2.59,0,0,1,0-5.18H58.05a2.59,2.59,0,0,1,0,5.18ZM119,43.09,77.1,106.38,43.71,85,85.57,21.68,119,43.09ZM88.44,60.37a9,9,0,1,1-12.32-3.3,9,9,0,0,1,12.32,3.3ZM107,50.57,78.93,92.33a5.88,5.88,0,0,0-8.1,1.78L57.62,85.66a5.87,5.87,0,0,0-1.78-8.1L83.92,35.78A5.86,5.86,0,0,0,92,34l13.21,8.45A5.88,5.88,0,0,0,107,50.57Z" />
+                                </svg></i>
+                            <span class="item-name">Bảng Chấm Công</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link route('admin.employee.check-employee-todo')"
                             href="{{ route('admin.employee.check-employee-todo') }}" title="Chọn Sản Phẩm">
                             <i class="icon-svg"><svg fill="#000000" width="24px" height="24px"
@@ -445,8 +476,20 @@
                                                 d="M3.5 1a1 1 0 0 0 1-1h1a1 1 0 0 0 2 0h1a1 1 0 0 0 2 0h1a1 1 0 1 0 2 0H15v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1a1 1 0 1 0 0 2v1h-1.5a1 1 0 1 0-2 0h-1a1 1 0 1 0-2 0h-1a1 1 0 1 0-2 0h-1a1 1 0 1 0-2 0H1v-1a1 1 0 1 0 0-2v-1a1 1 0 1 0 0-2V9a1 1 0 1 0 0-2V6a1 1 0 0 0 0-2V3a1 1 0 0 0 0-2V0h1.5a1 1 0 0 0 1 1M3 3v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1" />
                                         </svg>
                                     </i>
-                                    <span class="item-name">Tạo Tem Bì</span>
+                                    <span class="item-name">Tạo Tem Bịch</span>
                                 </a>
+
+                                <a class="dropdown-item" href="{{ route('admin.product.barcode.history') }}">
+                                    <i class="icon-svg me-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-archive-fill" viewBox="0 0 16 16">
+                                            <path
+                                                d="M12.643 0H3.357C2.4 0 1.643.743 1.643 1.657V3h12.714V1.657C14.357.743 13.6 0 12.643 0zM0 4v10.5C0 15.327.673 16 1.5 16h13c.827 0 1.5-.673 1.5-1.5V4H0zm4.5 4h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1zm0 2h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z" />
+                                        </svg>
+                                    </i>
+                                    <span class="item-name">Lịch Sử In Tem</span>
+                                </a>
+
                             </div>
                         </li>
                     @endif

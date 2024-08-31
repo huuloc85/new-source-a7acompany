@@ -6,25 +6,30 @@
         border: 1px solid #d2d6da !important;
         padding-left: 10px;
     }
-    .active > .page-link{
-        color:white !important
+
+    .active>.page-link {
+        color: white !important
     }
+
     .href {
         color: blue !important;
     }
+
     .search-role {
         height: 37px;
     }
-    .table td, .table th {
+
+    .table td,
+    .table th {
         white-space: normal;
     }
 </style>
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between">
-                <div class="header-title">
-                    <h4 class="card-title">Danh Sách Log</h4>
+            <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                <div class="border-radius-lg ps-2 pt-4 pb-3">
+                    <h4 class="card-title mb-0">Danh Sách Log</h4>
                 </div>
             </div>
             <div class="p-4 pb-0 d-flex">
@@ -36,7 +41,7 @@
                     <form action="">
                         <div class="input-group input-group-outline">
                             <input name="key" value="{{ request()->key}}" type="text" class="form-control search-role" placeholder="Nhận từ khóa...">
-                            <button type="submit" class ='btn btn-primary'>Tìm kiếm</button>
+                            <button type="submit" class='btn btn-primary'>Tìm kiếm</button>
                         </div>
                     </form>
                 </div>
@@ -81,7 +86,7 @@
                                     <form action="{{route('admin.log.delete', $log->id)}}" method="post">
                                         @method('DELETE')
                                         @csrf
-                                        <button onclick="return confirm('Bạn có chắc muốn xóa Log này không?');" class ='btn btn-danger' type="submit">Xóa</button>
+                                        <button onclick="return confirm('Bạn có chắc muốn xóa Log này không?');" class='btn btn-danger' type="submit">Xóa</button>
                                     </form>
                                 </td>
                             </tr>

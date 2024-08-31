@@ -66,21 +66,21 @@
                                             <div class="col-lg-6">
                                                 <div class="form-group">
                                                     <label for="full-name" class="form-label">Full Name</label>
-                                                    <input id="name" name="first_name"
+                                                    <input id="full-name" name="first_name"
                                                         value="{{ old('first_name') }}" class="form-control"
                                                         type="text" placeholder=" " required autofocus>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="form-group">
-                                                    <label for="last-name" class="form-label">Last Name</label>
-                                                    <input class="form-control" type="text" name="last_name"
+                                                    <label for="last_name" class="form-label">Last Name</label>
+                                                    <input class="form-control" type="text" name="last_name" id="last_name"
                                                         placeholder=" " value="{{ old('last_name') }}" required>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="form-group">
-                                                    <label>Email <span class="text-danger">*</span></label>
+                                                    <label for="email">Email <span class="text-danger">*</span></label>
                                                     <input class="form-control" type="email" placeholder=" "
                                                         id="email" name="email" value="{{ old('email') }}"
                                                         required>
@@ -90,7 +90,7 @@
                                                 <div class="form-group">
                                                     <label for="phone" class="form-label">Phone No.</label>
                                                     <input class="form-control" type="text" name="phone_number"
-                                                        placeholder=" ">
+                                                        placeholder=" " id="phone">
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -106,7 +106,7 @@
                                                     <label for="confirm-password" class="form-label">Confirm
                                                         Password</label>
                                                     <input id="password_confirmation" class="form-control"
-                                                        type="password" placeholder=" " name="password_confirmation"
+                                                        type="password" placeholder=" " name="password_confirmation" id="confirm-password"
                                                         required>
                                                 </div>
                                             </div>
