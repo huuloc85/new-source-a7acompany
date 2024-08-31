@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceRecordController extends Controller
 {
@@ -130,6 +131,33 @@ class AttendanceRecordController extends Controller
 
             // Xử lý lỗi và trả về thông báo lỗi
             return redirect()->back()->with('error', 'Đã xảy ra lỗi trong khi lấy thông tin chấm công: ' . $e->getMessage());
+        }
+    }
+
+    public function updateDataCC(Request $request)
+    {
+        try {
+            $data = $request->input('data');
+            if (!empty($data)) {
+                foreach ($data as $record) {
+                    $check = DB::table('attendencerecord')
+                    ->where('employee_code', $record['employee_code'])
+                    ->where('datetime', $record['datetime'])
+                    ->first();
+
+                    if (!$check) {
+                        DB::table('attendencerecord')->insert($record);
+                    } else {
+                        Log::error("bản ghi đã tồn tại employee_code:" . $record['employee_code'] . " datetime: " . $record['datetime']);
+                    }
+                }
+                return response()->json(['message' => 'Data inserted successfully']);
+            } else {
+                return response()->json(['message' => 'No data to insert'], 400);
+            }
+        } catch (\Exception $e) {
+            Log::error("error: " . $e);
+            return response()->json(['message' => 'No data to insert'], 500);
         }
     }
 }
