@@ -291,7 +291,7 @@
             $('#product_pcs').val(data[1]);
         }
 
-        function savePrint() {
+        function savePrint(event) {
             var url = $('#save-print').data('url');
             var productCode = $('#product_code').val();
             var date = $('#date').val();
@@ -300,7 +300,7 @@
             var binStart = $('#binStart').val();
             var type = $('#type').val();
 
-            console.log(date, shift, binCount, binStart, productCode, productPcs, type);
+            console.log(date, shift, binCount, binStart, product_code, product_pcs, type);
 
             if (productCode) {
                 $.ajax({

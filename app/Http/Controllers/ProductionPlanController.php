@@ -284,33 +284,54 @@ class ProductionPlanController extends Controller
     // Xử lý cập nhật kế hoạch sản xuất
     public function handleConfigProductPlan(Request $request)
     {
+        DB::beginTransaction(); // Bắt đầu transaction để đảm bảo dữ liệu nhất quán
         try {
-            // Xác thực dữ liệu đầu vào
             $plansData = $request->input('plans');
 
-            // Kiểm tra nếu mảng plans không rỗng
             if (is_array($plansData)) {
                 foreach ($plansData as $planData) {
                     // Kiểm tra nếu các key cần thiết tồn tại trong dữ liệu
-                    if (isset($planData['id']) && isset($planData['production_plan'])) {
-                        // Tìm kế hoạch sản xuất theo ID
+                    if (isset($planData['id'], $planData['production_plan'], $planData['product_id'])) {
                         $productionPlan = ProductionPlan::findOrFail($planData['id']);
-
-                        // Cập nhật các thuộc tính kế hoạch sản xuất
                         $productionPlan->updateProductionPlanAttributes($planData);
+
+                        // Lấy dữ liệu planned_material dựa trên product_id
+                        $productMaterials = ProductionPlan::where('product_id', $planData['product_id'])->get();
+
+                        $totalQuantity = 0;
+
+                        // Gộp lại những dữ liệu trùng và cộng dồn
+                        foreach ($productMaterials as $material) {
+                            $totalQuantity += $material->planned_material;
+                        }
+
+                        // Lưu lại dữ liệu vào bảng quantity
+                        MaterialProduct::updateOrCreate(
+                            [
+                                'product_id' => $planData['product_id'],
+                                'production_plans_id' => $productionPlan->id
+                            ],
+                            ['quantity' => $totalQuantity]
+                        );
+                    } else {
+                        // Log lỗi nếu thiếu dữ liệu cần thiết
+                        Log::error('Missing required data in planData: ' . json_encode($planData));
                     }
                 }
             }
 
+            DB::commit(); // Commit transaction khi mọi thứ thành công
             toast('Cập nhật kế hoạch sản xuất thành công!', 'success', 'top-right');
             return redirect()->route('admin.product-plan.index');
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); // Rollback transaction khi có lỗi xảy ra
             Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
             toast('Cập nhật kế hoạch sản xuất không thành công!', 'error', 'top-right');
             return redirect()->route('admin.product-plan.index');
         }
     }
+
+
 
     public function export(Request $request)
     {

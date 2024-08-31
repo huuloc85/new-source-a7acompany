@@ -75,6 +75,4 @@ class ProductionPlan extends Model
     {
         return $this->hasMany(MaterialProduct::class, 'production_plans_id');
     }
-
-    public $materialcolor = ['Natural', 'Gray', 'Black'];
 }
