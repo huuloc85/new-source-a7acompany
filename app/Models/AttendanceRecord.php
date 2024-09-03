@@ -9,17 +9,18 @@ class AttendanceRecord extends Model
 {
     use HasFactory;
 
-    protected $table = 'mcc'; // Tên bảng
+    protected $table = 'attendencerecord'; // Tên bảng
 
     protected $fillable = [
-        'auth_d',
-        'auth_t',
+        'employee_code',
+        'datetime',
+        'date',
+        'time',
         'direction',
-        'dv_name',
-        'dv_seri_no',
-        'per_name',
-        'card_no',
-        'employee_code'
+        'deviceName',
+        'deviceSN',
+        'employee_Name',
+        'cardNo'
     ];
 
     public function employee()

@@ -104,8 +104,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     Route::middleware(['authAdmin'])->prefix('/attendence')->group(function () {
         Route::get('/index', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
-        // Route::delete('/admin-view-employee-todo/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
-        // Route::post('/admin-check-employee-todo/edit/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
+        Route::get('/records', [AttendanceRecordController::class, 'records'])->name('admin.attendence.records');
+        Route::post('/records', [AttendanceRecordController::class, 'handleRecords'])->name('admin.attendence.handleRecords');
     });
 
     //quản lý chức vụ
