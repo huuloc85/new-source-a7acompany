@@ -138,6 +138,8 @@ class AttendanceRecordController extends Controller
             // Tính Giờ Tăng Ca
             $record->overtime_hours = $this->calculateOvertime($record->time_out, $record->employee->category_celender_id, $record->time_in, $workStartTime, $workEndTime, $breakTime);
             // dd($record->overtime_hours);
+
+            // Tính Giờ Hành Chính
             $administrativeHours = min($record->total_hours, 8);
 
             if ($record->employee->category_celender_id == 2) {
@@ -204,10 +206,10 @@ class AttendanceRecordController extends Controller
                 $overtimeStart = Carbon::parse('16:30:00');
                 break;
             case 4:
-                $overtimeStart = Carbon::parse('17:15:00');
+                $overtimeStart = Carbon::parse('17:00:00');
                 break;
             default:
-                return 0; // Không tính giờ tăng ca cho các category khác
+                return 0;
         }
 
         $overtimeEnd = Carbon::parse('19:30:00');
@@ -226,12 +228,11 @@ class AttendanceRecordController extends Controller
             // Tính số phút làm thêm từ $overtimeStart đến $timeOut
             $overtimeMinutes = $timeOut->diffInMinutes($overtimeStart);
 
-            // Làm tròn số giờ làm thêm theo các mốc 15 phút: 16, 31, 46, 01
+            // Tính số giờ làm thêm dựa trên số phút đã qua và làm tròn đến mốc 15 phút
             $overtimeHours = 0;
             if ($overtimeMinutes > 0) {
-                // Tính số giờ làm thêm dựa trên mốc phút
-                $overtimeMinutesRounded = $this->roundMinutesToNearestQuarter($overtimeMinutes);
-                $overtimeHours = $overtimeMinutesRounded / 60;
+                // Mỗi 16 phút thêm 0.25 giờ
+                $overtimeHours = floor($overtimeMinutes / 16) * 0.25;
             }
 
             return round($overtimeHours, 2); // Làm tròn đến 2 chữ số thập phân
@@ -239,31 +240,6 @@ class AttendanceRecordController extends Controller
 
         return 0;
     }
-
-    private function roundMinutesToNearestQuarter($minutes)
-    {
-        // Xác định mốc phút gần nhất trong các mốc 15 phút
-        $minutes = ($minutes < 0) ? 0 : $minutes; // Không cho số phút âm
-        $quarters = [0, 15, 30, 45];
-        foreach ($quarters as $quarter) {
-            if ($minutes <= $quarter) {
-                return $quarter;
-            }
-        }
-        return 60; // Trả về 60 nếu không nằm trong mốc nào (trong trường hợp $minutes > 45)
-    }
-
-
-
-
-
-
-
-
-
-
-
-
 
     public function employeeview(Request $request)
     {

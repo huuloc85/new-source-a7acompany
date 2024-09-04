@@ -36,7 +36,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                     Tổng Giờ Làm Việc(H)</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                    Giờ Làm Việc(H) </th>
+                                    Giờ Hành Chính(H) </th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                     Giờ Tăng Ca(H)</th>
                             </tr>
@@ -56,7 +56,7 @@
                                         {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công về' }}
                                     </td>
                                     <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
-                                        {{ $record->total_hours ? $record->total_hours : 'Chấm Công Không Đủ' }}
+                                        {{ $record->total_hours ? $record->total_hours : 'Chấm công không đủ' }}
                                     </td>
                                     <td>
                                         @if ($record->administrative_hours > 0)
