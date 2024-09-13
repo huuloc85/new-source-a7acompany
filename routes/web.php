@@ -67,7 +67,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::delete('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'deleteHistory'])->name('admin.employee.delete-employee-todo');
         Route::post('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'updateEmployee'])->name('admin.employee.update-employee-todo');
         //View của nhân viên Xem Chấm Công
-        Route::get('/attendence', [AttendanceRecordController::class, 'employeeview'])->name('admin.employee.attendence_record');
+        Route::get('/attendence', [AttendanceRecordController::class, 'employeeViewRecords'])->name('admin.employee.attendence');
+        Route::get('/attendence-caculate', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('admin.employee.attendence_caculate_records');
     });
 
 

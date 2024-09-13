@@ -27,4 +27,17 @@ class AttendanceRecord extends Model
     {
         return $this->belongsTo(Employee::class, 'employee_code', 'code');
     }
+
+    public static function getDayOfWeekMapping()
+    {
+        return [
+            'Monday'    => 'Thứ Hai',
+            'Tuesday'   => 'Thứ Ba',
+            'Wednesday' => 'Thứ Tư',
+            'Thursday'  => 'Thứ Năm',
+            'Friday'    => 'Thứ Sáu',
+            'Saturday'  => 'Thứ Bảy',
+            'Sunday'    => 'Chủ Nhật'
+        ];
+    }
 }

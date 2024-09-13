@@ -26,12 +26,12 @@
         }
     </style>
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Bảng Chấm Công {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
-                        </h4>
+                    <div class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between">
+                        <h4 class="card-title mb-0">Bảng Tính Công Tháng
+                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}</h4>
                     </div>
                 </div>
                 <div class="card-body">
@@ -49,13 +49,14 @@
                                 <label>{{ Auth()->user()->role->role_name ?? '' }}</label></label>
                         </div>
                     </div>
-                    <form method="GET" action="{{ route('admin.attendence.index') }}">
+                    <form method="GET" action="{{ route('admin.employee.attendence_caculate_records') }}">
                         <div class="form-group">
                             <label for="month">Chọn tháng:</label>
                             <input type="month" id="month" name="month" value="{{ $currentMonth }}"
-                                class="form-control" onchange="document.getElementById('filterForm').submit();">
+                                class="form-control" onchange="this.form.submit()">
                         </div>
                     </form>
+
                     <div class="table-responsive">
                         @if ($records->isEmpty())
                             <p class="text-center">Hiện tại chưa có thông tin nào.</p>
@@ -77,7 +78,22 @@
                                             Ngày Chấm</th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Thời Gian</th>
+                                            Ngày Trong Tuần</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Giờ Vào</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Giờ Ra</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Tổng Giờ Làm Việc (H)</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Giờ Hành Chính (H)</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Giờ Tăng Ca (H)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -87,7 +103,30 @@
                                             <td>{{ $record->employee_code }}</td>
                                             <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
                                             <td>{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($record->datetime)->format('H:i:s') }}</td>
+                                            <td>{{ $record->day_of_week }}</td>
+                                            <td class="{{ $record->time_in ? '' : 'text-danger' }}">
+                                                {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
+                                            </td>
+                                            <td class="{{ $record->time_out ? '' : 'text-danger' }}">
+                                                {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công về' }}
+                                            </td>
+                                            <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
+                                                {{ $record->total_hours ? $record->total_hours : 'Chấm công không đủ' }}
+                                            </td>
+                                            <td>
+                                                @if ($record->administrative_hours > 0)
+                                                    <strong>{{ number_format($record->administrative_hours, 2) }}</strong>
+                                                @else
+                                                    {{ '0' }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($record->overtime_hours > 0)
+                                                    <strong>{{ number_format($record->overtime_hours, 2) }}</strong>
+                                                @else
+                                                    {{ '0' }}
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
