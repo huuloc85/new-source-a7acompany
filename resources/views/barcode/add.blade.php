@@ -328,8 +328,7 @@
         $(document).ready(function() {
             $(document).keydown(function(event) {
                 if (event.ctrlKey && event.key === 'p') {
-                    event.preventDefault(); // Ngăn chặn hành động in mặc định của trình duyệt
-                    savePrint(); // Gọi hàm savePrint khi Ctrl+P được nhấn
+                    event.preventDefault();
                 }
             });
         });

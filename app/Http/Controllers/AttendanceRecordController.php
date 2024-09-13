@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceRecordController extends Controller
 {
+    //View Lịch Sử Chấm Công (Admin)
     public function index(Request $request)
     {
         // Lấy tháng hiện tại hoặc tháng được chọn từ request
@@ -38,6 +39,7 @@ class AttendanceRecordController extends Controller
         return view('attendence.index', compact('records', 'currentMonth', 'categories'));
     }
 
+    //View Bảng Tính Công (Admin)
     public function records(Request $request)
     {
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
@@ -68,6 +70,7 @@ class AttendanceRecordController extends Controller
         return view('attendence.records', compact('records', 'currentMonth'));
     }
 
+    //Query (Admin)
     private function buildQuery(Request $request, $currentMonth, $timeFilter, $startTime, $endTime)
     {
         $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
@@ -98,6 +101,7 @@ class AttendanceRecordController extends Controller
         return $query;
     }
 
+    //Code chức năng tính công (Admin)
     private function processRecord($record, $timeFilter, $dayOfWeekMapping)
     {
         $date = Carbon::parse($record->date);
@@ -135,6 +139,7 @@ class AttendanceRecordController extends Controller
         }
     }
 
+    //Tính Tổng Giờ Làm Việc
     private function calculateTotalHours($timeIn, $timeOut, $workStartTime, $workEndTime, $breakTime)
     {
         if (!$timeIn || !$timeOut) return 0;
@@ -159,6 +164,7 @@ class AttendanceRecordController extends Controller
         return round($workingHours * 4) / 4;
     }
 
+    //Tính Giờ Tăng Ca
     private function calculateOvertime($timeOut, $categoryId, $timeIn, $workStartTime, $workEndTime, $breakTime)
     {
         $totalHours = $this->calculateTotalHours($timeIn, $timeOut, $workStartTime, $workEndTime, $breakTime);
@@ -181,6 +187,7 @@ class AttendanceRecordController extends Controller
         return 0;
     }
 
+    //View Lịch Sử Chấm Công (Nhân Viên)
     public function employeeViewRecords(Request $request)
     {
         $employeeCode = auth()->user()->code;
@@ -200,6 +207,7 @@ class AttendanceRecordController extends Controller
         return view('attendence.employee_records', compact('records', 'currentMonth', 'categories'));
     }
 
+    //View Tính Toán Chấm Công (Nhân Viên)
     public function employeeViewCaculateRecords(Request $request)
     {
         $employeeCode = auth()->user()->code;  // Lọc theo mã nhân viên đăng nhập
@@ -238,6 +246,7 @@ class AttendanceRecordController extends Controller
         return view('attendence.employee_caculate_records', compact('records', 'currentMonth'));
     }
 
+    //Kéo Data Từ Mcc
     public function updateDataCC(Request $request)
     {
         try {

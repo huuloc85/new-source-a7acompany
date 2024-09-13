@@ -1,13 +1,45 @@
 @extends('master')
 
 @section('content')
+    <style>
+        .search-container {
+            position: relative;
+            width: 29.9%;
+        }
+
+        .form-control-search {
+            padding-left: 2.5rem;
+            /* border-radius: 20px; */
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+
+        }
+    </style>
+
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Bảng Chấm Công {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                        <h4 class="card-title mb-0">Bảng Lịch Sử Chấm Công Tháng
+                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
                         </h4>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="search" class="form-control form-control-search"
+                            placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
+                        <i class="search-icon fas fa-search"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center ps-2">
@@ -29,7 +61,6 @@
                         </div>
                     </form>
                 </div>
-
 
                 <div class="card-body">
                     <table class="table table-hover mb-4">
@@ -68,4 +99,32 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search');
+            const table = document.querySelector('.table');
+            const rows = table.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    let found = false;
+
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                            found = true;
+                        }
+                    });
+
+                    if (searchTerm === '' || found) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

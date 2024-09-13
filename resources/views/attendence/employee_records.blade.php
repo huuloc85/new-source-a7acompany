@@ -30,10 +30,12 @@
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Bảng Chấm Công {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                        <h4 class="card-title mb-0">Bảng Lịch Sử Chấm Công Tháng
+                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
                         </h4>
                     </div>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
                         <div>
@@ -55,6 +57,7 @@
                             <input type="month" id="month" name="month" value="{{ $currentMonth }}"
                                 class="form-control" onchange="document.getElementById('filterForm').submit();">
                         </div>
+
                     </form>
                     <div class="table-responsive">
                         @if ($records->isEmpty())

@@ -3,10 +3,55 @@
 @section('content')
     <style>
         @media (max-width: 768px) {
-            .table-responsive {
+            .table-wrapper {
+                display: block;
                 overflow-x: auto;
+                white-space: nowrap;
             }
 
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                display: block;
+                margin-bottom: 10px;
+                border: 1px solid #ddd;
+            }
+
+            td {
+                display: block;
+                text-align: right;
+                font-size: 14px;
+                padding: 10px;
+                position: relative;
+                border-bottom: 1px solid #ddd;
+            }
+
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 50%;
+                padding-left: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                text-align: left;
+            }
+
+            /* Ẩn cột STT trên màn hình nhỏ */
+            table th:nth-child(1),
+            table td:nth-child(1) {
+                display: none;
+            }
+        }
+
+        @media (min-width: 769px) {
             .form-label {
                 font-size: 14px;
             }
@@ -25,6 +70,8 @@
             }
         }
     </style>
+
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -37,16 +84,16 @@
                 <div class="card-body">
                     <div class="row">
                         <div>
-                            <label class="form-label fw-bold" for="">Tên nhân viên:
-                                <label>{{ Auth()->user()->name ?? '' }}</label></label>
+                            <label class="form-label fw-bold">Tên nhân viên:
+                                <span>{{ Auth()->user()->name ?? '' }}</span></label>
                         </div>
                         <div>
-                            <label class="form-label fw-bold" for="">Mã nhân viên:
-                                <label>{{ Auth()->user()->code ?? '' }}</label></label>
+                            <label class="form-label fw-bold">Mã nhân viên:
+                                <span>{{ Auth()->user()->code ?? '' }}</span></label>
                         </div>
                         <div>
-                            <label class="form-label fw-bold" for="">Bộ phận:
-                                <label>{{ Auth()->user()->role->role_name ?? '' }}</label></label>
+                            <label class="form-label fw-bold">Bộ phận:
+                                <span>{{ Auth()->user()->role->role_name ?? '' }}</span></label>
                         </div>
                     </div>
                     <form method="GET" action="{{ route('admin.employee.attendence_caculate_records') }}">
@@ -55,14 +102,15 @@
                             <input type="month" id="month" name="month" value="{{ $currentMonth }}"
                                 class="form-control" onchange="this.form.submit()">
                         </div>
+
                     </form>
 
-                    <div class="table-responsive">
+                    <div class="table-wrapper">
                         @if ($records->isEmpty())
                             <p class="text-center">Hiện tại chưa có thông tin nào.</p>
                         @else
                             <table class="table table-hover mb-4">
-                                <thead class="text-center">
+                                <thead>
                                     <tr>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
@@ -99,28 +147,31 @@
                                 <tbody>
                                     @foreach ($records as $record)
                                         <tr class="text-center">
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $record->employee_code }}</td>
-                                            <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
-                                            <td>{{ $record->day_of_week }}</td>
-                                            <td class="{{ $record->time_in ? '' : 'text-danger' }}">
+                                            <td data-label="STT">{{ $loop->iteration }}</td>
+                                            <td data-label="Mã Nhân Viên">{{ $record->employee_code }}</td>
+                                            <td data-label="Tên Nhân Viên">
+                                                {{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
+                                            <td data-label="Ngày Chấm">
+                                                {{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
+                                            <td data-label="Ngày Trong Tuần">{{ $record->day_of_week }}</td>
+                                            <td data-label="Giờ Vào" class="{{ $record->time_in ? '' : 'text-danger' }}">
                                                 {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                             </td>
-                                            <td class="{{ $record->time_out ? '' : 'text-danger' }}">
+                                            <td data-label="Giờ Ra" class="{{ $record->time_out ? '' : 'text-danger' }}">
                                                 {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công về' }}
                                             </td>
-                                            <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
+                                            <td data-label="Tổng Giờ Làm Việc (H)"
+                                                class="{{ $record->total_hours ? '' : 'text-danger' }}">
                                                 {{ $record->total_hours ? $record->total_hours : 'Chấm công không đủ' }}
                                             </td>
-                                            <td>
+                                            <td data-label="Giờ Hành Chính (H)">
                                                 @if ($record->administrative_hours > 0)
                                                     <strong>{{ number_format($record->administrative_hours, 2) }}</strong>
                                                 @else
                                                     {{ '0' }}
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td data-label="Giờ Tăng Ca (H)">
                                                 @if ($record->overtime_hours > 0)
                                                     <strong>{{ number_format($record->overtime_hours, 2) }}</strong>
                                                 @else

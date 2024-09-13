@@ -401,33 +401,46 @@
                             <span class="item-name">Bảng Lương</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.employee.attendence') }}" title="Bảng Chấm Công">
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Mã Vạch">
                             <i class="icon-svg">
-                                <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24">
+                                <!-- Biểu tượng máy in hoặc con tem -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                    fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
                                     <path
-                                        d="M12 1.75a10.25 10.25 0 100 20.5 10.25 10.25 0 000-20.5zm0 18.5a8.25 8.25 0 110-16.5 8.25 8.25 0 010 16.5zm.75-13.5h-1.5v6l4.5 2.7.75-1.23-3.75-2.25V6.75z" />
+                                        d="M2 2a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm0 1h12a1 1 0 0 1 1 1v4H1V4a1 1 0 0 1 1-1zm11 10H3v-2h10v2zM2 12a1 1 0 0 1-1-1v-2h14v2a1 1 0 0 1-1 1H2zm9-7H5v2h6V5z" />
                                 </svg>
                             </i>
-                            <span class="item-name">Bảng Chấm Công</span>
+                            <span class="item-name">Chấm Công</span>
                         </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ route('admin.employee.attendence') }}">
+                                <i class="icon-svg me-2">
+                                    <!-- Biểu tượng hộp hoặc thùng -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
+                                        <path
+                                            d="M9.35 1.176a1 1 0 0 0-.7 0l-6.5 2.7A1 1 0 0 0 2 4.77v6.458a1 1 0 0 0 .65.939l6.5 2.7a1 1 0 0 0 .7 0l6.5-2.7a1 1 0 0 0 .65-.939V4.771a1 1 0 0 0-.65-.938l-6.5-2.7zM8 2.317L13.661 4.6 8 6.884 2.339 4.6 8 2.317zm6 9.84-5.5 2.286v-4.943l5.5-2.286v4.943zm-7-4.943v4.943L1.5 12.157V7.214l5.5 2.285z" />
+                                    </svg>
+                                </i>
+                                <span class="item-name">Bảng Lịch Sử Chấm Công</span>
+                            </a>
+                            <a class="dropdown-item"
+                                href="{{ route('admin.employee.attendence_caculate_records') }}">
+                                <i class="icon-svg me-2">
+                                    <!-- Biểu tượng túi hoặc bịch -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-bag-fill" viewBox="0 0 16 16">
+                                        <path
+                                            d="M5.5 2a3.5 3.5 0 1 1 7 0h1a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h1zm7 0a2.5 2.5 0 1 0-5 0h5z" />
+                                    </svg>
+                                </i>
+                                <span class="item-name">Bảng Tính Công</span>
+                            </a>
+                        </div>
                     </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.employee.attendence_caculate_records') }}"
-                            title="Bảng Tính Công">
-                            <i class="icon-svg">
-                                <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M4 3h16v18H4V3zm2 2v2h12V5H6zm0 4v2h12V9H6zm0 4v2h12v-2H6zm0 4v2h12v-2H6z" />
-                                </svg>
-                            </i>
-                            <span class="item-name">Bảng Tính Công</span>
-                        </a>
-                    </li>
-
 
                     <li class="nav-item">
                         <a class="nav-link route('admin.employee.check-employee-todo')"

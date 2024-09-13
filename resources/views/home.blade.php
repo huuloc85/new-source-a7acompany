@@ -567,6 +567,82 @@
                                 <ul class="swiper-wrapper list-inline m-0 p-0 mb-2">
                                     <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
                                         <div class="card-body">
+                                            <a href="{{ route('admin.employee.attendence') }}">
+                                                <i class="material-icons opacity-10 text-white">computer</i>
+                                                <div class="progress-widget">
+                                                    <div id="circle-progress-01"
+                                                        class="circle-progress-01 circle-progress circle-progress-primary text-center"
+                                                        data-min-value="0" data-max-value="100" data-value="90"
+                                                        data-type="percent">
+                                                        <svg width="24" height="24" id="Layer_1"
+                                                            data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 24 24">
+                                                            <defs>
+                                                                <style>
+                                                                    .cls-1 {
+                                                                        fill-rule: evenodd;
+                                                                    }
+                                                                </style>
+                                                            </defs>
+                                                            <title>History</title>
+                                                            <path class="cls-1"
+                                                                d="M12,1.5A10.5,10.5,0,1,0,22.5,12,10.5,10.5,0,0,0,12,1.5ZM12,20.25A8.25,8.25,0,1,1,20.25,12,8.26,8.26,0,0,1,12,20.25ZM13.5,7.5V12l4.5,2.7" />
+                                                        </svg>
+
+                                                    </div>
+                                                    <div class="progress-detail">
+                                                        <h4 class="text-sm mb-0 text-capitalize">Bảng lịch sử chấm công
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <div class="card-footer p-3">
+                                                <p class="mb-0">Đi đến <a
+                                                        href="{{ route('admin.employee.attendence') }}">bảng lịch sử chấm
+                                                        công.</a></p>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
+                                        <div class="card-body">
+                                            <a href="{{ route('admin.employee.attendence_caculate_records') }}">
+                                                <i class="material-icons opacity-10 text-white">weekend</i>
+                                                <div class="progress-widget">
+                                                    <div id="circle-progress-01"
+                                                        class="circle-progress-01 circle-progress circle-progress-primary text-center"
+                                                        data-min-value="0" data-max-value="100" data-value="90"
+                                                        data-type="percent">
+                                                        <svg width="24" height="24" id="Layer_1"
+                                                            data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                                                            viewBox="0 0 24 24">
+                                                            <defs>
+                                                                <style>
+                                                                    .cls-1 {
+                                                                        fill-rule: evenodd;
+                                                                    }
+                                                                </style>
+                                                            </defs>
+                                                            <title>Calculation</title>
+                                                            <path class="cls-1"
+                                                                d="M21 3H3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm-1 16H4v-1h16v1Zm0-3H4v-1h16v1Zm0-3H4v-1h16v1Zm0-3H4V7h16v1Zm0-3H4V4h16v1Z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="progress-detail">
+                                                        <h4 class="text-sm mb-0 text-capitalize">Bảng tính công</h4>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <div class="card-footer p-3">
+                                                <p class="mb-0">Đi đến <a
+                                                        href="{{ route('admin.employee.attendence_caculate_records') }}">bảng
+                                                        tính công.</a></p>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
+                                        <div class="card-body">
                                             <a href="{{ route('admin.employee-show.celender') }}"><i
                                                     class="material-icons opacity-10 text-white">weekend</i>
                                                 <div class="progress-widget">
