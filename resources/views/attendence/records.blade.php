@@ -1,6 +1,40 @@
 @extends('master')
 
 @section('content')
+    <style>
+        .form-control-search {
+            padding-left: 2.5rem;
+            /* Khoảng cách cho biểu tượng tìm kiếm */
+            border-radius: 25px;
+            /* Bo tròn góc */
+            border: 1px solid #ced4da;
+            /* Màu viền */
+            font-size: 0.875rem;
+            /* Kích thước chữ */
+            max-width: 400px;
+            /* Kích thước tối đa của input */
+            width: 100%;
+            /* Đảm bảo chiếm toàn bộ không gian khả dụng trong container */
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            /* Khoảng cách từ viền trái */
+            top: 50%;
+            transform: translateY(-50%);
+            /* Căn giữa theo chiều dọc */
+            font-size: 1rem;
+            /* Kích thước biểu tượng */
+            color: #6c757d;
+            /* Màu sắc biểu tượng */
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+            /* Màu sắc placeholder */
+        }
+    </style>
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -10,10 +44,16 @@
                             {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}</h4>
                     </div>
                 </div>
-                <div class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between">
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterModal">
-                        Tìm Kiếm
+                <div class="d-flex align-items-center my-2 ps-2">
+                    <button type="button" class="btn btn-primary btn-sm rounded-pill shadow-sm me-2" data-bs-toggle="modal"
+                        data-bs-target="#filterModal">
+                        Lọc Thông Tin
                     </button>
+                    <div class="position-relative flex-grow-1 ms-2">
+                        <input type="text" id="search" class="form-control form-control-search"
+                            placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
+                        <i class="search-icon fas fa-search"></i>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if ($records->isEmpty())
@@ -37,6 +77,7 @@
                                     <th
                                         class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                         Ngày Trong Tuần</th>
+
                                     <th
                                         class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                         Giờ Vào</th>
@@ -69,21 +110,17 @@
                                             {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công về' }}
                                         </td>
                                         <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
-                                            {{ $record->total_hours ? $record->total_hours : 'Chấm công không đủ' }}
-                                        </td>
-                                        <td>
-                                            @if ($record->administrative_hours > 0)
-                                                <strong>{{ number_format($record->administrative_hours, 2) }}</strong>
+                                            @if ($record->total_hours)
+                                                <strong>{{ $record->total_hours }}</strong>
                                             @else
-                                                {{ '0' }}
+                                                {{ 'Chấm công không đủ' }}
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($record->overtime_hours > 0)
-                                                <strong>{{ number_format($record->overtime_hours, 2) }}</strong>
-                                            @else
-                                                {{ '0' }}
-                                            @endif
+                                            <strong>{{ $record->administrative_hours > 0 ? number_format($record->administrative_hours, 2) : '0' }}</strong>
+                                        </td>
+                                        <td>
+                                            <strong>{{ $record->overtime_hours > 0 ? number_format($record->overtime_hours, 2) : '0' }}</strong>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -111,11 +148,11 @@
                                 <input type="month" name="month" id="month" class="form-control"
                                     placeholder="Chọn tháng" value="{{ request('month', $currentMonth) }}">
                             </div>
-                            <div class="col-md-12 mb-3">
+                            {{-- <div class="col-md-12 mb-3">
                                 <label for="employee_name" class="form-label">Tên Nhân Viên:</label>
                                 <input type="text" id="employee_name" name="employee_name" class="form-control"
                                     value="{{ request('employee_name') }}">
-                            </div>
+                            </div> --}}
                             <div class="col-md-12 mb-3">
                                 <label for="start_date" class="form-label">Từ ngày:</label>
                                 <input type="date" id="start_date" name="start_date" class="form-control"
@@ -129,9 +166,10 @@
                             <div class="col-md-12 mb-3">
                                 <label for="time_filter" class="form-label">Thời Gian:</label>
                                 <select id="time_filter" name="time_filter" class="form-select">
-                                    @foreach (config("a7a.list_category") as $key => $record)
-                                        <option value="{{$key}}" {{ request('time_filter') === $key ? 'selected' : '' }}>
-                                            {{$record}}
+                                    @foreach (config('a7a.list_category') as $key => $record)
+                                        <option value="{{ $key }}"
+                                            {{ request('time_filter') === $key ? 'selected' : '' }}>
+                                            {{ $record }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -146,4 +184,32 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search');
+            const table = document.querySelector('.table');
+            const rows = table.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    let found = false;
+
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                            found = true;
+                        }
+                    });
+
+                    if (searchTerm === '' || found) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

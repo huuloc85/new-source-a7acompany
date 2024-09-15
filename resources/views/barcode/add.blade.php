@@ -125,8 +125,7 @@
                                     <button type="submit" id="register-barcode" class="btn btn-success">Tạo tem</button>
                                     <a class="btn btn-primary" href="{{ route('admin.product.barcode') }}">Làm mới</a>
                                     @if (isset($binArray))
-                                        <a class="btn btn-secondary" onclick="savePrint(event)"
-                                            href="javascript:window.print()">Print</a>
+                                        <a class="btn btn-secondary" onclick="handlePrint(event)" href="#">Print</a>
                                     @endif
                                 </div>
                                 <div class="container-gird">
@@ -273,8 +272,7 @@
                                 @if (isset($binArray))
                                     <div class="no-print">
                                         <a class="btn btn-secondary" id="save-print"
-                                            data-url="{{ route('admin.barcode.save.print') }}" onclick="savePrint(event)"
-                                            href="javascript:window.print()">Print</a>
+                                            data-url="{{ route('admin.barcode.save.print') }}" href="#">Print</a>
                                     </div>
                                 @endif
                             </div>
@@ -284,14 +282,17 @@
             </div>
         </div>
     </div>
+
     <script>
+        var lastPrintTime = null; // Biến lưu thời gian lần in gần nhất
+
         function selectProduct(event) {
             var data = event.target.value.split("-", 2);
             $('#product_code').val(data[0]);
             $('#product_pcs').val(data[1]);
         }
 
-        function savePrint(event) {
+        function savePrint(callback) {
             var url = $('#save-print').data('url');
             var productCode = $('#product_code').val();
             var date = $('#date').val();
@@ -299,8 +300,6 @@
             var binCount = $('#binCount').val();
             var binStart = $('#binStart').val();
             var type = $('#type').val();
-
-            console.log(date, shift, binCount, binStart, product_code, product_pcs, type);
 
             if (productCode) {
                 $.ajax({
@@ -317,6 +316,7 @@
                     },
                     success: function(response) {
                         console.log(response.status);
+                        if (callback) callback(); // Gọi callback sau khi lưu thành công
                     },
                     error: function(xhr, status, error) {
                         console.error("Đã xảy ra lỗi khi gửi lưu lịch sử print:", error);
@@ -325,13 +325,66 @@
             }
         }
 
+        function handlePrint() {
+            var currentTime = new Date().getTime();
+
+            if (lastPrintTime === null) {
+                // Lần in đầu tiên, không có cảnh báo
+                lastPrintTime = currentTime;
+                savePrint(function() {
+                    setTimeout(function() {
+                        window.print();
+                    }, 100);
+                });
+            } else {
+                var timeDiff = (currentTime - lastPrintTime) / 1000 / 60;
+
+                if (timeDiff <= 5) {
+                    // Nếu thời gian in thứ hai trong vòng 5 phút, hiển thị cảnh báo
+                    Swal.fire({
+                        title: 'Cảnh báo!',
+                        text: 'Bạn đã in trước đó chưa đầy 5 phút. Bạn có chắc chắn muốn in thêm không?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Có',
+                        cancelButtonText: 'Không'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Nếu người dùng xác nhận in, cho phép in
+                            lastPrintTime = currentTime;
+                            savePrint(function() {
+                                setTimeout(function() {
+                                    window.print();
+                                }, 100);
+                            });
+                        }
+                    });
+                } else {
+                    // Nếu đã hơn 5 phút, không cần cảnh báo
+                    lastPrintTime = currentTime;
+                    savePrint(function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 100);
+                    });
+                }
+            }
+        }
+
         $(document).ready(function() {
+            // Xử lý sự kiện nhấn Ctrl+P
             $(document).keydown(function(event) {
                 if (event.ctrlKey && event.key === 'p') {
-                    event.preventDefault();
+                    event.preventDefault(); // Ngăn chặn việc tự động mở hộp thoại in
+                    handlePrint(); // Xử lý việc in
                 }
+            });
+
+            // Xử lý khi nhấn vào nút Print
+            $('#save-print').click(function(event) {
+                event.preventDefault(); // Ngăn chặn việc mở hộp thoại in tự động
+                handlePrint(); // Gọi cùng một logic xử lý in
             });
         });
     </script>
-
 @endsection

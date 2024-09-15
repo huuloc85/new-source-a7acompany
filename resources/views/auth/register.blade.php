@@ -16,7 +16,7 @@
     <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
     <!-- Font Awesome Icons -->
-    {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <!-- CSS Files -->
@@ -74,13 +74,15 @@
                                             <div class="col-lg-6">
                                                 <div class="form-group">
                                                     <label for="last_name" class="form-label">Last Name</label>
-                                                    <input class="form-control" type="text" name="last_name" id="last_name"
-                                                        placeholder=" " value="{{ old('last_name') }}" required>
+                                                    <input class="form-control" type="text" name="last_name"
+                                                        id="last_name" placeholder=" " value="{{ old('last_name') }}"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="form-group">
-                                                    <label for="email">Email <span class="text-danger">*</span></label>
+                                                    <label for="email">Email <span
+                                                            class="text-danger">*</span></label>
                                                     <input class="form-control" type="email" placeholder=" "
                                                         id="email" name="email" value="{{ old('email') }}"
                                                         required>
@@ -106,8 +108,8 @@
                                                     <label for="confirm-password" class="form-label">Confirm
                                                         Password</label>
                                                     <input id="password_confirmation" class="form-control"
-                                                        type="password" placeholder=" " name="password_confirmation" id="confirm-password"
-                                                        required>
+                                                        type="password" placeholder=" " name="password_confirmation"
+                                                        id="confirm-password" required>
                                                 </div>
                                             </div>
                                             <div class="d-flex justify-content-center">
