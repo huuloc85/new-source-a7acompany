@@ -129,13 +129,11 @@
                             <div class="col-md-12 mb-3">
                                 <label for="time_filter" class="form-label">Thời Gian:</label>
                                 <select id="time_filter" name="time_filter" class="form-select">
-                                    <option value="working_hours"
-                                        {{ request('time_filter', 'working_hours') === 'working_hours' ? 'selected' : '' }}>
-                                        Nhân viên hành chính (07:30 - 17:00)
-                                    </option>
-                                    <option value="qc_day" {{ request('time_filter') === 'qc_day' ? 'selected' : '' }}>
-                                        Nhân viên QC Ca Ngày (07:30 - 19:30)
-                                    </option>
+                                    @foreach (config("a7a.list_category") as $key => $record)
+                                        <option value="{{$key}}" {{ request('time_filter') === $key ? 'selected' : '' }}>
+                                            {{$record}}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
