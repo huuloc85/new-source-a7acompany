@@ -1,64 +1,104 @@
 @extends('master')
 
 @section('content')
-    <div class="container mt-4">
-        <div class="card">
-            <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
-                <div class="border-radius-lg ps-2 pt-4 pb-3">
-                    <h4 class="card-title mb-0">Bảng Chấm Công Tháng {{ $month }} Của Nhân Viên
-                        {{ $employeeName }}</h4>
-                </div>
-            </div>
-            <div class="card-body">
-                @if ($records->isEmpty())
-                    <p class="text-center">Không có bản ghi nào cho tháng này.</p>
-                @else
-                    <div class="grid-container">
-                        @foreach ($records as $record)
-                            <div class="grid-item {{ $record->status }}">
-                                <div class="record-header">
-                                    <span>Tên Nhân Viên: {{ $employeeName }}</span>
-                                </div>
-                                <div class="record-body">
-                                    <p>Thứ: {{ $record->day_of_week }}</p>
-                                    <p>Ngày: {{ $record->formatted_date }}</p>
-                                    <p class="{{ $record->time_in == 'Chưa Chấm Công Vào' ? 'text-danger' : '' }}">
-                                        Thời Gian Vào: {{ $record->time_in }}
-                                    </p>
-                                    <p class="{{ $record->time_out == 'Chưa Chấm Công Ra' ? 'text-danger' : '' }}">
-                                        Thời Gian Ra: {{ $record->time_out }}
-                                    </p>
-                                </div>
-                            </div>
-                        @endforeach
+    <style>
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .form-label {
+                font-size: 14px;
+            }
+
+            .form-control {
+                font-size: 14px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 8px;
+            }
+        }
+    </style>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Bảng Lịch Sử Chấm Công Tháng
+                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                        </h4>
                     </div>
-                @endif
+                </div>
+
+                <div class="card-body">
+                    <div class="row">
+                        <div>
+                            <label class="form-label fw-bold" for="">Tên nhân viên:
+                                <label>{{ Auth()->user()->name ?? '' }}</label></label>
+                        </div>
+                        <div>
+                            <label class="form-label fw-bold" for="">Mã nhân viên:
+                                <label>{{ Auth()->user()->code ?? '' }}</label></label>
+                        </div>
+                        <div>
+                            <label class="form-label fw-bold" for="">Bộ phận:
+                                <label>{{ Auth()->user()->role->role_name ?? '' }}</label></label>
+                        </div>
+                    </div>
+                    <form method="GET" action="{{ route('admin.attendence.index') }}">
+                        <div class="form-group">
+                            <label for="month">Chọn tháng:</label>
+                            <input type="month" id="month" name="month" value="{{ $currentMonth }}"
+                                class="form-control" onchange="document.getElementById('filterForm').submit();">
+                        </div>
+
+                    </form>
+                    <div class="table-responsive">
+                        @if ($records->isEmpty())
+                            <p class="text-center">Hiện tại chưa có thông tin nào.</p>
+                        @else
+                            <table class="table table-hover mb-4">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            STT</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Mã Nhân Viên</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Tên Nhân Viên</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Ngày Chấm</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Thời Gian</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($records as $record)
+                                        <tr class="text-center">
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $record->employee_code }}</td>
+                                            <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($record->datetime)->format('H:i:s') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <style>
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .grid-item {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 1rem;
-            background-color: #f9f9f9;
-        }
-
-        .record-header {
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        .record-body p {
-            margin: 0.5rem 0;
-        }
-    </style>
 @endsection

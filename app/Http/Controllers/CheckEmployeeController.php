@@ -117,68 +117,6 @@ class CheckEmployeeController extends Controller
         }
     }
 
-    // public function handleCheckEmployeeTodo(Request $request)
-    // {
-    //     try {
-    //         $employeeId = auth()->user()->id;
-    //         $shift = $request->input('shift');
-    //         $date = Carbon::now();
-
-    //         // Lấy giá trị status của người dùng
-    //         $status = Status::getStatusValue(auth()->user()->category_celender->name);
-
-    //         // Kiểm tra nếu status bằng 1 và shift là 'Nghỉ'
-    //         if ($status == 1 && $shift == 'Nghỉ') {
-    //             // Lấy ca làm việc trước đó 1 ngày
-    //             $previousDate = $date->copy()->subDay();
-
-    //             // Lấy ID của Calender theo ngày
-    //             $calendar = Celender::whereDate('date', $previousDate->toDateString())->first();
-
-    //             if ($calendar) {
-    //                 // Lấy chi tiết CalenderDetailHNHC theo ID của Calender và ngày cụ thể
-    //                 $dayColumn = 'day' . $previousDate->day;
-    //                 $calendarDetail = CelenderDetailHNHC::where('calendar_id', $calendar->id)->first();
-
-    //                 if ($calendarDetail && $calendarDetail->$dayColumn == 'Ca 2' && $previousDate->hour >= 0 && $previousDate->hour < 8 && $previousDate->minute <= 30) {
-    //                     $date->subDay();
-    //                 }
-    //             }
-    //         } else {
-    //             // Nếu là ca 2 và giờ hiện tại từ 00:00 đến 08:30, trừ một ngày
-    //             if ($shift == 'Ca 2' && $date->hour >= 0 && $date->hour < 8 && $date->minute <= 30) {
-    //                 $date->subDay();
-    //             }
-    //         }
-
-    //         // Kiểm tra xem bản ghi đã tồn tại chưa
-    //         $existingRecord = CheckEmployee::where('employee_id', $employeeId)
-    //             ->where('product_id', $request->product_id)
-    //             ->where('shift', $shift)
-    //             ->whereDate('date', $date->toDateString())
-    //             ->first();
-
-    //         if ($existingRecord) {
-    //             toast('Sản phẩm đã tồn tại cho ngày và ca hiện tại!', 'error', 'top-right');
-    //             return redirect()->back();
-    //         }
-
-    //         $checkEmployee = new CheckEmployee();
-    //         $checkEmployee->product_id = $request->product_id;
-    //         $checkEmployee->employee_id = $employeeId;
-    //         $checkEmployee->shift = $shift;
-    //         $checkEmployee->date = $date;
-    //         $checkEmployee->status = $status;
-    //         $checkEmployee->save();
-
-    //         toast('Cập nhật hoạt động sản phẩm thành công!', 'success', 'top-right');
-    //         return redirect()->back();
-    //     } catch (\Exception $e) {
-    //         toast('Cập nhật hoạt động sản phẩm không thành công!', 'error', 'top-right');
-    //         return redirect()->back();
-    //     }
-    // }
-
     // chức năng update của nhân viên
     public function updateEmployee(Request $request, $id)
     {

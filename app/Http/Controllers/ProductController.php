@@ -483,7 +483,7 @@ class ProductController extends Controller
                 $hour = $currentDateTime->hour;
                 // $hour = 14;
                 // cắt phần tính tồn -> cronjob;
-                if ($status == 1 && $hour < 13) {
+                if ($status == 1 && $hour < 9) {
                     //nếu là 100% và trước 7h sáng thì trừ đi 1 ngày
                     $subDate = Carbon::now()->subDay()->format('Y-m-d');
                     $dailyQuan = new DailyQuantity();
