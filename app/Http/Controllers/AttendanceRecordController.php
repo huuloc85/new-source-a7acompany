@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceRecordController extends Controller
 {
+    private $listRecord;
     //View Lịch Sử Chấm Công (Admin)
     public function index(Request $request)
     {
@@ -49,11 +50,14 @@ class AttendanceRecordController extends Controller
         $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->pluck('id')->first();
         $query = $this->buildQuery($request, $currentMonth, $timeFilter);
         $records = $this->checkQuery($query, $timeFilter);
+        $this->listRecord = $records;
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
 
-        foreach ($records as $record) {
-            $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId);
+        foreach ($records as $key => $record) {
+            $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
         }
+
+        $records = $this->listRecord;
         return view('attendence.records', compact('records', 'currentMonth'));
     }
 
@@ -121,7 +125,7 @@ class AttendanceRecordController extends Controller
     }
 
     //Code chức năng tính công (Admin)
-    private function processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId)
+    private function processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key)
     {
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
@@ -140,7 +144,20 @@ class AttendanceRecordController extends Controller
                 if ($shiftBefore == config("a7a.shift_1")) {
                     $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
                 } else if ($shiftBefore == config("a7a.shift_2")) {
-                    $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                    //$this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                    // check in before 12h AM?
+                    $times = explode(', ', $record->all_times);
+                    $timesBefore12AM = array_filter($times, function($time) {
+                        return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
+                    });
+
+                    if (!empty($timesBefore12AM)) {
+                        // dd($record);
+                        $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                    } else {
+                        unset($this->listRecord[$key]);
+                        $record = null;
+                    }
                 }
             }
         }
@@ -340,7 +357,7 @@ class AttendanceRecordController extends Controller
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
 
         // Xử lý dữ liệu của từng bản ghi dựa trên loại nhân viên
-        foreach ($records as $record) {
+        foreach ($records as $key => $record) {
             $this->processRecord($record, $employeeCategory, $dayOfWeekMapping);
         }
 
