@@ -57,8 +57,10 @@ class AttendanceRecordController extends Controller
             $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
         }
 
-        $records = $this->listRecord;
-        return view('attendence.records', compact('records', 'currentMonth'));
+        return view('attendence.records', [
+            'records' => $this->listRecord,
+            'currentMonth' => $currentMonth
+        ]);
     }
 
     //Query (Admin)
@@ -128,7 +130,6 @@ class AttendanceRecordController extends Controller
     //Code chức năng tính công (Admin)
     private function processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key)
     {
-
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
         if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
@@ -153,12 +154,10 @@ class AttendanceRecordController extends Controller
                         return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
                     });
 
-                    if (!empty($timesBefore12AM)) {
-                        // dd($record);
+                    if (empty($timesBefore12AM)) {
                         $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
                     } else {
                         unset($this->listRecord[$key]);
-                        $record = null;
                     }
                 }
             }
@@ -347,8 +346,8 @@ class AttendanceRecordController extends Controller
             ->orderBy('date', 'asc');
         $timeFilter = CategoryCelender::listCateforEmployee[$categoryId];
         $records = $this->checkQuery($query, $timeFilter);
-        foreach ($records as $record) {
-            $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId);
+        foreach ($records as $key => $record) {
+            $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
         }
         return view('attendence.employee_caculate_records', compact('records', 'currentMonth'));
     }
