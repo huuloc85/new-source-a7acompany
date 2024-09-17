@@ -16,16 +16,43 @@
                             value="{{ request('month', \Carbon\Carbon::now()->format('Y-m')) }}"
                             onchange="this.form.submit()">
                     </div>
-                    <div class="col-md-6 col-lg-1">
+                    <div class="col-md-6 col-lg-2">
                         <label for="type" class="form-label">Chọn Loại Tem</label>
                         <select name="type" id="type" class="form-control" onchange="this.form.submit()">
                             <option value="">Tất Cả</option>
-                            <option value="Tem Thùng" {{ request('type') == 'Tem Thùng' ? 'selected' : '' }}>Tem Thùng
-                            </option>
-                            <option value="Tem Bịch" {{ request('type') == 'Tem Bịch' ? 'selected' : '' }}>Tem Bịch</option>
+                            @foreach ($types as $type)
+                                <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
+                                    {{ $type }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="product_id" class="form-label">Chọn Sản Phẩm</label>
+                        <select name="product_id" id="product_id" class="form-control" onchange="this.form.submit()">
+                            <option value="">Tất Cả</option>
+                            @foreach ($products as $product)
+                                <option value="{{ $product->id }}"
+                                    {{ request('product_id') == $product->id ? 'selected' : '' }}>
+                                    {{ $product->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6 col-lg-2">
+                        <label for="employee_id" class="form-label">Chọn Nhân Viên</label>
+                        <select name="employee_id" id="employee_id" class="form-control" onchange="this.form.submit()">
+                            <option value="">Tất Cả</option>
+                            @foreach ($employees as $employee)
+                                <option value="{{ $employee->id }}"
+                                    {{ request('employee_id') == $employee->id ? 'selected' : '' }}>
+                                    {{ $employee->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                 </form>
+
                 <div class="card-body">
                     @if ($historyprint->isEmpty())
                         <div class="text-center">

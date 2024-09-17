@@ -136,10 +136,10 @@
             navbarNav.classList.toggle('show');
         });
 
-        document.addEventListener('click', function(e) {
-            if (!navbarDropdown.contains(e.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
+        // document.addEventListener('click', function(e) {
+        //     if (!navbarDropdown.contains(e.target)) {
+        //         dropdownMenu.classList.remove('show');
+        //     }
+        // });
     });
 </script>

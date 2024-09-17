@@ -122,7 +122,7 @@ class ProductionPlanController extends Controller
     public function index(Request $request)
     {
         // Lấy tháng hiện tại và tháng được chọn từ yêu cầu
-        $selectedMonth = $request->input('month', Carbon::now()->format('m-Y'));
+        $selectedMonth = $request->input('month', Carbon::create(2024, 8, 1)->format('m-Y'));
         $currentMonth = Carbon::now()->format('m-Y');
 
         // Kiểm tra nếu hôm nay là ngày đầu tháng

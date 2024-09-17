@@ -127,6 +127,7 @@
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Ngày Trong Tuần</th>
+
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Giờ Vào</th>
@@ -154,6 +155,7 @@
                                             <td data-label="Ngày Chấm">
                                                 {{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
                                             <td data-label="Ngày Trong Tuần">{{ $record->day_of_week }}</td>
+
                                             <td data-label="Giờ Vào" class="{{ $record->time_in ? '' : 'text-danger' }}">
                                                 {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                             </td>
@@ -165,18 +167,10 @@
                                                 {{ $record->total_hours ? $record->total_hours : 'Chấm công không đủ' }}
                                             </td>
                                             <td data-label="Giờ Hành Chính (H)">
-                                                @if ($record->administrative_hours > 0)
-                                                    <strong>{{ number_format($record->administrative_hours, 2) }}</strong>
-                                                @else
-                                                    {{ '0' }}
-                                                @endif
+                                                <strong>{{ $record->administrative_hours > 0 ? number_format($record->administrative_hours, 2) : '0' }}</strong>
                                             </td>
                                             <td data-label="Giờ Tăng Ca (H)">
-                                                @if ($record->overtime_hours > 0)
-                                                    <strong>{{ number_format($record->overtime_hours, 2) }}</strong>
-                                                @else
-                                                    {{ '0' }}
-                                                @endif
+                                                <strong>{{ $record->overtime_hours > 0 ? number_format($record->overtime_hours, 2) : '0' }}</strong>
                                             </td>
                                         </tr>
                                     @endforeach
