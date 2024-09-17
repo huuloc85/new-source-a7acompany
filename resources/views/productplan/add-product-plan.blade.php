@@ -6,7 +6,7 @@
             max-width: 100%;
             padding: 0 1rem;
             /* display: flex;
-                                                                    justify-content: center; */
+                                                                                                                            justify-content: center; */
         }
 
         .grid-container {
@@ -63,31 +63,21 @@
                                         <option value="">Tất Cả Sản Phẩm</option>
                                         @foreach ($products as $product)
                                             <option value="{{ $product->id }}" data-bin-code="{{ $product->binCode }}"
-                                                data-quan-entity-bin="{{ $product->quanEntityBin }}">
+                                                data-quan-entity-bin="{{ $product->quanEntityBin }}"
+                                                data-material="{{ $product->material }}" data-color="{{ $product->color }}">
                                                 {{ $product->name }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label for="material_name">Chọn Nguyên Liệu</label>
-                                    <select class="form-control" id="material_name" name="material_name">
-                                        <option value="">Tất Cả Nguyên Liệu</option>
-                                        @foreach ($materials as $material)
-                                            <option>{{ $material }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="material_color">Màu Sắc</label>
-                                    <select class="form-control" id="material_color" name="material_color">
-                                        <option value="">Tất Cả Nguyên Liệu</option>
-                                        @foreach ($materialcolor as $color)
-                                            <option>{{ $color }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                {{-- <div class="form-group">
+                                    <label for="material">Nguyên Liệu</label>
+                                    <input type="text" id="material" name="material" class="form-control" required>
+                                </div> --}}
+                                {{-- <div class="form-group">
+                                    <label for="color">Màu Sắc</label>
+                                    <input type="text" id="color" name="color" class="form-control" required>
+                                </div> --}}
 
                                 <div class="form-group">
                                     <label for="production_plan">Kế Hoạch Sản Xuất (PCS)</label>
@@ -162,9 +152,13 @@
             var selectedOption = this.options[this.selectedIndex];
             var binCode = selectedOption.getAttribute('data-bin-code');
             var quanEntityBin = selectedOption.getAttribute('data-quan-entity-bin');
+            var material = selectedOption.getAttribute('data-material');
+            var color = selectedOption.getAttribute('data-color');
 
             document.getElementById('box_type').value = binCode || '';
             document.getElementById('products_per_box').value = quanEntityBin || '';
+            document.getElementById('material').value = material || '';
+            document.getElementById('color').value = color || '';
         });
     </script>
 @endsection

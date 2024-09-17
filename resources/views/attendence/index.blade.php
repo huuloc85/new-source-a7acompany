@@ -1,68 +1,83 @@
 @extends('master')
 
 @section('content')
+    <style>
+        .search-container {
+            position: relative;
+            width: 29.9%;
+        }
+
+        .form-control-search {
+            padding-left: 2.5rem;
+            /* border-radius: 20px; */
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+
+        }
+    </style>
+
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Bảng Chấm Công Tháng {{ $currentMonth }}</h4>
+                        <h4 class="card-title mb-0">Bảng Lịch Sử Chấm Công Tháng
+                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                        </h4>
+                    </div>
+                    <div class="search-container">
+                        <input type="text" id="search" class="form-control form-control-search"
+                            placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
+                        <i class="search-icon fas fa-search"></i>
                     </div>
                 </div>
-                <div class="card-body">
-                    <!-- Phần này để lọc dữ liệu -->
-                    <form method="GET" action="{{ route('admin.attendence.index') }}" class="mb-4">
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="employee_name" class="form-label">Tên Nhân Viên:</label>
-                                <input type="text" id="employee_name" name="employee_name" class="form-control"
-                                    value="{{ request('employee_name') }}" onchange="this.form.submit()">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="start_date" class="form-label">Từ ngày:</label>
-                                <input type="date" id="start_date" name="start_date" class="form-control"
-                                    value="{{ request('start_date') }}" onchange="this.form.submit()">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="end_date" class="form-label">Đến ngày:</label>
-                                <input type="date" id="end_date" name="end_date" class="form-control"
-                                    value="{{ request('end_date') }}" onchange="this.form.submit()">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="time_filter" class="form-label">Thời Gian:</label>
-                                <select id="time_filter" name="time_filter" class="form-select"
-                                    onchange="this.form.submit()">
-                                    <option value="working_hours"
-                                        {{ request('time_filter', 'working_hours') === 'working_hours' ? 'selected' : '' }}>
-                                        Nhân viên hành chính (07:30 - 17:00)
+                <div class="d-flex align-items-center ps-2">
+                    <form method="GET" action="{{ route('admin.attendence.index') }}" class="d-flex">
+                        <div class="form-group mb-0 me-2" style="margin-right: 10px;">
+                            <input type="month" name="month" id="month" class="form-control"
+                                placeholder="Chọn tháng" value="{{ $currentMonth }}" onchange="this.form.submit()">
+                        </div>
+                        <div class="form-group mb-0">
+                            <select name="category" id="category" class="form-control" onchange="this.form.submit()">
+                                <option value="">Tất cả</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        {{ request('category') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
                                     </option>
-                                    <option value="qc_day" {{ request('time_filter') === 'qc_day' ? 'selected' : '' }}>
-                                        Nhân viên QC Ca Ngày (07:30 - 19:30)
-                                    </option>
-                                    <option value="nhan_vien_san_xuat_shift_1"
-                                        {{ request('time_filter') === 'nhan_vien_san_xuat_shift_1' ? 'selected' : '' }}>
-                                        Nhân Viên Sản Xuất Ca 1 (07:30 - 19:30)
-                                    </option>
-                                    <option value="nhan_vien_san_xuat_shift_2"
-                                        {{ request('time_filter') === 'nhan_vien_san_xuat_shift_2' ? 'selected' : '' }}>
-                                        Nhân Viên Sản Xuất Ca 2 (19:30 - 07:30)
-                                    </option>
-                                </select>
-                            </div>
+                                @endforeach
+                            </select>
                         </div>
                     </form>
+                </div>
 
-
+                <div class="card-body">
                     <table class="table table-hover mb-4">
                         <thead class="text-center">
                             <tr>
-                                <th>STT</th>
-                                <th>Mã Nhân Viên</th>
-                                <th>Tên Nhân Viên</th>
-                                <th>Ngày Chấm</th>
-                                <th>Ngày Trong Tuần</th>
-                                <th>Giờ Vào</th>
-                                <th>Giờ Ra</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Mã Nhân Viên</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Tên Nhân Viên</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Ngày Chấm</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Thời Gian</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Danh Mục Làm Việc</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,13 +86,10 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $record->employee_code }}</td>
                                     <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
-                                    <td>{{ $record->formatted_date }}</td>
-                                    <td>{{ $record->day_of_week }}</td>
-                                    <td class="{{ $record->time_in ? '' : 'text-danger' }}">
-                                        {{ $record->time_in ?: 'Chưa chấm công' }}
-                                    </td>
-                                    <td class="{{ $record->time_out ? '' : 'text-danger' }}">
-                                        {{ $record->time_out ?: 'Chưa chấm công' }}
+                                    <td>{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($record->datetime)->format('H:i:s') }}</td>
+
+                                    <td>{{ $record->employee ? $record->employee->category_celender->name : 'Không xác định' }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -87,4 +99,32 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search');
+            const table = document.querySelector('.table');
+            const rows = table.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    let found = false;
+
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                            found = true;
+                        }
+                    });
+
+                    if (searchTerm === '' || found) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

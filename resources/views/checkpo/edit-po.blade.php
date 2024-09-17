@@ -32,15 +32,19 @@
     </div>
 </div>
 <script>
-    $('#updateDetail').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget);
-        var dailyId = button.data('daily-id');
-        var dailyQuan = button.data('daily-quan');
-        var status = button.data('status');
-        var productId = button.data('product-id');
-        document.getElementById('dailyId').value = dailyId;
-        document.getElementById('quantity').value = dailyQuan;
-        document.getElementById('status').value = status;
-        document.getElementById('product_id').value = productId;
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#updatePO').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Nút kích hoạt modal
+            var dailyId = button.data('daily-id'); // Lấy giá trị data-daily-id
+            var dailyQuan = button.data('daily-quan'); // Lấy giá trị data-daily-quan
+            var status = button.data('status'); // Lấy giá trị data-status
+            var productId = button.data('product-id'); // Lấy giá trị data-product-id
+
+            // Cập nhật các trường input trong modal
+            document.getElementById('dailyId').value = dailyId;
+            document.getElementById('quantity').value = dailyQuan;
+            document.getElementById('status').value = status;
+            document.getElementById('product_id').value = productId;
+        });
     });
 </script>

@@ -9,21 +9,35 @@ class AttendanceRecord extends Model
 {
     use HasFactory;
 
-    protected $table = 'mcc'; // Tên bảng
+    protected $table = 'attendencerecord'; // Tên bảng
 
     protected $fillable = [
-        'auth_d',
-        'auth_t',
+        'employee_code',
+        'datetime',
+        'date',
+        'time',
         'direction',
-        'dv_name',
-        'dv_seri_no',
-        'per_name',
-        'card_no',
-        'employee_code'
+        'deviceName',
+        'deviceSN',
+        'employee_Name',
+        'cardNo'
     ];
 
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'employee_code', 'code');
+    }
+
+    public static function getDayOfWeekMapping()
+    {
+        return [
+            'Monday'    => 'Thứ Hai',
+            'Tuesday'   => 'Thứ Ba',
+            'Wednesday' => 'Thứ Tư',
+            'Thursday'  => 'Thứ Năm',
+            'Friday'    => 'Thứ Sáu',
+            'Saturday'  => 'Thứ Bảy',
+            'Sunday'    => 'Chủ Nhật'
+        ];
     }
 }

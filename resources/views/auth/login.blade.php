@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
     <!-- Font Awesome Icons -->
-    {{-- <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script> --}}
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <!-- CSS Files -->
     <link rel="stylesheet" href="{{ asset('assets/css/hope-ui.css?v=1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/libs.min.css') }}">
@@ -49,7 +49,7 @@
                                                 <div class="form-group">
                                                     <label for="email" class="form-label">Số điện thoại hoặc tài
                                                         khoản</label>
-                                                    <input type="text"
+                                                    <input type="text" id="email"
                                                         placeholder="Nhập số điện thoại hoặc tài khoản"
                                                         class="form-control" name="phone" required>
                                                 </div>

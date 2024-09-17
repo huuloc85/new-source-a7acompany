@@ -131,13 +131,27 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Sản phẩm</th>
-                                        <th>Kế hoạch sản xuất</th>
-                                        <th>Tỉ lệ sản phẩm</th>
-                                        <th>Số lượng bao bì mỗi thùng</th>
-                                        <th>Số sản phẩm mỗi thùng</th>
-                                        <th>Chu kỳ</th>
-                                        <th>Số lượng cavity</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Sản phẩm</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Kế hoạch sản xuất</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Tỉ lệ sản phẩm</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Số lượng bao bì mỗi thùng</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Số sản phẩm mỗi thùng</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Chu kỳ</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                            Số lượng cavity</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -147,6 +161,9 @@
                                             <td>
                                                 <input type="hidden" name="plans[{{ $plan->id }}][id]"
                                                     value="{{ $plan->id }}">
+                                                <input type="hidden" name="plans[{{ $plan->id }}][product_id]"
+                                                    value="{{ $plan->product_id }}">
+
                                                 <input type="number" name="plans[{{ $plan->id }}][production_plan]"
                                                     class="form-control"
                                                     value="{{ old('plans.' . $plan->id . '.production_plan', $plan->production_plan) }}">

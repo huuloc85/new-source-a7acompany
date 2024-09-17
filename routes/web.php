@@ -17,6 +17,7 @@ use App\Http\Controllers\CheckPoController;
 use App\Http\Controllers\StampController;
 use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\BarCodeController;
+use App\Http\Controllers\HistoryPrintController;
 use App\Http\Controllers\MaterialProductController;
 use App\Models\LoginHistory;
 use App\Models\Product;
@@ -65,6 +66,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/check-employee-todo/history', [CheckEmployeeController::class, 'historyEmployeeCheck'])->name('admin.employee-history-check');
         Route::delete('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'deleteHistory'])->name('admin.employee.delete-employee-todo');
         Route::post('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'updateEmployee'])->name('admin.employee.update-employee-todo');
+        //View của nhân viên Xem Chấm Công
+        Route::get('/attendence', [AttendanceRecordController::class, 'employeeViewRecords'])->name('admin.employee.attendence');
+        Route::get('/attendence-caculate', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('admin.employee.attendence_caculate_records');
     });
 
 
@@ -101,8 +105,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     Route::middleware(['authAdmin'])->prefix('/attendence')->group(function () {
         Route::get('/index', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
-        // Route::delete('/admin-view-employee-todo/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
-        // Route::post('/admin-check-employee-todo/edit/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
+        Route::get('/records', [AttendanceRecordController::class, 'records'])->name('admin.attendence.records');
+        Route::post('/records', [AttendanceRecordController::class, 'handleRecords'])->name('admin.attendence.handleRecords');
     });
 
     //quản lý chức vụ
@@ -174,6 +178,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         //thêm sản lượng 100 200 xuất hàng hàng lỗi admin
         Route::get('/add-quantity-admin', [ProductController::class, 'viewUpdateQuantityAdmin'])->name('admin.product.add-quantity-admin');
         Route::post('/handle-add-quantity-admin', [ProductController::class, 'handleUpdateQuantityAdmin'])->name('admin.product.handle-add-quantity-admin');
+        Route::get('/test', [ProductController::class, 'viewtest'])->name('admin.product.test');
+        Route::get('/test/{id}/edit', [ProductController::class, 'editTest'])->name('admin.product.editTest');
+        Route::post('/test/{id}', [ProductController::class, 'updateTest'])->name('admin.product.updateTest');
     });
 
     //barcode
@@ -181,12 +188,14 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/', [StampController::class, 'index'])->name('admin.product.barcode');
         Route::post('/register', [StampController::class, 'barcode'])->name('admin.barcode.register');
         Route::post('/save-print', [StampController::class, 'savePrint'])->name('admin.barcode.save.print');
+        Route::get('/history', [HistoryPrintController::class, 'index'])->name('admin.product.barcode.history');
     });
 
     //packing-stamp
     Route::middleware(['packingStamp'])->prefix('/packing')->group(function () {
         Route::get('/', [StampController::class, 'packingStamp'])->name('admin.product.packing');
         Route::post('/register', [StampController::class, 'StorePackingStamp'])->name('admin.packing.register');
+        Route::post('/save-printPacking', [StampController::class, 'savePrintPacking'])->name('admin.barcode.save.print.packing');
     });
 
     //view check barcode for employee

@@ -42,9 +42,9 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <div class="header-title">
-                        <h4 class="card-title">Danh Sách Lịch Sử Cập Nhật Sản Phẩm</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Danh Sách Lịch Sử Cập Nhật Sản Phẩm</h4>
                     </div>
                 </div>
                 <div class="p-4 pb-0 d-flex">
@@ -97,6 +97,7 @@
                                             lượng
                                             xuất hàng</th>
                                         <th class="text-center text-uppercase text-md font-weight-bolder">Thời gian cập nhật
+                                            cuối cùng
                                         </th>
                                         <th class="text-center text-uppercase text-md font-weight-bolder">Người nhập</th>
                                         <th class="text-center text-uppercase text-md font-weight-bolder">Thao tác</th>
@@ -108,8 +109,11 @@
                                             <td class="text-center">{{ $key + 1 }}</td>
                                             <td class="text-center">{{ $dailyQuantity->product->name }}</td>
                                             <td class="text-center">{{ number_format($dailyQuantity->quantity) }}</td>
-                                            <td class="text-center">{{ $dailyQuantity->date }}</td>
-                                            <td class="text-center">{{ $dailyQuantity->created_at }}</td>
+                                            <td class="text-center">
+                                                {{ \Carbon\Carbon::parse($dailyQuantity->date)->format('d-m-Y') }}</td>
+                                            <td class="text-center">
+                                                {{ \Carbon\Carbon::parse($dailyQuantity->updated_at)->format('d-m-Y H:i:s') }}
+                                            </td>
                                             <td class="text-center">{{ $dailyQuantity->employee->name }}</td>
                                             <td class="text-center btn-group-custom">
                                                 <div class="btn-group" role="group" aria-label="Button Group">
@@ -117,11 +121,9 @@
                                                         data-daily-id="{{ $dailyQuantity->id }}"
                                                         data-daily-quan="{{ $dailyQuantity->quantity }}"
                                                         data-product-id="{{ $dailyQuantity->product->id }}" data-status="8"
-                                                        data-bs-toggle="modal" data-bs-target="#updatePO" title="Chỉnh sửa"
-                                                        data-bs-placement="top">
+                                                        data-bs-toggle="modal" data-bs-target="#updatePO" title="Chỉnh sửa">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
-
                                                     <form action="{{ route('admin.checkpo.delete', $dailyQuantity->id) }}"
                                                         method="POST">
                                                         @csrf

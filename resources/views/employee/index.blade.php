@@ -1,36 +1,80 @@
 @extends('master')
 @section('content')
+    <style>
+        .search-container {
+            position: relative;
+            max-width: 100%;
+        }
+
+        .form-control-search {
+            padding-left: 2.5rem;
+            border-radius: 25px;
+            border: 1px solid #ced4da;
+            width: 100%;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+        }
+
+        .btn-custom {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+        }
+
+        .p-4 {
+            padding: 1rem !important;
+        }
+
+        .btn {
+            margin: 0 0.5rem;
+        }
+    </style>
+
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <div class="header-title">
-                        <h4 class="card-title">Danh sách nhân sự</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Danh Sách Nhân Sự</h4>
                     </div>
                 </div>
-                <div class="p-4 pb-0 d-flex">
-                    <a href="{{ route('admin.employee.add') }}" type="button" class="btn btn-success btn-lg py-4"
+                <div class="p-4 pb-0 d-flex align-items-center">
+                    <a href="{{ route('admin.employee.add') }}" type="button" class="btn btn-success btn-sm btn-custom"
                         title="Thêm Nhân Sự" data-bs-toggle="tooltip">
                         <i class="fas fa-user-plus fa-lg"></i>
                     </a>
                     <a href="{{ route('admin.employee.getTrash') }}" type="button"
-                        class="btn btn-warning btn-lg trash ms-2 py-4" title="Thùng Rác" data-bs-toggle="tooltip">
+                        class="btn btn-warning btn-sm btn-custom" title="Thùng Rác" data-bs-toggle="tooltip">
                         <i class="fas fa-trash fa-lg"></i>
                     </a>
                     <a href="http://192.168.1.3/doc/index.html#/portal/login" type="button"
-                        class="btn btn-dark btn-lg ms-2 py-4" title="Thêm Nhân Sự Vào Máy Chấm Công"
+                        class="btn btn-dark btn-sm btn-custom" title="Thêm Nhân Sự Vào Máy Chấm Công"
                         data-bs-toggle="tooltip">
                         <i class="fas fa-fingerprint fa-lg"></i>
                     </a>
-
-                    <div style="flex-grow: 1; display: flex; justify-content: end;">
-                        <div>
-                            <button type="button" class="btn btn-primary btn-lg py-4" data-bs-toggle="modal"
-                                data-bs-target="#searchModal" title="Tìm kiếm" data-bs-toggle="tooltip">
-                                <i class="fas fa-search fa-lg"></i>
-                            </button>
-                            @include('employee.search-advand', ['href' => 'admin.employee.home'])
-                        </div>
+                    <div class="ms-auto">
+                        <button type="button" class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal"
+                            data-bs-target="#searchModal" title="Tìm kiếm" data-bs-toggle="tooltip">
+                            <i class="fas fa-search fa-lg"></i>
+                        </button>
+                        @include('employee.search-advand', ['href' => 'admin.employee.home'])
+                    </div>
+                    <div class="position-relative flex-grow-1 ms-2">
+                        <input type="text" id="search" class="form-control form-control-search"
+                            placeholder="Tìm kiếm theo tên nhân viên, mã nhân viên hoặc chức vụ">
+                        <i class="search-icon fas fa-search"></i>
                     </div>
                 </div>
                 <div class="ps-4 d-flex">
@@ -42,25 +86,38 @@
                             <table id="datatable" class="table table-hover dataTable no-footer" data-toggle="data-table"
                                 aria-describedby="datatable_info">
                                 <thead>
-                                    <tr>
-                                        <th class="text-center">STT</th>
-                                        <th>Tên/Điện thoại</th>
-                                        <th class="text-center">Chức vụ</th>
-                                        <th class="text-center">Mã nhân viên</th>
-                                        <th class="text-center">Danh mục lịch làm việc</th>
-                                        <th class="text-center">Chức năng</th>
+                                    <tr class="text-center">
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            STT</th>
+                                        <th
+                                            class=" text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-8">
+                                            Tên/Điện thoại</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Chức vụ</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Mã nhân viên</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Danh mục lịch làm việc</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Chức
+                                            năng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($employees as $key => $employee)
                                         <tr>
                                             <td>
-                                                <div class="d-flex px-3 py-1">
+                                                <div class="d-flex justify-content-center align-items-center px-2 py-1">
                                                     {{ $loop->iteration }}
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="d-flex px-2 py-1">
+                                                <div class="d-flex px-2 py-1 ps-5">
                                                     <div>
                                                         <img src="{{ asset('storage/employee/' . $employee->photo) }}"
                                                             class="avatar avatar-sm me-3 border-radius-lg" alt="user1">
@@ -74,7 +131,8 @@
                                             </td>
                                             <td class="align-middle text-center">
                                                 <p class="text-xs font-weight-bold mb-0">
-                                                    {{ $employee->role->role_name }}</p>
+                                                    {{ $employee->role->role_name }}
+                                                </p>
                                             </td>
                                             <td class="align-middle text-center">
                                                 <p class="text-xs font-weight-bold mb-0">{{ $employee->code }}</p>
@@ -84,7 +142,7 @@
                                                     {{ $employee->category_celender->name }}
                                                 </p>
                                             </td>
-                                            <td class="align-middle">
+                                            <td class="align-middle text-center">
                                                 <form action="{{ route('admin.employee.delete', $employee->id) }}"
                                                     method="post" class="mb-0">
                                                     @method('DELETE')
@@ -120,9 +178,33 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search');
+            const table = document.querySelector('#datatable');
+            const rows = table.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    let found = false;
+
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                            found = true;
+                        }
+                    });
+
+                    row.style.display = found ? '' : 'none';
+                });
+            });
+        });
+    </script>
 @endsection
-<script>
-    $(document).ready(function() {
-        $('[data-bs-toggle="tooltip"]').tooltip();
-    });
-</script>

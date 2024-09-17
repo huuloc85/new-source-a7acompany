@@ -153,9 +153,9 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <div class="header-title">
-                        <h4 class="card-title">Danh sách PO</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Danh Sách PO</h4>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; padding-left: 10px; margin-top: 20px;">
@@ -197,10 +197,11 @@
                         <input name="monthExport" id="monthExport" type="hidden" value="{{ $selectedMonth }}">
                     </form>
 
-
                     <div style="margin-right: 10px;">
-                        <a href="{{ route('admin.history-import-quantity') }}" class="btn btn-primary tooltip-btn">
-                            <i class="fas fa-history"></i></a>
+                        <a href="{{ route('admin.history-import-quantity') }}" class="btn btn-primary tooltip-btn"
+                            data-toggle="tooltip" title="Lịch Sử Nhập PO">
+                            <i class="fas fa-truck"></i>
+                        </a>
                     </div>
                     {{-- Chọn tháng --}}
                     <form action="{{ route('admin.checkpo.index') }}" method="GET"
@@ -215,11 +216,6 @@
                         </select>
                     </form>
 
-                    {{-- Lịch Sử Nhập PO --}}
-                    {{-- <div>
-                        <a href="{{ route('admin.history-import-quantity') }}" class="btn btn-primary tooltip-btn">
-                            <i class="fas fa-history"></i></a>
-                    </div> --}}
                 </div>
 
                 <div class="row">
@@ -266,13 +262,19 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th title="STT">STT</th>
-                                                        <th title="Tên linh kiện">Tên linh kiện</th>
-                                                        <th title="Tổng số lượng tồn hiện tại">Tổng số lượng tồn hiện tại
+                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                            title="STT">STT</th>
+                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                            title="Tên linh kiện">Tên linh kiện</th>
+                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                            title="Tổng số lượng tồn hiện tại">Tổng số lượng tồn hiện tại
                                                         </th>
-                                                        <th title="Còn lại trong tuần">Còn lại trong tuần</th>
-                                                        <th title="Đã xuất trong tuần">Đã xuất trong tuần</th>
-                                                        <th title="Tồn đầu tuần">Tồn đầu tuần</th>
+                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                            title="Còn lại trong tuần">Còn lại trong tuần</th>
+                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                            title="Đã xuất trong tuần">Đã xuất trong tuần</th>
+                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                                            title="Tồn đầu tuần">Tồn đầu tuần</th>
                                                         @foreach ($weekDays as $date)
                                                             @php
                                                                 // Chỉ định định dạng của chuỗi ngày
@@ -281,7 +283,7 @@
                                                                     $date,
                                                                 );
                                                             @endphp
-                                                            <th class="text-uppercase text-md font-weight-bolder text-center"
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center text-center"
                                                                 title="{{ $carbonDate->toDateString() }}">
                                                                 {{ $carbonDate->format('d-m') }}
                                                             </th>
@@ -367,7 +369,8 @@
                                                                         0;
                                                                 @endphp
                                                                 <td class="text-center bg-2">
-                                                                    {{ number_format($quanExport) }}</td>
+                                                                    {{ number_format($quanExport) }}
+                                                                </td>
                                                             @endforeach
                                                         </tr>
                                                     @endforeach
@@ -377,7 +380,6 @@
                                     </div>
                                 </div>
                             @endforeach
-
                             {{-- Tab Hàng Ngày --}}
                             <div class="tab-pane tab-vvp fade po-tab" id="daily-tab" role="tabpanel"
                                 aria-labelledby="daily-tab-btn">
@@ -386,14 +388,20 @@
                                 </div>
                                 <div class="px-0 pb-2">
                                     <div class="table-responsive p-0 d-flex">
-                                        <div class="col-4 my-5">
+                                        <div class="col-4">
                                             <table class="table align-items-center mb-0 table-hover">
-                                                <thead>
+                                                <thead style="height: 82px">
                                                     <tr>
-                                                        <th class="text-uppercase text-md font-weight-bolder">STT</th>
-                                                        <th class="text-uppercase text-md font-weight-bolder">Tên linh
+                                                        <th
+                                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                            STT</th>
+                                                        <th
+                                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                            Tên linh
                                                             kiện</th>
-                                                        <th class="text-uppercase text-md font-weight-bolder">Tổng cộng
+                                                        <th
+                                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                                            Tổng cộng
                                                         </th>
                                                     </tr>
                                                 </thead>
@@ -421,7 +429,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-10 product-tab">
+                                        <div class="col-8 product-tab">
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead>
                                                     <tr>
@@ -431,9 +439,10 @@
                                                                     'd-m',
                                                                 ); // Định dạng ngày tháng
                                                             @endphp
-                                                            <th class="text-uppercase text-center text-md font-weight-bolder <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center<?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
                                                                 colspan="2" title="{{ $date }}">
-                                                                {{ $formattedDate }}</th>
+                                                                {{ $formattedDate }}
+                                                            </th>
                                                         @endforeach
                                                     </tr>
                                                     <tr>
@@ -477,7 +486,7 @@
                                                                         $nextDayEightAM = $formattedDate
                                                                             ->copy()
                                                                             ->addDay()
-                                                                            ->setHour(10);
+                                                                            ->setHour(9);
 
                                                                         // Phân biệt ca dựa vào thời gian trong cột created_at
                                                                         if ($created_at->isSameDay($formattedDate)) {
@@ -510,7 +519,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             {{-- Tab Hàng Lỗi --}}
                             <div class="tab-pane tab-vvp fade po-tab" id="error-tab" role="tabpanel"
                                 aria-labelledby="error-tab">
@@ -523,11 +531,14 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-uppercase text-md font-weight-bolder text-center">
+                                                        <th
+                                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center text-center">
                                                             STT</th>
-                                                        <th class="text-uppercase text-md font-weight-bolder">
+                                                        <th
+                                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                                             Tên linh kiện</th>
-                                                        <th class="text-uppercase text-md font-weight-bolder">
+                                                        <th
+                                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                                             Tổng cộng</th>
                                                     </tr>
                                                 </thead>
@@ -567,9 +578,10 @@
                                                                     'd-m',
                                                                 );
                                                             @endphp
-                                                            <th class="text-uppercase text-center text-md font-weight-bolder col-3 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-centercol-3 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
                                                                 rowspan="2" title="{{ $formattedDate }}">
-                                                                {{ $formattedDate }}</th>
+                                                                {{ $formattedDate }}
+                                                            </th>
                                                         @endforeach
 
                                                     </tr>

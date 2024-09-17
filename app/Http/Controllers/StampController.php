@@ -182,6 +182,7 @@ class StampController extends Controller
             $history = new HistoryPrint();
             $history->product_id = $product->id;
             $history->employee_id = Auth()->user()->id;
+            $history->type = $request->type;
             $history->date = $request->date;
             $history->shift = $request->shift;
             $history->binCount = $request->binCount;

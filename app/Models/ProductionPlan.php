@@ -14,7 +14,6 @@ class ProductionPlan extends Model
 
     protected $fillable = [
         'product_id',
-        'material_name',                                            // Tên Nguyên Vật Liệu
         'production_plan',                                          // Kế Hoạch Sản Xuất (PCS)
         'planned_material',                                         // Dự Định Vật Liệu (KG)
         'packaging_type',                                           // Loại Bao Bì
@@ -76,6 +75,4 @@ class ProductionPlan extends Model
     {
         return $this->hasMany(MaterialProduct::class, 'production_plans_id');
     }
-
-    public $materialcolor = ['Natural', 'Gray', 'Black'];
 }

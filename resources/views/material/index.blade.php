@@ -12,22 +12,26 @@
                 <div class="card-body">
                     <table class="table table-bordered">
                         <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Tên Nguyên Liệu</th>
-                                <th>Tổng Số Lượng</th>
+                            <tr class="text-center">
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    STT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Mã Nguyên Liệu</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                                    Tổng Số Lượng</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($materials as $index => $material)
-                                <tr>
+                                <tr class="text-center">
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $material->name }}</td>
-                                    <td>{{ $material->total_quantity }}</td>
+                                    <td>{{ $material['material'] }}</td>
+                                    <td>{{ number_format($material['total_quantity'], 2) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>

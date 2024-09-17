@@ -18,8 +18,9 @@
                                 <!-- Ngày -->
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Ngày<span class="required text-danger">*</span></label>
-                                    <input type="date" class="form-control @error('date') is-invalid @enderror"
-                                        placeholder="Ngày" name="date" value="{{ $request->date ?? '' }}" required>
+                                    <input type="date" id="date"
+                                        class="form-control @error('date') is-invalid @enderror" placeholder="Ngày"
+                                        name="date" value="{{ $request->date ?? '' }}" required>
                                     @error('date')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -31,8 +32,10 @@
                                     <select id="shift" class="form-control @error('shift') is-invalid @enderror"
                                         name="shift" required>
                                         <option style="text-align: center" value="">----- Ca làm việc -----</option>
-                                        <option value="1" {{ old('shift') == 1 ? 'selected' : '' }}>Ca 1</option>
-                                        <option value="2" {{ old('shift') == 2 ? 'selected' : '' }}>Ca 2</option>
+                                        <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value ="1">Ca 1
+                                        </option>
+                                        <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value ="2">Ca 2
+                                        </option>
                                     </select>
                                     @error('shift')
                                         <div class="text-danger">{{ $message }}</div>
@@ -43,7 +46,7 @@
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Số lượng thùng (tem)<span
                                             class="required text-danger">*</span></label>
-                                    <input min="1" max="999"
+                                    <input min="1" max="999" id="binCount"
                                         class="form-control @error('binCount') is-invalid @enderror"
                                         placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}"
                                         required>
@@ -61,7 +64,8 @@
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Thùng bắt đầu<span
                                             class="required text-danger">*</span></label>
-                                    <input min="0" class="form-control @error('binStart') is-invalid @enderror"
+                                    <input min="0" id="binStart"
+                                        class="form-control @error('binStart') is-invalid @enderror"
                                         placeholder="Thùng bắt đầu" name="binStart" value="{{ $request->binStart ?? '' }}"
                                         required>
                                     @error('binStart')
@@ -112,6 +116,8 @@
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <input type="hidden" id="type" name="type" value="Tem Thùng">
+
                             </div><br>
 
                             <div>
@@ -119,8 +125,7 @@
                                     <button type="submit" id="register-barcode" class="btn btn-success">Tạo tem</button>
                                     <a class="btn btn-primary" href="{{ route('admin.product.barcode') }}">Làm mới</a>
                                     @if (isset($binArray))
-                                        <a class="btn btn-secondary" onclick="savePrint(event)"
-                                            href="javascript:window.print()">Print</a>
+                                        <a class="btn btn-secondary" onclick="handlePrint(event)" href="#">Print</a>
                                     @endif
                                 </div>
                                 <div class="container-gird">
@@ -139,7 +144,14 @@
                                                                         CO. LTD</div>
                                                                 </td>
                                                                 <td colspan="4" class="align-content-center">
-                                                                    <div class="qrcode-img">{!! $qrCode !!}</div>
+                                                                    <div class="qrcode-img">VINH VINH PHAT ONE MEMBER
+                                                                        CO.,LTD <br> Add: 851 Highway 1A, Binh Hung Hoa A
+                                                                        Ward, Binh Tan District, HCM City <br>Fac:
+                                                                        2861,National Highway 1, Hamlet 3, Binh Chanh
+                                                                        Commune, Binh Chanh District, HCM City <br>
+                                                                        Tel: 84-0272.3630.655 or 84-0272.3630.656 <br>
+                                                                        Fax:84-0272.3630.657
+                                                                        Made in Viet Nam</div>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -172,7 +184,7 @@
                                                                 </td>
                                                                 <td class="text-center align-content-center">
                                                                     <p class="mb-0">
-                                                                        {{ $product?->productionPlans()?->firstOrFail()?->material_name ?? 'NULL' }}
+                                                                        {{ $product->material }}
                                                                     </p>
                                                                 </td>
                                                                 <td colspan="2" class="text-center">
@@ -181,7 +193,7 @@
                                                                 <td colspan="2"
                                                                     class="text-center align-content-center">
                                                                     <p class="mb-0">
-                                                                        {{ $product?->productionPlans()?->firstOrFail()?->material_color ?? 'NULL' }}
+                                                                        {{ $product->color }}
                                                                     </p>
                                                                 </td>
                                                             </tr>
@@ -213,7 +225,7 @@
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td class="text-start">
+                                                                {{-- <td class="text-start">
                                                                     Mã vạch<br>バーコード
                                                                 </td>
                                                                 <td colspan="5"
@@ -221,7 +233,7 @@
                                                                     <img id="barcode-image"
                                                                         src="data:image/png;base64,{{ $bin['barcode'] }}"
                                                                         alt="Mã vạch">
-                                                                </td>
+                                                                </td> --}}
                                                             </tr>
                                                             <tr>
                                                                 <td class="text-start">
@@ -267,8 +279,7 @@
                                 @if (isset($binArray))
                                     <div class="no-print">
                                         <a class="btn btn-secondary" id="save-print"
-                                            data-url="{{ route('admin.barcode.save.print') }}" onclick="savePrint(event)"
-                                            href="javascript:window.print()">Print</a>
+                                            data-url="{{ route('admin.barcode.save.print') }}" href="#">Print</a>
                                     </div>
                                 @endif
                             </div>
@@ -278,20 +289,24 @@
             </div>
         </div>
     </div>
+
     <script>
+        var lastPrintTime = null; // Biến lưu thời gian lần in gần nhất
+
         function selectProduct(event) {
             var data = event.target.value.split("-", 2);
             $('#product_code').val(data[0]);
             $('#product_pcs').val(data[1]);
         }
 
-        function savePrint(event) {
+        function savePrint(callback) {
             var url = $('#save-print').data('url');
             var productCode = $('#product_code').val();
             var date = $('#date').val();
             var shift = $('#shift').val();
             var binCount = $('#binCount').val();
             var binStart = $('#binStart').val();
+            var type = $('#type').val();
 
             if (productCode) {
                 $.ajax({
@@ -303,10 +318,12 @@
                         shift: shift,
                         binCount: binCount,
                         binStart: binStart,
+                        type: type,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
                         console.log(response.status);
+                        if (callback) callback(); // Gọi callback sau khi lưu thành công
                     },
                     error: function(xhr, status, error) {
                         console.error("Đã xảy ra lỗi khi gửi lưu lịch sử print:", error);
@@ -314,5 +331,67 @@
                 });
             }
         }
+
+        function handlePrint() {
+            var currentTime = new Date().getTime();
+
+            if (lastPrintTime === null) {
+                // Lần in đầu tiên, không có cảnh báo
+                lastPrintTime = currentTime;
+                savePrint(function() {
+                    setTimeout(function() {
+                        window.print();
+                    }, 100);
+                });
+            } else {
+                var timeDiff = (currentTime - lastPrintTime) / 1000 / 60;
+
+                if (timeDiff <= 5) {
+                    // Nếu thời gian in thứ hai trong vòng 5 phút, hiển thị cảnh báo
+                    Swal.fire({
+                        title: 'Cảnh báo!',
+                        text: 'Bạn đã in trước đó chưa đầy 5 phút. Bạn có chắc chắn muốn in thêm không?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Có',
+                        cancelButtonText: 'Không'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Nếu người dùng xác nhận in, cho phép in
+                            lastPrintTime = currentTime;
+                            savePrint(function() {
+                                setTimeout(function() {
+                                    window.print();
+                                }, 100);
+                            });
+                        }
+                    });
+                } else {
+                    // Nếu đã hơn 5 phút, không cần cảnh báo
+                    lastPrintTime = currentTime;
+                    savePrint(function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 100);
+                    });
+                }
+            }
+        }
+
+        $(document).ready(function() {
+            // Xử lý sự kiện nhấn Ctrl+P
+            $(document).keydown(function(event) {
+                if (event.ctrlKey && event.key === 'p') {
+                    event.preventDefault(); // Ngăn chặn việc tự động mở hộp thoại in
+                    handlePrint(); // Xử lý việc in
+                }
+            });
+
+            // Xử lý khi nhấn vào nút Print
+            $('#save-print').click(function(event) {
+                event.preventDefault(); // Ngăn chặn việc mở hộp thoại in tự động
+                handlePrint(); // Gọi cùng một logic xử lý in
+            });
+        });
     </script>
 @endsection

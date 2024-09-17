@@ -64,7 +64,7 @@ class ProductionPlanController extends Controller
 
         // Cập nhật các thuộc tính của bản ghi
         $productPlan->product_id = $request->input('product_id');
-        $productPlan->material_name = $request->input('material_name');
+        // $productPlan->material_name = $request->input('material');
         $productPlan->production_plan = $productionPlan;
         $productPlan->planned_material = $plannedMaterial;
         $productPlan->packaging_type = $request->input('packaging_type');
@@ -82,7 +82,7 @@ class ProductionPlanController extends Controller
         $productPlan->produced_quantity = $producedQuantity;
         $productPlan->remaining_production_quantity = $remainingProductionQuantity;
         $productPlan->remaining_production_days = $remainingProductionDays;
-        $productPlan->material_color = $request->input('material_color');
+        // $productPlan->material_color = $request->input('color');
 
         // Lưu sản phẩm kế hoạch
         $productPlan->save();
@@ -95,7 +95,7 @@ class ProductionPlanController extends Controller
 
         // Cập nhật giá trị cho materialProduct
         $materialProduct->quantity = $plannedMaterial;
-        $materialProduct->name = $productPlan->material_name;
+        // $materialProduct->name = $productPlan->material_name;
         $materialProduct->save();
 
         return $productPlan;
@@ -104,7 +104,7 @@ class ProductionPlanController extends Controller
     // Chức Năng Nguyên Liệu vs Loại Bao Bì (Hàm Chức Năng)
     private function getMaterialsAndPackagingTypes()
     {
-        $materials = ['WS641-B50', 'EP540N', 'ZS609-N', 'J783-N'];
+        // $materials = ['WS641-B50', 'EP540N', 'ZS609-N', 'J783-N'];
         $packagingTypes = [
             "20X20",
             "25X25",
@@ -114,15 +114,15 @@ class ProductionPlanController extends Controller
             "LÓT LỚNX2",
             "LÓT NHỎ"
         ];
-        $materialcolor = ['Natural', 'Gray', 'Black'];
-        return compact('materials', 'packagingTypes', 'materialcolor');
+        // $materialcolor = ['Natural', 'Gray', 'Black'];
+        return compact('packagingTypes');
     }
 
     // // View Kế Hoạch Sản Xuất
     public function index(Request $request)
     {
         // Lấy tháng hiện tại và tháng được chọn từ yêu cầu
-        $selectedMonth = $request->input('month', Carbon::now()->format('m-Y'));
+        $selectedMonth = $request->input('month', Carbon::create(2024, 8, 1)->format('m-Y'));
         $currentMonth = Carbon::now()->format('m-Y');
 
         // Kiểm tra nếu hôm nay là ngày đầu tháng
@@ -284,33 +284,54 @@ class ProductionPlanController extends Controller
     // Xử lý cập nhật kế hoạch sản xuất
     public function handleConfigProductPlan(Request $request)
     {
+        DB::beginTransaction(); // Bắt đầu transaction để đảm bảo dữ liệu nhất quán
         try {
-            // Xác thực dữ liệu đầu vào
             $plansData = $request->input('plans');
 
-            // Kiểm tra nếu mảng plans không rỗng
             if (is_array($plansData)) {
                 foreach ($plansData as $planData) {
                     // Kiểm tra nếu các key cần thiết tồn tại trong dữ liệu
-                    if (isset($planData['id']) && isset($planData['production_plan'])) {
-                        // Tìm kế hoạch sản xuất theo ID
+                    if (isset($planData['id'], $planData['production_plan'], $planData['product_id'])) {
                         $productionPlan = ProductionPlan::findOrFail($planData['id']);
-
-                        // Cập nhật các thuộc tính kế hoạch sản xuất
                         $productionPlan->updateProductionPlanAttributes($planData);
+
+                        // Lấy dữ liệu planned_material dựa trên product_id
+                        $productMaterials = ProductionPlan::where('product_id', $planData['product_id'])->get();
+
+                        $totalQuantity = 0;
+
+                        // Gộp lại những dữ liệu trùng và cộng dồn
+                        foreach ($productMaterials as $material) {
+                            $totalQuantity += $material->planned_material;
+                        }
+
+                        // Lưu lại dữ liệu vào bảng quantity
+                        MaterialProduct::updateOrCreate(
+                            [
+                                'product_id' => $planData['product_id'],
+                                'production_plans_id' => $productionPlan->id
+                            ],
+                            ['quantity' => $totalQuantity]
+                        );
+                    } else {
+                        // Log lỗi nếu thiếu dữ liệu cần thiết
+                        Log::error('Missing required data in planData: ' . json_encode($planData));
                     }
                 }
             }
 
+            DB::commit(); // Commit transaction khi mọi thứ thành công
             toast('Cập nhật kế hoạch sản xuất thành công!', 'success', 'top-right');
             return redirect()->route('admin.product-plan.index');
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollBack(); // Rollback transaction khi có lỗi xảy ra
             Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
             toast('Cập nhật kế hoạch sản xuất không thành công!', 'error', 'top-right');
             return redirect()->route('admin.product-plan.index');
         }
     }
+
+
 
     public function export(Request $request)
     {
