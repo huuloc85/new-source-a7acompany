@@ -30,4 +30,5 @@ return [
     "time_work" => 8,
     "shift_1" => "N",
     "shift_2" => "D",
+    "ca2_check_start_time" => "12:00:00",
 ];
