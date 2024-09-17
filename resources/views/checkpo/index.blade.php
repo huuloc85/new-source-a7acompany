@@ -390,7 +390,7 @@
                                     <div class="table-responsive p-0 d-flex">
                                         <div class="col-4">
                                             <table class="table align-items-center mb-0 table-hover">
-                                                <thead>
+                                                <thead style="height: 80px;">
                                                     <tr>
                                                         <th
                                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
