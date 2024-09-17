@@ -56,10 +56,24 @@
     border-width: 1px;
 }
 
-.qrcode-img {
+/* .qrcode-img {
     width: 200px;
     padding-bottom: 10px !important;
     padding-top: 10px !important;
+} */
+
+.qrcode-img {
+    width: 200px;
+    word-wrap: break-word;
+    /* Ngắt từ nếu quá dài */
+    font-size: 9px;
+    /* Kích thước chữ nhỏ để phù hợp */
+    line-height: 1.4;
+    /* Khoảng cách giữa các dòng */
+    text-align: left;
+    /* Căn lề trái cho văn bản */
+    white-space: normal;
+    /* Đảm bảo các dòng xuống dòng tự nhiên */
 }
 
 .qrcode-img svg {

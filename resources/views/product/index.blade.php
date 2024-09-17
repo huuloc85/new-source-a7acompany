@@ -540,7 +540,7 @@
                         $nextDayEightAM = $formattedDate
                         ->copy()
                         ->addDay()
-                        ->setHour(10);
+                        ->setHour(9);
 
                         // Phân biệt ca dựa vào thời gian trong cột created_at
                         if ($created_at->isSameDay($formattedDate)) {

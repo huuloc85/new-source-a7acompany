@@ -390,7 +390,7 @@
                                     <div class="table-responsive p-0 d-flex">
                                         <div class="col-4">
                                             <table class="table align-items-center mb-0 table-hover">
-                                                <thead>
+                                                <thead style="height: 82px">
                                                     <tr>
                                                         <th
                                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
@@ -486,7 +486,7 @@
                                                                         $nextDayEightAM = $formattedDate
                                                                             ->copy()
                                                                             ->addDay()
-                                                                            ->setHour(10);
+                                                                            ->setHour(9);
 
                                                                         // Phân biệt ca dựa vào thời gian trong cột created_at
                                                                         if ($created_at->isSameDay($formattedDate)) {

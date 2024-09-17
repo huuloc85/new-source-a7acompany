@@ -39,8 +39,9 @@ class HistoryPrintController extends Controller
     {
         if ($request->has('month') && $request->month != '') {
             $query->whereMonth('created_at', Carbon::parse($request->month)->month);
+        } else {
+            $query->whereMonth('created_at', Carbon::now()->month);
         }
-
         if ($request->has('type') && $request->type != '') {
             $query->where('type', $request->type);
         }

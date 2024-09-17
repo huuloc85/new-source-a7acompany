@@ -144,7 +144,14 @@
                                                                         CO. LTD</div>
                                                                 </td>
                                                                 <td colspan="4" class="align-content-center">
-                                                                    <div class="qrcode-img">{!! $qrCode !!}</div>
+                                                                    <div class="qrcode-img">VINH VINH PHAT ONE MEMBER
+                                                                        CO.,LTD <br> Add: 851 Highway 1A, Binh Hung Hoa A
+                                                                        Ward, Binh Tan District, HCM City <br>Fac:
+                                                                        2861,National Highway 1, Hamlet 3, Binh Chanh
+                                                                        Commune, Binh Chanh District, HCM City <br>
+                                                                        Tel: 84-0272.3630.655 or 84-0272.3630.656 <br>
+                                                                        Fax:84-0272.3630.657
+                                                                        Made in Viet Nam</div>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -218,7 +225,7 @@
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td class="text-start">
+                                                                {{-- <td class="text-start">
                                                                     Mã vạch<br>バーコード
                                                                 </td>
                                                                 <td colspan="5"
@@ -226,7 +233,7 @@
                                                                     <img id="barcode-image"
                                                                         src="data:image/png;base64,{{ $bin['barcode'] }}"
                                                                         alt="Mã vạch">
-                                                                </td>
+                                                                </td> --}}
                                                             </tr>
                                                             <tr>
                                                                 <td class="text-start">
