@@ -370,60 +370,96 @@ class CheckPoController extends Controller
 
     public function historyImport(Request $request)
     {
-        // Lấy ngày từ request nếu có, nếu không thì lấy ngày hiện tại
-        $month = $request->input('month') ? Carbon::createFromFormat('Y-m', $request->input('month')) : Carbon::now();
-
-        // Lấy danh sách sản phẩm
-        $products = Product::all();
-
-        // Lấy ID sản phẩm từ request nếu có, nếu không thì để trống (lấy tất cả sản phẩm)
-        $productId = $request->input('product_id', '');
-
-        // Lọc theo ID sản phẩm nếu có
-        $dailyQuantitiesQuery = DailyQuantityPO::whereYear('created_at', $month->year)
-            ->whereMonth('created_at', $month->month);
-
-        if ($productId) {
-            $dailyQuantitiesQuery->where('product_id', $productId);
+        $selectedDate = $request->input('date');
+        if ($selectedDate) {
+            $month = Carbon::parse($selectedDate);
+        } else {
+            $month = $request->input('month') ? Carbon::createFromFormat('Y-m', $request->input('month')) : Carbon::now();
         }
+        $products = Product::all();
+        //query
+        if ($selectedDate) {
+            $dailyQuantitiesQuery = DailyQuantityPO::whereDate('date', $selectedDate);
+        } else {
+            $dailyQuantitiesQuery = DailyQuantityPO::whereYear('date', $month->year)
+                ->whereMonth('date', $month->month);
+        }
+        $dailyQuantities = $dailyQuantitiesQuery->orderBy('date', 'asc')->get();
+        $dates = DailyQuantityPO::whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->select('date')
+            ->distinct()
+            ->orderBy('date')
+            ->get();
 
-        $dailyQuantities = $dailyQuantitiesQuery->get();
-
-        return view('checkpo.history-import-quantity', compact('products', 'month', 'dailyQuantities', 'productId'));
+        return view('checkpo.history-import-quantity', compact('products', 'month', 'dailyQuantities', 'selectedDate', 'dates'));
     }
 
     public function updatePO(Request $request)
     {
         try {
-            $dailyQuantity = DailyQuantityPO::findOrFail($request->dailyId);
-            $dailyQuantity->product_id = $request->input('product_id');
-            $dailyQuantity->quantity = $request->input('quantity');
-            $dailyQuantity->date = $dailyQuantity->date;
-            $dailyQuantity->employee_id = Auth::id();
-            $dailyQuantity->save();
+            $quantities = $request->input('quantities', []);
+            $productIds = $request->input('product_id', []);
+            $date = $request->input('date');
+            $status = $request->input('status');
 
-            $totalDailyQuantity = TotalDailyQuantityPo::where('product_id', $request->input('product_id'))
-                ->whereDate('date', $dailyQuantity->date)
-                ->first();
+            // Kiểm tra xem quantities và productIds có phải mảng hay không
+            if (is_array($quantities) && is_array($productIds)) {
+                foreach ($productIds as $productId) {
+                    $newQuantity = $quantities[$productId] ?? 0;
+                    if ($newQuantity > 0) {
+                        $dailyQuantity = DailyQuantityPO::where('product_id', $productId)
+                            ->whereDate('date', $date)
+                            ->first();
 
-            if ($totalDailyQuantity) {
-                $totalDailyQuantity->totalQuan += $request->input('quantity') - $request->input('oldQuan');
-                $totalDailyQuantity->status = $request->input('status');
-                $totalDailyQuantity->save();
-            } else {
-                $totalDailyQuantity = new TotalDailyQuantityPo();
-                $totalDailyQuantity->product_id = $request->input('product_id');
-                $totalDailyQuantity->date = $dailyQuantity->date;
-                $totalDailyQuantity->totalQuan = $request->input('quantity');
-                $totalDailyQuantity->status = $request->input('status');
-                $totalDailyQuantity->save();
+                        if ($dailyQuantity) {
+                            if ($dailyQuantity->quantity != $newQuantity) {
+                                $dailyQuantity->quantity = $newQuantity;
+                                $dailyQuantity->employee_id = Auth::id();
+                                $dailyQuantity->status = $status;
+                                $dailyQuantity->save();
+                            }
+                        } else {
+                            $dailyQuantity = new DailyQuantityPO();
+                            $dailyQuantity->product_id = $productId;
+                            $dailyQuantity->quantity = $newQuantity;
+                            $dailyQuantity->employee_id = Auth::id();
+                            $dailyQuantity->date = $date;
+                            $dailyQuantity->status = $status;
+                            $dailyQuantity->save();
+                        }
+                        $totalDailyQuantity = TotalDailyQuantityPo::where('product_id', $productId)
+                            ->whereDate('date', $date)
+                            ->first();
+
+                        if ($totalDailyQuantity) {
+                            $totalDailyQuantity->totalQuan = $newQuantity;
+                            $totalDailyQuantity->status = $status;
+                            $totalDailyQuantity->save();
+                        } else {
+                            $totalDailyQuantity = new TotalDailyQuantityPo();
+                            $totalDailyQuantity->product_id = $productId;
+                            $totalDailyQuantity->date = $date;
+                            $totalDailyQuantity->status = $status;
+                            $totalDailyQuantity->totalQuan = $newQuantity;
+                            $totalDailyQuantity->save();
+                        }
+                    }
+                }
             }
+
             toast('Cập nhật số lượng thành công!', 'success');
         } catch (\Exception $e) {
+            Log::error('Lỗi cập nhật số lượng', ['error' => $e->getMessage()]);
             toast('Có lỗi xảy ra khi cập nhật số lượng!', 'error');
         }
-        return redirect()->route('admin.history-import-quantity');
+        return redirect()->route('admin.history-import-quantity', [
+            'month' => $request->input('month'),
+            'date' => $date,
+            'status' => $status
+        ]);
     }
+
 
     public function deletePO($id)
     {
