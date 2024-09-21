@@ -139,7 +139,11 @@ class AttendanceRecordController extends Controller
             if ($shift == config("a7a.shift_1")) {
                 $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
             } else if ($shift == config("a7a.shift_2")) {
-                $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                if (Carbon::now()->format('Y-m-d') == $record->date) {
+                    unset($this->listRecord[$key]);
+                } else {
+                    $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                }
             } else {
                 ///lịch nghĩ nhưng đi làm
                 $date = $date->subDay();
@@ -147,17 +151,19 @@ class AttendanceRecordController extends Controller
                 if ($shiftBefore == config("a7a.shift_1")) {
                     $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
                 } else if ($shiftBefore == config("a7a.shift_2")) {
-                    //$this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
-                    // check in before 12h AM?
-                    $times = explode(', ', $record->all_times);
-                    $timesBefore12AM = array_filter($times, function ($time) {
-                        return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
-                    });
-
-                    if (empty($timesBefore12AM)) {
-                        $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
-                    } else {
+                    if (Carbon::now()->format('Y-m-d') == $record->date) {
                         unset($this->listRecord[$key]);
+                    } else {
+                        // check in before 12h AM?
+                        $times = explode(', ', $record->all_times);
+                        $timesBefore12AM = array_filter($times, function($time) {
+                            return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
+                        });
+                        if (empty($timesBefore12AM)) {
+                            $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                        } else {
+                            unset($this->listRecord[$key]);
+                        }
                     }
                 }
             }
@@ -178,7 +184,6 @@ class AttendanceRecordController extends Controller
             case 'qc_day':
                 $breakSchedule = $breakTimesConfig['ca_ngay']['schedule'];
                 break;
-
             case 'rotating_shift_mk':
             case 'rotating_shift_jp':
             case 'technical':
@@ -187,7 +192,6 @@ class AttendanceRecordController extends Controller
                     $breakTimesConfig['sx_ca_2']['schedule'] :
                     $breakTimesConfig['sx_ca_1']['schedule'];
                 break;
-
             default:
                 return 0;
         }
@@ -208,14 +212,12 @@ class AttendanceRecordController extends Controller
         return $breakTime;
     }
 
-
     //Code chức năng tính công ca 1 (Admin)
     private function processRecordCa1($record, $timeFilter, $dayOfWeekMapping)
     {
         $workStartTime = config("a7a.ca1_work_start_time");
         $workEndTime = $timeFilter === 'working_hours' ? config("a7a.ca1_work_end_time_wh") : config("a7a.ca1_work_end_time_qd");
         $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
-
 
         if ($record->record_count == 1) {
             $time = Carbon::parse($record->time_in);
@@ -280,6 +282,17 @@ class AttendanceRecordController extends Controller
             ->first();
 
         $record->time_out = isset($checkTimeOut) ? $checkTimeOut : null;
+
+        if ($record->time_out == null && $record->time_in != null) {
+            $times = explode(', ', $record->all_times);
+            if (count($times) > 1) {
+                $listTimeout = array_filter($times, function ($time) {
+                    return strtotime($time) > strtotime($record->time_in);
+                });
+
+                $record->time_out = !empty($listTimeout) ? min($listTimeout) : null;
+            }
+        }
 
         $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
         $workStartTime = config("a7a.ca2_work_start_time");
