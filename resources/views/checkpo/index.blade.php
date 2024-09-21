@@ -158,8 +158,7 @@
                         <h4 class="card-title mb-0">Danh Sách PO</h4>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; padding-left: 10px; margin-top: 20px;">
-
+                <div style="display: flex; align-items: center; padding-left: 10px; margin-top: 20px;" class="my-3">
                     {{-- Thêm Sản Lượng --}}
                     <div style="margin-right: 10px;">
                         <button type="button" class='btn btn-primary tooltip-btn' data-bs-toggle="modal"
@@ -215,9 +214,7 @@
                             @endforeach
                         </select>
                     </form>
-
                 </div>
-
                 <div class="row">
                     <div class="col-12 mb-3">
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
