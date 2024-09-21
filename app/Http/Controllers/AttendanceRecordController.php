@@ -164,12 +164,58 @@ class AttendanceRecordController extends Controller
         }
     }
 
+    private function calculateBreakTime($timeFilter, $timeIn, $timeOut)
+    {
+        $breakTimesConfig = config("a7a.break_times");
+        $breakTime = 0;
+        $timeIn = Carbon::parse($timeIn);
+        $timeOut = Carbon::parse($timeOut);
+
+        switch ($timeFilter) {
+            case 'working_hours':
+                $breakSchedule = $breakTimesConfig['ca_hanh_chinh']['schedule'];
+                break;
+            case 'qc_day':
+                $breakSchedule = $breakTimesConfig['ca_ngay']['schedule'];
+                break;
+
+            case 'rotating_shift_mk':
+            case 'rotating_shift_jp':
+            case 'technical':
+                // Chọn lịch nghỉ dựa trên giờ vào
+                $breakSchedule = $timeIn->hour >= 21 ?
+                    $breakTimesConfig['sx_ca_2']['schedule'] :
+                    $breakTimesConfig['sx_ca_1']['schedule'];
+                break;
+
+            default:
+                return 0;
+        }
+
+        foreach ($breakSchedule as $break) {
+            $breakStart = Carbon::parse($break['time']);
+            $breakEnd = $breakStart->copy()->addMinutes($break['duration']);
+
+            // Kiểm tra xem khoảng nghỉ có nằm trong khoảng thời gian làm việc không
+            if ($breakStart < $timeOut && $breakEnd > $timeIn) {
+                // Tính thời gian nghỉ thực tế
+                $actualBreakStart = max($breakStart, $timeIn);
+                $actualBreakEnd = min($breakEnd, $timeOut);
+                $breakTime += $actualBreakEnd->diffInMinutes($actualBreakStart);
+            }
+        }
+
+        return $breakTime;
+    }
+
+
     //Code chức năng tính công ca 1 (Admin)
     private function processRecordCa1($record, $timeFilter, $dayOfWeekMapping)
     {
         $workStartTime = config("a7a.ca1_work_start_time");
         $workEndTime = $timeFilter === 'working_hours' ? config("a7a.ca1_work_end_time_wh") : config("a7a.ca1_work_end_time_qd");
-        $breakTime = $timeFilter === 'working_hours' ? config("a7a.ca1_break_time_wh") : config("a7a.ca1_break_time_qd"); // break time in minutes
+        $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
+
 
         if ($record->record_count == 1) {
             $time = Carbon::parse($record->time_in);
@@ -235,7 +281,7 @@ class AttendanceRecordController extends Controller
 
         $record->time_out = isset($checkTimeOut) ? $checkTimeOut : null;
 
-        $breakTime = config("a7a.ca2_break_time");
+        $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
         $workStartTime = config("a7a.ca2_work_start_time");
         $workEndTime = config("a7a.ca2_work_end_time");
         $record->total_hours = $this->calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime, true);

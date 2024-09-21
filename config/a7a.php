@@ -1,6 +1,6 @@
 <?php
 return [
-    //chấm công
+    // chấm công
     "ca1_start_time" => "06:00:00",
     "ca1_end_time" => "20:30:00",
     "list_category" => [
@@ -8,7 +8,7 @@ return [
         'qc_day' => 'Nhân viên QC Ca Ngày (07:30 - 19:30)',
         'rotating_shift_mk' => 'Nhóm Đi Xoay Ca - Hàng Chợ',
         'rotating_shift_jp' => 'Nhóm Đi Xoay Ca - Hàng Nhật',
-        'technical' => 'Nhóm Kỹ Thuật'
+        'technical' => 'Nhóm Kỹ Thuật',
     ],
     "list_category_ca1" => ['working_hours', 'qc_day'],
     "list_category_ca2" => ['rotating_shift_mk', 'rotating_shift_jp', 'technical'],
@@ -17,9 +17,9 @@ return [
     "ca1_work_start_time" => "07:30:00",
     "ca1_work_end_time_wh" => "17:00:00",
     "ca1_work_end_time_qd" => "19:30:00",
-    "ca1_break_time_wh" => 90,
-    "ca1_break_time_qd" => 60,
-    "ca2_break_time" => 60,
+    // "ca1_break_time_wh" => 90,
+    // "ca1_break_time_qd" => 60,
+    // "ca2_break_time" => 60,
     "ca2_work_start_time" => "19:30:00",
     "ca2_work_end_time" => "07:30:00",
     "over_time_start_qd" => "16:30:00",
@@ -31,4 +31,39 @@ return [
     "shift_1" => "N",
     "shift_2" => "D",
     "ca2_check_start_time" => "12:00:00",
+
+    // Thời gian nghỉ
+    "break_times" => [
+        'ca_hanh_chinh' => [
+            'schedule' => [
+                ['time' => '09:30', 'duration' => 15],
+                ['time' => '12:00', 'duration' => 60],
+                ['time' => '14:30', 'duration' => 15],
+            ],
+        ],
+        'ca_ngay' => [
+            'schedule' => [
+                ['time' => '09:30', 'duration' => 5],
+                ['time' => '11:20', 'duration' => 40],
+                ['time' => '14:30', 'duration' => 5],
+                ['time' => '17:00', 'duration' => 10],
+            ],
+        ],
+        'sx_ca_1' => [
+            'schedule' => [
+                ['time' => '09:30', 'duration' => 10],
+                ['time' => '11:20', 'duration' => 30],
+                ['time' => '14:30', 'duration' => 10],
+                ['time' => '17:00', 'duration' => 10],
+            ],
+        ],
+        'sx_ca_2' => [
+            'schedule' => [
+                ['time' => '21:30', 'duration' => 10],
+                ['time' => '23:30', 'duration' => 30],
+                ['time' => '02:30', 'duration' => 10],
+                ['time' => '05:00', 'duration' => 10],
+            ],
+        ],
+    ],
 ];
