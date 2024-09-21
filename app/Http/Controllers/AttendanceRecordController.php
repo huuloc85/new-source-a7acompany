@@ -150,7 +150,7 @@ class AttendanceRecordController extends Controller
                     //$this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
                     // check in before 12h AM?
                     $times = explode(', ', $record->all_times);
-                    $timesBefore12AM = array_filter($times, function($time) {
+                    $timesBefore12AM = array_filter($times, function ($time) {
                         return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
                     });
 
@@ -310,24 +310,20 @@ class AttendanceRecordController extends Controller
     //View Lịch Sử Chấm Công (Nhân Viên)
     public function employeeViewRecords(Request $request)
     {
-        $employeeCode = auth()->user()->code;  // Lọc theo mã nhân viên đăng nhập
-        $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));  // Lấy tháng hiện tại hoặc tháng được chọn từ request
+        $employeeCode = auth()->user()->code;
+        // Lấy tháng hiện tại hoặc tháng được chọn từ request
+        $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
 
         // Lấy danh sách các danh mục làm việc
         $categories = CategoryCelender::all();
 
-        // Xây dựng truy vấn
+        // Truy vấn dữ liệu theo tháng được chọn và danh mục (nếu có)
         $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
             ->whereMonth('date', Carbon::parse($currentMonth)->month)
             ->where('employee_code', $employeeCode)
             ->orderBy('date', 'asc');
         $records = $query->get();
-        $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
-        foreach ($records as $record) {
-            $this->processRecord($record, $timeFilter ?? null, $dayOfWeekMapping, $calendarId ?? null);
-        }
 
-        // Trả kết quả về view
         return view('attendence.employee_records', compact('records', 'currentMonth', 'categories'));
     }
 
