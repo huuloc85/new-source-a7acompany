@@ -159,6 +159,11 @@ class AttendanceRecordController extends Controller
                 }
             } else {
                 ///lịch nghĩ nhưng đi làm
+                if ($date->day == 1) {
+                    ///get new category_id
+                    $prevMonth = $date = $date->subDay();
+                    $calendarId = Celender::whereMonth('date', Carbon::parse($prevMonth)->month)->pluck('id')->first();
+                }
                 $date = $date->subDay();
                 $shiftBefore = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
                 if ($shiftBefore == config("a7a.shift_1")) {
