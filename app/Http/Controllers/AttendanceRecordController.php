@@ -146,7 +146,12 @@ class AttendanceRecordController extends Controller
                     $timesBefore12AM = array_filter($times, function($time) {
                         return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
                     });
-                    if (empty($timesBefore12AM)) {
+
+                    $timesAfter12AM = array_filter($times, function($time) {
+                        return strtotime($time) > strtotime(config("a7a.ca2_check_start_time"));
+                    });
+
+                    if (empty($timesBefore12AM) || !empty($timesAfter12AM)) {
                         $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
                     } else {
                         unset($this->listRecord[$key]);
@@ -167,7 +172,11 @@ class AttendanceRecordController extends Controller
                         $timesBefore12AM = array_filter($times, function($time) {
                             return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
                         });
-                        if (empty($timesBefore12AM)) {
+                        $timesAfter12AM = array_filter($times, function($time) {
+                            return strtotime($time) > strtotime(config("a7a.ca2_check_start_time"));
+                        });
+
+                        if (empty($timesBefore12AM) || !empty($timesAfter12AM)) {
                             $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
                         } else {
                             unset($this->listRecord[$key]);
@@ -326,6 +335,12 @@ class AttendanceRecordController extends Controller
 
         $effectiveStart = $timeInDate < $workStartDate ? $workStartDate : $timeInDate;
         $effectiveEnd = $timeOutDate > $workEndDate ? $workEndDate : $timeOutDate;
+
+        // Không cộng thêm ngày nếu về sớm trước 24h
+        if ($shift2 && $timeOutDate->hour < 24 && $timeOutDate->isSameDay($timeInDate)) {
+            $effectiveEnd = $timeOutDate;
+        }
+
         if ($shift2 && $effectiveEnd < $effectiveStart) {
             $effectiveEnd->addDay();
         }
