@@ -286,10 +286,9 @@ class AttendanceRecordController extends Controller
         if ($record->time_out == null && $record->time_in != null) {
             $times = explode(', ', $record->all_times);
             if (count($times) > 1) {
-                $listTimeout = array_filter($times, function ($time) {
+                $listTimeout = array_filter($times, function ($time) use ($record) {
                     return strtotime($time) > strtotime($record->time_in);
                 });
-
                 $record->time_out = !empty($listTimeout) ? min($listTimeout) : null;
             }
         }
