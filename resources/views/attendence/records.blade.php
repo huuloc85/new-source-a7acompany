@@ -107,7 +107,7 @@
                                             {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                         </td>
                                         <td class="{{ $record->time_out ? '' : 'text-danger' }}">
-                                            {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công về' }}
+                                            {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                         </td>
                                         <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
                                             @if ($record->total_hours)

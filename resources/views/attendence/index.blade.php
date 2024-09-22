@@ -44,9 +44,11 @@
                 </div>
                 <div class="d-flex align-items-center ps-2">
                     <form method="GET" action="{{ route('admin.attendence.index') }}" class="d-flex">
-                        <div class="form-group mb-0 me-2" style="margin-right: 10px;">
+                        <div class="col-md-6 col-lg-2">
+                            <label for="month" class="form-label">Chọn Tháng</label>
                             <input type="month" name="month" id="month" class="form-control"
-                                placeholder="Chọn tháng" value="{{ $currentMonth }}" onchange="this.form.submit()">
+                                value="{{ request('month', \Carbon\Carbon::now()->format('Y-m')) }}"
+                                onchange="this.form.submit()">
                         </div>
                         <div class="form-group mb-0">
                             <select name="category" id="category" class="form-control" onchange="this.form.submit()">
