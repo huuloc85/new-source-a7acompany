@@ -88,7 +88,7 @@
                                 style="max-width: 20%;">
                             <select name="date" class="form-control" onchange="this.form.submit()"
                                 style="max-width: 120px;">
-                                <option value="">Chọn ngày</option>
+                                <option value="">Tất cả ngày</option>
                                 @foreach ($dates as $date)
                                     <option value="{{ $date->date }}"
                                         {{ request('date') == $date->date ? 'selected' : '' }}>
