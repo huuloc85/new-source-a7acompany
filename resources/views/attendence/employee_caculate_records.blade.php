@@ -109,7 +109,10 @@
                         @if ($records->isEmpty())
                             <p class="text-center">Hiện tại chưa có thông tin nào.</p>
                         @else
-                            <table class="table table-hover mb-4">
+                            <input type="checkbox" id="filter_absent" name="filter_absent" value="1"
+                                {{ request('filter_absent') ? 'checked' : '' }}>
+                            Chỉ hiển thị những ngày quên chấm công
+                            <table id="attendanceTable" class="table table-hover mb-4">
                                 <thead>
                                     <tr>
                                         <th
@@ -160,7 +163,7 @@
                                                 {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                             </td>
                                             <td data-label="Giờ Ra" class="{{ $record->time_out ? '' : 'text-danger' }}">
-                                                {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công về' }}
+                                                {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                             </td>
                                             <td data-label="Tổng Giờ Làm Việc (H)"
                                                 class="{{ $record->total_hours ? '' : 'text-danger' }}">
@@ -182,4 +185,28 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterCheckbox = document.getElementById('filter_absent');
+            const attendanceTable = document.getElementById('attendanceTable');
+            const rows = attendanceTable.querySelectorAll('tbody tr');
+
+            filterCheckbox.addEventListener('change', function() {
+                const showAbsentOnly = filterCheckbox.checked;
+
+                rows.forEach(row => {
+                    const timeInCell = row.cells[5]; // Giờ Vào
+                    const timeOutCell = row.cells[6]; // Giờ Ra
+
+                    const isAbsent = timeInCell.textContent.includes('Chưa chấm công vào') ||
+                        timeOutCell.textContent.includes('Chưa chấm công ra');
+                    if (showAbsentOnly) {
+                        row.style.display = isAbsent ? '' : 'none';
+                    } else {
+                        row.style.display = '';
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

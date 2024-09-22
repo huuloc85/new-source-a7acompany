@@ -10,6 +10,9 @@ class AttendanceRecord extends Model
     use HasFactory;
 
     protected $table = 'attendencerecord'; // Tên bảng
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $primaryKey = null;
 
     protected $fillable = [
         'employee_code',

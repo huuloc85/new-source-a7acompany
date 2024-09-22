@@ -107,6 +107,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/index', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
         Route::get('/records', [AttendanceRecordController::class, 'records'])->name('admin.attendence.records');
         Route::post('/records', [AttendanceRecordController::class, 'handleRecords'])->name('admin.attendence.handleRecords');
+        Route::delete('records/{employee_code}/{datetime}', [AttendanceRecordController::class, 'destroy'])->name('admin.attendence.destroy');
     });
 
     //quản lý chức vụ

@@ -4,35 +4,28 @@
     <style>
         .form-control-search {
             padding-left: 2.5rem;
-            /* Khoảng cách cho biểu tượng tìm kiếm */
-            border-radius: 25px;
-            /* Bo tròn góc */
+            border-radius: 20px;
             border: 1px solid #ced4da;
-            /* Màu viền */
             font-size: 0.875rem;
-            /* Kích thước chữ */
             max-width: 400px;
-            /* Kích thước tối đa của input */
             width: 100%;
-            /* Đảm bảo chiếm toàn bộ không gian khả dụng trong container */
         }
 
         .search-icon {
             position: absolute;
             left: 0.75rem;
-            /* Khoảng cách từ viền trái */
             top: 50%;
             transform: translateY(-50%);
-            /* Căn giữa theo chiều dọc */
             font-size: 1rem;
-            /* Kích thước biểu tượng */
             color: #6c757d;
-            /* Màu sắc biểu tượng */
         }
 
         .form-control::placeholder {
             color: #6c757d;
-            /* Màu sắc placeholder */
+        }
+
+        input#search:focus::placeholder {
+            color: transparent;
         }
     </style>
     <div class="row">
@@ -49,6 +42,10 @@
                         data-bs-target="#filterModal">
                         Lọc Thông Tin
                     </button>
+                    <a href="{{ route('admin.attendence.index') }}"
+                        class="btn btn-success btn-sm rounded-pill shadow-sm me-2">
+                        Bảng Lịch Sử Chấm Công
+                    </a>
                     <div class="position-relative flex-grow-1 ms-2">
                         <input type="text" id="search" class="form-control form-control-search"
                             placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
@@ -59,7 +56,10 @@
                     @if ($records->isEmpty())
                         <p class="text-center">Hiện tại chưa có thông tin nào.</p>
                     @else
-                        <table class="table table-hover mb-4">
+                        <input type="checkbox" id="filter_absent" name="filter_absent" value="1"
+                            {{ request('filter_absent') ? 'checked' : '' }}>
+                        Chỉ hiển thị những người quên chấm công
+                        <table id="attendanceTable" class="table table-hover mb-4">
                             <thead class="text-center">
                                 <tr>
                                     <th
@@ -84,6 +84,10 @@
                                     <th
                                         class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                         Giờ Ra</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        style="{{ is_null(request('time_filter')) || request('time_filter') === 'none' || in_array(request('time_filter'), ['qc_day', 'working_hours']) ? 'display: none;' : '' }}">
+                                        Ca Làm Việc
+                                    </th>
                                     <th
                                         class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                         Tổng Giờ Làm Việc(H)</th>
@@ -107,8 +111,14 @@
                                             {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                         </td>
                                         <td class="{{ $record->time_out ? '' : 'text-danger' }}">
-                                            {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công về' }}
+                                            {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                         </td>
+                                        <td
+                                            style="{{ request('time_filter') === null || request('time_filter') === 'none' || in_array(request('time_filter'), ['qc_day', 'working_hours']) ? 'display: none;' : '' }}">
+                                            <strong>{{ $record->shift === 'Đổi lịch đi làm' ? $record->shift : '' }}</strong>
+                                            {{ $record->shift !== 'Đổi lịch đi làm' ? $record->shift : '' }}
+                                        </td>
+
                                         <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
                                             @if ($record->total_hours)
                                                 <strong>{{ $record->total_hours }}</strong>
@@ -132,7 +142,7 @@
         </div>
     </div>
 
-    <!-- Modal for search filters -->
+    <!-- Modal tìm kiếm -->
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -148,11 +158,11 @@
                                 <input type="month" name="month" id="month" class="form-control"
                                     placeholder="Chọn tháng" value="{{ request('month', $currentMonth) }}">
                             </div>
-                            {{-- <div class="col-md-12 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label for="employee_name" class="form-label">Tên Nhân Viên:</label>
                                 <input type="text" id="employee_name" name="employee_name" class="form-control"
                                     value="{{ request('employee_name') }}">
-                            </div> --}}
+                            </div>
                             <div class="col-md-12 mb-3">
                                 <label for="start_date" class="form-label">Từ ngày:</label>
                                 <input type="date" id="start_date" name="start_date" class="form-control"
@@ -164,7 +174,7 @@
                                     value="{{ request('end_date') }}">
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label for="time_filter" class="form-label">Thời Gian:</label>
+                                <label for="time_filter" class="form-label">Danh mục làm việc:</label>
                                 <select id="time_filter" name="time_filter" class="form-select">
                                     @foreach (config('a7a.list_category') as $key => $record)
                                         <option value="{{ $key }}"
@@ -207,6 +217,28 @@
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';
+                    }
+                });
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterCheckbox = document.getElementById('filter_absent');
+            const attendanceTable = document.getElementById('attendanceTable');
+            const rows = attendanceTable.querySelectorAll('tbody tr');
+
+            filterCheckbox.addEventListener('change', function() {
+                const showAbsentOnly = filterCheckbox.checked;
+
+                rows.forEach(row => {
+                    const timeInCell = row.cells[5]; // Giờ Vào
+                    const timeOutCell = row.cells[6]; // Giờ Ra
+
+                    const isAbsent = timeInCell.textContent.includes('Chưa chấm công vào') ||
+                        timeOutCell.textContent.includes('Chưa chấm công ra');
+                    if (showAbsentOnly) {
+                        row.style.display = isAbsent ? '' : 'none';
+                    } else {
+                        row.style.display = '';
                     }
                 });
             });
