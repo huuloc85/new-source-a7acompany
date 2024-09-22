@@ -142,7 +142,15 @@ class AttendanceRecordController extends Controller
                 if (Carbon::now()->format('Y-m-d') == $record->date) {
                     unset($this->listRecord[$key]);
                 } else {
-                    $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                    $times = explode(', ', $record->all_times);
+                    $timesBefore12AM = array_filter($times, function($time) {
+                        return strtotime($time) < strtotime(config("a7a.ca2_check_start_time"));
+                    });
+                    if (empty($timesBefore12AM)) {
+                        $this->processRecordCa2($record, $timeFilter, $dayOfWeekMapping);
+                    } else {
+                        unset($this->listRecord[$key]);
+                    }
                 }
             } else {
                 ///lịch nghĩ nhưng đi làm
