@@ -244,9 +244,9 @@
                                     <i class="icon-svg me-2">
                                         <!-- Biểu tượng đóng gói hoặc bao bì -->
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-box" viewBox="0 0 16 16">
+                                            fill="currentColor" class="bi bi-briefcase" viewBox="0 0 16 16">
                                             <path
-                                                d="M8.5 1.5v1H13v4h-1V5H9v5h4v-2.5h1V14H2V7.5h1V10h4V5H4v1.5H3v-4h4.5v-1h1zm-5 5V14h9V6.5H3.5zM8 5v4h1V5H8z" />
+                                                d="M6.5 0a.5.5 0 0 0-.5.5V3H2a2 2 0 0 0-2 2v6.5A1.5 1.5 0 0 0 1.5 13h13a1.5 1.5 0 0 0 1.5-1.5V5a2 2 0 0 0-2-2h-4V.5a.5.5 0 0 0-.5-.5h-3zm1 .5v2.5h1V.5h-1zM1 5h14v6.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V5z" />
                                         </svg>
                                     </i>
                                     <span class="item-name">Tạo Tem Bịch</span>
