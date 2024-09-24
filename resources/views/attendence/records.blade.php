@@ -229,51 +229,44 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search');
-            const table = document.querySelector('.table');
-            const rows = table.querySelectorAll('tbody tr');
+            const filterCheckbox = document.getElementById('filter_absent');
+            const attendanceTable = document.getElementById('attendanceTable');
+            const rows = attendanceTable.querySelectorAll('tbody tr');
 
-            searchInput.addEventListener('input', function() {
+            function filterRows() {
                 const searchTerm = searchInput.value.toLowerCase();
+                const showAbsentOnly = filterCheckbox.checked;
 
                 rows.forEach(row => {
                     const cells = row.querySelectorAll('td');
                     let found = false;
 
+                    // Kiểm tra từ khóa tìm kiếm
                     cells.forEach(cell => {
                         if (cell.textContent.toLowerCase().includes(searchTerm)) {
                             found = true;
                         }
                     });
 
-                    if (searchTerm === '' || found) {
+                    const timeInCell = row.cells[5]; // Giờ Vào
+                    const timeOutCell = row.cells[6]; // Giờ Ra
+                    const isAbsent = timeInCell.textContent.includes('Chưa chấm công vào') ||
+                        timeOutCell.textContent.includes('Chưa chấm công ra');
+
+                    // Điều kiện hiển thị hàng
+                    if ((searchTerm === '' || found) && (!showAbsentOnly || isAbsent)) {
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';
                     }
                 });
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterCheckbox = document.getElementById('filter_absent');
-            const attendanceTable = document.getElementById('attendanceTable');
-            const rows = attendanceTable.querySelectorAll('tbody tr');
+            }
 
-            filterCheckbox.addEventListener('change', function() {
-                const showAbsentOnly = filterCheckbox.checked;
+            // Lắng nghe sự kiện nhập trên ô tìm kiếm
+            searchInput.addEventListener('input', filterRows);
 
-                rows.forEach(row => {
-                    const timeInCell = row.cells[5]; // Giờ Vào
-                    const timeOutCell = row.cells[6]; // Giờ Ra
-
-                    const isAbsent = timeInCell.textContent.includes('Chưa chấm công vào') ||
-                        timeOutCell.textContent.includes('Chưa chấm công ra');
-                    if (showAbsentOnly) {
-                        row.style.display = isAbsent ? '' : 'none';
-                    } else {
-                        row.style.display = '';
-                    }
-                });
-            });
+            // Lắng nghe sự kiện thay đổi trên checkbox
+            filterCheckbox.addEventListener('change', filterRows);
         });
     </script>
 @endsection
