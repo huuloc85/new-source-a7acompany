@@ -31,6 +31,10 @@
                 padding: 10px;
                 position: relative;
                 border-bottom: 1px solid #ddd;
+                min-width: 150px;
+                word-wrap: break-word;
+                word-break: break-all;
+
             }
 
             td::before {
@@ -44,10 +48,69 @@
                 text-align: left;
             }
 
-            /* Ẩn cột STT trên màn hình nhỏ */
             table th:nth-child(1),
             table td:nth-child(1) {
                 display: none;
+            }
+
+            input[type="checkbox"] {
+                display: none;
+            }
+
+            label[for="filter_absent"] {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            label[for="filter_absent"]:hover {
+                background-color: #0056b3;
+            }
+
+            input[type="checkbox"]:checked+label[for="filter_absent"] {
+                background-color: #28a745;
+            }
+        }
+
+        @media (max-width: 400px) {
+            td {
+                font-size: 12px;
+                padding: 5px;
+                overflow-wrap: break-word;
+                white-space: normal;
+                word-wrap: break-word;
+            }
+
+            td::before {
+                font-size: 10px;
+                padding-left: 5px;
+            }
+
+            input[type="checkbox"] {
+                display: none;
+            }
+
+            label[for="filter_absent"] {
+                display: inline-block;
+                padding: 8px 12px;
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                font-size: 12px;
+            }
+
+            label[for="filter_absent"]:hover {
+                background-color: #0056b3;
+            }
+
+            input[type="checkbox"]:checked+label[for="filter_absent"] {
+                background-color: #28a745;
             }
         }
 
@@ -70,7 +133,6 @@
             }
         }
     </style>
-
 
     <div class="row">
         <div class="col-12">
@@ -111,7 +173,7 @@
                         @else
                             <input type="checkbox" id="filter_absent" name="filter_absent" value="1"
                                 {{ request('filter_absent') ? 'checked' : '' }}>
-                            Chỉ hiển thị những ngày quên chấm công
+                            <label for="filter_absent">Chỉ hiển thị những ngày quên chấm công</label>
                             <table id="attendanceTable" class="table table-hover mb-4">
                                 <thead>
                                     <tr>

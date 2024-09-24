@@ -13,6 +13,7 @@
             border-radius: 25px;
             border: 1px solid #ced4da;
             font-size: 0.875rem;
+
         }
 
         .position-relative {

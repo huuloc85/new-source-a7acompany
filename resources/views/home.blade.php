@@ -89,7 +89,7 @@
                                 </li>
                                 <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
                                     <div class="card-body">
-                                        <a href="{{ route('admin.employee.home') }}">
+                                        <a href="{{ route('admin.attendence.index') }}">
                                             <div class="progress-widget">
                                                 <div id="circle-progress-01"
                                                     class="circle-progress-01 circle-progress circle-progress-primary text-center"
@@ -106,7 +106,8 @@
                                             </div>
                                         </a>
                                         <div class="card-footer p-3">
-                                            <p class="mb-2">Đi đến <a href="{{ route('admin.employee.home') }}">bảng lịch
+                                            <p class="mb-2">Đi đến <a href="{{ route('admin.attendence.index') }}">bảng
+                                                    lịch
                                                     sử chấm công.</a></p>
                                         </div>
                                     </div>
@@ -115,7 +116,7 @@
 
                                 <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
                                     <div class="card-body">
-                                        <a href="{{ route('admin.employee.home') }}">
+                                        <a href="{{ route('admin.attendence.records') }}">
                                             <div class="progress-widget">
                                                 <div id="circle-progress-01"
                                                     class="circle-progress-01 circle-progress circle-progress-primary text-center"
@@ -133,7 +134,8 @@
                                             </div>
                                         </a>
                                         <div class="card-footer p-3">
-                                            <p class="mb-2">Đi đến <a href="{{ route('admin.employee.home') }}">bảng tính
+                                            <p class="mb-2">Đi đến <a href="{{ route('admin.attendence.records') }}">bảng
+                                                    tính
                                                     toán chấm công.</a></p>
                                         </div>
                                     </div>

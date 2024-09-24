@@ -103,10 +103,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         // Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
     });
 
+    // Bảng Chấm Công
     Route::middleware(['authAdmin'])->prefix('/attendence')->group(function () {
         Route::get('/index', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
         Route::get('/records', [AttendanceRecordController::class, 'records'])->name('admin.attendence.records');
-        Route::post('/records', [AttendanceRecordController::class, 'handleRecords'])->name('admin.attendence.handleRecords');
+        Route::post('/records', [AttendanceRecordController::class, 'handleAddRecords'])->name('admin.attendence.handleRecords');
         Route::delete('records/{employee_code}/{datetime}', [AttendanceRecordController::class, 'destroy'])->name('admin.attendence.destroy');
     });
 

@@ -31,7 +31,9 @@ return [
     "over_time_end_ca2" => "09:00:00",
     "time_work" => 8,
     "shift_1" => "N",
+    "shift_1_extra_day" => "LN",
     "shift_2" => "D",
+    "shift_2_extra_night" => "TC",
     "ca2_check_start_time" => "12:00:00",
 
     // Thời gian nghỉ
