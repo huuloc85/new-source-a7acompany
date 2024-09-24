@@ -59,7 +59,7 @@
                         class="btn btn-warning btn-sm btn-custom" title="Thùng Rác" data-bs-toggle="tooltip">
                         <i class="fas fa-trash fa-lg"></i>
                     </a>
-                    <a href="http://192.168.1.3/doc/index.html#/portal/login" type="button"
+                    <a href="http://192.168.1.2/doc/index.html#/portal/login" type="button"
                         class="btn btn-dark btn-sm btn-custom" title="Thêm Nhân Sự Vào Máy Chấm Công"
                         data-bs-toggle="tooltip">
                         <i class="fas fa-fingerprint fa-lg"></i>

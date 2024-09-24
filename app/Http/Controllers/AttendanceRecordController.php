@@ -44,7 +44,7 @@ class AttendanceRecordController extends Controller
     }
 
     //Add Record (Admin)
-    public function handleRecords(Request $request)
+    public function handleAddRecords(Request $request)
     {
         DB::beginTransaction();
         try {
@@ -197,10 +197,14 @@ class AttendanceRecordController extends Controller
             $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
         } elseif (in_array($timeFilter, config("a7a.list_category_ca2"))) {
             $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
-            $record->shift = ($shift === config("a7a.shift_1") ? 'Ca 1' : ($shift === config("a7a.shift_2") ? 'Ca 2' : 'Đổi lịch đi làm'));
-            if ($shift == config("a7a.shift_1")) {
+            $record->shift = ($shift === config("a7a.shift_1") || $shift === config("a7a.shift_1_extra_day"))
+                ? 'Ca 1'
+                : (($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night"))
+                    ? 'Ca 2'
+                    : 'Đổi lịch đi làm');
+            if ($shift == config("a7a.shift_1") || $shift == config("a7a.shift_1_extra_day")) {
                 $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
-            } else if ($shift == config("a7a.shift_2")) {
+            } else if ($shift == config("a7a.shift_2") || $shift == config("a7a.shift_2_extra_night")) {
                 if (Carbon::now()->format('Y-m-d') == $record->date) {
                     unset($this->listRecord[$key]);
                 } else {
@@ -228,9 +232,9 @@ class AttendanceRecordController extends Controller
                 }
                 $date = $date->subDay();
                 $shiftBefore = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
-                if ($shiftBefore == config("a7a.shift_1")) {
+                if ($shiftBefore == config("a7a.shift_1") || $shiftBefore == config("a7a.shift_1_extra_day")) {
                     $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
-                } else if ($shiftBefore == config("a7a.shift_2")) {
+                } else if ($shiftBefore == config("a7a.shift_2") || $shiftBefore == config("a7a.shift_2_extra_night")) {
                     if (Carbon::now()->format('Y-m-d') == $record->date) {
                         unset($this->listRecord[$key]);
                     } else {
@@ -510,10 +514,14 @@ class AttendanceRecordController extends Controller
             ->orderBy('date', 'asc');
         $timeFilter = CategoryCelender::listCateforEmployee[$categoryId];
         $records = $this->checkQuery($query, $timeFilter);
+        $this->listRecord = $records;
         foreach ($records as $key => $record) {
             $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
         }
-        return view('attendence.employee_caculate_records', compact('records', 'currentMonth'));
+        return view('attendence.employee_caculate_records', [
+            'records' => $this->listRecord,
+            'currentMonth' => $currentMonth,
+        ]);
     }
 
     //Kéo Data Từ Mcc
