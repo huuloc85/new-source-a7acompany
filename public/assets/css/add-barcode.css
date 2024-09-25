@@ -175,7 +175,7 @@
     }
 
     .card {
-        padding: 10px !important;
+        padding-top: 30px !important;
         margin: 0 !important;
         background: transparent !important;
         border: none !important;
@@ -191,9 +191,8 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        row-gap: 10px;
-        column-gap: 70px;
-        zoom: 63%;
+        row-gap: 40px;
+        zoom: 55%;
     }
 
     .table {

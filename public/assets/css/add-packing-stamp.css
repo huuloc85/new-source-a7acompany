@@ -223,10 +223,10 @@
     }
 
     .fs-20 {
-        width: 120px !important;
+        width: 100% !important;
     }
 
     .fs-13 {
-        font-size: 13px !important;
+        font-size: 18px !important;
     }
 }
