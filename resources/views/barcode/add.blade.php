@@ -136,22 +136,24 @@
                                                     @if ($bin['bin'] != 'xxxx')
                                                         <table class="table table-bordered">
                                                             <tr>
-                                                                <td colspan="2" class="align-content-center">
+                                                                <td colspan="1" class="align-content-center">
                                                                     <img src="{{ asset('assets/img/logos/VVP.png') }}"
                                                                         alt="" width="110"
                                                                         title="VINH VINH PHAT ONE MEMBER CO.LTD">
-                                                                    <div class="logo-text qr-add">VINH VINH PHAT ONE MEMBER
-                                                                        CO. LTD</div>
+                                                                    {{-- <div class="logo-text qr-add">VINH VINH PHAT ONE MEMBER
+                                                                        CO. LTD</div> --}}
                                                                 </td>
                                                                 <td colspan="4" class="align-content-center">
-                                                                    <div class="qrcode-img">VINH VINH PHAT ONE MEMBER
-                                                                        CO.,LTD <br> Add: 851 Highway 1A, Binh Hung Hoa A
-                                                                        Ward, Binh Tan District, HCM City <br>Fac:
-                                                                        2861,National Highway 1, Hamlet 3, Binh Chanh
-                                                                        Commune, Binh Chanh District, HCM City <br>
-                                                                        Tel: 84-0272.3630.655 or 84-0272.3630.656 <br>
-                                                                        Fax:84-0272.3630.657
-                                                                        Made in Viet Nam</div>
+                                                                    <div class="qrcode-img">
+                                                                        VINH VINH PHAT ONE MEMBER CO., LTD<br>
+                                                                        Add: 851 Highway 1A, Binh Hung Hoa A Ward, Binh Tan
+                                                                        District, HCM City<br>
+                                                                        Fac: 2861, National Highway 1, Hamlet 3, Binh Chanh
+                                                                        Commune, Binh Chanh District, HCM City<br>
+                                                                        Tel: 84-0272.3630.655 or 84-0272.3630.656 Fax:
+                                                                        84-0272.3630.657<br>
+                                                                        Made in Viet Nam
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -239,7 +241,7 @@
                                                                 <td class="text-start">
                                                                     Kiểm tra<br>検査
                                                                 </td>
-                                                                <td colspan="2"
+                                                                <td colspan="3"
                                                                     class="text-center align-content-center">
                                                                     Kiểm tra 200%<br>檢查(200%)
                                                                 </td>
