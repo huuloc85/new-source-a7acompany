@@ -145,6 +145,7 @@
 
 }
 
+
 @media print {
     @page {
         size: A4 landscape;
@@ -175,7 +176,7 @@
     }
 
     .card {
-        padding-top: 30px !important;
+        padding-top: 10px !important;
         margin: 0 !important;
         background: transparent !important;
         border: none !important;
@@ -191,12 +192,18 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        row-gap: 40px;
-        zoom: 60%;
+        row-gap: 100px;
+        /* Giữ khoảng cách giữa các hàng */
+        column-gap: 2rem;
+        /* Khoảng cách giữa các cột */
+        padding: 2rem;
+        /* Khoảng cách giữa lưới và lề */
+        zoom: 62%;
     }
 
+
     .table {
-        transform: scaleX(1.10);
+        transform: scaleX(1.28);
         transform-origin: center !important;
     }
 
@@ -204,7 +211,7 @@
         margin: auto !important;
     }
 
-    .grid-item {
+    grid-item {
         margin-top: 20px !important;
     }
 
@@ -239,6 +246,6 @@
     }
 
     .fs-13 {
-        font-size: 23px !important;
+        font-size: 18px !important;
     }
 }

@@ -215,14 +215,18 @@
                                                                 </td>
                                                                 <td colspan="4"
                                                                     class="text-center align-content-center">
-                                                                    <div class="lot-container">
-                                                                        <p class="fw-bold mb-0">{{ $lotNo['lot'] }}</p>
-                                                                        <p class="fw-bold mb-0">-</p>
-                                                                        <p class="fw-bold mb-0">{{ $lotNo['date'] }}</p>
-                                                                        <p class="fw-bold mb-0">-</p>
-                                                                        <p class="fw-bold mb-0">{{ $lotNo['shift'] }}</p>
-                                                                        <p class="fw-bold mb-0">-</p>
-                                                                        <p class="fw-bold mb-0">{{ $bin['bin'] }}</p>
+                                                                    <div class="lot-container ">
+                                                                        <p class="fw-bold mb-0 fs-13 ">{{ $lotNo['lot'] }}
+                                                                        </p>
+                                                                        <p class="fw-bold mb-0 fs-13 ">-</p>
+                                                                        <p class="fw-bold mb-0 fs-13 ">
+                                                                            {{ $lotNo['date'] }}</p>
+                                                                        <p class="fw-bold mb-0 fs-13 ">-</p>
+                                                                        <p class="fw-bold mb-0 fs-13 ">
+                                                                            {{ $lotNo['shift'] }}</p>
+                                                                        <p class="fw-bold mb-0 fs-13 ">-</p>
+                                                                        <p class="fw-bold mb-0 fs-13 ">{{ $bin['bin'] }}
+                                                                        </p>
                                                                     </div>
                                                                 </td>
                                                             </tr>
