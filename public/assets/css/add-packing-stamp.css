@@ -148,13 +148,16 @@
     .grid-container {
         padding-left: 0 !important;
         padding-right: 0 !important;
-        padding-top: 20px !important;
+        padding-top: 10px !important;
         padding-bottom: 10px !important;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(4, 1fr);
+        grid-template-rows: repeat(4, auto);
+        row-gap: 0.2rem;
         zoom: 60%;
     }
+
+
 
     .table {
         transform: scaleX(1.28);
@@ -168,7 +171,13 @@
 
     .grid-item {
         margin-top: 10px !important;
+        page-break-inside: avoid;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
     }
+
 
     .no-print {
         display: none !important;
@@ -227,6 +236,11 @@
     }
 
     .fs-13 {
-        font-size: 23px !important;
+        font-size: 20px !important;
     }
+
+    /* .grid-container:empty {
+        display: none;
+    } */
+
 }
