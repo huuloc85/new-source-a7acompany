@@ -63,23 +63,21 @@
 } */
 
 .qrcode-img {
-    width: 200px;
-    word-wrap: break-word;
-    /* Ngắt từ nếu quá dài */
-    font-size: 9px;
-    /* Kích thước chữ nhỏ để phù hợp */
-    line-height: 1.4;
-    /* Khoảng cách giữa các dòng */
+    width: 100%;
+    font-size: 10px;
+    line-height: 1;
     text-align: left;
-    /* Căn lề trái cho văn bản */
     white-space: normal;
-    /* Đảm bảo các dòng xuống dòng tự nhiên */
+    word-break: break-word;
+
 }
 
-.qrcode-img svg {
+
+
+/* .qrcode-img svg {
     width: 80px;
     height: 80px;
-}
+} */
 
 .qr-add {
     font-size: 9px;
@@ -150,6 +148,7 @@
 @media print {
     @page {
         size: A4 landscape;
+        margin: 0;
     }
 
     .p-4,
@@ -165,8 +164,18 @@
         box-shadow: none !important;
     }
 
+    .qrcode-img {
+        width: 100%;
+        font-size: 10px;
+        line-height: 1.4;
+        text-align: left;
+        white-space: normal;
+        word-break: break-word;
+
+    }
+
     .card {
-        padding: 0 !important;
+        padding: 10px !important;
         margin: 0 !important;
         background: transparent !important;
         border: none !important;
@@ -182,7 +191,9 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        zoom: 60%;
+        row-gap: 10px;
+        column-gap: 70px;
+        zoom: 63%;
     }
 
     .table {
