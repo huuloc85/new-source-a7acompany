@@ -192,11 +192,11 @@
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
         row-gap: 40px;
-        zoom: 55%;
+        zoom: 60%;
     }
 
     .table {
-        transform: scaleX(1.28);
+        transform: scaleX(1.10);
         transform-origin: center !important;
     }
 
@@ -234,10 +234,11 @@
 
     .moc-style td:nth-child(3) {
         border-right: 1px solid;
-        height: 130px !important
+        width: 100% !important;
+        height: 130px !important;
     }
 
     .fs-13 {
-        font-size: 14px !important;
+        font-size: 23px !important;
     }
 }
