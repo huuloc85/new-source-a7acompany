@@ -132,7 +132,7 @@
                                     <div class="grid-container">
                                         @if (isset($binArray))
                                             @foreach ($binArray as $key => $bin)
-                                                <div class="container grid-item">
+                                                <div class="container grid-item ">
                                                     <table class="table table-bordered">
                                                         <tr>
                                                             <td class="text-start w-120 w-5">
