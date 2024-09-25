@@ -247,7 +247,7 @@
                                                                 </td>
                                                                 <td colspan="3"
                                                                     class="text-center align-content-center">
-                                                                    Kiểm tra (Xuất hàng) 検査 (出荷)
+                                                                    Kiểm tra (Xuất hàng)<br> 検査 (出荷)
                                                                 </td>
                                                             </tr>
                                                             <tr class="moc-style">
@@ -256,7 +256,7 @@
 
                                                                 </td>
                                                                 <td colspan="3"></td>
-                                                                <td colspan="2" style="position: relative;">
+                                                                <td colspan="1" style="position: relative;">
                                                                     <div class="square"></div>
                                                                 </td>
                                                             </tr>
