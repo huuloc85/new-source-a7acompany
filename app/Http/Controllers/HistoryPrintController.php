@@ -26,7 +26,7 @@ class HistoryPrintController extends Controller
         $historyprint = $query->get();
 
         // Lấy danh sách loại tem, sản phẩm và nhân viên
-        $distinctValues = $this->getDistinctValues();
+        $distinctValues = $this->getDistinctValues($request);
 
         return view('barcode.history', array_merge(
             ['historyprint' => $historyprint],
@@ -37,51 +37,86 @@ class HistoryPrintController extends Controller
     // Phương thức để áp dụng các bộ lọc
     private function applyFilters($query, Request $request)
     {
+        // Lọc theo tháng
         if ($request->has('month') && $request->month != '') {
-            $query->whereMonth('created_at', Carbon::parse($request->month)->month);
+            $query->whereMonth('date', Carbon::parse($request->month)->month);
         } else {
-            $query->whereMonth('created_at', Carbon::now()->month);
+            $query->whereMonth('date', Carbon::now()->month);
         }
+
+        // Lọc theo loại tem
         if ($request->has('type') && $request->type != '') {
             $query->where('type', $request->type);
         }
 
+        // Lọc theo sản phẩm
         if ($request->has('product_id') && $request->product_id != '') {
             $query->where('product_id', $request->product_id);
         }
 
+        // Lọc theo nhân viên
         if ($request->has('employee_id') && $request->employee_id != '') {
             $query->where('employee_id', $request->employee_id);
+        }
+
+        // Lọc theo ngày cụ thể
+        if ($request->has('date') && $request->date != '') {
+            $query->whereDate('date', Carbon::parse($request->date));
         }
     }
 
     // Phương thức để lấy danh sách loại tem, sản phẩm, và nhân viên
-    private function getDistinctValues()
+    private function getDistinctValues(Request $request)
     {
-        $query = HistoryPrint::distinct()
-            ->where(function ($q) {
-                if (Auth::user()->role_id != 15 && Auth::user()->code != '19010400') {
-                    $q->where('employee_id', Auth::user()->id);
-                }
-            });
+        $query = HistoryPrint::query();
 
-        // Lấy loại tem
-        $types = $query->clone()->pluck('type')->filter()->unique();
+        // Áp dụng bộ lọc theo user
+        if (Auth::user()->role_id != 15 && Auth::user()->code != '19010400') {
+            $query->where('employee_id', Auth::user()->id);
+        }
 
-        // Lấy sản phẩm
+        // Lọc theo tháng nếu được chọn
+        if ($request->has('month') && $request->month != '') {
+            $query->whereMonth('date', Carbon::parse($request->month)->month)
+                ->whereYear('date', Carbon::parse($request->month)->year);
+        } else {
+            $query->whereMonth('date', Carbon::now()->month)
+                ->whereYear('date', Carbon::now()->year);
+        }
+
+        // Lấy loại tem (distinct)
+        $types = $query->clone()
+            ->select('type')
+            ->distinct()
+            ->pluck('type')->filter()->unique();
+
+        // Lấy sản phẩm (distinct)
         $products = $query->clone()
+            ->select('product_id')
+            ->distinct()
             ->pluck('product_id')
             ->map(function ($id) {
                 return Product::find($id);
             })->filter();
 
-        // Lấy nhân viên
+        // Lấy nhân viên (distinct)
         $employees = $query->clone()
+            ->select('employee_id')
+            ->distinct()
             ->pluck('employee_id')
             ->map(function ($id) {
                 return Employee::find($id);
             })->filter();
 
-        return compact('types', 'products', 'employees');
+        // Lấy danh sách ngày dựa theo tháng đã chọn (distinct)
+        $dates = $query->clone()
+            ->select('date')
+            ->distinct()
+            ->pluck('date')
+            ->map(function ($date) {
+                return Carbon::parse($date)->format('Y-m-d');
+            })->unique();
+
+        return compact('types', 'products', 'employees', 'dates');
     }
 }
