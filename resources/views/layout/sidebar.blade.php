@@ -588,7 +588,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (Auth()->user()->role_id == 4)
+                    {{-- @if (Auth()->user()->role_id == 4)
                         <li class="nav-item">
                             <a class="nav-link route('admin.barcode.scan')" href="{{ route('admin.barcode.scan') }}"
                                 title="Mã Vạch">
@@ -607,7 +607,7 @@
                                 <span class="item-name">Mã Vạch</span>
                             </a>
                         </li>
-                    @endif
+                    @endif --}}
                     <li class="nav-item">
                         <a class="nav-link route('admin.profile')" href="{{ route('admin.profile') }}"
                             title="Thông Tin Tài Khoản">
