@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\Attendance\Records;
 use App\Models\AttendanceRecord;
 use App\Models\CategoryCelender;
 use App\Models\CelenderDetailHNHC;
@@ -12,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceRecordController extends Controller
 {
@@ -550,5 +552,64 @@ class AttendanceRecordController extends Controller
             Log::error("error: " . $e);
             return response()->json(['message' => 'No data to insert'], 500);
         }
+    }
+
+    public function export(Request $request)
+    {
+        $employeeCode = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
+        $categoryIds = CategoryCelender::pluck('id');
+        $currentMonth = Carbon::now()->format('Y-m');
+        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)
+            ->pluck('id')
+            ->first();
+
+        $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
+            ->whereMonth('date', Carbon::parse($currentMonth)->month)
+            ->whereIn('employee_code', $employeeCode)
+            ->orderBy('employee_code', 'asc')
+            ->orderBy('date', 'asc');
+
+        $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
+        foreach ($categoryIds as $categoryId) {
+            $timeFilter = CategoryCelender::listCateforEmployee[$categoryId];
+            $records = $this->checkQuery($query, $timeFilter);
+            $this->listRecord = $records;
+            foreach ($records as $key => $record) {
+                $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
+            }
+        }
+
+        return Excel::download(new Records($this->listRecord), 'Bảng Chấm Công ' . $currentMonth . '.xlsx');
+    }
+
+    public function testExport(Request $request)
+    {
+        $employeeCode = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
+        $categoryIds = CategoryCelender::pluck('id');
+        $currentMonth = Carbon::now()->format('Y-m');
+        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)
+            ->pluck('id')
+            ->first();
+
+        $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
+            ->whereMonth('date', Carbon::parse($currentMonth)->month)
+            ->whereIn('employee_code', $employeeCode)
+            ->orderBy('employee_code', 'asc')
+            ->orderBy('date', 'asc');
+
+        $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
+        foreach ($categoryIds as $categoryId) {
+
+            $timeFilter = CategoryCelender::listCateforEmployee[$categoryId];
+            $records = $this->checkQuery($query, $timeFilter);
+            $this->listRecord = $records;
+            foreach ($records as $key => $record) {
+                $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
+            }
+        }
+        dd($timeFilter);
+        return view('export.attendance.records', [
+            'records' => $this->listRecord,
+        ]);
     }
 }

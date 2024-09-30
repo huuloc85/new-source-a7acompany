@@ -105,6 +105,7 @@ class EmployeeController extends Controller
         $employee->home_town = trim($request->home_town);
         $employee->CCCD = trim($request->CCCD);
         $employee->role_id = trim($request->role_id);
+        $employee->company = trim($request->company);
         $employee->category_celender_id = trim($request->category_celender_id);
         $employee->gender = trim($request->gender);
         $employee->marital_status = $request->marital_status;
@@ -136,6 +137,7 @@ class EmployeeController extends Controller
         }
 
         try {
+            // dd($employee);
             $employee->save();
             toast('Thêm nhân sự mới thành công!', 'success', 'top-right');
             return redirect()->route('admin.employee.home');
@@ -173,6 +175,7 @@ class EmployeeController extends Controller
         $employee->home_town = trim($request->home_town);
         $employee->CCCD = trim($request->CCCD);
         $employee->role_id = trim($request->role_id);
+        $employee->company = trim($request->company);
         $employee->category_celender_id = trim($request->category_celender_id);
         $employee->gender = trim($request->gender);
         $employee->marital_status = $request->marital_status;
@@ -205,6 +208,7 @@ class EmployeeController extends Controller
         }
 
         try {
+
             $employee->save();
             if ($request->hasFile('photo')) {
                 $image = 'public/employee/' . $oldImg;

@@ -80,6 +80,14 @@
                             placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
                         <i class="search-icon fas fa-search"></i>
                     </div>
+                    <form action="{{ route('admin.attendance.export') }}" method="GET">
+                        {{-- <input type="hidden" name="month" value="{{ $selectedMonth }}"> --}}
+                        <button type="submit" class="btn btn-primary">Xuất Excel</button>
+                    </form>
+                    <div class="container mt-5">
+                        <h1>Kiểm Tra View Export</h1>
+                        <a href="{{ route('test.export') }}" class="btn btn-primary">Kiểm Tra Export</a>
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -129,6 +137,7 @@
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Giờ Tăng Ca(H)</th>
                                     </tr>
+
                                 </thead>
                                 <tbody>
                                     @foreach ($records as $record)
