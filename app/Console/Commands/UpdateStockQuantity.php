@@ -33,6 +33,7 @@ class UpdateStockQuantity extends Command
     {
         try {
             DB::beginTransaction();
+            $previousMonth = Carbon::now()->subMonth()->startOfMonth();
             $listProductId = Product::all()->pluck('id');
             $month = Carbon::now()->format('m-Y');
             $count = 0;
@@ -42,27 +43,56 @@ class UpdateStockQuantity extends Command
                 $stockQuan200 = TotalMonthQuantity::where('product_id', $productId)->where('month', $month)->where('status', 5)->first();
                 $stockQuan = TotalMonthQuantity::where('product_id', $productId)->where('month', $month)->where('status', 4)->first();
                 $stockMOQ = TotalMonthQuantity::where('product_id', $productId)->where('month', $month)->where('status', 7)->first();
-
+                // dd($stockQuan200);
                 if ($stockQuan200 == null) {
                     //thực hiện tính lại tồn đầu kỳ 200%
-                    $lastStockQuan200 = TotalMonthQuantity::where('product_id', $productId)->where('status', 5)->latest()->value('totalQuan');
-                    $laseTotalChecked = TotalMonthQuantity::where('product_id', $productId)->where('status', 2)->latest()->value('totalQuan');
-                    $laseTotalExport = TotalMonthQuantity::where('product_id', $productId)->where('status', 3)->latest()->value('totalQuan');
+                    $lastStockQuan200 = TotalMonthQuantity::where('product_id', $productId)
+                        ->where('status', 5)
+                        ->whereMonth('created_at', $previousMonth->month)
+                        ->whereYear('created_at', $previousMonth->year)
+                        ->value('totalQuan');
 
+                    $laseTotalChecked = TotalMonthQuantity::where('product_id', $productId)
+                        ->where('status', 2)
+                        ->whereMonth('created_at', $previousMonth->month)
+                        ->whereYear('created_at', $previousMonth->year)
+                        ->value('totalQuan');
+
+                    $laseTotalExport = TotalMonthQuantity::where('product_id', $productId)
+                        ->where('status', 3)
+                        ->whereMonth('created_at', $previousMonth->month)
+                        ->whereYear('created_at', $previousMonth->year)
+                        ->value('totalQuan');
+                    // dd($laseTotalChecked, $laseTotalChecked, $laseTotalExport);
                     $newStockQuan200 = new TotalMonthQuantity();
                     $newStockQuan200->product_id = $productId;
                     $newStockQuan200->status = 5;
                     $newStockQuan200->month = $month;
                     $newStockQuan200->totalQuan = ($lastStockQuan200 + $laseTotalChecked) - $laseTotalExport;
+                    // dd($newStockQuan200);
                     $newStockQuan200->save();
                     $count200++;
                 }
 
                 if ($stockQuan == null) {
                     //thực hiện tính lại tồn đầu kỳ
-                    $oldStockQuan = TotalMonthQuantity::where('product_id', $productId)->where('status', 4)->latest()->value('totalQuan');   //tồn đầu kỳ gần nhất
-                    $prorealityQuan = TotalMonthQuantity::where('product_id', $productId)->where('status', 1)->latest()->value('totalQuan'); //sản xuất gần nhất
-                    $laseTotalExport = TotalMonthQuantity::where('product_id', $productId)->where('status', 3)->latest()->value('totalQuan'); //xuất tháng gần nhất
+                    $oldStockQuan = TotalMonthQuantity::where('product_id', $productId)
+                        ->where('status', 4)  // tồn đầu kỳ
+                        ->whereMonth('created_at', $previousMonth->month)
+                        ->whereYear('created_at', $previousMonth->year)
+                        ->value('totalQuan');
+
+                    $prorealityQuan = TotalMonthQuantity::where('product_id', $productId)
+                        ->where('status', 1)  // sản xuất gần nhất
+                        ->whereMonth('created_at', $previousMonth->month)
+                        ->whereYear('created_at', $previousMonth->year)
+                        ->value('totalQuan');
+
+                    $laseTotalExport = TotalMonthQuantity::where('product_id', $productId)
+                        ->where('status', 3)  // xuất tháng gần nhất
+                        ->whereMonth('created_at', $previousMonth->month)
+                        ->whereYear('created_at', $previousMonth->year)
+                        ->value('totalQuan');
                     $stockEndQuan = ($oldStockQuan + $prorealityQuan) - $laseTotalExport; //tồn cuối kỳ gần nhất
 
                     $newStockQuan = new TotalMonthQuantity();
@@ -74,8 +104,7 @@ class UpdateStockQuantity extends Command
                     $count++;
                 }
 
-                if ($stockMOQ == null)
-                {
+                if ($stockMOQ == null) {
                     $stockMOQ = TotalMonthQuantity::where('product_id', $productId)->where('status', 7)->latest()->value('totalQuan');
 
                     //thực hiện tính lại tồn đầu kỳ

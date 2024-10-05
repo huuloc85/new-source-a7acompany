@@ -166,7 +166,7 @@
     }
 
     .qrcode-img {
-        width: 100%;
+        width: auto;
         font-size: 10px;
         line-height: 1.4;
         text-align: left;
@@ -176,7 +176,7 @@
     }
 
     .card {
-        padding: 10px !important;
+        padding: 0 !important;
         margin: 0 !important;
         background: transparent !important;
         border: none !important;
@@ -186,28 +186,37 @@
     .square {
         color: black !important;
         border: none 1px 1px 1px !important;
+
     }
+
 
     .grid-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        row-gap: 60px;
-        padding: 1rem;
-        zoom: 62%;
+        zoom: 68%;
+        /* row-gap: 0.2rem; */
+        /* column-gap: 4rem; */
+        page-break-inside: avoid;
+        padding-top: 10px !important;
+    }
+
+    .grid-item {
+        page-break-inside: avoid;
     }
 
     .table {
-        transform: scaleX(1.28);
-        transform-origin: center !important;
+        width: 110%;
+        max-width: none;
+        height: auto !important;
+        max-height: 100% !important;
+        border-spacing: 0;
+        min-width: none;
     }
+
 
     .grid-item * {
         margin: auto !important;
-    }
-
-    grid-item {
-        margin-top: 20px !important;
     }
 
     .no-print {
@@ -217,7 +226,8 @@
     .main-content {
         padding: 0 !important;
         margin: 0 !important;
-        margin-top: -37px !important;
+        margin-top: -25px !important;
+        margin-left: -60px !important;
     }
 
     header,
@@ -226,23 +236,17 @@
     }
 
     .container {
-        width: 100%;
+        width: auto;
         font-size: 5pt;
     }
 
     .moc-style td:nth-child(3) {
         border-right: 1px solid;
-        width: 100% !important;
+        width: auto !important;
         height: 130px !important;
     }
 
     .fs-13 {
-        font-size: 18px !important;
-    }
-
-    .grid-item {
-        page-break-inside: avoid;
-        padding: 1rem;
-        /* Ngăn không cho phần tử bị ngắt giữa chừng */
+        font-size: 20px !important;
     }
 }

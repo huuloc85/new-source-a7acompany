@@ -554,6 +554,7 @@ class AttendanceRecordController extends Controller
         }
     }
 
+    //Export
     public function export(Request $request)
     {
         $employeeCode = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
@@ -582,7 +583,8 @@ class AttendanceRecordController extends Controller
         return Excel::download(new Records($this->listRecord), 'Bảng Chấm Công ' . $currentMonth . '.xlsx');
     }
 
-    public function testExport(Request $request)
+    //TestView Export
+    public function testExport()
     {
         $employeeCode = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
         $categoryIds = CategoryCelender::pluck('id');
@@ -607,7 +609,6 @@ class AttendanceRecordController extends Controller
                 $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
             }
         }
-        dd($timeFilter);
         return view('export.attendance.records', [
             'records' => $this->listRecord,
         ]);
