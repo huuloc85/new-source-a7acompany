@@ -162,26 +162,44 @@ class AttendanceRecordController extends Controller
     //Query theo ca (Admin)
     private function checkQuery($query, $timeFilter)
     {
-        if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
-            $records = $query->select(
-                'employee_code',
-                'date',
-                DB::raw('COUNT(*) as record_count'),
-                DB::raw('MIN(time) as time_in'),
-                DB::raw('MAX(time) as time_out'),
-                DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
-            );
-        } else if (in_array($timeFilter, config("a7a.list_category_ca2"))) {
-            //nếu ca2
-            $records = $query->select(
-                'employee_code',
-                'date',
-                DB::raw('COUNT(*) as record_count'),
-                DB::raw('MIN(time) as time_in'),
-                DB::raw('MAX(time) as time_out'),
-                DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
-            );
-        }
+        // if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
+        //     $records = $query->select(
+        //         'employee_code',
+        //         'date',
+        //         DB::raw('COUNT(*) as record_count'),
+        //         DB::raw('MIN(time) as time_in'),
+        //         DB::raw('MAX(time) as time_out'),
+        //         DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
+        //     );
+        // } else if (in_array($timeFilter, config("a7a.list_category_ca2"))) {
+        //     //nếu ca2
+        //     $records = $query->select(
+        //         'employee_code',
+        //         'date',
+        //         DB::raw('COUNT(*) as record_count'),
+        //         DB::raw('MIN(time) as time_in'),
+        //         DB::raw('MAX(time) as time_out'),
+        //         DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
+        //     );
+        // } else {
+        //     //get all
+        //     $records = $query->select(
+        //         'employee_code',
+        //         'date',
+        //         DB::raw('COUNT(*) as record_count'),
+        //         DB::raw('MIN(time) as time_in'),
+        //         DB::raw('MAX(time) as time_out'),
+        //         DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
+        //     );
+        // }
+        $records = $query->select(
+            'employee_code',
+            'date',
+            DB::raw('COUNT(*) as record_count'),
+            DB::raw('MIN(time) as time_in'),
+            DB::raw('MAX(time) as time_out'),
+            DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
+        );
 
         return $records->groupBy('employee_code', 'date')
             ->orderBy('employee_code', 'asc')
@@ -193,6 +211,9 @@ class AttendanceRecordController extends Controller
     //Code chức năng tính công (Admin)
     private function processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key)
     {
+        if ($timeFilter == null && $record->employee->category_celender_id != null) {
+            $timeFilter = CategoryCelender::listCateforEmployee[$record->employee->category_celender_id];
+        }
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
         if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
@@ -601,12 +622,10 @@ class AttendanceRecordController extends Controller
 
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
         foreach ($categoryIds as $categoryId) {
-
-            $timeFilter = CategoryCelender::listCateforEmployee[$categoryId];
-            $records = $this->checkQuery($query, $timeFilter);
+            $records = $this->checkQuery($query, null);
             $this->listRecord = $records;
             foreach ($records as $key => $record) {
-                $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
+                $this->processRecord($record, null, $dayOfWeekMapping, $calendarId, $key);
             }
         }
         return view('export.attendance.records', [
