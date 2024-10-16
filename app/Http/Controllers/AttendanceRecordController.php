@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\Attendance\MultiSheetExport;
 use App\Exports\Attendance\Records;
 use App\Models\AttendanceRecord;
 use App\Models\CategoryCelender;
@@ -469,7 +470,7 @@ class AttendanceRecordController extends Controller
             $workingHours += $billedHours;
         }
 
-        return floor($workingHours * 4) / 4;
+        return round($workingHours * 4) / 4;
     }
 
     //Tính Giờ Tăng Ca
@@ -578,58 +579,95 @@ class AttendanceRecordController extends Controller
     //Export
     public function export(Request $request)
     {
-        $employeeCode = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
-        $categoryIds = CategoryCelender::pluck('id');
-        $currentMonth = Carbon::now()->format('Y-m');
-        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)
-            ->pluck('id')
-            ->first();
-
-        $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
-            ->whereMonth('date', Carbon::parse($currentMonth)->month)
-            ->whereIn('employee_code', $employeeCode)
+        $currentMonth = Carbon::now()->format('m-Y');
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+        $employeeCodes = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
+        $calendarId = Celender::whereBetween('date', [$startDate, $endDate])->pluck('id')->first();
+        $query = AttendanceRecord::whereBetween('date', [$startDate, $endDate])
+            ->whereIn('employee_code', $employeeCodes)
             ->orderBy('employee_code', 'asc')
             ->orderBy('date', 'asc');
+        $records = $this->checkQuery($query, null);
+        $this->listRecord = $records;
+        $a7aRecords = [];
+        $vinhVinhPhatRecords = [];
 
-        $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
-        foreach ($categoryIds as $categoryId) {
-            $timeFilter = CategoryCelender::listCateforEmployee[$categoryId];
-            $records = $this->checkQuery($query, $timeFilter);
-            $this->listRecord = $records;
-            foreach ($records as $key => $record) {
-                $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
+        foreach ($records as $key => $record) {
+            $employee = Employee::where('code', $record->employee_code)->first();
+            if ($employee) {
+                if ($employee->company === 'A7A') {
+                    $a7aRecords[] = $record;
+                } elseif ($employee->company === 'Vinh Vinh Phát') {
+                    $vinhVinhPhatRecords[] = $record;
+                }
             }
+            $this->processRecord($record, null, AttendanceRecord::getDayOfWeekMapping(), $calendarId, $key);
         }
-
-        return Excel::download(new Records($this->listRecord), 'Bảng Chấm Công ' . $currentMonth . '.xlsx');
+        return Excel::download(
+            new MultiSheetExport([
+                'A7A' => $a7aRecords,
+                'Vinh Vinh Phát' => $vinhVinhPhatRecords,
+            ], $startDate, $endDate, $currentMonth), // Thêm $startDate, $endDate và $currentMonth
+            'Bảng Tính Công Tháng ' . $currentMonth . '.xlsx',
+            \Maatwebsite\Excel\Excel::XLSX,
+            [
+                'Content-Type' => 'text/xlsx',
+            ]
+        );
     }
 
     //TestView Export
-    public function testExport()
+    public function testExport(Request $request)
     {
-        $employeeCode = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
-        $categoryIds = CategoryCelender::pluck('id');
-        $currentMonth = Carbon::now()->format('Y-m');
-        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)
+        // Lấy ngày bắt đầu và ngày kết thúc từ request
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+        // Lấy mã nhân viên, loại trừ các vai trò 15 và 1, chia theo công ty
+        $employeesA7A = Employee::where('company', 'A7A')
+            ->whereNotIn('role_id', [15, 1])
+            ->pluck('code');
+        $employeesVinhVinhPhat = Employee::where('company', 'Vinh Vinh Phát')
+            ->whereNotIn('role_id', [15, 1])
+            ->pluck('code');
+
+        // Lấy calendar ID cho phạm vi ngày được chọn
+        $calendarId = Celender::whereBetween('date', [$startDate, $endDate])
             ->pluck('id')
             ->first();
 
-        $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
-            ->whereMonth('date', Carbon::parse($currentMonth)->month)
-            ->whereIn('employee_code', $employeeCode)
+        // Truy vấn bản ghi chấm công cho công ty A7A
+        $queryA7A = AttendanceRecord::whereBetween('date', [$startDate, $endDate])
+            ->whereIn('employee_code', $employeesA7A)
             ->orderBy('employee_code', 'asc')
             ->orderBy('date', 'asc');
 
+        // Truy vấn bản ghi chấm công cho công ty Vinh Vinh Phát
+        $queryVinhVinhPhat = AttendanceRecord::whereBetween('date', [$startDate, $endDate])
+            ->whereIn('employee_code', $employeesVinhVinhPhat)
+            ->orderBy('employee_code', 'asc')
+            ->orderBy('date', 'asc');
+
+        // Lấy mapping ngày trong tuần
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
-        foreach ($categoryIds as $categoryId) {
-            $records = $this->checkQuery($query, null);
-            $this->listRecord = $records;
-            foreach ($records as $key => $record) {
-                $this->processRecord($record, null, $dayOfWeekMapping, $calendarId, $key);
-            }
+
+        // Kiểm tra và xử lý dữ liệu cho công ty A7A
+        $recordsA7A = $this->checkQuery($queryA7A, null);
+        foreach ($recordsA7A as $key => $record) {
+            $this->processRecord($record, null, $dayOfWeekMapping, $calendarId, $key);
         }
+
+        // Kiểm tra và xử lý dữ liệu cho công ty Vinh Vinh Phát
+        $recordsVinhVinhPhat = $this->checkQuery($queryVinhVinhPhat, null);
+        foreach ($recordsVinhVinhPhat as $key => $record) {
+            $this->processRecord($record, null, $dayOfWeekMapping, $calendarId, $key);
+        }
+
+        // Trả về view với dữ liệu được chia thành hai sheet
         return view('export.attendance.records', [
-            'records' => $this->listRecord,
+            'recordsA7A' => $recordsA7A,
+            'recordsVinhVinhPhat' => $recordsVinhVinhPhat,
         ]);
     }
 }
