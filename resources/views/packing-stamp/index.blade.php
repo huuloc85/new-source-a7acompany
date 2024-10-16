@@ -338,11 +338,11 @@
 
         $(document).ready(function() {
             $(document).keydown(function(event) {
-                if (event.ctrlKey && event.key === 'p') {
-                    event.preventDefault();
-                    isPrintShortcutActivated = true;
-                    handlePrint();
-                }
+                // if (event.ctrlKey && event.key === 'p') {
+                //     event.preventDefault();
+                //     isPrintShortcutActivated = true;
+                //     handlePrint();
+                // }
 
                 // Ngăn chặn Ctrl+Shift+P nếu Ctrl+P chưa được nhấn
                 if (event.ctrlKey && event.shiftKey && event.key === 'P') {

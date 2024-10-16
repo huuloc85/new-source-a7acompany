@@ -12,46 +12,40 @@
         style="width: 100%; border-collapse: collapse; margin: 0 auto; background-color: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
         <thead>
             <tr>
-                <th colspan="{{ count($records) * 3 + 3 }}"
+                <th colspan="3"
                     style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
                     Bảng Chấm Công Từ: {{ $startDate->format('d/m/Y') }} Đến: {{ $endDate->format('d/m/Y') }}
                 </th>
             </tr>
             <tr>
-                <th rowspan="2"
+                <th
                     style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
                     STT
                 </th>
-                <th rowspan="2"
+                <th
                     style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
                     Tên Nhân Viên
                 </th>
-                <th rowspan="2"
+                <th
                     style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
                     Mã Nhân Viên
                 </th>
-                @foreach ($records as $record)
-                    <th colspan="3"
-                        style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
-                        {{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}
-                    </th>
-                @endforeach
-            </tr>
-            <tr>
-                @foreach ($records as $record)
-                    <th
-                        style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
-                        Tổng Giờ Làm Việc(H)
-                    </th>
-                    <th
-                        style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
-                        Giờ Hành Chính(H)
-                    </th>
-                    <th
-                        style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
-                        Giờ Tăng Ca(H)
-                    </th>
-                @endforeach
+                <th
+                    style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
+                    Ngày
+                </th>
+                <th
+                    style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
+                    Tổng Giờ Làm Việc(H)
+                </th>
+                <th
+                    style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
+                    Giờ Hành Chính(H)
+                </th>
+                <th
+                    style="border: 1px solid black; color: #ffffff; font-weight: bold; text-align: center; padding: 10px; background-color: #007bff; font-family: Arial, sans-serif; font-size: 16px;">
+                    Giờ Tăng Ca(H)
+                </th>
             </tr>
         </thead>
 
@@ -72,10 +66,11 @@
                         style="border: 1px solid black; text-align: center; padding: 10px; font-family: Arial, sans-serif; font-size: 14px;">
                         {{ $record->employee ? $record->employee->name : 'Không xác định' }}
                     </td>
-                <tr>
-
-
-                    {{-- <td
+                    <td
+                        style="border: 1px solid black; text-align: center; padding: 10px; font-family: Arial, sans-serif; font-size: 14px;">
+                        {{ $record->date }}
+                    </td>
+                    <td
                         style="border: 1px solid black; text-align: center; padding: 10px; font-family: Arial, sans-serif; font-size: 14px;">
                         {{ $record->total_hours ? round($record->total_hours, 2) : 'Chấm công không đủ' }}
                     </td>
@@ -86,7 +81,7 @@
                     <td
                         style="border: 1px solid black; text-align: center; padding: 10px; font-family: Arial, sans-serif; font-size: 14px;">
                         {{ number_format($record->overtime_hours, 2) }}
-                    </td> --}}
+                    </td>
             @endforeach
 
         </tbody>

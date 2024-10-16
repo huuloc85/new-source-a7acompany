@@ -608,7 +608,7 @@ class AttendanceRecordController extends Controller
             new MultiSheetExport([
                 'A7A' => $a7aRecords,
                 'Vinh Vinh Phát' => $vinhVinhPhatRecords,
-            ], $startDate, $endDate, $currentMonth), // Thêm $startDate, $endDate và $currentMonth
+            ], $startDate, $endDate, $currentMonth),
             'Bảng Tính Công Tháng ' . $currentMonth . '.xlsx',
             \Maatwebsite\Excel\Excel::XLSX,
             [
