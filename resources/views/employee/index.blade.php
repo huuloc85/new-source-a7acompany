@@ -98,6 +98,9 @@
                                             Chức vụ</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Công ty đang hoạt động</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Mã nhân viên</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -132,6 +135,11 @@
                                             <td class="align-middle text-center">
                                                 <p class="text-xs font-weight-bold mb-0">
                                                     {{ $employee->role->role_name }}
+                                                </p>
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <p class="text-xs font-weight-bold mb-0">
+                                                    {{ $employee->company ?? 'Chưa có công ty' }}
                                                 </p>
                                             </td>
                                             <td class="align-middle text-center">
