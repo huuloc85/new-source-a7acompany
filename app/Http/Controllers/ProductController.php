@@ -29,6 +29,10 @@ class ProductController extends Controller
     //index
     public function index(Request $request)
     {
+        $page = "product";
+        if ($request->page) {
+            $page = $request->page;
+        }
         $monthNearly = Carbon::now()->format('m-Y');
         $listMonth = TotalMonthQuantity::distinct()->pluck('month');
         $listMonthExport = TotalMonthQuantity::where('status', 3)->distinct()->pluck('month');
@@ -90,7 +94,7 @@ class ProductController extends Controller
         // dd($monthNearly);
         $listDate = $this->handleDayInMonth($monthNearly);
 
-        return view('product.index', compact('products', 'total', 'models', 'modelSizes', 'listMonth', 'monthNearly', 'listMonthExport', 'listDate', 'filter', 'errorQuantities'));
+        return view('product.index', compact('products', 'total', 'models', 'modelSizes', 'listMonth', 'monthNearly', 'listMonthExport', 'listDate', 'filter', 'errorQuantities', 'page'));
     }
 
     //add
