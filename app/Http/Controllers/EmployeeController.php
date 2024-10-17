@@ -68,6 +68,9 @@ class EmployeeController extends Controller
         if (!empty($request->gender)) {
             $employees->Gender($request);
         }
+        if (!empty($request->company)) {
+            $employees->where('company', 'LIKE', '%' . $request->company . '%');
+        }
 
         $employees = $employees->where('role_id', '!=', 15)
             ->where('role_id', '!=', 17)
@@ -79,7 +82,12 @@ class EmployeeController extends Controller
             ->where('id', '!=', 16)
             ->where('id', '!=', 17)->where('id', '!=', 1)->get();
         $categories = CategoryCelender::all();
-        return view('employee.index', compact('employees', 'total', 'roles', 'categories'));
+        $companies = Employee::whereNotNull('company')
+            ->where('company', '!=', '')
+            ->distinct()
+            ->pluck('company');
+
+        return view('employee.index', compact('employees', 'total', 'roles', 'categories', 'companies'));
     }
 
     //view add
