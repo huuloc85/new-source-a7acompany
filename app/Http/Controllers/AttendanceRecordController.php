@@ -589,32 +589,54 @@ class AttendanceRecordController extends Controller
             ->orderBy('employee_code', 'asc')
             ->orderBy('date', 'asc');
         $records = $this->checkQuery($query, null);
+        $allEmployee = Employee::select('id', 'code', 'name', 'company')
+                                ->where('role_id', '!=', 15)
+                                ->where('role_id', '!=', 17)
+                                ->where('deleted_at', null)->where('company', '!=', null)->get();
+
         $this->listRecord = $records;
         $a7aRecords = [];
         $vinhVinhPhatRecords = [];
-
-        foreach ($records as $key => $record) {
-            $employee = Employee::where('code', $record->employee_code)->first();
-            if ($employee) {
-                if ($employee->company === 'A7A') {
-                    $a7aRecords[] = $record;
-                } elseif ($employee->company === 'Vinh Vinh Phát') {
-                    $vinhVinhPhatRecords[] = $record;
+        foreach ($allEmployee as $employee) {
+            $attendance = [];
+            foreach ($records as $key => $record) {
+                if ($employee->code == $record->employee_code) {
+                    $attendance[] = $record;
                 }
+                $this->processRecord($record, null, AttendanceRecord::getDayOfWeekMapping(), $calendarId, $key);
             }
-            $this->processRecord($record, null, AttendanceRecord::getDayOfWeekMapping(), $calendarId, $key);
+            $employee->setDataAttribute($attendance);
+            if ($employee->company === 'A7A') {
+                $a7aRecords[] = $employee;
+            } elseif ($employee->company === 'Vinh Vinh Phát') {
+                $vinhVinhPhatRecords[] = $employee;
+            }
         }
+        
+        $listDate = $this->createDateRangeArray($startDate, $endDate);
+
         return Excel::download(
             new MultiSheetExport([
                 'A7A' => $a7aRecords,
                 'Vinh Vinh Phát' => $vinhVinhPhatRecords,
-            ], $startDate, $endDate, $currentMonth),
+            ], $startDate, $endDate, $currentMonth, $listDate),
             'Bảng Tính Công Tháng ' . $currentMonth . '.xlsx',
             \Maatwebsite\Excel\Excel::XLSX,
             [
                 'Content-Type' => 'text/xlsx',
             ]
         );
+    }
+
+    function createDateRangeArray($startDate, $endDate) {
+        $dates = [];
+
+        while ($startDate < $endDate) {
+            $dates[] = $startDate->format('Y-m-d');
+            $startDate->modify('+1 day');
+        }
+
+        return $dates;
     }
 
     //TestView Export

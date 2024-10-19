@@ -10,6 +10,7 @@ class DateTimeHelper {
         $diff_time= \Carbon\Carbon::createFromTimeStamp(strtotime($date))->diffForHumans();
         return $diff_time;
     }
+
     public static function dateAgo($date,$type2='')
     {
         if($date==null || $date=='0000-00-00 00:00:00'){ return '-'; }
@@ -42,6 +43,7 @@ class DateTimeHelper {
         $diff_time = \Carbon\Carbon::createFromTimeStamp(strtotime($newDate));
         return $diff_time;
     }
+    
     public static function strtotimeToDate($date)
     {
         if($date==null || $date=='0000-00-00 00:00:00'){ return '-'; }

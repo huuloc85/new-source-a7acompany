@@ -85,11 +85,11 @@
                             class="d-flex align-items-center">
                             <div class="me-2">
                                 <label for="start_date" class="form-label">Ngày Bắt Đầu</label>
-                                <input type="date" id="start_date" name="start_date" class="form-control">
+                                <input type="date" id="start_date" name="start_date" class="form-control" required>
                             </div>
                             <div class="me-2">
                                 <label for="end_date" class="form-label">Ngày Kết Thúc</label>
-                                <input type="date" id="end_date" name="end_date" class="form-control">
+                                <input type="date" id="end_date" name="end_date" class="form-control" required>
                             </div>
                             <button type="submit" class="btn btn-primary mt-4">Export</button>
                         </form>

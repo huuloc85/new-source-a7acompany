@@ -60,6 +60,16 @@ class Employee extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function getDataAttribute()
+    {
+        return $this->dataAttendance;
+    }
+
+    public function setDataAttribute($value)
+    {
+        $this->dataAttendance = $value;
+    }
+
     //relationship role
     public function role()
     {
