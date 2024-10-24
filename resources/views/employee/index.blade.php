@@ -47,7 +47,7 @@
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Danh Sách Nhân Sự</h4>
+                        <h4 class="card-title mb-0">Danh Sách Nhân Viên</h4>
                     </div>
                 </div>
                 <div class="p-4 pb-0 d-flex align-items-center">
@@ -71,11 +71,25 @@
                         </button>
                         @include('employee.search-advand', ['href' => 'admin.employee.home'])
                     </div>
+                    <div class="position-relative">
+                        <form action="{{ route('admin.employee.home') }}" method="GET">
+                            <select name="company" id="company" class="form-control" onchange="this.form.submit()">
+                                <option value="">Chọn công ty</option>
+                                @foreach ($companies as $company)
+                                    <option value="{{ $company }}"
+                                        {{ request('company') == $company ? 'selected' : '' }}>
+                                        {{ $company }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
                     <div class="position-relative flex-grow-1 ms-2">
                         <input type="text" id="search" class="form-control form-control-search"
                             placeholder="Tìm kiếm theo tên nhân viên, mã nhân viên hoặc chức vụ">
                         <i class="search-icon fas fa-search"></i>
                     </div>
+
                 </div>
                 <div class="ps-4 d-flex">
                     Tổng : {{ count($employees) }}/{{ $total }}

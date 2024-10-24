@@ -217,10 +217,15 @@ class AttendanceRecordController extends Controller
         }
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
+        $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
         if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
+            $record->shift = ($shift === config("a7a.shift_1") || $shift === config("a7a.shift_1_extra_day"))
+                ? 'Ca 1'
+                : (($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night"))
+                    ? 'Ca 2'
+                    : 'Đổi lịch đi làm');
             $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
         } elseif (in_array($timeFilter, config("a7a.list_category_ca2"))) {
-            $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
             $record->shift = ($shift === config("a7a.shift_1") || $shift === config("a7a.shift_1_extra_day"))
                 ? 'Ca 1'
                 : (($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night"))
@@ -579,42 +584,89 @@ class AttendanceRecordController extends Controller
     //Export
     public function export(Request $request)
     {
+        ini_set('max_execution_time', 180);
         $currentMonth = Carbon::now()->format('m-Y');
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
         $employeeCodes = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
-        $calendarId = Celender::whereBetween('date', [$startDate, $endDate])->pluck('id')->first();
+
+        $startMonthCalendarId = Celender::whereMonth('date', $startDate->month)
+            ->whereYear('date', $startDate->year)
+            ->pluck('id')
+            ->first();
+        $endMonthCalendarId = Celender::whereMonth('date', $endDate->month)
+            ->whereYear('date', $endDate->year)
+            ->pluck('id')
+            ->first();
+
+        // $calendarIds = collect([$startMonthCalendarId, $endMonthCalendarId])->filter();
+        // dd($calendarIds);
         $query = AttendanceRecord::whereBetween('date', [$startDate, $endDate])
             ->whereIn('employee_code', $employeeCodes)
             ->orderBy('employee_code', 'asc')
             ->orderBy('date', 'asc');
+
         $records = $this->checkQuery($query, null);
+
+        // $employeeCodes = ['23052600', '15110600', '23030100', '16100400', '22072300'];
+        // $allEmployee = Employee::select('id', 'code', 'name', 'company')
+        //     ->whereIn('code', $employeeCodes)
+        //     ->whereNull('deleted_at')
+        //     ->whereNotNull('company')
+        //     ->get();
         $allEmployee = Employee::select('id', 'code', 'name', 'company')
-                                ->where('role_id', '!=', 15)
-                                ->where('role_id', '!=', 17)
-                                ->where('deleted_at', null)->where('company', '!=', null)->get();
+            ->where('role_id', '!=', 15)
+            ->where('role_id', '!=', 17)
+            ->where('deleted_at', null)->where('company', '!=', null)->get();
 
         $this->listRecord = $records;
         $a7aRecords = [];
         $vinhVinhPhatRecords = [];
+
         foreach ($allEmployee as $employee) {
             $attendance = [];
+            $employeeTotalHours = [
+                'totalHourMonth' => 0,
+                'totalHourTC' => 0,
+                'totalHourDay' => 0,
+                'totalHourNight' => 0,
+            ];
             foreach ($records as $key => $record) {
                 if ($employee->code == $record->employee_code) {
                     $attendance[] = $record;
                 }
+                if (Carbon::parse($record->date)->month == $startDate->month && Carbon::parse($record->date)->year == $startDate->year) {
+                    $calendarId = $startMonthCalendarId;
+                } elseif (Carbon::parse($record->date)->month == $endDate->month && Carbon::parse($record->date)->year == $endDate->year) {
+                    $calendarId = $endMonthCalendarId;
+                }
+
                 $this->processRecord($record, null, AttendanceRecord::getDayOfWeekMapping(), $calendarId, $key);
+
+                // Tính tổng giờ cho nhân viên này
+                if ($employee->code == $record->employee_code) {
+                    $employeeTotalHours['totalHourMonth'] += $record->total_hours;
+                    $employeeTotalHours['totalHourTC'] += $record->overtime_hours;
+                    if ($record->shift === 'Ca 1') {
+                        $employeeTotalHours['totalHourDay'] += $record->administrative_hours; // Giờ hành chính
+                    } elseif ($record->shift === 'Ca 2') {
+                        $employeeTotalHours['totalHourNight'] += $record->administrative_hours; // Giờ đêm
+                    }
+                }
             }
+
+            // Gán dữ liệu chấm công và tổng giờ làm việc cho nhân viên
             $employee->setDataAttribute($attendance);
+            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours);
+
+            // Phân loại nhân viên theo công ty
             if ($employee->company === 'A7A') {
                 $a7aRecords[] = $employee;
             } elseif ($employee->company === 'Vinh Vinh Phát') {
                 $vinhVinhPhatRecords[] = $employee;
             }
         }
-        
         $listDate = $this->createDateRangeArray($startDate, $endDate);
-
         return Excel::download(
             new MultiSheetExport([
                 'A7A' => $a7aRecords,
@@ -628,7 +680,9 @@ class AttendanceRecordController extends Controller
         );
     }
 
-    function createDateRangeArray($startDate, $endDate) {
+
+    function createDateRangeArray($startDate, $endDate)
+    {
         $dates = [];
 
         while ($startDate < $endDate) {
