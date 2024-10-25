@@ -608,16 +608,16 @@ class AttendanceRecordController extends Controller
 
         $records = $this->checkQuery($query, null);
 
-        // $employeeCodes = ['23052600', '15110600', '23030100', '16100400', '22072300'];
-        // $allEmployee = Employee::select('id', 'code', 'name', 'company')
-        //     ->whereIn('code', $employeeCodes)
-        //     ->whereNull('deleted_at')
-        //     ->whereNotNull('company')
-        //     ->get();
+        $employeeCodes = ['23052600', '20050400', '23030100', '16100400', '22072300'];
         $allEmployee = Employee::select('id', 'code', 'name', 'company')
-            ->where('role_id', '!=', 15)
-            ->where('role_id', '!=', 17)
-            ->where('deleted_at', null)->where('company', '!=', null)->get();
+            ->whereIn('code', $employeeCodes)
+            ->whereNull('deleted_at')
+            ->whereNotNull('company')
+            ->get();
+        // $allEmployee = Employee::select('id', 'code', 'name', 'company')
+        //     ->where('role_id', '!=', 15)
+        //     ->where('role_id', '!=', 17)
+        //     ->where('deleted_at', null)->where('company', '!=', null)->get();
 
         $this->listRecord = $records;
         $a7aRecords = [];

@@ -40,16 +40,22 @@ class AuthController extends Controller
                 Auth::logout();
                 return redirect()->route('login');
             }
-
-            toast('Bạn đã đăng nhập thành công!', 'success', 'top-right');
             $employee = Employee::where('id', $user->id)->first();
+            $today = now()->format('m-d'); // Lấy ngày và tháng hiện tại
+            $birthdayEmployees = Employee::whereRaw("DATE_FORMAT(birthday, '%m-%d') = ?", [$today])
+                ->whereNull('deleted_at') // Điều kiện kiểm tra chưa nghỉ việc
+                ->pluck('name');
+
+            $isBirthday = $birthdayEmployees->isNotEmpty(); // Kiểm tra có nhân viên nào sinh nhật hôm nay không
+
             if ($employee && ($employee->role_id == 15 || $employee->role_id == 16 || $employee->role_id == 17)) {
                 LogActivity::logViewActivity($user, 'Admin Đăng Nhập', 'Admin đã đăng nhập vào web');
             } else {
                 LogActivity::logViewActivity($user, 'Nhân Viên Đăng Nhập', 'Nhân viên đã đăng nhập vào web');
             }
-
-            return redirect()->route('admin.home');
+            return redirect()->route('admin.home')
+                ->with('birthday_check', $isBirthday)
+                ->with('birthday_employees', $birthdayEmployees);
         }
 
         toast('Số điện thoại hoặc mật khẩu không đúng!', 'error', 'top-right');
