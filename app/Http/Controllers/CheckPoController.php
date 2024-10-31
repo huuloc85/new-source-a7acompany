@@ -406,44 +406,45 @@ class CheckPoController extends Controller
             // Kiểm tra xem quantities và productIds có phải mảng hay không
             if (is_array($quantities) && is_array($productIds)) {
                 foreach ($productIds as $productId) {
+                    // Cho phép lưu giá trị 0
                     $newQuantity = $quantities[$productId] ?? 0;
-                    if ($newQuantity > 0) {
-                        $dailyQuantity = DailyQuantityPO::where('product_id', $productId)
-                            ->whereDate('date', $date)
-                            ->first();
 
-                        if ($dailyQuantity) {
-                            if ($dailyQuantity->quantity != $newQuantity) {
-                                $dailyQuantity->quantity = $newQuantity;
-                                $dailyQuantity->employee_id = Auth::id();
-                                $dailyQuantity->status = $status;
-                                $dailyQuantity->save();
-                            }
-                        } else {
-                            $dailyQuantity = new DailyQuantityPO();
-                            $dailyQuantity->product_id = $productId;
+                    $dailyQuantity = DailyQuantityPO::where('product_id', $productId)
+                        ->whereDate('date', $date)
+                        ->first();
+
+                    if ($dailyQuantity) {
+                        if ($dailyQuantity->quantity != $newQuantity) {
                             $dailyQuantity->quantity = $newQuantity;
                             $dailyQuantity->employee_id = Auth::id();
-                            $dailyQuantity->date = $date;
                             $dailyQuantity->status = $status;
                             $dailyQuantity->save();
                         }
-                        $totalDailyQuantity = TotalDailyQuantityPo::where('product_id', $productId)
-                            ->whereDate('date', $date)
-                            ->first();
+                    } else {
+                        $dailyQuantity = new DailyQuantityPO();
+                        $dailyQuantity->product_id = $productId;
+                        $dailyQuantity->quantity = $newQuantity;
+                        $dailyQuantity->employee_id = Auth::id();
+                        $dailyQuantity->date = $date;
+                        $dailyQuantity->status = $status;
+                        $dailyQuantity->save();
+                    }
 
-                        if ($totalDailyQuantity) {
-                            $totalDailyQuantity->totalQuan = $newQuantity;
-                            $totalDailyQuantity->status = $status;
-                            $totalDailyQuantity->save();
-                        } else {
-                            $totalDailyQuantity = new TotalDailyQuantityPo();
-                            $totalDailyQuantity->product_id = $productId;
-                            $totalDailyQuantity->date = $date;
-                            $totalDailyQuantity->status = $status;
-                            $totalDailyQuantity->totalQuan = $newQuantity;
-                            $totalDailyQuantity->save();
-                        }
+                    $totalDailyQuantity = TotalDailyQuantityPo::where('product_id', $productId)
+                        ->whereDate('date', $date)
+                        ->first();
+
+                    if ($totalDailyQuantity) {
+                        $totalDailyQuantity->totalQuan = $newQuantity;
+                        $totalDailyQuantity->status = $status;
+                        $totalDailyQuantity->save();
+                    } else {
+                        $totalDailyQuantity = new TotalDailyQuantityPo();
+                        $totalDailyQuantity->product_id = $productId;
+                        $totalDailyQuantity->date = $date;
+                        $totalDailyQuantity->status = $status;
+                        $totalDailyQuantity->totalQuan = $newQuantity;
+                        $totalDailyQuantity->save();
                     }
                 }
             }
@@ -453,6 +454,7 @@ class CheckPoController extends Controller
             Log::error('Lỗi cập nhật số lượng', ['error' => $e->getMessage()]);
             toast('Có lỗi xảy ra khi cập nhật số lượng!', 'error');
         }
+
         return redirect()->route('admin.history-import-quantity', [
             'month' => $request->input('month'),
             'date' => $date,

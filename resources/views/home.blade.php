@@ -54,6 +54,11 @@
 </style>
 @extends('master')
 @section('content')
+
+    @if (session('birthday_check'))
+        @include('modal.birthday')
+    @endif
+
     @if (Auth()->user()->role->role_name == 'admin' ||
             Auth()->user()->role->role_name == 'manager' ||
             Auth()->user()->role->role_name == 'accountant')
@@ -865,4 +870,10 @@
                 </div>
             </div>
     @endif
+
+    <script>
+        $(document).ready(function() {
+            $('#birthdayModal').modal('show');
+        });
+    </script>
 @endsection

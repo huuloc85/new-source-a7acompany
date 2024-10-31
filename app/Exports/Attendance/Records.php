@@ -18,14 +18,16 @@ class Records extends DefaultValueBinder implements FromView, ShouldAutoSize, Wi
     protected $startDate;
     protected $endDate;
     protected $currentMonth;
+    protected $listDate;
 
-    public function __construct($records, $title, $startDate, $endDate, $currentMonth)
+    public function __construct($records, $title, $startDate, $endDate, $currentMonth, $listDate)
     {
         $this->records = $records;
         $this->title = $title;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->currentMonth = $currentMonth;
+        $this->listDate = $listDate;
     }
 
     public function title(): string
@@ -40,6 +42,7 @@ class Records extends DefaultValueBinder implements FromView, ShouldAutoSize, Wi
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
             'currentMonth' => $this->currentMonth,
+            'listDate' => $this->listDate,
         ]);
     }
 
@@ -47,8 +50,8 @@ class Records extends DefaultValueBinder implements FromView, ShouldAutoSize, Wi
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->freezePane('C3');
-                $event->sheet->getSheetView()->setZoomScale(70);
+                $event->sheet->freezePane('H4');
+                $event->sheet->getSheetView()->setZoomScale(60);
             },
         ];
     }

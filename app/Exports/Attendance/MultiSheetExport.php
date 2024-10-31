@@ -10,13 +10,15 @@ class MultiSheetExport implements WithMultipleSheets
     protected $startDate;
     protected $endDate;
     protected $currentMonth;
+    protected $listDate;
 
-    public function __construct(array $sheetsData, $startDate, $endDate, $currentMonth)
+    public function __construct(array $sheetsData, $startDate, $endDate, $currentMonth, $listDate)
     {
         $this->sheetsData = $sheetsData;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->currentMonth = $currentMonth;
+        $this->listDate = $listDate;
     }
 
     public function sheets(): array
@@ -24,7 +26,7 @@ class MultiSheetExport implements WithMultipleSheets
         $sheets = [];
 
         foreach ($this->sheetsData as $title => $records) {
-            $sheets[] = new Records($records, $title, $this->startDate, $this->endDate, $this->currentMonth);
+            $sheets[] = new Records($records, $title, $this->startDate, $this->endDate, $this->currentMonth, $this->listDate);
         }
 
         return $sheets;
