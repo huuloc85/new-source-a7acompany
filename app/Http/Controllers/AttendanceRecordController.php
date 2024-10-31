@@ -415,10 +415,11 @@ class AttendanceRecordController extends Controller
             ->where('date', Carbon::parse($record->date)->addDay())
             ->where('time', '<', config("a7a.ca2_max_end_time"))
             ->orderBy('time', 'desc')
-            ->pluck('time')
+            ->select('time', 'date')
             ->first();
 
-        $record->time_out = isset($checkTimeOut) ? $checkTimeOut : null;
+        $record->time_out = isset($checkTimeOut->time) ? $checkTimeOut->time : null;
+        $record->date_out = isset($checkTimeOut->date) ? $checkTimeOut->date : null;
 
         if ($record->time_out == null && $record->time_in != null) {
             $times = explode(', ', $record->all_times);
@@ -448,6 +449,7 @@ class AttendanceRecordController extends Controller
     {
         if (!$record->time_in || !$record->time_out) return 0;
 
+
         $timeInDate = Carbon::parse($record->time_in);
         $timeOutDate = Carbon::parse($record->time_out);
         $workStartDate = Carbon::parse($workStartTime);
@@ -456,14 +458,19 @@ class AttendanceRecordController extends Controller
         $effectiveStart = $timeInDate < $workStartDate ? $workStartDate : $timeInDate;
         $effectiveEnd = $timeOutDate > $workEndDate ? $workEndDate : $timeOutDate;
 
-        // Không cộng thêm ngày nếu về sớm trước 24h
-        if ($shift2 && $timeOutDate->hour < 24 && $timeOutDate->isSameDay($timeInDate)) {
+        if ($shift2 && $record->date_out == null) {
             $effectiveEnd = $timeOutDate;
         }
 
-        if ($shift2 && $effectiveEnd < $effectiveStart) {
+        // Không cộng thêm ngày nếu về sớm trước 24h
+        if ($shift2 && $timeOutDate->hour < 24 && $record->date == $record->date_out) {
+            $effectiveEnd = $timeOutDate;
+        }
+
+        if ($shift2 && $effectiveEnd < $effectiveStart && $record->date_out != null && $record->date != $record->date_out) {
             $effectiveEnd->addDay();
         }
+
         $workingMillis = max(0, $effectiveEnd->diffInSeconds($effectiveStart));
         $workingHours = $workingMillis / 3600 - ($breakTime / 60);
 
@@ -684,66 +691,13 @@ class AttendanceRecordController extends Controller
     function createDateRangeArray($startDate, $endDate)
     {
         $dates = [];
+        $currentDate = clone $startDate;
 
-        while ($startDate < $endDate) {
-            $dates[] = $startDate->format('Y-m-d');
-            $startDate->modify('+1 day');
+        while ($currentDate <= $endDate) {
+            $dates[] = $currentDate->format('Y-m-d');
+            $currentDate->modify('+1 day');
         }
 
         return $dates;
-    }
-
-    //TestView Export
-    public function testExport(Request $request)
-    {
-        // Lấy ngày bắt đầu và ngày kết thúc từ request
-        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-
-        // Lấy mã nhân viên, loại trừ các vai trò 15 và 1, chia theo công ty
-        $employeesA7A = Employee::where('company', 'A7A')
-            ->whereNotIn('role_id', [15, 1])
-            ->pluck('code');
-        $employeesVinhVinhPhat = Employee::where('company', 'Vinh Vinh Phát')
-            ->whereNotIn('role_id', [15, 1])
-            ->pluck('code');
-
-        // Lấy calendar ID cho phạm vi ngày được chọn
-        $calendarId = Celender::whereBetween('date', [$startDate, $endDate])
-            ->pluck('id')
-            ->first();
-
-        // Truy vấn bản ghi chấm công cho công ty A7A
-        $queryA7A = AttendanceRecord::whereBetween('date', [$startDate, $endDate])
-            ->whereIn('employee_code', $employeesA7A)
-            ->orderBy('employee_code', 'asc')
-            ->orderBy('date', 'asc');
-
-        // Truy vấn bản ghi chấm công cho công ty Vinh Vinh Phát
-        $queryVinhVinhPhat = AttendanceRecord::whereBetween('date', [$startDate, $endDate])
-            ->whereIn('employee_code', $employeesVinhVinhPhat)
-            ->orderBy('employee_code', 'asc')
-            ->orderBy('date', 'asc');
-
-        // Lấy mapping ngày trong tuần
-        $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
-
-        // Kiểm tra và xử lý dữ liệu cho công ty A7A
-        $recordsA7A = $this->checkQuery($queryA7A, null);
-        foreach ($recordsA7A as $key => $record) {
-            $this->processRecord($record, null, $dayOfWeekMapping, $calendarId, $key);
-        }
-
-        // Kiểm tra và xử lý dữ liệu cho công ty Vinh Vinh Phát
-        $recordsVinhVinhPhat = $this->checkQuery($queryVinhVinhPhat, null);
-        foreach ($recordsVinhVinhPhat as $key => $record) {
-            $this->processRecord($record, null, $dayOfWeekMapping, $calendarId, $key);
-        }
-
-        // Trả về view với dữ liệu được chia thành hai sheet
-        return view('export.attendance.records', [
-            'recordsA7A' => $recordsA7A,
-            'recordsVinhVinhPhat' => $recordsVinhVinhPhat,
-        ]);
     }
 }

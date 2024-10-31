@@ -20,7 +20,6 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <style>
-                /* CSS cho modal */
                 .birthday-cake-img {
                     width: 80%;
                     border-radius: 10px;
@@ -43,16 +42,12 @@
 
                 .modal-content {
                     background: linear-gradient(135deg, #f0f8ff 30%, #ffffff 70%);
-                    border: 2px solid #000000;
-                    border-radius: 15px;
                     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
                     animation: slideIn 0.7s forwards;
                 }
 
                 .modal-header {
-                    border-bottom: 2px solid #000000;
                     background-color: #ffffff;
-                    animation: glow-header 2s infinite alternate;
                 }
 
                 .modal-title {
@@ -61,7 +56,6 @@
                     font-size: 1.8rem;
                     text-align: center;
                     margin: 0;
-                    /* Không có khoảng cách trên và dưới */
                 }
 
                 @keyframes glow-header {
@@ -79,6 +73,7 @@
                     color: #424242;
                     text-align: center;
                     animation: pulse 1.5s infinite;
+
                 }
 
                 @keyframes pulse {
@@ -97,18 +92,13 @@
 
                 .employee-list {
                     list-style-type: none;
-                    /* Không có dấu chấm đầu dòng */
                     padding: 0;
-                    /* Không có khoảng cách bên trong */
                     margin: 20px 0;
-                    /* Khoảng cách trên và dưới */
                 }
 
                 .employee-list li {
                     margin: 10px 0;
-                    /* Khoảng cách giữa các tên */
                     font-weight: bold;
-                    /* Chữ đậm */
                 }
 
                 .pyro>.before,
@@ -404,22 +394,22 @@
                     @foreach (session('birthday_employees', []) as $employee)
                         @php
                             $wishes = [
-                                "Chúc bạn, {$employee} có một tuổi mới tràn đầy sức khỏe và thành công!",
-                                "Hy vọng tuổi mới sẽ mang lại nhiều may mắn và niềm vui cho bạn, {$employee}!",
-                                "Chúc bạn, {$employee} luôn hạnh phúc, thành đạt và ngày càng xinh đẹp!",
-                                "Chúc bạn, {$employee} luôn vui vẻ, đạt được mọi điều mong muốn trong cuộc sống!",
-                                "Một tuổi mới đầy niềm vui và năng lượng mới đang chờ đón bạn, {$employee}!",
-                                "Chúc bạn, {$employee} thành công trong mọi dự định và ước mơ trong năm tới!",
-                                "Mong rằng bạn, {$employee} sẽ luôn nhận được sự hỗ trợ và đồng hành từ đồng nghiệp trong công việc!",
-                                "Chúc bạn, {$employee} có nhiều cơ hội để phát triển bản thân và thăng tiến trong sự nghiệp!",
-                                "Hy vọng mỗi ngày của bạn, {$employee} đều tràn đầy hạnh phúc và niềm vui trong công việc!",
-                                "Chúc bạn luôn giữ vững tinh thần làm việc và không ngừng phấn đấu, {$employee}!",
-                                "Mong rằng năm mới sẽ mang đến cho bạn, {$employee} nhiều dự án thành công và đạt được mọi mục tiêu!",
-                                "Chúc bạn, {$employee} có một ngày sinh nhật thật đáng nhớ bên những người bạn yêu thương!",
-                                "Mong rằng công ty sẽ luôn là một nơi làm việc vui vẻ và ý nghĩa đối với bạn, {$employee}!",
-                                "Chúc bạn, {$employee} gặt hái nhiều thành công và niềm vui trong cả công việc lẫn cuộc sống!",
-                                "Hy vọng bạn, {$employee} sẽ luôn là nguồn cảm hứng cho mọi người xung quanh!",
-                                "Chúc bạn, {$employee} sẽ có nhiều kỷ niệm đẹp trong năm mới và những mối quan hệ tốt đẹp!",
+                                "Chúc  {$employee} có một tuổi mới tràn đầy sức khỏe và thành công!",
+                                "Hy vọng tuổi mới sẽ mang lại nhiều may mắn và niềm vui cho {$employee}!",
+                                "Chúc {$employee} luôn hạnh phúc, thành đạt và ngày càng xinh đẹp!",
+                                "Chúc {$employee} luôn vui vẻ, đạt được mọi điều mong muốn trong cuộc sống!",
+                                "Một tuổi mới đầy niềm vui và năng lượng mới đang chờ đón {$employee}!",
+                                "Chúc {$employee} thành công trong mọi dự định và ước mơ trong năm tới!",
+                                "Mong rằng {$employee} sẽ luôn nhận được sự hỗ trợ và đồng hành từ đồng nghiệp trong công việc!",
+                                "Chúc {$employee} có nhiều cơ hội để phát triển bản thân và thăng tiến trong sự nghiệp!",
+                                "Hy vọng mỗi ngày của {$employee} đều tràn đầy hạnh phúc và niềm vui trong công việc!",
+                                "Chúc bạn luôn giữ vững tinh thần làm việc và không ngừng phấn đấu {$employee}!",
+                                "Mong rằng năm mới sẽ mang đến cho {$employee} nhiều dự án thành công và đạt được mọi mục tiêu!",
+                                "Chúc {$employee} có một ngày sinh nhật thật đáng nhớ bên những người bạn yêu thương!",
+                                "Mong rằng công ty sẽ luôn là một nơi làm việc vui vẻ và ý nghĩa đối với {$employee}!",
+                                "Chúc {$employee} gặt hái nhiều thành công và niềm vui trong cả công việc lẫn cuộc sống!",
+                                "Hy vọng {$employee} sẽ luôn là nguồn cảm hứng cho mọi người xung quanh!",
+                                "Chúc {$employee} sẽ có nhiều kỷ niệm đẹp trong năm mới và những mối quan hệ tốt đẹp!",
                             ];
                             $randomWish = $wishes[array_rand($wishes)];
                         @endphp
