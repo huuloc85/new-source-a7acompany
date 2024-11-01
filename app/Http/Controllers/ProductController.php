@@ -946,6 +946,10 @@ class ProductController extends Controller
                 'stockQuan200Nearly' => $stockQuan200Nearly,
                 'stockQuanMOQNearly' => $stockQuanMOQNearly,
             ];
+            // Kiểm tra dữ liệu của product_id = 4
+            // if ($productId == 4) {
+            //     dd($productNearData[$productId]);
+            // }
         }
 
         // Lấy danh sách tất cả sản phẩm

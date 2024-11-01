@@ -448,8 +448,6 @@ class AttendanceRecordController extends Controller
     private function calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime, $shift2 = false)
     {
         if (!$record->time_in || !$record->time_out) return 0;
-
-
         $timeInDate = Carbon::parse($record->time_in);
         $timeOutDate = Carbon::parse($record->time_out);
         $workStartDate = Carbon::parse($workStartTime);
@@ -478,7 +476,7 @@ class AttendanceRecordController extends Controller
         if ($workingHours < $dailyWorkHours) {
             $requiredHours = $dailyWorkHours - $workingHours;
             $timeOutDate = $shift2 == true ? $timeOutDate->subDay() : $timeOutDate;
-            $billedHours = $timeOutDate <= $workEndDate ? 0 : min($timeOutDate->diffInHours($workEndDate), $requiredHours);
+            $billedHours = $timeOutDate <= $workEndDate ? 0 : min($timeOutDate->floatDiffInHours($workEndDate), $requiredHours);
             $workingHours += $billedHours;
         }
 
@@ -486,7 +484,7 @@ class AttendanceRecordController extends Controller
     }
 
     //Tính Giờ Tăng Ca
-    private function calculateOvertime($record, $workStartTime, $workEndTime, $breakTime, $shift2 = false)
+    private function calculateOvertime($record, $shift2 = false)
     {
         $totalHours = $record->total_hours;
         $categoryId = $record->employee->category_celender_id;

@@ -104,8 +104,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
     <div class="row">
@@ -193,7 +198,8 @@
                     </div>
                 </div>
                 <div class="px-0 pb-2">
-                    <ul class="nav nav-tabs px-4" id="myTab" role="tablist" data-url="{{ route('admin.product.home') }}">
+                    <ul class="nav nav-tabs px-4" id="myTab" role="tablist"
+                        data-url="{{ route('admin.product.home') }}">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link tab-vvp product active show" id="product-tab" data-bs-toggle="tab"
                                 data-bs-target="#product" type="button" role="tab" aria-controls="product"
@@ -247,7 +253,8 @@
                                                             </td>
                                                             <td>
                                                                 <div class="d-flex px-3 py-1">
-                                                                    <a href="{{ route('admin.product.detail', $product->id) }}">{{ $product->name }}</a>
+                                                                    <a
+                                                                        href="{{ route('admin.product.detail', $product->id) }}">{{ $product->name }}</a>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -309,7 +316,7 @@
                                                         $stockQuan200 = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0; //tồn đầu kỳ 200%
                                                         $errorQuantity = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 6)->value('totalQuan') ?? 0; //hàng lỗi
                                                         $stockQuanMOQ = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 7)->value('totalQuan') ?? 0; // MOQ
-
+                                                        
                                                         $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; //đã kiểm 200%
                                                         $stockEndQuan = $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; //tồn cuối kỳ
                                                         $stockNoneCheck200 = $stockQuan + $prorealityQuan - $exportedQuan - $checked200 - $errorQuantity; //số lượng hàng chưa kiểm 200%
@@ -498,7 +505,9 @@
                                                         @foreach ($listDate as $key => $date)
                                                             @php
                                                                 // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
-                                                                $formattedDate = Carbon\Carbon::parse($date)->startOfDay();
+                                                                $formattedDate = Carbon\Carbon::parse(
+                                                                    $date,
+                                                                )->startOfDay();
                                                                 // Lấy tất cả các dailyQuantities cho ngày cụ thể
                                                                 $dailyQuantitiesOfTheDay = $product
                                                                     ->DailyQuantities()
@@ -862,6 +871,12 @@
         </div>
     </div>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
         $(document).ready(function() {
             var activeHome = false;
             var activeProduce = false;
@@ -1009,13 +1024,6 @@
                     }
                 }
             };
-
-            document.addEventListener('DOMContentLoaded', function() {
-                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl);
-                });
-            });
         })
     </script>
 @endsection
