@@ -377,7 +377,7 @@ class AttendanceRecordController extends Controller
             // Nếu time_in và time_out khác nhau ít nhất 1 giờ
             if ($timeIn->diffInHours($timeOut) >= 1) {
                 $record->total_hours = $this->calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime);
-                $record->overtime_hours = $this->calculateOvertime($record, $workStartTime, $workEndTime, $breakTime);
+                $record->overtime_hours = $this->calculateOvertime($record);
             } else {
                 // Nếu không, đặt time_out là null
                 $record->time_out = null;
@@ -435,7 +435,7 @@ class AttendanceRecordController extends Controller
         $workStartTime = config("a7a.ca2_work_start_time");
         $workEndTime = config("a7a.ca2_work_end_time");
         $record->total_hours = $this->calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime, true);
-        $record->overtime_hours = $this->calculateOvertime($record, $workStartTime, $workEndTime, $breakTime, true);
+        $record->overtime_hours = $this->calculateOvertime($record, true);
 
         $administrativeHours = min($record->total_hours, 8);
         $record->administrative_hours = $administrativeHours;
@@ -476,7 +476,7 @@ class AttendanceRecordController extends Controller
         if ($workingHours < $dailyWorkHours) {
             $requiredHours = $dailyWorkHours - $workingHours;
             $timeOutDate = $shift2 == true ? $timeOutDate->subDay() : $timeOutDate;
-            $billedHours = $timeOutDate <= $workEndDate ? 0 : min($timeOutDate->floatDiffInHours($workEndDate), $requiredHours);
+            $billedHours = $timeOutDate <= $workEndDate ? 0 : min($timeOutDate->DiffInHours($workEndDate), $requiredHours);
             $workingHours += $billedHours;
         }
 
