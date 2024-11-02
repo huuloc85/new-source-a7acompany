@@ -237,9 +237,9 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder px-3"
+                                                        <th class="text-uppercase text-xxs font-weight-bolder px-3"
                                                             rowspan="2">&nbsp;<br>STT<br>&nbsp;</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  px-4"
+                                                        <th class="text-uppercase text-xxs font-weight-bolder  px-4"
                                                             rowspan="2">&nbsp;<br>Tên linh kiện<br>&nbsp;</th>
                                                     </tr>
                                                 </thead>
@@ -266,43 +266,43 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-3"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-3"
                                                             rowspan="2">SẢN LƯỢNG<br>(MOQ)</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-3"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-3"
                                                             rowspan="2">THUNG CATON/THANG<br>(MOQ)</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">Dự định <br>Thời gian hoạt động thiết
                                                             bị<br>(ngày/tháng)</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">Thực tế <br>Thời gian hoạt động thiết
                                                             bị<br>(ngày/tháng)</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-3"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-3"
                                                             rowspan="2">FAPV出荷</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-3"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-3"
                                                             rowspan="2">FASV出荷</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-3"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-3"
                                                             rowspan="2">FAVV出荷</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">TỔNG SỐ LƯỢNG<br>TỒN ĐẦU KỲ</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">TỔNG THỰC TẾ<br>SẢN XUẤT(cái/tháng)</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">TỔNG SỐ LƯỢNG<br>ĐÃ XUẤT</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">SỐ LƯỢNG<br>ĐÃ KIỂM 200%</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">SỐ LƯỢNG<br>HÀNG CHƯA KIỂM 200%</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">TỔNG SỐ LƯỢNG<br>TỒN CUỐI KỲ</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-2"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-2"
                                                             rowspan="2">SỐ NGÀY<br>TỒN KHO</th>
                                                         @foreach ($listMonthExport as $monthExport)
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 bg-3"
+                                                            <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 bg-3"
                                                                 rowspan="2">SỐ LƯỢNG<br>ĐÃ XUẤT THÁNG
                                                                 {{ $monthExport }}
                                                             </th>
                                                         @endforeach
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1"
                                                             rowspan="2">THAO TÁC</th>
                                                     </tr>
                                                 </thead>
@@ -446,11 +446,11 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-uppercase text-secondary text-xxs fw-bold  px-3 align-middle"
+                                                        <th class="text-uppercase  text-xxs fw-bold  px-3 align-middle"
                                                             rowspan="2">&nbsp;STT<br>&nbsp;</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  px-4"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  px-4"
                                                             rowspan="2">Tên linh kiện<br>&nbsp;</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center text-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center text-center"
                                                             rowspan="2">Tổng cộng<br>&nbsp;</th>
                                                     </tr>
                                                 </thead>
@@ -483,10 +483,10 @@
                                                 <thead>
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
+                                                            <th class="text-uppercase  text-xxs font-weight-bolder  text-center <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
                                                                 colspan="2">{{ $date }}</th>
                                                         @endforeach
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1"
                                                             rowspan="2">THAO TÁC</th>
                                                     </tr>
                                                     <tr>
@@ -581,13 +581,13 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center"
                                                             rowspan="2">STT</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  px-4"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  px-4"
                                                             rowspan="2">Tên Linh Kiện</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1"
                                                             rowspan="2">Tồn đầu kỳ<br>hàng 200%</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1"
                                                             rowspan="2">Phát sinh<br>kiểm hàng 200%</th>
                                                     </tr>
                                                 </thead>
@@ -626,10 +626,10 @@
                                                 <thead>
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
+                                                            <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
                                                                 rowspan="2">{{ $date }}<br>&nbsp;</th>
                                                         @endforeach
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1"
                                                             rowspan="2">THAO TÁC<br>&nbsp;</th>
                                                     </tr>
                                                 </thead>
@@ -681,11 +681,11 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead style="height: 51px">
                                                     <tr>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  px-3 align-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  px-3 align-center"
                                                             rowspan="2">STT</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  px-4 align-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  px-4 align-center"
                                                             rowspan="2">Tên linh kiện</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 align-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 align-center"
                                                             rowspan="2">Tổng cộng</th>
                                                     </tr>
                                                 </thead>
@@ -719,10 +719,10 @@
                                                 <thead>
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
+                                                            <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
                                                                 rowspan="2">{{ $date }}<br>&nbsp;</th>
                                                         @endforeach
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1"
                                                             rowspan="2">THAO TÁC<br>&nbsp;</th>
                                                     </tr>
                                                 </thead>
@@ -774,11 +774,11 @@
                                             <table class="table align-items-center mb-0 table-hover">
                                                 <thead style="height: 52px">
                                                     <tr>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  px-3 align-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  px-3 align-center"
                                                             rowspan="2">STT</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  px-4 align-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  px-4 align-center"
                                                             rowspan="2">Tên linh kiện</th>
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 align-center"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 align-center"
                                                             rowspan="2">Tổng cộng</th>
                                                     </tr>
                                                 </thead>
@@ -812,10 +812,10 @@
                                                 <thead>
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
-                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
+                                                            <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1 <?= $key % 2 == 0 ? 'bg-3' : 'bg-2' ?>"
                                                                 rowspan="2">{{ $date }}<br>&nbsp;</th>
                                                         @endforeach
-                                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder  text-center col-1"
+                                                        <th class="text-uppercase  text-xxs font-weight-bolder  text-center col-1"
                                                             rowspan="2">THAO TÁC<br>&nbsp;</th>
                                                     </tr>
                                                 </thead>
