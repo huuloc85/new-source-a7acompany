@@ -128,12 +128,13 @@
                                         <a class="btn btn-secondary" onclick="handlePrint(event)" href="#">Print</a>
                                     @endif
                                 </div>
-                                <div class="container-gird">
+                                <div class="container-gird no-break">
                                     <div class="grid-container">
                                         @if (isset($binArray))
                                             @foreach ($binArray as $key => $bin)
-                                                <div class="container grid-item ">
-                                                    <table class="table table-bordered">
+                                                <div class="container grid-item">
+                                                    <table class="table table-bordered"
+                                                        style="margin-top: 5px; margin-bottom: 5px;">
                                                         <tr>
                                                             <td class="text-start w-120 w-5">
                                                                 Tên sản<br>phẩm<br>品名
@@ -338,11 +339,12 @@
 
         $(document).ready(function() {
             $(document).keydown(function(event) {
-                // if (event.ctrlKey && event.key === 'p') {
-                //     event.preventDefault();
-                //     isPrintShortcutActivated = true;
-                //     handlePrint();
-                // }
+                // Kích hoạt Ctrl + P để lưu lịch sử in
+                if (event.ctrlKey && event.key === 'p') {
+                    event.preventDefault(); // Ngăn hành động mặc định
+                    isPrintShortcutActivated = true; // Đánh dấu Ctrl + P đã được nhấn
+                    handlePrint(); // Gọi hàm in
+                }
 
                 // Ngăn chặn Ctrl+Shift+P nếu Ctrl+P chưa được nhấn
                 if (event.ctrlKey && event.shiftKey && event.key === 'P') {
@@ -354,6 +356,10 @@
                             icon: 'info',
                             confirmButtonText: 'Đồng ý'
                         });
+                    } else {
+                        // Nếu Ctrl + P đã được nhấn, bạn có thể thực hiện hành động cho Ctrl + Shift + P ở đây
+                        console.log("Ctrl + Shift + P được nhấn!");
+                        // Thực hiện hành động khác nếu cần
                     }
                 }
             });

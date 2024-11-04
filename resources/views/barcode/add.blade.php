@@ -386,11 +386,12 @@
 
         $(document).ready(function() {
             $(document).keydown(function(event) {
-                // if (event.ctrlKey && event.key === 'p') {
-                //     event.preventDefault();
-                //     isPrintShortcutActivated = true;
-                //     handlePrint();
-                // }
+                // Kích hoạt Ctrl + P để lưu lịch sử in
+                if (event.ctrlKey && event.key === 'p') {
+                    event.preventDefault(); // Ngăn hành động mặc định
+                    isPrintShortcutActivated = true; // Đánh dấu Ctrl + P đã được nhấn
+                    handlePrint(); // Gọi hàm in
+                }
 
                 // Ngăn chặn Ctrl+Shift+P nếu Ctrl+P chưa được nhấn
                 if (event.ctrlKey && event.shiftKey && event.key === 'P') {
@@ -402,16 +403,20 @@
                             icon: 'info',
                             confirmButtonText: 'Đồng ý'
                         });
+                    } else {
+                        // Nếu Ctrl + P đã được nhấn, bạn có thể thực hiện hành động cho Ctrl + Shift + P ở đây
+                        console.log("Ctrl + Shift + P được nhấn!");
+                        // Thực hiện hành động khác nếu cần
+                        // Ví dụ: bạn có thể gọi một hàm khác ở đây
+                        // handleShiftPrint();
                     }
                 }
             });
 
             $('#save-print').click(function(event) {
                 event.preventDefault();
-                handlePrint();
+                handlePrint(); // Gọi hàm in khi nhấn nút
             });
         });
     </script>
-
-
 @endsection
