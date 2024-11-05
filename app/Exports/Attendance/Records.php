@@ -50,7 +50,7 @@ class Records extends DefaultValueBinder implements FromView, ShouldAutoSize, Wi
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->freezePane('H4');
+                $event->sheet->freezePane('K4');
                 $event->sheet->getSheetView()->setZoomScale(60);
             },
         ];
