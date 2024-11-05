@@ -134,7 +134,7 @@
                                             @foreach ($binArray as $key => $bin)
                                                 <div class="container grid-item">
                                                     <table class="table table-bordered"
-                                                        style="margin-top: 5px; margin-bottom: 5px;">
+                                                        style="margin-top: 10px; margin-bottom: 10px;">
                                                         <tr>
                                                             <td class="text-start w-120 w-5">
                                                                 Tên sản<br>phẩm<br>品名
