@@ -81,6 +81,17 @@ class Employee extends Authenticatable
         $this->dataAttendance = $value;
     }
 
+    public function getEmployeeForPCAttribute()
+    {
+        return $this->employeeforPC;
+    }
+
+    // Setter cho employeeforPC
+    public function setEmployeeForPCAttribute($value)
+    {
+        $this->employeeforPC = $value;
+    }
+
     //relationship role
     public function role()
     {

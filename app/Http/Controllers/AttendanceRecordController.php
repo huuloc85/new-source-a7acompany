@@ -327,6 +327,11 @@ class AttendanceRecordController extends Controller
             }
         }
 
+        // Nếu ca là qc_day và giờ về sớm hơn 17:00, vẫn trừ thêm 10 phút
+        if ($timeFilter === 'qc_day' && $timeOut < Carbon::parse('17:00')) {
+            $breakTime += 10;
+        }
+
         return $breakTime;
     }
 
@@ -335,6 +340,19 @@ class AttendanceRecordController extends Controller
     {
         $workStartTime = config("a7a.ca1_work_start_time");
         $workEndTime = $timeFilter === 'working_hours' ? config("a7a.ca1_work_end_time_wh") : config("a7a.ca1_work_end_time_qd");
+
+        if ($record->employee_code === '23030100') {
+            $dayOfWeek = Carbon::parse($record->date)->dayOfWeek; // 1 là Thứ Hai, 3 là Thứ Tư, 5 là Thứ Sáu
+            if (in_array($dayOfWeek, [1, 3, 5]) && $record->shift === 'Ca 1') {
+                $workStartTime = '07:00'; // Đặt giờ bắt đầu làm việc là 7:00 sáng
+                $workEndTime = Carbon::parse($workStartTime)->addHours(8)->format('H:i'); // Đặt giờ kết thúc để làm đủ 8 tiếng
+
+                // Đảm bảo giờ làm việc không vượt quá 8 tiếng
+                $record->total_hours = min($record->total_hours, 8);
+                $record->overtime_hours = 0; // Không có giờ tăng ca
+            }
+        }
+
         $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
 
         if ($record->record_count == 1) {
@@ -636,6 +654,11 @@ class AttendanceRecordController extends Controller
                 'totalHourDay' => 0,
                 'totalHourNight' => 0,
             ];
+            $employeeforPC = [
+                'PCTCNgay' => 0,
+                'PCTCDem' => 0,
+                'PCTCTC' => 0,
+            ];
             foreach ($records as $key => $record) {
                 if ($employee->code == $record->employee_code) {
                     $attendance[] = $record;
@@ -654,15 +677,25 @@ class AttendanceRecordController extends Controller
                     $employeeTotalHours['totalHourTC'] += $record->overtime_hours;
                     if ($record->shift === 'Ca 1') {
                         $employeeTotalHours['totalHourDay'] += $record->administrative_hours; // Giờ hành chính
+                        if ($record->administrative_hours > 5) {
+                            $employeeforPC['PCTCNgay'] += 1; // Tăng PCTCNgay
+                        }
                     } elseif ($record->shift === 'Ca 2') {
                         $employeeTotalHours['totalHourNight'] += $record->administrative_hours; // Giờ đêm
+                        if ($record->administrative_hours > 5) {
+                            $employeeforPC['PCTCDem'] += 1; // Tăng PCTCDem
+                        }
+                    }
+                    if ($record->administrative_hours >= 8) {
+                        $employeeforPC['PCTCTC'] += 1; // Tăng PCTCTC nếu giờ >= 8
                     }
                 }
             }
 
             // Gán dữ liệu chấm công và tổng giờ làm việc cho nhân viên
             $employee->setDataAttribute($attendance);
-            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours);
+            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours); //tổng giờ làm việc 
+            $employee->setEmployeeForPCAttribute($employeeforPC);  //phụ cấp 
 
             // Phân loại nhân viên theo công ty
             if ($employee->company === 'A7A') {
@@ -677,14 +710,13 @@ class AttendanceRecordController extends Controller
                 'A7A' => $a7aRecords,
                 'Vinh Vinh Phát' => $vinhVinhPhatRecords,
             ], $startDate, $endDate, $currentMonth, $listDate),
-            'Bảng Tính Công Tháng ' . $currentMonth . '.xlsx',
+            'Bảng Tính Công Tháng' . '.xlsx',
             \Maatwebsite\Excel\Excel::XLSX,
             [
                 'Content-Type' => 'text/xlsx',
             ]
         );
     }
-
 
     function createDateRangeArray($startDate, $endDate)
     {

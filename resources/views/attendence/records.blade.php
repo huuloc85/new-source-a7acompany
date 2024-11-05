@@ -337,9 +337,25 @@
             // Hiển thị overlay loading
             document.getElementById('loading-overlay').style.display = 'flex';
 
+            // Lấy giá trị ngày bắt đầu và kết thúc
+            const startDateInput = document.getElementById('start_date').value;
+            const endDateInput = document.getElementById('end_date').value;
+
+            // Chuyển đổi sang định dạng d-m-Y
+            const formatDate = (dateString) => {
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0'); // Lấy ngày và thêm số 0 nếu cần
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+                const year = date.getFullYear();
+                return `${day}-${month}-${year}`; // Định dạng d-m-Y
+            };
+
+            const formattedStartDate = formatDate(startDateInput);
+            const formattedEndDate = formatDate(endDateInput);
+
             // Thực hiện yêu cầu AJAX
-            fetch("{{ route('admin.attendance.export') }}?start_date=" + document.getElementById('start_date')
-                    .value + "&end_date=" + document.getElementById('end_date').value)
+            fetch("{{ route('admin.attendance.export') }}?start_date=" + startDateInput + "&end_date=" +
+                    endDateInput)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -350,11 +366,10 @@
                     const url = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'Bảng Tính Công Tháng ' + new Date().toLocaleString(
-                        'default', {
-                            month: 'long',
-                            year: 'numeric'
-                        }) + '.xlsx'); // Cập nhật tên tệp nếu cần
+                    // Tạo tên tệp dựa trên formattedStartDate và formattedEndDate
+                    const fileName = 'Bảng Tính Công Từ ' + formattedStartDate + ' Đến ' + formattedEndDate +
+                        '.xlsx';
+                    link.setAttribute('download', fileName); // Tên tệp đã chỉnh sửa
                     document.body.appendChild(link);
                     link.click(); // Tự động tải xuống
                     document.body.removeChild(link); // Xóa link sau khi tải xong
