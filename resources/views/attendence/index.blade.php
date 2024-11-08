@@ -130,10 +130,10 @@
                                         <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
                                         <td>{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
                                         <td>{{ \Carbon\Carbon::parse($record->datetime)->format('H:i:s') }}</td>
-
                                         <td>{{ $record->employee ? $record->employee->category_celender->name : 'Không xác định' }}
                                         </td>
                                         <td>
+                                            <!-- Delete Button -->
                                             <form method="POST"
                                                 action="{{ route('admin.attendence.destroy', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}"
                                                 style="display:inline;">
@@ -142,6 +142,55 @@
                                                 <button type="submit" class="btn btn-danger btn-sm"
                                                     onclick="return confirm('Bạn có chắc chắn muốn xóa không?');">Xóa</button>
                                             </form>
+
+                                            <!-- Update Button (Triggering Modal) -->
+                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#updateModal-{{ $loop->iteration }}">
+                                                Cập Nhật
+                                            </button>
+
+                                            <!-- Update Modal -->
+                                            <div class="modal fade" id="updateModal-{{ $loop->iteration }}" tabindex="-1"
+                                                aria-labelledby="updateModalLabel-{{ $loop->iteration }}"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form method="POST"
+                                                            action="{{ route('admin.attendence.update', ['employee_code' => $record->employee_code, 'date' => $record->date]) }}">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="updateModalLabel-{{ $loop->iteration }}">Cập Nhật
+                                                                    Thời Gian</h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- Time Input Field -->
+                                                                <div class="mb-3">
+                                                                    <label for="time" class="form-label">Thời
+                                                                        Gian</label>
+                                                                    <input type="time" class="form-control"
+                                                                        name="time"
+                                                                        value="{{ \Carbon\Carbon::parse($record->time)->format('H:i:s') }}"
+                                                                        required>
+                                                                </div>
+                                                                <input type="hidden" name="date"
+                                                                    value="{{ \Carbon\Carbon::parse($record->date)->format('Y-m-d') }}">
+
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Đóng</button>
+                                                                <button type="submit" class="btn btn-primary">Lưu Thay
+                                                                    Đổi</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </td>
                                     </tr>
                                 @endforeach

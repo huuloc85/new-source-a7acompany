@@ -218,6 +218,37 @@ class CelenderController extends Controller
         $roles = Role::where('id', '!=', 15)
             ->where('id', '!=', 16)
             ->where('id', '!=', 17)->get();
+
+
+        $today = now();
+        $currentDay = $today->day;
+        $day = request('day', $currentDay);
+
+        $employeesToday = CelenderDetailHNHC::where('celender_id', $id)
+            ->whereHas('employee', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->get()
+            ->filter(function ($detail) use ($day) {
+                $columnName = "day" . $day;
+                $workValues = ['N', 'LN', 'TC', 'D'];
+                $columnValue = $detail->$columnName;
+                return in_array($columnValue, $workValues);
+            });
+
+        foreach ($employeesToday as $detail) {
+            $currentDayValue = $detail->{'day' . $day};
+            if (in_array($currentDayValue, ['N', 'LN'])) {
+                $detail->shift = 'Ca 1';
+            } elseif (in_array($currentDayValue, ['TC', 'D'])) {
+                $detail->shift = 'Ca 2';
+            } else {
+                $detail->shift = 'Nghỉ Làm';
+            }
+        }
+
+        $employeesTodayCount = $employeesToday->count();
+
         return view('celender.show-detail', compact(
             'dates',
             'formatDate',
@@ -228,7 +259,11 @@ class CelenderController extends Controller
             'celenderDetailsWC',
             'celenderDetailsWCCleanWomen',
             'celenderDetailsWCCleanMen',
-            'roles'
+            'roles',
+            'employeesToday',
+            'today',
+            'day',
+            'employeesTodayCount'
         ));
     }
 }

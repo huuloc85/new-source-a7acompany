@@ -97,8 +97,15 @@
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between">
-                        <h4 class="card-title mb-0">Bảng Tính Công Tháng
-                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}</h4>
+                        <h4>
+                            Bảng Tính Công
+                            @if (request('start_date') && request('end_date'))
+                                từ {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }} đến
+                                {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
+                            @else
+                                Tháng {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                            @endif
+                        </h4>
                     </div>
                 </div>
                 <div class="d-flex flex-wrap align-items-center my-2 ps-2 pe-2">
@@ -175,13 +182,9 @@
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Giờ Ra</th>
-                                        {{-- <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                            style="{{ is_null(request('time_filter')) || request('time_filter') === 'none' || in_array(request('time_filter'), ['qc_day', 'working_hours']) ? 'display: none;' : '' }}">
-                                            Ca Làm Việc
-                                        </th> --}}
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Giờ Ra</th>
+                                            Ca Làm Việc</th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Tổng Giờ Làm Việc(H)</th>
@@ -209,11 +212,6 @@
                                             <td class="{{ $record->time_out ? '' : 'text-danger' }}">
                                                 {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                             </td>
-                                            {{-- <td
-                                                style="{{ request('time_filter') === null || request('time_filter') === 'none' || in_array(request('time_filter'), ['qc_day', 'working_hours']) ? 'display: none;' : '' }}">
-                                                <strong>{{ $record->shift === 'Đổi lịch đi làm' ? $record->shift : '' }}</strong>
-                                                {{ $record->shift !== 'Đổi lịch đi làm' ? $record->shift : '' }}
-                                            </td> --}}
                                             <td>{{ $record->shift }}</td>
                                             <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
                                                 @if ($record->total_hours)
