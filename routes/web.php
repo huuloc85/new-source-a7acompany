@@ -108,7 +108,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/index', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
         Route::get('/records', [AttendanceRecordController::class, 'records'])->name('admin.attendence.records');
         Route::post('/records', [AttendanceRecordController::class, 'handleAddRecords'])->name('admin.attendence.handleRecords');
-        Route::put('/admin/attendence/{employee_code}/{date}', [AttendanceRecordController::class, 'update'])->name('admin.attendence.update');
+        Route::put('/admin/attendence/{employee_code}/{datetime}', [AttendanceRecordController::class, 'update'])->name('admin.attendence.update');
         Route::delete('records/{employee_code}/{datetime}', [AttendanceRecordController::class, 'destroy'])->name('admin.attendence.destroy');
         Route::get('/export', [AttendanceRecordController::class, 'export'])->name('admin.attendance.export');
         Route::get('/test-export', [AttendanceRecordController::class, 'testExport'])->name('test.export');

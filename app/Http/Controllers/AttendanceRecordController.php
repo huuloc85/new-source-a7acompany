@@ -15,9 +15,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Traits\CelenderDetailTrait;
 
 class AttendanceRecordController extends Controller
 {
+    use CelenderDetailTrait;
+
     private $listRecord;
     //View Lịch Sử Chấm Công (Admin)
     public function index(Request $request)
@@ -79,50 +82,108 @@ class AttendanceRecordController extends Controller
         }
     }
 
-    public function update(Request $request, $employee_code, $date)
+    // public function update(Request $request, $employee_code, $datetime)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // Lấy bản ghi duy nhất dựa trên employee_code và datetime
+    //         $record = AttendanceRecord::where('employee_code', $employee_code)
+    //             ->where('datetime', $datetime)
+    //             ->firstOrFail();
+
+    //         // Lấy `time` mới từ input request
+    //         $datetime = $request->input('datetime');
+
+
+    //         // Cập nhật lại các trường date, time và datetime
+    //         $record->date = $newDatetime->format('Y-m-d'); // cập nhật date mới
+    //         $record->time = $newDatetime->format('H:i:s'); // cập nhật time mới
+    //         $record->datetime = $newDatetime->format('Y-m-d H:i:s.u'); // cập nhật datetime mới
+
+    //         // Lưu bản ghi đã cập nhật
+    //         $record->save();
+    //         DB::commit();
+
+    //         // Thông báo thành công
+    //         toast('Cập nhật dữ liệu chấm công thành công!', 'success', 'top-right');
+    //         return redirect()->route('admin.attendence.index');
+    //     } catch (\Exception $e) {
+    //         // Rollback nếu có lỗi
+    //         DB::rollBack();
+    //         Log::error('Lỗi: ' . $e->getMessage() . ' tại dòng: ' . $e->getLine());
+    //         toast('Cập nhật dữ liệu chấm công không thành công!', 'error', 'top-right');
+    //         return redirect()->back();
+    //     }
+    // }
+
+    public function update(Request $request, $employee_code, $datetime)
     {
-        DB::beginTransaction();
-
         try {
-            // Tìm bản ghi duy nhất theo employee_code, date và time
-            $time = $request->input('time');  // lấy time từ request
-            $record = AttendanceRecord::where('employee_code', $employee_code)
-                ->where('date', $date)
-                ->where('time', $time)
-                ->firstOrFail();
+            // Lấy bản ghi duy nhất từ bảng 'attendencerecord' bằng cách sử dụng DB::table()
+            $record = DB::table('attendencerecord')
+                ->where('employee_code', $employee_code)
+                ->where('datetime', $datetime)
+                ->first();  // Sử dụng first() để chỉ lấy một bản ghi
 
-            $date = $request->input('date');  // lấy date từ request
-
-            // Kiểm tra thời gian có đúng định dạng không (có giây hay không)
-            if (!\Carbon\Carbon::hasFormat($time, 'H:i:s')) {
-                $time = $time . ':00';  // Nếu thiếu giây, tự động thêm 00 vào
+            // Kiểm tra nếu không có bản ghi nào được tìm thấy
+            if (!$record) {
+                throw new \Exception('Không tìm thấy bản ghi phù hợp');
             }
 
-            // Kết hợp date và time thành datetime và tạo đối tượng Carbon
-            $datetime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $date . ' ' . $time);
+            // Log bản ghi trước khi cập nhật để kiểm tra
+            Log::info('Bản ghi trước khi cập nhật:', (array)$record);
 
-            // Lấy microseconds
-            $microseconds = $datetime->format('u');
+            // Lấy `datetime` mới từ input request
+            $newDatetime = $request->input('datetime');
 
-            // Cập nhật lại các trường date, time và datetime cho bản ghi
-            $record->date = $datetime->format('Y-m-d');
-            $record->time = $datetime->format('H:i:s');
-            $record->datetime = $datetime->format('Y-m-d H:i:s') . '.' . $microseconds;
+            // Parse `datetime` thành `date`, `time`, và `datetime`
+            $parsedDate = \Carbon\Carbon::parse($newDatetime)->format('Y-m-d');
+            $parsedTime = \Carbon\Carbon::parse($newDatetime)->format('H:i:s.u');
+            $parsedDateTime = \Carbon\Carbon::parse($newDatetime)->format('Y-m-d H:i:s.u');
 
-            $record->save();
-            DB::commit();
+            // Cập nhật dữ liệu bản ghi trong cơ sở dữ liệu
+            $updateResult = DB::table('attendencerecord')
+                ->where('employee_code', $employee_code)
+                ->where('datetime', $datetime)
+                ->update([
+                    'date' => $parsedDate,
+                    'time' => $parsedTime,
+                    'datetime' => $parsedDateTime,
+                ]);
 
-            // Toast thông báo thành công
+            // Log kết quả của câu lệnh update
+            Log::info('Kết quả cập nhật:', ['result' => $updateResult]);
+
+            // Kiểm tra xem câu lệnh update có thay đổi gì không
+            if ($updateResult == 0) {
+                throw new \Exception('Không có bản ghi nào bị thay đổi');
+            }
+
+            // Lấy lại bản ghi sau khi cập nhật để kiểm tra
+            $updatedRecord = DB::table('attendencerecord')
+                ->where('employee_code', $employee_code)
+                ->where('datetime', $parsedDateTime) // Dùng datetime mới để tìm bản ghi vừa cập nhật
+                ->first();
+
+            // Log bản ghi sau khi cập nhật
+            Log::info('Bản ghi sau khi cập nhật:', (array)$updatedRecord);
+
+            // Thông báo thành công
             toast('Cập nhật dữ liệu chấm công thành công!', 'success', 'top-right');
             return redirect()->route('admin.attendence.index');
         } catch (\Exception $e) {
-            // Rollback nếu có lỗi
-            DB::rollBack();
+            // Nếu có lỗi, log lỗi và thông báo thất bại
             Log::error('Lỗi: ' . $e->getMessage() . ' tại dòng: ' . $e->getLine());
             toast('Cập nhật dữ liệu chấm công không thành công!', 'error', 'top-right');
             return redirect()->back();
         }
     }
+
+
+
+
+
 
     //Delete Record (Admin)
     public function destroy($employee_code, $datetime)
@@ -165,9 +226,18 @@ class AttendanceRecordController extends Controller
             $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
         }
 
+        $calendarDetails = $this->getCelenderDetails($request, $calendarId);
+
         return view('attendence.records', [
             'records' => $this->listRecord,
             'currentMonth' => $currentMonth,
+            'timeFilter' => $timeFilter,
+            'id' => $calendarId,
+            'employeesToday' => $calendarDetails['employeesToday'],
+            'today' => $calendarDetails['today'],
+            'day' => $calendarDetails['day'],
+            'employeesTodayCount' => $calendarDetails['employeesTodayCount'],
+            'currentDay' => $calendarDetails['currentDay'],
         ]);
     }
 
@@ -239,17 +309,21 @@ class AttendanceRecordController extends Controller
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
 
-        $prevMonth = $date = $date->subDay();
-        $calendarId = Celender::whereMonth('date', Carbon::parse($prevMonth)->month)->pluck('id')->first();
-        $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
+        if ($date->day == 1) {
+            ///get new category_id
+            $prevMonth = $date = $date->subDay();
+            $calendarId = Celender::whereMonth('date', Carbon::parse($prevMonth)->month)->pluck('id')->first();
+            $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
+        }
 
+        $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
         if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
             if ($shift === config("a7a.shift_1") || $shift === config("a7a.shift_1_extra_day")) {
                 $record->shift = 'Ca 1';
             } elseif ($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night")) {
                 $record->shift = 'Ca 2';
             } else {
-                $record->shift = 'Nghỉ những đi làm';
+                $record->shift = 'Đổi lịch đi làm';
             }
             $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
         } elseif (in_array($timeFilter, config("a7a.list_category_ca2"))) {
@@ -258,7 +332,7 @@ class AttendanceRecordController extends Controller
             } elseif ($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night")) {
                 $record->shift = 'Ca 2';
             } else {
-                $record->shift = 'Nghỉ những đi làm';
+                $record->shift = 'Đổi lịch đi làm';
             }
             if ($shift == config("a7a.shift_1") || $shift == config("a7a.shift_1_extra_day")) {
                 $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);

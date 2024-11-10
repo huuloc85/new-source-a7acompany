@@ -83,41 +83,17 @@
         .bg-yellow {
             background-color: yellow;
         }
-
-        .employee-list {
-            max-height: 500px;
-            overflow-y: auto;
-
-        }
-
-        .employee-card {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: center;
-            background-color: #f9f9f9;
-            margin-bottom: 10px;
-            min-height: 50px;
-        }
-
-        .modal-lg {
-            max-width: 80%;
-        }
     </style>
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Chi Tiết Lịch Làm Việc</h4>
+                        <h4 class="card-title mb-0">{{ $calendarTitle }}</h4>
                     </div>
                 </div>
                 <div class="ps-2 d-flex my-2">
                     <a class="btn btn-success" href="{{ route('admin.celender.home') }}">Lịch làm việc</a>
-                    <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal"
-                        data-bs-target="#todayEmployeesModal">
-                        Nhân viên làm việc hôm nay
-                    </button>
                 </div>
                 <div class="px-0 pb-2">
                     <ul class="nav nav-tabs px-4" id="myTab" role="tablist">
@@ -472,62 +448,6 @@
             </div>
         </div>
     </div>
-
-    {{-- Modal Nhân Viên Làm Việc Hôm Nay --}}
-    <div class="modal fade" id="todayEmployeesModal" tabindex="-1" aria-labelledby="todayEmployeesModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <!-- Header danh sách nhân viên -->
-                    <h5 class="mt-4">
-                        Danh sách nhân viên làm việc ngày
-                        @if ($day)
-                            {{ \Carbon\Carbon::createFromFormat('d', $day)->format('d/m/Y') }}
-                        @else
-                            {{ $today->format('d/m/Y') }}
-                        @endif
-                        ({{ $employeesTodayCount }} nhân viên)
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Form filter theo ngày -->
-                    <form action="{{ route('admin.celender.detail', ['id' => $id]) }}" method="GET">
-                        <div class="form-group">
-                            <label for="day">Chọn ngày:</label>
-                            <select name="day" id="day" class="form-control" onchange="this.form.submit()"
-                                required>
-                                <option value="">Chọn ngày</option>
-                                @for ($i = 1; $i <= 31; $i++)
-                                    <option value="{{ $i }}" {{ $day == $i ? 'selected' : '' }}>Ngày
-                                        {{ $i }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                    </form>
-
-                    @if ($employeesToday->isEmpty())
-                        <p>Không có nhân viên nào làm việc trong ngày này.</p>
-                    @else
-                        <div class="employee-list row">
-                            @foreach ($employeesToday as $detail)
-                                <div class="col-3 employee-card">
-                                    <p>{{ $detail->employee->name }}</p>
-                                    <p><strong>Ca làm việc:</strong> {{ $detail->shift }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <script>
         $(document).ready(function() {
             const listClass = ['N', 'D', 'X', 'TC', 'LN'];
