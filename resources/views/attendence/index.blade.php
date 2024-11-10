@@ -123,7 +123,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Bảng danh sách chấm công -->
                                 @foreach ($records as $record)
                                     <tr class="text-center">
                                         <td>{{ $loop->iteration }}</td>
@@ -134,7 +133,7 @@
                                         <td>{{ $record->employee ? $record->employee->category_celender->name : 'Không xác định' }}
                                         </td>
                                         <td>
-                                            <!-- Xóa -->
+                                            <!-- Delete Button -->
                                             <form method="POST"
                                                 action="{{ route('admin.attendence.destroy', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}"
                                                 style="display:inline;">
@@ -144,50 +143,49 @@
                                                     onclick="return confirm('Bạn có chắc chắn muốn xóa không?');">Xóa</button>
                                             </form>
 
-                                            <!-- Cập Nhật Button (Triggering Modal) -->
+                                            <!-- Update Button (Triggering Modal) -->
                                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#updateModal{{ $record->employee_code }}{{ $record->datetime }}">
+                                                data-bs-target="#updateModal-{{ $loop->iteration }}">
                                                 Cập Nhật
                                             </button>
+
+                                            <!-- Update Modal -->
+                                            <div class="modal fade" id="updateModal-{{ $loop->iteration }}" tabindex="-1"
+                                                aria-labelledby="updateModalLabel-{{ $loop->iteration }}"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form method="POST"
+                                                            action="{{ route('admin.attendence.update', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Cập Nhật Thời Gian</h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label for="datetime" class="form-label">Thời
+                                                                        Gian</label>
+                                                                    <input type="datetime" class="form-control"
+                                                                        name="datetime"
+                                                                        value="{{ \Carbon\Carbon::parse($record->datetime) }}"
+                                                                        required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Đóng</button>
+                                                                <button type="submit" class="btn btn-primary">Lưu Thay
+                                                                    Đổi</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
-
-                                    <!-- Modal cho mỗi bản ghi -->
-                                    <div class="modal fade"
-                                        id="updateModal{{ $record->employee_code }}{{ $record->datetime }}" tabindex="-1"
-                                        aria-labelledby="updateModalLabel{{ $record->employee_code }}{{ $record->datetime }}"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <form method="POST"
-                                                    action="{{ route('admin.attendence.update', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title"
-                                                            id="updateModalLabel{{ $record->employee_code }}{{ $record->datetime }}">
-                                                            Cập Nhật Thời Gian</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label for="datetime" class="form-label">Thời Gian</label>
-                                                            <input type="datetime-local" class="form-control"
-                                                                name="datetime"
-                                                                value="{{ \Carbon\Carbon::parse($record->datetime)->format('Y-m-d\TH:i') }}"
-                                                                required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Đóng</button>
-                                                        <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
@@ -196,7 +194,6 @@
             </div>
         </div>
     </div>
-    <!-- Update Modal -->
     <!-- Modal thêm dữ liệu -->
     <div class="modal fade" id="addDataModal" tabindex="-1" aria-labelledby="addDataModalLabel" aria-hidden="true">
         <div class="modal-dialog">
