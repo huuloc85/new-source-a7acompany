@@ -8,25 +8,8 @@
             font-size: 0.875rem;
         }
 
-        .form-control-search {
-            padding-left: 2.5rem;
-            border-radius: 25px;
-            border: 1px solid #ced4da;
-            font-size: 0.875rem;
-            width: 100%
-        }
-
         .position-relative {
             position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1rem;
-            color: #6c757d;
         }
 
         .form-control::placeholder {
@@ -90,6 +73,105 @@
                 transform: rotate(360deg);
             }
         }
+
+        .employee-list {
+            max-height: 500px;
+            overflow-y: auto;
+
+        }
+
+        .employee-card {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            min-height: 50px;
+        }
+
+        .modal-lg {
+            max-width: 80%;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        input.form-control-search {
+            padding-right: 30px;
+        }
+
+        /* btn Lọc thông tin (Primary) */
+        .btn-outline-primary:hover {
+            color: #fff;
+            background-color: #0d6efd;
+            /* Màu chuẩn của Bootstrap cho Primary */
+            border-color: #0d6efd;
+        }
+
+        .btn-outline-primary:active {
+            color: #0d6efd;
+            background-color: transparent;
+            border-color: #0d6efd;
+        }
+
+        .btn-outline-primary:focus {
+            box-shadow: none;
+            background-color: transparent;
+            border-color: #0d6efd;
+        }
+
+        /* btn Lịch sử (Success) */
+        .btn-outline-success:hover {
+            color: #fff;
+            background-color: #198754;
+            /* Màu chuẩn của Bootstrap cho Success */
+            border-color: #198754;
+        }
+
+        .btn-outline-success:active {
+            color: #198754;
+            background-color: transparent;
+            border-color: #198754;
+        }
+
+        /*
+                    .btn-outline-success:focus {
+                        box-shadow: none;
+                        background-color: transparent;
+                        border-color: #198754;
+                    } */
+
+        /* btn Danh sách (Info) */
+        .btn-outline-info:hover {
+            color: #fff;
+            background-color: #0dcaf0;
+            /* Màu chuẩn của Bootstrap cho Info */
+            border-color: #0dcaf0;
+        }
+
+        .btn-outline-info:active {
+            color: #0dcaf0;
+            background-color: transparent;
+            border-color: #0dcaf0;
+        }
+
+        .btn-outline-info:focus {
+            box-shadow: none;
+            background-color: transparent;
+            border-color: #0dcaf0;
+        }
     </style>
 
     <div class="row">
@@ -97,59 +179,78 @@
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
                     <div class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between">
-                        <h4 class="card-title mb-0">Bảng Tính Công Tháng
-                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}</h4>
+                        <h4>
+                            Bảng Tính Công
+                            @if (request('start_date') && request('end_date'))
+                                từ {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }} đến
+                                {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
+                            @else
+                                Tháng {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                            @endif
+                        </h4>
                     </div>
                 </div>
-                <div class="d-flex flex-wrap align-items-center my-2 ps-2 pe-2">
-                    <div class="mb-2 d-flex align-items-center ps-2">
-                        <button type="button" class="btn btn-primary btn-sm rounded-pill shadow-sm me-2"
+                <div class="d-flex flex-wrap align-items-center gap-3 my-2 px-2">
+                    <!-- Nút Lọc Thông Tin và Lịch Sử Chấm Công -->
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm"
                             data-bs-toggle="modal" data-bs-target="#filterModal">
-                            Lọc Thông Tin
+                            <i class="fas fa-filter me-1"></i> Lọc Thông Tin
                         </button>
                         <a href="{{ route('admin.attendence.index') }}"
-                            class="btn btn-success btn-sm rounded-pill shadow-sm">
-                            Bảng Lịch Sử Chấm Công
+                            class="btn btn-outline-success btn-sm rounded-pill shadow-sm">
+                            <i class="fas fa-history me-1"></i> Lịch Sử Chấm Công
                         </a>
                     </div>
-                    <div class="mb-2 me-2 flex-grow-1 position-relative ps-2">
-                        <input type="text" id="search" class="form-control form-control-search"
-                            placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
-                        <i class="search-icon fas fa-search"></i>
-                    </div>
-                    <div class="mb-2 me-2 flex-grow-1 position-relative ps-2">
-                        {{-- <!-- Overlay Loading Spinner -->
-                        <div id="loading-overlay" style="display: none;">
-                            <div class="spinner"></div>
-                        </div> --}}
 
-                        <!-- Form Export -->
-                        <form id="export-form" class="d-flex align-items-center">
-                            <div class="me-2 d-flex align-items-center">
-                                <label for="start_date" class="form-label mb-0 me-1">Ngày Bắt Đầu:</label>
-                                <input type="date" id="start_date" name="start_date" class="form-control" required>
-                            </div>
-                            <div class="me-2 d-flex align-items-center">
-                                <label for="end_date" class="form-label mb-0 me-1">Ngày Kết Thúc:</label>
-                                <input type="date" id="end_date" name="end_date" class="form-control" required>
-                            </div>
-                            <button type="button" class="btn btn-primary btn-sm" id="export-button">Export</button>
-                        </form>
+                    <!-- Ô Tìm Kiếm -->
+                    <div class="search-box position-relative flex-grow-1">
+                        <input type="text" id="search" class="form-control form-control-sm rounded-pill"
+                            placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
+                        <i class="fas fa-search search-icon"></i>
                     </div>
+
+                    <!-- Form Export -->
+                    <form id="export-form" class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-1">
+                            <label for="start_date" class="form-label mb-0 me-1">Từ:</label>
+                            <input type="date" id="start_date" name="start_date"
+                                class="form-control form-control-sm rounded-pill" required>
+                        </div>
+                        <div class="d-flex align-items-center gap-1">
+                            <label for="end_date" class="form-label mb-0 me-1">Đến:</label>
+                            <input type="date" id="end_date" name="end_date"
+                                class="form-control form-control-sm rounded-pill" required>
+                        </div>
+                        <button type="button" class="btn btn-outline-warning btn-sm rounded-pill" id="export-button">
+                            <i class="fas fa-file-export me-1"></i> Export
+                        </button>
+                    </form>
+
+                    <!-- Danh Sách Nhân Viên Làm Việc Hằng Ngày -->
+                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill ms-2" data-bs-toggle="modal"
+                        data-bs-target="#todayEmployeesModal">
+                        <i class="fas fa-users me-1"></i> Danh Sách Nhân Viên Làm Việc Hằng Ngày
+                    </button>
                 </div>
+
                 <div class="card-body">
                     <div class="table-responsive position-relative">
+                        <!-- Loading Overlay -->
                         <div id="loading-overlay"
                             style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
                             <div class="spinner"></div>
                             <p style="color: white; margin-top: 10px;">Đang xuất dữ liệu...</p>
                         </div>
+                        <!-- Checkbox Lọc -->
+                        <div class="form-check form-switch mx-2">
+                            <input class="form-check-input" type="checkbox" id="filter_absent" name="filter_absent">
+                            <label class="form-check-label" for="filter_absent">Chỉ hiển thị những người quên chấm
+                                công</label>
+                        </div>
                         @if ($records->isEmpty())
-                            <p class="text-center">Hiện tại chưa có thông tin nào.</p>
+                            <p class="text-center text-danger">Hiện tại chưa có thông tin nào.</p>
                         @else
-                            <input type="checkbox" id="filter_absent" name="filter_absent" value="1"
-                                {{ request('filter_absent') ? 'checked' : '' }}>
-                            Chỉ hiển thị những người quên chấm công
                             <table id="attendanceTable" class="table table-hover mb-4">
                                 <thead class="text-center">
                                     <tr>
@@ -168,39 +269,32 @@
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Ngày Trong Tuần</th>
-
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Giờ Vào</th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Giờ Ra</th>
-                                        {{-- <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                            style="{{ is_null(request('time_filter')) || request('time_filter') === 'none' || in_array(request('time_filter'), ['qc_day', 'working_hours']) ? 'display: none;' : '' }}">
-                                            Ca Làm Việc
-                                        </th> --}}
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Giờ Ra</th>
+                                            Ca Làm Việc</th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Tổng Giờ Làm Việc(H)</th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Giờ Hành Chính(H) </th>
+                                            Giờ Hành Chính(H)</th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
                                             Giờ Tăng Ca(H)</th>
                                     </tr>
-
                                 </thead>
                                 <tbody>
                                     @foreach ($records as $record)
                                         <tr class="text-center">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $record->employee_code }}</td>
-                                            <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}
-                                            </td>
+                                            <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
                                             <td>{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
                                             <td>{{ $record->day_of_week }}</td>
                                             <td class="{{ $record->time_in ? '' : 'text-danger' }}">
@@ -209,11 +303,6 @@
                                             <td class="{{ $record->time_out ? '' : 'text-danger' }}">
                                                 {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                             </td>
-                                            {{-- <td
-                                                style="{{ request('time_filter') === null || request('time_filter') === 'none' || in_array(request('time_filter'), ['qc_day', 'working_hours']) ? 'display: none;' : '' }}">
-                                                <strong>{{ $record->shift === 'Đổi lịch đi làm' ? $record->shift : '' }}</strong>
-                                                {{ $record->shift !== 'Đổi lịch đi làm' ? $record->shift : '' }}
-                                            </td> --}}
                                             <td>{{ $record->shift }}</td>
                                             <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
                                                 @if ($record->total_hours)
@@ -235,6 +324,7 @@
                         @endif
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -291,6 +381,56 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="todayEmployeesModal" tabindex="-1" aria-labelledby="todayEmployeesModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="mt-4">
+                        Danh sách nhân viên làm việc ngày
+                        @if ($day)
+                            {{ \Carbon\Carbon::createFromFormat('d', $day)->format('d/m/Y') }}
+                        @else
+                            {{ $today->format('d/m/Y') }}
+                        @endif
+                        ({{ $employeesTodayCount }} nhân viên)
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form Lọc Ngày -->
+                    <div class="form-group">
+                        <label for="day">Chọn ngày:</label>
+                        <select name="day" id="day" class="form-control" required>
+                            <option value="">Chọn ngày</option>
+                            @for ($i = 1; $i <= 31; $i++)
+                                <option value="{{ $i }}" {{ $day == $i ? 'selected' : '' }}>Ngày
+                                    {{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <!-- Hiển thị danh sách nhân viên -->
+                    @if ($employeesToday->isEmpty())
+                        <p>Không có nhân viên nào làm việc trong ngày này.</p>
+                    @else
+                        <div class="employee-list row">
+                            @foreach ($employeesToday as $detail)
+                                <div class="col-3 employee-card">
+                                    <p>{{ $detail->employee->name }}</p>
+                                    <p><strong>Ca làm việc:</strong> {{ $detail->shift }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search');
@@ -382,6 +522,33 @@
                     alert('Có lỗi xảy ra khi xuất dữ liệu');
                     console.error(error);
                 });
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const daySelect = document.getElementById('day');
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentDay = {{ $currentDay }}; // Ngày hiện tại từ server-side
+            const selectedDay = parseInt(urlParams.get('day'));
+            const showModal = urlParams.get('showModal') === 'true';
+
+            // Xử lý sự kiện khi người dùng chọn ngày
+            daySelect?.addEventListener('change', (e) => {
+                const selectedValue = parseInt(e.target.value);
+                const params = new URLSearchParams();
+
+                // Chỉ cập nhật URL khi ngày được chọn khác với ngày hiện tại
+                if (selectedValue && selectedValue !== currentDay) {
+                    params.set('day', selectedValue);
+                    params.set('showModal', 'true');
+                }
+
+                // Điều hướng đến URL mới với các tham số
+                window.location.search = params.toString();
+            });
+
+            // Tự động mở modal nếu ngày được chọn khác ngày hiện tại và có showModal
+            if (showModal && selectedDay !== currentDay) {
+                new bootstrap.Modal(document.getElementById('todayEmployeesModal')).show();
+            }
         });
     </script>
 @endsection

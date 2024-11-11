@@ -55,7 +55,7 @@
                                     @enderror
                                     <small class="form-text text-muted">
                                         <strong>Lưu ý: Trường hợp nếu cần in lại nhiều tem với số thùng khác nhau thì nhập
-                                            số lượng tem theo các số lượng cần in, ví dụ: cần in 2 tem lẻ 1,2 thì nhập số
+                                            số lượng tem theo các số lượng cần in, ví dụ: cần in 2 tem lẻ 1 và 2 thì nhập số
                                             lượng là 2</strong>
                                     </small>
                                 </div>
@@ -134,7 +134,7 @@
                                             @foreach ($binArray as $key => $bin)
                                                 <div class="container grid-item">
                                                     <table class="table table-bordered"
-                                                        style="margin-top: 10px; margin-bottom: 10px;">
+                                                        style="margin-top: 5px; margin-bottom: 5px;">
                                                         <tr>
                                                             <td class="text-start w-120 w-5">
                                                                 Tên sản<br>phẩm<br>品名

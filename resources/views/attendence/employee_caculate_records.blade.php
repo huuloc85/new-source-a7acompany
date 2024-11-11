@@ -171,9 +171,11 @@
                         @if ($records->isEmpty())
                             <p class="text-center">Hiện tại chưa có thông tin nào.</p>
                         @else
-                            <input type="checkbox" id="filter_absent" name="filter_absent" value="1"
-                                {{ request('filter_absent') ? 'checked' : '' }}>
-                            <label for="filter_absent">Chỉ hiển thị những ngày quên chấm công</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="filter_absent">
+                                <label class="form-check-label" for="filter_absent">Hiển thị những ngày quên chấm
+                                    công</label>
+                            </div>
                             <table id="attendanceTable" class="table table-hover mb-4">
                                 <thead>
                                     <tr>

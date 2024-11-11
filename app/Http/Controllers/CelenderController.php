@@ -182,6 +182,8 @@ class CelenderController extends Controller
     //detail
     public function detail(Request $request, $id)
     {
+        $calendar = Celender::find($id);
+        $calendarTitle = $calendar ? $calendar->title : 'Không tìm thấy lịch';
         $startDate = Celender::where('id', $id)->pluck('date')->first();
         $dates = [];
         $month = date("m", strtotime($startDate));
@@ -228,7 +230,8 @@ class CelenderController extends Controller
             'celenderDetailsWC',
             'celenderDetailsWCCleanWomen',
             'celenderDetailsWCCleanMen',
-            'roles'
+            'roles',
+            'calendarTitle'
         ));
     }
 }
