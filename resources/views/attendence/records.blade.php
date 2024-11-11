@@ -112,31 +112,65 @@
             padding-right: 30px;
         }
 
-        /* Tùy chỉnh màu sắc và hiệu ứng hover cho nút */
-        .btn-outline-primary:hover,
-        .btn-outline-success:hover,
+        /* btn Lọc thông tin (Primary) */
+        .btn-outline-primary:hover {
+            color: #fff;
+            background-color: #0d6efd;
+            /* Màu chuẩn của Bootstrap cho Primary */
+            border-color: #0d6efd;
+        }
+
+        .btn-outline-primary:active {
+            color: #0d6efd;
+            background-color: transparent;
+            border-color: #0d6efd;
+        }
+
+        .btn-outline-primary:focus {
+            box-shadow: none;
+            background-color: transparent;
+            border-color: #0d6efd;
+        }
+
+        /* btn Lịch sử (Success) */
+        .btn-outline-success:hover {
+            color: #fff;
+            background-color: #198754;
+            /* Màu chuẩn của Bootstrap cho Success */
+            border-color: #198754;
+        }
+
+        .btn-outline-success:active {
+            color: #198754;
+            background-color: transparent;
+            border-color: #198754;
+        }
+
+        /*
+                    .btn-outline-success:focus {
+                        box-shadow: none;
+                        background-color: transparent;
+                        border-color: #198754;
+                    } */
+
+        /* btn Danh sách (Info) */
         .btn-outline-info:hover {
             color: #fff;
-            background-color: #007bff;
-            /* Hoặc màu khác nếu bạn muốn */
+            background-color: #0dcaf0;
+            /* Màu chuẩn của Bootstrap cho Info */
+            border-color: #0dcaf0;
         }
 
-        /* Thêm trạng thái active để bỏ màu sau khi click */
-        .btn-outline-primary:active,
-        .btn-outline-success:active,
         .btn-outline-info:active {
-            color: #007bff;
-            /* Hoặc màu bạn muốn cho văn bản */
+            color: #0dcaf0;
             background-color: transparent;
-            /* Đảm bảo màu nền sẽ quay về trạng thái mặc định */
+            border-color: #0dcaf0;
         }
 
-        /* Thêm trạng thái focus để bỏ màu sau khi click */
-        .btn-outline-primary:focus,
-        .btn-outline-success:focus,
         .btn-outline-info:focus {
             box-shadow: none;
             background-color: transparent;
+            border-color: #0dcaf0;
         }
     </style>
 
@@ -198,13 +232,6 @@
                         data-bs-target="#todayEmployeesModal">
                         <i class="fas fa-users me-1"></i> Danh Sách Nhân Viên Làm Việc Hằng Ngày
                     </button>
-                    <!-- Checkbox Lọc -->
-
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="filter_absent" name="filter_absent">
-                        <label class="form-check-label" for="filter_absent">Chỉ hiển thị những người quên chấm
-                            công</label>
-                    </div>
                 </div>
 
                 <div class="card-body">
@@ -214,6 +241,12 @@
                             style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
                             <div class="spinner"></div>
                             <p style="color: white; margin-top: 10px;">Đang xuất dữ liệu...</p>
+                        </div>
+                        <!-- Checkbox Lọc -->
+                        <div class="form-check form-switch mx-2">
+                            <input class="form-check-input" type="checkbox" id="filter_absent" name="filter_absent">
+                            <label class="form-check-label" for="filter_absent">Chỉ hiển thị những người quên chấm
+                                công</label>
                         </div>
                         @if ($records->isEmpty())
                             <p class="text-center text-danger">Hiện tại chưa có thông tin nào.</p>

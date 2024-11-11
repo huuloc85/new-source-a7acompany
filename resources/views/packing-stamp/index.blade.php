@@ -55,7 +55,7 @@
                                     @enderror
                                     <small class="form-text text-muted">
                                         <strong>Lưu ý: Trường hợp nếu cần in lại nhiều tem với số thùng khác nhau thì nhập
-                                            số lượng tem theo các số lượng cần in, ví dụ: cần in 2 tem lẻ 1,2 thì nhập số
+                                            số lượng tem theo các số lượng cần in, ví dụ: cần in 2 tem lẻ 1 và 2 thì nhập số
                                             lượng là 2</strong>
                                     </small>
                                 </div>

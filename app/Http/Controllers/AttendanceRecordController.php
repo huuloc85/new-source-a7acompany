@@ -37,15 +37,13 @@ class AttendanceRecordController extends Controller
             ->whereMonth('date', Carbon::parse($currentMonth)->month)
             ->orderBy('employee_code', 'asc')
             ->orderBy('date', 'asc');
-
         if ($request->filled('category')) {
             $query->whereHas('employee', function ($q) use ($request) {
                 $q->where('category_celender_id', $request->input('category'));
             });
         }
 
-        $records = $query->get();
-
+        $records = $query->paginate(AttendanceRecord::paginate);
         return view('attendence.index', compact('records', 'currentMonth', 'categories', 'employees'));
     }
 
@@ -82,61 +80,11 @@ class AttendanceRecordController extends Controller
         }
     }
 
-    // public function update(Request $request, $employee_code, $datetime)
-    // {
-    //     DB::beginTransaction();
-
-    //     try {
-    //         // Lấy bản ghi duy nhất dựa trên employee_code và datetime
-    //         $record = AttendanceRecord::where('employee_code', $employee_code)
-    //             ->where('datetime', $datetime)
-    //             ->firstOrFail();
-
-    //         // Lấy `time` mới từ input request
-    //         $datetime = $request->input('datetime');
-
-
-    //         // Cập nhật lại các trường date, time và datetime
-    //         $record->date = $newDatetime->format('Y-m-d'); // cập nhật date mới
-    //         $record->time = $newDatetime->format('H:i:s'); // cập nhật time mới
-    //         $record->datetime = $newDatetime->format('Y-m-d H:i:s.u'); // cập nhật datetime mới
-
-    //         // Lưu bản ghi đã cập nhật
-    //         $record->save();
-    //         DB::commit();
-
-    //         // Thông báo thành công
-    //         toast('Cập nhật dữ liệu chấm công thành công!', 'success', 'top-right');
-    //         return redirect()->route('admin.attendence.index');
-    //     } catch (\Exception $e) {
-    //         // Rollback nếu có lỗi
-    //         DB::rollBack();
-    //         Log::error('Lỗi: ' . $e->getMessage() . ' tại dòng: ' . $e->getLine());
-    //         toast('Cập nhật dữ liệu chấm công không thành công!', 'error', 'top-right');
-    //         return redirect()->back();
-    //     }
-    // }
-
     public function update(Request $request, $employee_code, $datetime)
     {
         try {
-            // Lấy bản ghi duy nhất từ bảng 'attendencerecord' bằng cách sử dụng DB::table()
-            $record = DB::table('attendencerecord')
-                ->where('employee_code', $employee_code)
-                ->where('datetime', $datetime)
-                ->first();  // Sử dụng first() để chỉ lấy một bản ghi
 
-            // Kiểm tra nếu không có bản ghi nào được tìm thấy
-            if (!$record) {
-                throw new \Exception('Không tìm thấy bản ghi phù hợp');
-            }
-
-            // Log bản ghi trước khi cập nhật để kiểm tra
-            Log::info('Bản ghi trước khi cập nhật:', (array)$record);
-
-            // Lấy `datetime` mới từ input request
             $newDatetime = $request->input('datetime');
-
             // Parse `datetime` thành `date`, `time`, và `datetime`
             $parsedDate = \Carbon\Carbon::parse($newDatetime)->format('Y-m-d');
             $parsedTime = \Carbon\Carbon::parse($newDatetime)->format('H:i:s.u');
@@ -151,24 +99,6 @@ class AttendanceRecordController extends Controller
                     'time' => $parsedTime,
                     'datetime' => $parsedDateTime,
                 ]);
-
-            // Log kết quả của câu lệnh update
-            Log::info('Kết quả cập nhật:', ['result' => $updateResult]);
-
-            // Kiểm tra xem câu lệnh update có thay đổi gì không
-            if ($updateResult == 0) {
-                throw new \Exception('Không có bản ghi nào bị thay đổi');
-            }
-
-            // Lấy lại bản ghi sau khi cập nhật để kiểm tra
-            $updatedRecord = DB::table('attendencerecord')
-                ->where('employee_code', $employee_code)
-                ->where('datetime', $parsedDateTime) // Dùng datetime mới để tìm bản ghi vừa cập nhật
-                ->first();
-
-            // Log bản ghi sau khi cập nhật
-            Log::info('Bản ghi sau khi cập nhật:', (array)$updatedRecord);
-
             // Thông báo thành công
             toast('Cập nhật dữ liệu chấm công thành công!', 'success', 'top-right');
             return redirect()->route('admin.attendence.index');
@@ -179,11 +109,6 @@ class AttendanceRecordController extends Controller
             return redirect()->back();
         }
     }
-
-
-
-
-
 
     //Delete Record (Admin)
     public function destroy($employee_code, $datetime)
@@ -214,15 +139,36 @@ class AttendanceRecordController extends Controller
     //View Bảng Tính Công (Admin)
     public function records(Request $request)
     {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        if ($startDate) {
+            $startDate = Carbon::parse($startDate)->startOfDay();
+        }
+        if ($endDate) {
+            $endDate = Carbon::parse($endDate)->endOfDay();
+        }
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
         $timeFilter = $request->time_filter ?? 'working_hours';
-        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->pluck('id')->first();
+        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->whereYear('date', Carbon::parse($currentMonth)->year)->pluck('id')->first();
+        $startCalendarId = null;
+        $endCalendarId = null;
+        if ($startDate && $endDate) {
+            $startCalendarId = Celender::whereMonth('date', $startDate->month)->whereYear('date', $startDate->year)->pluck('id')->first();;
+            $endCalendarId = Celender::whereMonth('date', $endDate->month)->whereYear('date', $endDate->year)->pluck('id')->first();;
+        }
         $query = $this->buildQuery($request, $currentMonth, $timeFilter);
         $records = $this->checkQuery($query, $timeFilter);
         $this->listRecord = $records;
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
 
         foreach ($records as $key => $record) {
+            if ($startDate && $endDate) {
+                if (Carbon::parse($record->date)->month == $startDate->month && Carbon::parse($record->date)->year == $startDate->year) {
+                    $calendarId = $startCalendarId;
+                } elseif (Carbon::parse($record->date)->month == $endDate->month && Carbon::parse($record->date)->year == $endDate->year) {
+                    $calendarId = $endCalendarId;
+                }
+            }
             $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
         }
 

@@ -61,7 +61,7 @@
                         </h4>
                     </div>
                 </div>
-                <div class="d-flex flex-wrap align-items-center my-2 ps-2 pe-2">
+                <div class="d-flex flex-wrap align-items-center gap-3 my-2 px-2">
                     <form method="GET" action="{{ route('admin.attendence.index') }}" class="d-flex flex-wrap w-100">
                         <div class="mb-2 me-2">
                             <input type="month" name="month" id="month" class="form-control"
@@ -189,6 +189,11 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div style="display: flex; justify-content: center; align-items: center; margin:20px">
+                            <div>
+                                {{ $records->appends(request()->all())->links() }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
