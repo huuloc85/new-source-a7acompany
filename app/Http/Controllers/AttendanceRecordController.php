@@ -25,7 +25,10 @@ class AttendanceRecordController extends Controller
     //View Lịch Sử Chấm Công (Admin)
     public function index(Request $request)
     {
-        $employees = Employee::whereNotIn('role_id', [15, 1])->get();
+        $employees = Employee::whereNotIn('role_id', [15, 1])
+            ->whereNull('deleted_at')
+            ->get();
+
         // Lấy tháng hiện tại hoặc tháng được chọn từ request
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
 
@@ -139,6 +142,7 @@ class AttendanceRecordController extends Controller
     //View Bảng Tính Công (Admin)
     public function records(Request $request)
     {
+
         $startDate = $request->start_date;
         $endDate = $request->end_date;
         if ($startDate) {
@@ -163,6 +167,9 @@ class AttendanceRecordController extends Controller
 
         foreach ($records as $key => $record) {
             if ($startDate && $endDate) {
+                // if ($record->employee_code == '23081500' && $record->date == '2024-11-01') {
+                //     dd($calendarId);
+                // }
                 if (Carbon::parse($record->date)->month == $startDate->month && Carbon::parse($record->date)->year == $startDate->year) {
                     $calendarId = $startCalendarId;
                 } elseif (Carbon::parse($record->date)->month == $endDate->month && Carbon::parse($record->date)->year == $endDate->year) {
@@ -254,13 +261,6 @@ class AttendanceRecordController extends Controller
         }
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
-
-        if ($date->day == 1) {
-            ///get new category_id
-            $prevMonth = $date = $date->subDay();
-            $calendarId = Celender::whereMonth('date', Carbon::parse($prevMonth)->month)->pluck('id')->first();
-            $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
-        }
 
         $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
         if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
@@ -355,7 +355,7 @@ class AttendanceRecordController extends Controller
             case 'rotating_shift_jp':
             case 'technical':
                 // Chọn lịch nghỉ dựa trên giờ vào
-                $breakSchedule = $timeIn->hour >= 21 ?
+                $breakSchedule = $timeIn->hour >= 18 ?
                     $breakTimesConfig['sx_ca_2']['schedule'] :
                     $breakTimesConfig['sx_ca_1']['schedule'];
                 break;
@@ -445,6 +445,9 @@ class AttendanceRecordController extends Controller
             if ($timeIn->diffInHours($timeOut) >= 1) {
                 $record->total_hours = $this->calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime);
                 $record->overtime_hours = $this->calculateOvertime($record);
+                // if ($record->employee_code == '22092700' && $record->date == '2024-10-25') {
+                //     dd($record->overtime_hours);
+                // }
             } else {
                 // Nếu không, đặt time_out là null
                 $record->time_out = null;
@@ -452,16 +455,20 @@ class AttendanceRecordController extends Controller
                 $record->overtime_hours = 0;
             }
         }
-
-        $administrativeHours = min($record->total_hours, config("a7a.time_work"));
+        $administrativeHours = min($record->total_hours, 8);
         if ($record->employee->category_celender_id == [2, 4]) {
-            $record->overtime_hours = max($record->total_hours - $administrativeHours, 0);
+            $record->overtime_hours = min($record->total_hours - $administrativeHours);
         }
-
+        // if ($record->employee_code == '22092700' && $record->date == '2024-10-25') {
+        //     dd($record, $administrativeHours, $record->employee->category_celender_id);
+        // }
         $record->administrative_hours = $administrativeHours;
         if ($record->overtime_hours > 0) {
             $record->total_hours = $record->administrative_hours + $record->overtime_hours;
         }
+        // if ($record->employee_code == '22092700' && $record->date == '2024-10-25') {
+        //     dd($record->total_hours, $record->overtime_hours, $record->administrative_hours);
+        // }
     }
 
     //Code chức năng tính công ca 2 (Admin)
@@ -477,6 +484,7 @@ class AttendanceRecordController extends Controller
             });
             $record->time_in = !empty($timesBefore8AM) ? min($timesBefore8AM) : null;
         }
+
         //set time out
         $checkTimeOut = AttendanceRecord::where('employee_code', $record->employee_code)
             ->where('date', Carbon::parse($record->date)->addDay())
@@ -498,9 +506,29 @@ class AttendanceRecordController extends Controller
             }
         }
 
+
         $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
         $workStartTime = config("a7a.ca2_work_start_time");
         $workEndTime = config("a7a.ca2_work_end_time");
+        if ($record->record_count > 1) {
+            $timeIn = Carbon::parse($record->time_in);
+            $timeOut = Carbon::parse($record->time_out);
+
+            //Khoảng cách giữa time_out và time_out > 1 thì chạy bình thường
+            if ($timeIn && $timeOut && $timeIn->diffInHours($timeOut) <= 1) {
+                $diffToStart = $timeIn->diffInSeconds(Carbon::parse($workStartTime));
+                $diffToEnd = $timeIn->diffInSeconds(Carbon::parse($workEndTime));
+
+                if ($diffToStart < $diffToEnd) {
+                    $record->time_in = $timeIn;
+                    $record->time_out = null;
+                } else {
+                    $record->time_out = $timeIn;
+                    $record->time_in = null;
+                }
+            }
+        }
+
         $record->total_hours = $this->calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime, true);
         $record->overtime_hours = $this->calculateOvertime($record, true);
 
@@ -519,7 +547,6 @@ class AttendanceRecordController extends Controller
         $timeOutDate = Carbon::parse($record->time_out);
         $workStartDate = Carbon::parse($workStartTime);
         $workEndDate = Carbon::parse($workEndTime);
-
         $effectiveStart = $timeInDate < $workStartDate ? $workStartDate : $timeInDate;
         $effectiveEnd = $timeOutDate > $workEndDate ? $workEndDate : $timeOutDate;
 
@@ -536,8 +563,16 @@ class AttendanceRecordController extends Controller
             $effectiveEnd->addDay();
         }
 
+        // Tính toán thời gian làm việc (tính theo giây)
         $workingMillis = max(0, $effectiveEnd->diffInSeconds($effectiveStart));
-        $workingHours = $workingMillis / 3600 - ($breakTime / 60);
+
+        // Trừ giờ nghỉ (breakTime) nếu có
+        $workingHours = $workingMillis / 3600 - (1 / 60);
+
+        // // Trường hợp đặc biệt khi ca 2, bạn cần xử lý lại giờ nghỉ cho hợp lý
+        if ($shift2) {
+            $workingHours -= ($breakTime / 60); // Trừ thêm giờ nghỉ cho ca 2
+        }
 
         $dailyWorkHours = 8;
         if ($workingHours < $dailyWorkHours) {
@@ -547,33 +582,46 @@ class AttendanceRecordController extends Controller
             $workingHours += $billedHours;
         }
 
+
+        // Làm tròn kết quả cuối cùng
         return round($workingHours * 4) / 4;
     }
+
 
     //Tính Giờ Tăng Ca
     private function calculateOvertime($record, $shift2 = false)
     {
-        $totalHours = $record->total_hours;
+        $totalHours = $record->total_hours; // Tổng giờ làm việc
+        $timeIn = Carbon::parse($record->time_in); // Giờ bắt đầu làm việc thực tế
+        $timeOut = Carbon::parse($record->time_out); // Giờ kết thúc làm việc thực tế
         $categoryId = $record->employee->category_celender_id;
-        $overtimeStart = Carbon::parse(config("a7a.over_time_start_qd"));
+
+        // Giờ tăng ca mặc định
+        $defaultOvertimeStart = Carbon::parse(config("a7a.over_time_start_qd"));
         if ($categoryId == CategoryCelender::listCate['working_hours']) {
-            $overtimeStart = Carbon::parse(config("a7a.over_time_start_wh"));
+            $defaultOvertimeStart = Carbon::parse(config("a7a.over_time_start_wh"));
         }
         if ($shift2) {
-            $overtimeStart = Carbon::parse(Carbon::parse(config("a7a.over_time_start_ca2")));
+            $defaultOvertimeStart = Carbon::parse(config("a7a.over_time_start_ca2"));
         }
-        if (!$overtimeStart) return 0;
 
-        $overtimeEnd = $shift2 == false ? Carbon::parse(config("a7a.over_time_end_ca1")) : Carbon::parse(config("a7a.over_time_end_ca2"));
-        $timeOut = Carbon::parse($record->time_out);
+        // Giờ tăng ca kết thúc
+        $overtimeEnd = $shift2 ? Carbon::parse(config("a7a.over_time_end_ca2")) : Carbon::parse(config("a7a.over_time_end_ca1"));
 
-        if ($totalHours >= config("a7a.time_work")) {
-            if ($timeOut->lt($overtimeStart)) return 0;
-            if ($timeOut->gt($overtimeEnd)) $timeOut = $overtimeEnd;
+        // Xử lý tính toán tăng ca
+        if ($totalHours >= config("a7a.time_work")) { // Đủ giờ làm tối thiểu để tính tăng ca
+            $overtimeStart = $defaultOvertimeStart->max($timeIn->addHours(config("a7a.time_work"))); // Giờ tăng ca bắt đầu là giờ cao hơn giữa mặc định và giờ làm thực tế
+            if ($timeOut->lt($overtimeStart)) return 0; // Kết thúc làm việc trước giờ tăng ca -> không tăng ca
+            if ($timeOut->gt($overtimeEnd)) $timeOut = $overtimeEnd; // Giới hạn giờ kết thúc tăng ca
 
             $overtimeMinutes = $timeOut->diffInMinutes($overtimeStart);
-            $overtimeHours = $overtimeMinutes > 0 ? floor($overtimeMinutes / 15) * 0.25 : 0;
+            $overtimeHours = $overtimeMinutes > 0 ? floor($overtimeMinutes / 15) * 0.25 : 0; // Làm tròn xuống theo 15 phút
+            return round($overtimeHours, 2);
+        }
 
+        // Trường hợp giờ làm < đủ thời gian tối thiểu, tính tăng ca theo giờ vượt
+        if ($totalHours > 8) {
+            $overtimeHours = $totalHours - 8; // Giờ vượt sau 8 tiếng làm việc
             return round($overtimeHours, 2);
         }
 
