@@ -381,8 +381,8 @@ class EmployeeController extends Controller
         if (!empty($request->key)) {
             $salaryManagers->Name($request);
         }
-        $end_date = Carbon::now()->format('Y-m-d');
-        $salaryManagers = $salaryManagers->where('date_show', '<=', $end_date);
+        // $end_date = Carbon::now()->format('Y-m-d');
+        // $salaryManagers = $salaryManagers->where('date_show', '<=', $end_date);
         $total = count($salaryManagers->get());
         $salaryManagers = $salaryManagers->orderBy('id', 'DESC')->paginate(SalaryManager::paginate);
         LogActivity::logViewActivity(auth()->user(), 'Xem Bảng Lương', 'Nhân viên xem bảng lương');
