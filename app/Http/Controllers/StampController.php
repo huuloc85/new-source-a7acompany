@@ -179,15 +179,30 @@ class StampController extends Controller
     {
         $product = Product::where('code', $request->productCode)->first();
         if ($product != null) {
-            $history = new HistoryPrint();
-            $history->product_id = $product->id;
-            $history->employee_id = Auth()->user()->id;
-            $history->type = $request->type;
-            $history->date = $request->date;
-            $history->shift = $request->shift;
-            $history->binCount = $request->binCount;
-            $history->binStart = $request->binStart;
-            $history->save();
+            $listBin = explode(",", $request->binStart);
+            if (count($listBin) > 1) {
+                foreach ($listBin as $bin) {
+                    $history = new HistoryPrint();
+                    $history->product_id = $product->id;
+                    $history->employee_id = Auth()->user()->id;
+                    $history->type = $request->type;
+                    $history->date = $request->date;
+                    $history->shift = $request->shift;
+                    $history->binCount = 1;
+                    $history->binStart = $bin;
+                    $history->save();
+                }
+            } else {
+                $history = new HistoryPrint();
+                $history->product_id = $product->id;
+                $history->employee_id = Auth()->user()->id;
+                $history->type = $request->type;
+                $history->date = $request->date;
+                $history->shift = $request->shift;
+                $history->binCount = $request->binCount;
+                $history->binStart = $request->binStart;
+                $history->save();
+            }
         }
 
         return response()->json(200);
