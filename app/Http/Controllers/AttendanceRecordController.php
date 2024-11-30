@@ -337,13 +337,15 @@ class AttendanceRecordController extends Controller
     }
 
     //Tính Tổng BreakTime
-    private function calculateBreakTime($timeFilter, $timeIn, $timeOut)
+    private function calculateBreakTime($record, $timeFilter, $timeIn, $timeOut)
     {
+        // if ($record->employee_code == "16100400" && $record->date == "2024-11-06") {
+        //     $timeIn = "21:20:00.000000";
+        // }
         $breakTimesConfig = config("a7a.break_times");
-        $breakTime = 0;
         $timeIn = Carbon::parse($timeIn);
         $timeOut = Carbon::parse($timeOut);
-
+        $breakTime = 0;
         switch ($timeFilter) {
             case 'working_hours':
                 $breakSchedule = $breakTimesConfig['ca_hanh_chinh']['schedule'];
@@ -355,7 +357,7 @@ class AttendanceRecordController extends Controller
             case 'rotating_shift_jp':
             case 'technical':
                 // Chọn lịch nghỉ dựa trên giờ vào
-                $breakSchedule = $timeIn->hour >= 21 ?
+                $breakSchedule = $record->shift == "Ca 2" ?
                     $breakTimesConfig['sx_ca_2']['schedule'] :
                     $breakTimesConfig['sx_ca_1']['schedule'];
                 break;
@@ -363,16 +365,77 @@ class AttendanceRecordController extends Controller
                 return 0;
         }
 
-        foreach ($breakSchedule as $break) {
-            $breakStart = Carbon::parse($break['time']);
-            $breakEnd = $breakStart->copy()->addMinutes($break['duration']);
+        // foreach ($breakSchedule as $break) {
+        //     $breakStart = Carbon::parse($break['time']);
+        //     $breakEnd = $breakStart->copy()->addMinutes($break['duration']);
 
-            // Kiểm tra xem khoảng nghỉ có nằm trong khoảng thời gian làm việc không
-            if ($breakStart < $timeOut && $breakEnd > $timeIn) {
-                // Tính thời gian nghỉ thực tế
-                $actualBreakStart = max($breakStart, $timeIn);
-                $actualBreakEnd = min($breakEnd, $timeOut);
-                $breakTime += $actualBreakEnd->diffInMinutes($actualBreakStart);
+        //     // Kiểm tra xem khoảng nghỉ có nằm trong khoảng thời gian làm việc không
+        //     if ($breakStart < $timeOut && $breakEnd > $timeIn) {
+        //         // Tính thời gian nghỉ thực tế
+        //         $actualBreakStart = max($breakStart, $timeIn);
+        //         $actualBreakEnd = min($breakEnd, $timeOut);
+        //         $breakTime += $actualBreakEnd->diffInMinutes($actualBreakStart);
+        //     }
+        // }
+
+        // Nếu ca là qc_day và giờ về sớm hơn 17:00, vẫn trừ thêm 10 phút
+        // if ($timeFilter === 'qc_day' && $timeOut < Carbon::parse('17:00')) {
+        //     $breakTime += 10;
+        // }
+
+        // return $breakTime;
+        return $this->handleBreakTime($record, $breakSchedule, $timeIn, $timeOut, $timeFilter);
+    }
+
+    private function handleBreakTime($record, $breakSchedule, $timeIn, $timeOut, $timeFilter)
+    {
+        $breakTime = 0;
+        if (in_array($timeFilter, config("a7a.list_category_ca1")) || $record->shift == "Ca 1") {
+            //ca 1
+            foreach ($breakSchedule as $break) {
+                $breakStart = Carbon::parse($break['time']);
+                $breakEnd = $breakStart->copy()->addMinutes($break['duration']);
+
+                // Kiểm tra xem khoảng nghỉ có nằm trong khoảng thời gian làm việc không
+                if ($breakStart < $timeOut && $breakEnd > $timeIn) {
+                    // Tính thời gian nghỉ thực tế
+                    $actualBreakStart = max($breakStart, $timeIn);
+                    $actualBreakEnd = min($breakEnd, $timeOut);
+                    $breakTime += $actualBreakEnd->diffInMinutes($actualBreakStart);
+                }
+            }
+        } else if (in_array($timeFilter, config("a7a.list_category_ca2"))) {
+            //ca 2
+            foreach ($breakSchedule as $key => $break) {
+                $breakStart = Carbon::parse($break['time']);
+                $breakEnd = $breakStart->copy()->addMinutes($break['duration']);
+                if ($timeIn->hour >= 18) {
+                    //đi làm từ chiều đến tối
+                    if ($timeOut->hour >= 18 && $breakStart->hour >= 18) {
+                        //về trong ngày
+                        if ($timeIn < $breakStart && $timeOut > $breakEnd) {
+                            $breakTime += $break['duration'];
+                        }
+                    } else if ($timeOut->hour < 8) {
+                        //về ngày hôm sau
+                        if ($breakStart->hour >= 18) {
+                            if ($timeIn < $breakStart) {
+                                $breakTime += $break['duration'];
+                            }
+                        } else if ($breakStart->hour < 8) {
+                            if ($timeOut > $breakEnd) {
+                                $breakTime += $break['duration'];
+                            }
+                        }
+                    }
+                } else {
+                    //đi làm khi qua ngày hôm sau
+                    if ($breakStart->hour < 8) {
+                        if ($timeIn < $breakStart && $timeOut > $breakEnd) {
+                            $breakTime += $break['duration'];
+                        }
+                    }
+                }
             }
         }
 
@@ -380,6 +443,10 @@ class AttendanceRecordController extends Controller
         if ($timeFilter === 'qc_day' && $timeOut < Carbon::parse('17:00')) {
             $breakTime += 10;
         }
+
+        // if ($record->employee_code == "16100400" && $record->date == "2024-11-06") {
+        //     dd($record, $timeIn, $breakTime);
+        // }
 
         return $breakTime;
     }
@@ -402,7 +469,7 @@ class AttendanceRecordController extends Controller
             }
         }
 
-        $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
+        $breakTime = $this->calculateBreakTime($record, $timeFilter, $record->time_in, $record->time_out);
 
         if ($record->record_count == 1) {
             $time = Carbon::parse($record->time_in);
@@ -518,7 +585,7 @@ class AttendanceRecordController extends Controller
             }
         }
 
-        $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
+        $breakTime = $this->calculateBreakTime($record, $timeFilter, $record->time_in, $record->time_out);
         $workStartTime = config("a7a.ca2_work_start_time");
         $workEndTime = config("a7a.ca2_work_end_time");
         if ($record->record_count >  1) {
@@ -590,9 +657,9 @@ class AttendanceRecordController extends Controller
         // Trừ giờ nghỉ (breakTime) nếu có
         $workingHours = $workingMillis / 3600 - ($breakTime / 60);
         // Trường hợp đặc biệt khi ca 2, bạn cần xử lý lại giờ nghỉ cho hợp lý
-        if ($shift2) {
-            $workingHours -= 1; // Trừ thêm giờ nghỉ cho ca 2
-        }
+        // if ($shift2) {
+        //     $workingHours -= 1; // Trừ thêm giờ nghỉ cho ca 2
+        // }
         $dailyWorkHours = 8;
         if ($workingHours < $dailyWorkHours) {
             $requiredHours = $dailyWorkHours - $workingHours;
@@ -797,8 +864,8 @@ class AttendanceRecordController extends Controller
 
             // Gán dữ liệu chấm công và tổng giờ làm việc cho nhân viên
             $employee->setDataAttribute($attendance);
-            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours); //tổng giờ làm việc 
-            $employee->setEmployeeForPCAttribute($employeeforPC);  //phụ cấp 
+            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours); //tổng giờ làm việc
+            $employee->setEmployeeForPCAttribute($employeeforPC);  //phụ cấp
 
             // Phân loại nhân viên theo công ty
             if ($employee->company === 'A7A') {
