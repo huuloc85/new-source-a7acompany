@@ -55,7 +55,7 @@
                                     @enderror
                                     <small class="form-text text-muted">
                                         <strong>Lưu ý: Trường hợp nếu cần in lại nhiều tem với số thùng khác nhau thì nhập
-                                            số lượng tem theo các số lượng cần in, ví dụ: cần in 2 tem lẻ 1,2 thì nhập số
+                                            số lượng tem theo các số lượng cần in, ví dụ: cần in 2 tem lẻ 1 và 2 thì nhập số
                                             lượng là 2</strong>
                                     </small>
                                 </div>
@@ -128,12 +128,13 @@
                                         <a class="btn btn-secondary" onclick="handlePrint(event)" href="#">Print</a>
                                     @endif
                                 </div>
-                                <div class="container-gird">
+                                <div class="container-gird no-break">
                                     <div class="grid-container">
                                         @if (isset($binArray))
                                             @foreach ($binArray as $key => $bin)
-                                                <div class="container grid-item ">
-                                                    <table class="table table-bordered">
+                                                <div class="container grid-item">
+                                                    <table class="table table-bordered"
+                                                        style="margin-top: 5px; margin-bottom: 5px;">
                                                         <tr>
                                                             <td class="text-start w-120 w-5">
                                                                 Tên sản<br>phẩm<br>品名
@@ -250,6 +251,7 @@
     </div>
     <script>
         var lastPrintTime = null; // Biến lưu thời gian lần in gần nhất
+        var isPrintShortcutActivated = false; // Biến theo dõi trạng thái nhấn Ctrl + P
 
         function selectProduct(event) {
             var data = event.target.value.split("-", 2);
@@ -294,18 +296,17 @@
             var currentTime = new Date().getTime();
 
             if (lastPrintTime === null) {
-                // Lần in đầu tiên, không có cảnh báo
                 lastPrintTime = currentTime;
                 savePrint(function() {
                     setTimeout(function() {
                         window.print();
+                        isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                     }, 100);
                 });
             } else {
                 var timeDiff = (currentTime - lastPrintTime) / 1000 / 60;
 
                 if (timeDiff <= 5) {
-                    // Nếu thời gian in thứ hai trong vòng 5 phút, hiển thị cảnh báo
                     Swal.fire({
                         title: 'Cảnh báo!',
                         text: 'Bạn đã in trước đó chưa đầy 5 phút. Bạn có chắc chắn muốn in thêm không?',
@@ -315,21 +316,21 @@
                         cancelButtonText: 'Không'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Nếu người dùng xác nhận in, cho phép in
                             lastPrintTime = currentTime;
                             savePrint(function() {
                                 setTimeout(function() {
                                     window.print();
+                                    isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                                 }, 100);
                             });
                         }
                     });
                 } else {
-                    // Nếu đã hơn 5 phút, không cần cảnh báo
                     lastPrintTime = currentTime;
                     savePrint(function() {
                         setTimeout(function() {
                             window.print();
+                            isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                         }, 100);
                     });
                 }
@@ -337,18 +338,35 @@
         }
 
         $(document).ready(function() {
-            // Xử lý sự kiện nhấn Ctrl+P
             $(document).keydown(function(event) {
+                // Kích hoạt Ctrl + P để lưu lịch sử in
                 if (event.ctrlKey && event.key === 'p') {
-                    event.preventDefault(); // Ngăn chặn việc tự động mở hộp thoại in
-                    handlePrint(); // Xử lý việc in
+                    event.preventDefault(); // Ngăn hành động mặc định
+                    isPrintShortcutActivated = true; // Đánh dấu Ctrl + P đã được nhấn
+                    handlePrint(); // Gọi hàm in
+                }
+
+                // Ngăn chặn Ctrl+Shift+P nếu Ctrl+P chưa được nhấn
+                if (event.ctrlKey && event.shiftKey && event.key === 'P') {
+                    if (!isPrintShortcutActivated) {
+                        event.preventDefault();
+                        Swal.fire({
+                            title: 'Thông báo',
+                            text: 'Vui lòng nhấn Ctrl + P trước khi sử dụng Ctrl + Shift + P.',
+                            icon: 'info',
+                            confirmButtonText: 'Đồng ý'
+                        });
+                    } else {
+                        // Nếu Ctrl + P đã được nhấn, bạn có thể thực hiện hành động cho Ctrl + Shift + P ở đây
+                        console.log("Ctrl + Shift + P được nhấn!");
+                        // Thực hiện hành động khác nếu cần
+                    }
                 }
             });
 
-            // Xử lý khi nhấn vào nút Print
             $('#save-print').click(function(event) {
-                event.preventDefault(); // Ngăn chặn việc mở hộp thoại in tự động
-                handlePrint(); // Gọi cùng một logic xử lý in
+                event.preventDefault();
+                handlePrint();
             });
         });
     </script>

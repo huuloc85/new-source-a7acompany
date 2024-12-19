@@ -35,26 +35,46 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
+            // Kiểm tra nếu nhân viên đã nghỉ việc
             if ($user && $user->deleted_at !== null) {
                 toast('Bạn đã nghỉ việc!', 'error', 'top-right');
                 Auth::logout();
                 return redirect()->route('login');
             }
 
-            toast('Bạn đã đăng nhập thành công!', 'success', 'top-right');
             $employee = Employee::where('id', $user->id)->first();
-            if ($employee && ($employee->role_id == 15 || $employee->role_id == 16 || $employee->role_id == 17)) {
-                LogActivity::logViewActivity($user, 'Admin Đăng Nhập', 'Admin đã đăng nhập vào web');
-            } else {
-                LogActivity::logViewActivity($user, 'Nhân Viên Đăng Nhập', 'Nhân viên đã đăng nhập vào web');
+
+            // Kiểm tra sinh nhật
+            $today = now()->format('m-d');
+            $birthdayEmployees = Employee::whereRaw("DATE_FORMAT(birthday, '%m-%d') = ?", [$today])
+                ->whereNull('deleted_at')
+                ->pluck('name');
+
+            $isBirthday = $birthdayEmployees->isNotEmpty();
+
+            // Kiểm tra xem đã có bản ghi đăng nhập trong ngày hay chưa
+            $loginHistoryExists = LoginHistory::where('employee_id', $employee->id)
+                ->whereDate('date', now()->toDateString())
+                ->exists();
+
+            if (!$loginHistoryExists && $isBirthday) {
+                // Chỉ hiển thị modal sinh nhật nếu chưa có bản ghi đăng nhập trong ngày
+                session()->flash('birthday_check', true);
+                session()->flash('birthday_employees', $birthdayEmployees);
             }
+
+            // Ghi log hoạt động đăng nhập
+            $roleName = $employee->role_id == 15 || $employee->role_id == 16 || $employee->role_id == 17 ? 'Admin' : 'Nhân Viên';
+            LogActivity::logViewActivity($user, "{$roleName} Đăng Nhập", "{$roleName} đã đăng nhập vào web");
 
             return redirect()->route('admin.home');
         }
 
+        // Xử lý sai thông tin đăng nhập
         toast('Số điện thoại hoặc mật khẩu không đúng!', 'error', 'top-right');
         return redirect()->back();
     }
+
 
     //logout
     public function logout()

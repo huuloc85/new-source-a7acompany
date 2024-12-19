@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\Attendance\MultiSheetExport;
+use App\Exports\Attendance\Records;
 use App\Models\AttendanceRecord;
 use App\Models\CategoryCelender;
 use App\Models\CelenderDetailHNHC;
@@ -12,9 +14,13 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Traits\CelenderDetailTrait;
 
 class AttendanceRecordController extends Controller
 {
+    use CelenderDetailTrait;
+
     private $listRecord;
     //View Lịch Sử Chấm Công (Admin)
     public function index(Request $request)
@@ -31,15 +37,13 @@ class AttendanceRecordController extends Controller
             ->whereMonth('date', Carbon::parse($currentMonth)->month)
             ->orderBy('employee_code', 'asc')
             ->orderBy('date', 'asc');
-
         if ($request->filled('category')) {
             $query->whereHas('employee', function ($q) use ($request) {
                 $q->where('category_celender_id', $request->input('category'));
             });
         }
 
-        $records = $query->get();
-
+        $records = $query->paginate(AttendanceRecord::paginate);
         return view('attendence.index', compact('records', 'currentMonth', 'categories', 'employees'));
     }
 
@@ -76,6 +80,36 @@ class AttendanceRecordController extends Controller
         }
     }
 
+    public function update(Request $request, $employee_code, $datetime)
+    {
+        try {
+
+            $newDatetime = $request->input('datetime');
+            // Parse `datetime` thành `date`, `time`, và `datetime`
+            $parsedDate = \Carbon\Carbon::parse($newDatetime)->format('Y-m-d');
+            $parsedTime = \Carbon\Carbon::parse($newDatetime)->format('H:i:s.u');
+            $parsedDateTime = \Carbon\Carbon::parse($newDatetime)->format('Y-m-d H:i:s.u');
+
+            // Cập nhật dữ liệu bản ghi trong cơ sở dữ liệu
+            $updateResult = DB::table('attendencerecord')
+                ->where('employee_code', $employee_code)
+                ->where('datetime', $datetime)
+                ->update([
+                    'date' => $parsedDate,
+                    'time' => $parsedTime,
+                    'datetime' => $parsedDateTime,
+                ]);
+            // Thông báo thành công
+            toast('Cập nhật dữ liệu chấm công thành công!', 'success', 'top-right');
+            return redirect()->route('admin.attendence.index');
+        } catch (\Exception $e) {
+            // Nếu có lỗi, log lỗi và thông báo thất bại
+            Log::error('Lỗi: ' . $e->getMessage() . ' tại dòng: ' . $e->getLine());
+            toast('Cập nhật dữ liệu chấm công không thành công!', 'error', 'top-right');
+            return redirect()->back();
+        }
+    }
+
     //Delete Record (Admin)
     public function destroy($employee_code, $datetime)
     {
@@ -105,51 +139,87 @@ class AttendanceRecordController extends Controller
     //View Bảng Tính Công (Admin)
     public function records(Request $request)
     {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        if ($startDate) {
+            $startDate = Carbon::parse($startDate)->startOfDay();
+        }
+        if ($endDate) {
+            $endDate = Carbon::parse($endDate)->endOfDay();
+        }
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
         $timeFilter = $request->time_filter ?? 'working_hours';
-        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->pluck('id')->first();
+        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->whereYear('date', Carbon::parse($currentMonth)->year)->pluck('id')->first();
+        $startCalendarId = null;
+        $endCalendarId = null;
+        if ($startDate && $endDate) {
+            $startCalendarId = Celender::whereMonth('date', $startDate->month)->whereYear('date', $startDate->year)->pluck('id')->first();;
+            $endCalendarId = Celender::whereMonth('date', $endDate->month)->whereYear('date', $endDate->year)->pluck('id')->first();;
+        }
         $query = $this->buildQuery($request, $currentMonth, $timeFilter);
         $records = $this->checkQuery($query, $timeFilter);
         $this->listRecord = $records;
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
 
         foreach ($records as $key => $record) {
+            if ($startDate && $endDate) {
+                if (Carbon::parse($record->date)->month == $startDate->month && Carbon::parse($record->date)->year == $startDate->year) {
+                    $calendarId = $startCalendarId;
+                } elseif (Carbon::parse($record->date)->month == $endDate->month && Carbon::parse($record->date)->year == $endDate->year) {
+                    $calendarId = $endCalendarId;
+                }
+            }
             $this->processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key);
         }
+
+        $calendarDetails = $this->getCelenderDetails($request, $calendarId);
 
         return view('attendence.records', [
             'records' => $this->listRecord,
             'currentMonth' => $currentMonth,
+            'timeFilter' => $timeFilter,
+            'id' => $calendarId,
+            'employeesToday' => $calendarDetails['employeesToday'],
+            'today' => $calendarDetails['today'],
+            'day' => $calendarDetails['day'],
+            'employeesTodayCount' => $calendarDetails['employeesTodayCount'],
+            'currentDay' => $calendarDetails['currentDay'],
         ]);
     }
 
     //Query (Admin)
     private function buildQuery(Request $request, $currentMonth, $timeFilter)
     {
-        $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
-            ->whereMonth('date', Carbon::parse($currentMonth)->month)
-            ->orderBy('employee_code', 'asc')
-            ->orderBy('date', 'asc');
+        // Nếu có cả `start_date` và `end_date`, truy vấn sẽ chỉ sử dụng chúng
+        if ($request->has('start_date') && $request->start_date && $request->has('end_date') && $request->end_date) {
+            $query = AttendanceRecord::whereDate('date', '>=', $request->start_date)
+                ->whereDate('date', '<=', $request->end_date)
+                ->orderBy('employee_code', 'asc')
+                ->orderBy('date', 'asc');
+        } else {
+            // Nếu không có `start_date` và `end_date`, sử dụng `currentMonth`
+            $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
+                ->whereMonth('date', Carbon::parse($currentMonth)->month)
+                ->orderBy('employee_code', 'asc')
+                ->orderBy('date', 'asc');
+        }
 
-        if ($request->has('start_date') && $request->start_date) {
-            $query->whereDate('date', '>=', $request->start_date);
-        }
-        if ($request->has('end_date') && $request->end_date) {
-            $query->whereDate('date', '<=', $request->end_date);
-        }
+        // Điều kiện tìm kiếm theo `employee_name`
         if ($request->has('employee_name') && $request->employee_name) {
             $employeeIds = Employee::where('name', 'like', '%' . $request->employee_name . '%')->pluck('code');
             $query->whereIn('employee_code', $employeeIds);
         }
 
+        // Điều kiện theo `timeFilter`
         if (config("a7a.list_category")[$timeFilter]) {
             $categoryId = CategoryCelender::listCate[$timeFilter];
             $query->whereHas('employee', function ($query) use ($categoryId) {
                 $query->where('category_celender_id', $categoryId);
             });
 
+            // Điều kiện thời gian cho `Ca 1` nếu `timeFilter` thuộc `list_category_ca1`
             if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
-                $query = $query->whereTime('time', '>=', config("a7a.ca1_start_time"))
+                $query->whereTime('time', '>=', config("a7a.ca1_start_time"))
                     ->whereTime('time', '<=', config("a7a.ca1_end_time"));
             }
         }
@@ -160,26 +230,14 @@ class AttendanceRecordController extends Controller
     //Query theo ca (Admin)
     private function checkQuery($query, $timeFilter)
     {
-        if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
-            $records = $query->select(
-                'employee_code',
-                'date',
-                DB::raw('COUNT(*) as record_count'),
-                DB::raw('MIN(time) as time_in'),
-                DB::raw('MAX(time) as time_out'),
-                DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
-            );
-        } else if (in_array($timeFilter, config("a7a.list_category_ca2"))) {
-            //nếu ca2
-            $records = $query->select(
-                'employee_code',
-                'date',
-                DB::raw('COUNT(*) as record_count'),
-                DB::raw('MIN(time) as time_in'),
-                DB::raw('MAX(time) as time_out'),
-                DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
-            );
-        }
+        $records = $query->select(
+            'employee_code',
+            'date',
+            DB::raw('COUNT(*) as record_count'),
+            DB::raw('MIN(time) as time_in'),
+            DB::raw('MAX(time) as time_out'),
+            DB::raw("GROUP_CONCAT(time ORDER BY time ASC SEPARATOR ', ') as all_times")
+        );
 
         return $records->groupBy('employee_code', 'date')
             ->orderBy('employee_code', 'asc')
@@ -191,17 +249,37 @@ class AttendanceRecordController extends Controller
     //Code chức năng tính công (Admin)
     private function processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key)
     {
+        if ($timeFilter == null && $record->employee->category_celender_id != null) {
+            $timeFilter = CategoryCelender::listCateforEmployee[$record->employee->category_celender_id];
+        }
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
+
+        if ($date->day == 1) {
+            ///get new category_id
+            $prevMonth = $date = $date->subDay();
+            $calendarId = Celender::whereMonth('date', Carbon::parse($prevMonth)->month)->pluck('id')->first();
+            $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
+        }
+
+        $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
         if (in_array($timeFilter, config("a7a.list_category_ca1"))) {
+            if ($shift === config("a7a.shift_1") || $shift === config("a7a.shift_1_extra_day")) {
+                $record->shift = 'Ca 1';
+            } elseif ($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night")) {
+                $record->shift = 'Ca 2';
+            } else {
+                $record->shift = 'Đổi lịch đi làm';
+            }
             $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
         } elseif (in_array($timeFilter, config("a7a.list_category_ca2"))) {
-            $shift = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day' . $date->day)->first();
-            $record->shift = ($shift === config("a7a.shift_1") || $shift === config("a7a.shift_1_extra_day"))
-                ? 'Ca 1'
-                : (($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night"))
-                    ? 'Ca 2'
-                    : 'Đổi lịch đi làm');
+            if ($shift === config("a7a.shift_1") || $shift === config("a7a.shift_1_extra_day")) {
+                $record->shift = 'Ca 1';
+            } elseif ($shift === config("a7a.shift_2") || $shift === config("a7a.shift_2_extra_night")) {
+                $record->shift = 'Ca 2';
+            } else {
+                $record->shift = 'Đổi lịch đi làm';
+            }
             if ($shift == config("a7a.shift_1") || $shift == config("a7a.shift_1_extra_day")) {
                 $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
             } else if ($shift == config("a7a.shift_2") || $shift == config("a7a.shift_2_extra_night")) {
@@ -298,6 +376,11 @@ class AttendanceRecordController extends Controller
             }
         }
 
+        // Nếu ca là qc_day và giờ về sớm hơn 17:00, vẫn trừ thêm 10 phút
+        if ($timeFilter === 'qc_day' && $timeOut < Carbon::parse('17:00')) {
+            $breakTime += 10;
+        }
+
         return $breakTime;
     }
 
@@ -306,6 +389,19 @@ class AttendanceRecordController extends Controller
     {
         $workStartTime = config("a7a.ca1_work_start_time");
         $workEndTime = $timeFilter === 'working_hours' ? config("a7a.ca1_work_end_time_wh") : config("a7a.ca1_work_end_time_qd");
+
+        if ($record->employee_code === '23030100') {
+            $dayOfWeek = Carbon::parse($record->date)->dayOfWeek; // 1 là Thứ Hai, 3 là Thứ Tư, 5 là Thứ Sáu
+            if (in_array($dayOfWeek, [1, 3, 5]) && $record->shift === 'Ca 1') {
+                $workStartTime = '07:00'; // Đặt giờ bắt đầu làm việc là 7:00 sáng
+                $workEndTime = Carbon::parse($workStartTime)->addHours(8)->format('H:i'); // Đặt giờ kết thúc để làm đủ 8 tiếng
+
+                // Đảm bảo giờ làm việc không vượt quá 8 tiếng
+                $record->total_hours = min($record->total_hours, 8);
+                $record->overtime_hours = 0; // Không có giờ tăng ca
+            }
+        }
+
         $breakTime = $this->calculateBreakTime($timeFilter, $record->time_in, $record->time_out);
 
         if ($record->record_count == 1) {
@@ -348,7 +444,7 @@ class AttendanceRecordController extends Controller
             // Nếu time_in và time_out khác nhau ít nhất 1 giờ
             if ($timeIn->diffInHours($timeOut) >= 1) {
                 $record->total_hours = $this->calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime);
-                $record->overtime_hours = $this->calculateOvertime($record, $workStartTime, $workEndTime, $breakTime);
+                $record->overtime_hours = $this->calculateOvertime($record);
             } else {
                 // Nếu không, đặt time_out là null
                 $record->time_out = null;
@@ -386,10 +482,11 @@ class AttendanceRecordController extends Controller
             ->where('date', Carbon::parse($record->date)->addDay())
             ->where('time', '<', config("a7a.ca2_max_end_time"))
             ->orderBy('time', 'desc')
-            ->pluck('time')
+            ->select('time', 'date')
             ->first();
 
-        $record->time_out = isset($checkTimeOut) ? $checkTimeOut : null;
+        $record->time_out = isset($checkTimeOut->time) ? $checkTimeOut->time : null;
+        $record->date_out = isset($checkTimeOut->date) ? $checkTimeOut->date : null;
 
         if ($record->time_out == null && $record->time_in != null) {
             $times = explode(', ', $record->all_times);
@@ -405,7 +502,7 @@ class AttendanceRecordController extends Controller
         $workStartTime = config("a7a.ca2_work_start_time");
         $workEndTime = config("a7a.ca2_work_end_time");
         $record->total_hours = $this->calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime, true);
-        $record->overtime_hours = $this->calculateOvertime($record, $workStartTime, $workEndTime, $breakTime, true);
+        $record->overtime_hours = $this->calculateOvertime($record, true);
 
         $administrativeHours = min($record->total_hours, 8);
         $record->administrative_hours = $administrativeHours;
@@ -418,7 +515,6 @@ class AttendanceRecordController extends Controller
     private function calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime, $shift2 = false)
     {
         if (!$record->time_in || !$record->time_out) return 0;
-
         $timeInDate = Carbon::parse($record->time_in);
         $timeOutDate = Carbon::parse($record->time_out);
         $workStartDate = Carbon::parse($workStartTime);
@@ -427,14 +523,19 @@ class AttendanceRecordController extends Controller
         $effectiveStart = $timeInDate < $workStartDate ? $workStartDate : $timeInDate;
         $effectiveEnd = $timeOutDate > $workEndDate ? $workEndDate : $timeOutDate;
 
-        // Không cộng thêm ngày nếu về sớm trước 24h
-        if ($shift2 && $timeOutDate->hour < 24 && $timeOutDate->isSameDay($timeInDate)) {
+        if ($shift2 && $record->date_out == null) {
             $effectiveEnd = $timeOutDate;
         }
 
-        if ($shift2 && $effectiveEnd < $effectiveStart) {
+        // Không cộng thêm ngày nếu về sớm trước 24h
+        if ($shift2 && $timeOutDate->hour < 24 && $record->date == $record->date_out) {
+            $effectiveEnd = $timeOutDate;
+        }
+
+        if ($shift2 && $effectiveEnd < $effectiveStart && $record->date_out != null && $record->date != $record->date_out) {
             $effectiveEnd->addDay();
         }
+
         $workingMillis = max(0, $effectiveEnd->diffInSeconds($effectiveStart));
         $workingHours = $workingMillis / 3600 - ($breakTime / 60);
 
@@ -442,15 +543,15 @@ class AttendanceRecordController extends Controller
         if ($workingHours < $dailyWorkHours) {
             $requiredHours = $dailyWorkHours - $workingHours;
             $timeOutDate = $shift2 == true ? $timeOutDate->subDay() : $timeOutDate;
-            $billedHours = $timeOutDate <= $workEndDate ? 0 : min($timeOutDate->diffInHours($workEndDate), $requiredHours);
+            $billedHours = $timeOutDate <= $workEndDate ? 0 : min($timeOutDate->DiffInHours($workEndDate), $requiredHours);
             $workingHours += $billedHours;
         }
 
-        return floor($workingHours * 4) / 4;
+        return round($workingHours * 4) / 4;
     }
 
     //Tính Giờ Tăng Ca
-    private function calculateOvertime($record, $workStartTime, $workEndTime, $breakTime, $shift2 = false)
+    private function calculateOvertime($record, $shift2 = false)
     {
         $totalHours = $record->total_hours;
         $categoryId = $record->employee->category_celender_id;
@@ -550,5 +651,132 @@ class AttendanceRecordController extends Controller
             Log::error("error: " . $e);
             return response()->json(['message' => 'No data to insert'], 500);
         }
+    }
+
+    //Export
+    public function export(Request $request)
+    {
+        ini_set('max_execution_time', 180);
+        $currentMonth = Carbon::now()->format('m-Y');
+        $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+        $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+        $employeeCodes = Employee::whereNotIn('role_id', [15, 1])->pluck('code');
+
+        $startMonthCalendarId = Celender::whereMonth('date', $startDate->month)
+            ->whereYear('date', $startDate->year)
+            ->pluck('id')
+            ->first();
+        $endMonthCalendarId = Celender::whereMonth('date', $endDate->month)
+            ->whereYear('date', $endDate->year)
+            ->pluck('id')
+            ->first();
+
+        // $calendarIds = collect([$startMonthCalendarId, $endMonthCalendarId])->filter();
+        // dd($calendarIds);
+        $query = AttendanceRecord::whereBetween('date', [$startDate, $endDate])
+            ->whereIn('employee_code', $employeeCodes)
+            ->orderBy('employee_code', 'asc')
+            ->orderBy('date', 'asc');
+
+        $records = $this->checkQuery($query, null);
+
+        $employeeCodes = ['23052600', '20050400', '23030100', '16100400', '22072300'];
+        $allEmployee = Employee::select('id', 'code', 'name', 'company')
+            ->whereIn('code', $employeeCodes)
+            ->whereNull('deleted_at')
+            ->whereNotNull('company')
+            ->get();
+        // $allEmployee = Employee::select('id', 'code', 'name', 'company')
+        //     ->where('role_id', '!=', 15)
+        //     ->where('role_id', '!=', 17)
+        //     ->where('deleted_at', null)->where('company', '!=', null)->get();
+
+        $this->listRecord = $records;
+        $a7aRecords = [];
+        $vinhVinhPhatRecords = [];
+
+        foreach ($allEmployee as $employee) {
+            $attendance = [];
+            $employeeTotalHours = [
+                'totalHourMonth' => 0,
+                'totalHourTC' => 0,
+                'totalHourDay' => 0,
+                'totalHourNight' => 0,
+            ];
+            $employeeforPC = [
+                'PCTCNgay' => 0,
+                'PCTCDem' => 0,
+                'PCTCTC' => 0,
+            ];
+            foreach ($records as $key => $record) {
+                if ($employee->code == $record->employee_code) {
+                    $attendance[] = $record;
+                }
+                if (Carbon::parse($record->date)->month == $startDate->month && Carbon::parse($record->date)->year == $startDate->year) {
+                    $calendarId = $startMonthCalendarId;
+                } elseif (Carbon::parse($record->date)->month == $endDate->month && Carbon::parse($record->date)->year == $endDate->year) {
+                    $calendarId = $endMonthCalendarId;
+                }
+
+                $this->processRecord($record, null, AttendanceRecord::getDayOfWeekMapping(), $calendarId, $key);
+
+                // Tính tổng giờ cho nhân viên này
+                if ($employee->code == $record->employee_code) {
+                    $employeeTotalHours['totalHourMonth'] += $record->total_hours;
+                    $employeeTotalHours['totalHourTC'] += $record->overtime_hours;
+                    if ($record->shift === 'Ca 1') {
+                        $employeeTotalHours['totalHourDay'] += $record->administrative_hours; // Giờ hành chính
+                        if ($record->administrative_hours > 5) {
+                            $employeeforPC['PCTCNgay'] += 1; // Tăng PCTCNgay
+                        }
+                    } elseif ($record->shift === 'Ca 2') {
+                        $employeeTotalHours['totalHourNight'] += $record->administrative_hours; // Giờ đêm
+                        if ($record->administrative_hours > 5) {
+                            $employeeforPC['PCTCDem'] += 1; // Tăng PCTCDem
+                        }
+                    }
+                    if ($record->administrative_hours >= 8) {
+                        $employeeforPC['PCTCTC'] += 1; // Tăng PCTCTC nếu giờ >= 8
+                    }
+                }
+            }
+
+            // Gán dữ liệu chấm công và tổng giờ làm việc cho nhân viên
+            $employee->setDataAttribute($attendance);
+            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours); //tổng giờ làm việc 
+            $employee->setEmployeeForPCAttribute($employeeforPC);  //phụ cấp 
+
+            // Phân loại nhân viên theo công ty
+            if ($employee->company === 'A7A') {
+                $a7aRecords[] = $employee;
+            } elseif ($employee->company === 'Vinh Vinh Phát') {
+                $vinhVinhPhatRecords[] = $employee;
+            }
+        }
+        $listDate = $this->createDateRangeArray($startDate, $endDate);
+        return Excel::download(
+            new MultiSheetExport([
+                'A7A' => $a7aRecords,
+                'Vinh Vinh Phát' => $vinhVinhPhatRecords,
+            ], $startDate, $endDate, $currentMonth, $listDate),
+            'Bảng Tính Công Tháng' . '.xlsx',
+            \Maatwebsite\Excel\Excel::XLSX,
+            [
+                'Content-Type' => 'text/xlsx',
+            ]
+        );
+    }
+
+    function createDateRangeArray($startDate, $endDate)
+    {
+        $dates = [];
+        $currentDate = clone $startDate;
+
+        while ($currentDate <= $endDate) {
+            $dates[] = $currentDate->format('Y-m-d');
+            $currentDate->modify('+1 day');
+        }
+
+        return $dates;
     }
 }

@@ -103,8 +103,8 @@ class SalaryOfficialVVP extends Model
         'advance_money',                                //tạm ứng
         'advance_money_notice',                         //tạm ứng Ghi Chú
         'number_of_violations',                         //Số lần vi phạm
-        'subtract_of_violations',                       //Trừ vi phạm
-        'subtract_of_violations_notice',                //Trừ vi phạm Ghi Chú
+        'unicon_deduction',                             //Trừ vi phạm
+        'unicon_deduction_notice',                      //Trừ vi phạm Ghi Chú
         'daysleave_allowed',                            //số ngày nghỉ có phép
         'subtract_daysleave_allowed',                   //Trừ tiền nghỉ có phép
         'subtract_daysleave_allowed_notice',            //Trừ tiền nghỉ có phép Ghi Chú

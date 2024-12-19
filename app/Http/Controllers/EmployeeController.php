@@ -68,6 +68,9 @@ class EmployeeController extends Controller
         if (!empty($request->gender)) {
             $employees->Gender($request);
         }
+        if (!empty($request->company)) {
+            $employees->where('company', 'LIKE', '%' . $request->company . '%');
+        }
 
         $employees = $employees->where('role_id', '!=', 15)
             ->where('role_id', '!=', 17)
@@ -79,7 +82,12 @@ class EmployeeController extends Controller
             ->where('id', '!=', 16)
             ->where('id', '!=', 17)->where('id', '!=', 1)->get();
         $categories = CategoryCelender::all();
-        return view('employee.index', compact('employees', 'total', 'roles', 'categories'));
+        $companies = Employee::whereNotNull('company')
+            ->where('company', '!=', '')
+            ->distinct()
+            ->pluck('company');
+
+        return view('employee.index', compact('employees', 'total', 'roles', 'categories', 'companies'));
     }
 
     //view add
@@ -105,6 +113,7 @@ class EmployeeController extends Controller
         $employee->home_town = trim($request->home_town);
         $employee->CCCD = trim($request->CCCD);
         $employee->role_id = trim($request->role_id);
+        $employee->company = trim($request->company);
         $employee->category_celender_id = trim($request->category_celender_id);
         $employee->gender = trim($request->gender);
         $employee->marital_status = $request->marital_status;
@@ -136,6 +145,7 @@ class EmployeeController extends Controller
         }
 
         try {
+            // dd($employee);
             $employee->save();
             toast('Thêm nhân sự mới thành công!', 'success', 'top-right');
             return redirect()->route('admin.employee.home');
@@ -173,6 +183,7 @@ class EmployeeController extends Controller
         $employee->home_town = trim($request->home_town);
         $employee->CCCD = trim($request->CCCD);
         $employee->role_id = trim($request->role_id);
+        $employee->company = trim($request->company);
         $employee->category_celender_id = trim($request->category_celender_id);
         $employee->gender = trim($request->gender);
         $employee->marital_status = $request->marital_status;
@@ -205,6 +216,7 @@ class EmployeeController extends Controller
         }
 
         try {
+
             $employee->save();
             if ($request->hasFile('photo')) {
                 $image = 'public/employee/' . $oldImg;

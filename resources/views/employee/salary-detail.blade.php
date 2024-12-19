@@ -704,7 +704,7 @@
                         <div class="row">
                             <div class="col-3">
                                 <div class="text-start pt-1">
-                                    <label class="form-label mb-0" for="" style="word-wrap: break-word;">Trừ vi phạm:</label>
+                                    <label class="form-label mb-0" for="" style="word-wrap: break-word;">Phí công đoàn 1%:</label>
                                 </div>
                             </div>
                             <div class="col-3">
@@ -714,12 +714,12 @@
                             </div>
                             <div class="col-3">
                                 <div class="text-center pt-1">
-                                    <label class="form-label mb-0" for="" style="word-wrap: break-word;">{{ number_format($salaryOfficialsVVP->subtract_of_violations) ?? '' }}</label>
+                                    <label class="form-label mb-0" for="" style="word-wrap: break-word;">{{ number_format($salaryOfficialsVVP->unicon_deduction) ?? '' }}</label>
                                 </div>
                             </div>
                             <div class="col-3">
                                 <div class="text-center pt-1">
-                                    <label class="form-label mb-0" for="" style="word-wrap: break-word;">{{ $salaryOfficialsVVP->subtract_of_violations_notice ?? '' }}</label>
+                                    <label class="form-label mb-0" for="" style="word-wrap: break-word;">{{ $salaryOfficialsVVP->unicon_deduction_notice ?? '' }}</label>
                                 </div>
                             </div>
                         </div>

@@ -60,6 +60,38 @@ class Employee extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function getEmployeeTotalHoursAttribute()
+    {
+        return $this->employeeTotalHours;
+    }
+
+    // Setter for employeeTotalHours
+    public function setEmployeeTotalHoursAttribute($value)
+    {
+        $this->employeeTotalHours = $value;
+    }
+
+    public function getDataAttribute()
+    {
+        return $this->dataAttendance;
+    }
+
+    public function setDataAttribute($value)
+    {
+        $this->dataAttendance = $value;
+    }
+
+    public function getEmployeeForPCAttribute()
+    {
+        return $this->employeeforPC;
+    }
+
+    // Setter cho employeeforPC
+    public function setEmployeeForPCAttribute($value)
+    {
+        $this->employeeforPC = $value;
+    }
+
     //relationship role
     public function role()
     {

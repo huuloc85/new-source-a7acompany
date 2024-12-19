@@ -13,7 +13,7 @@ class AttendanceRecord extends Model
     public $timestamps = false;
     public $incrementing = false;
     protected $primaryKey = null;
-
+    public const paginate = 500;
     protected $fillable = [
         'employee_code',
         'datetime',
