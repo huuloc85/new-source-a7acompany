@@ -340,7 +340,7 @@ class AttendanceRecordController extends Controller
     private function calculateBreakTime($record, $timeFilter, $timeIn, $timeOut)
     {
         // if ($record->employee_code == "16100400" && $record->date == "2024-11-06") {
-        //     $timeIn = "21:20:00.000000";
+        //     $timeIn = "00:30:00.000000";
         // }
         $breakTimesConfig = config("a7a.break_times");
         $timeIn = Carbon::parse($timeIn);
@@ -444,9 +444,9 @@ class AttendanceRecordController extends Controller
             $breakTime += 10;
         }
 
-        // if ($record->employee_code == "16100400" && $record->date == "2024-11-06") {
-        //     dd($record, $timeIn, $breakTime);
-        // }
+        if ($record->employee_code == "16100400" && $record->date == "2024-11-06") {
+            dd($record, $timeIn, $breakTime);
+        }
 
         return $breakTime;
     }
@@ -777,7 +777,7 @@ class AttendanceRecordController extends Controller
     //Export
     public function export(Request $request)
     {
-        ini_set('max_execution_time', 180);
+        ini_set('max_execution_time', 500);
         $currentMonth = Carbon::now()->format('m-Y');
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
@@ -801,12 +801,14 @@ class AttendanceRecordController extends Controller
 
         $records = $this->checkQuery($query, null);
 
-        $employeeCodes = ['23052600', '20050400', '23030100', '16100400', '22072300'];
+        // $employeeCodes = ['23052600', '20050400', '23030100', '16100400', '22072300'];
         $allEmployee = Employee::select('id', 'code', 'name', 'company')
-            ->whereIn('code', $employeeCodes)
             ->whereNull('deleted_at')
             ->whereNotNull('company')
+            ->whereNotIn('role_id', [15, 17])
             ->get();
+
+
         // $allEmployee = Employee::select('id', 'code', 'name', 'company')
         //     ->where('role_id', '!=', 15)
         //     ->where('role_id', '!=', 17)
@@ -843,15 +845,17 @@ class AttendanceRecordController extends Controller
 
                 // Tính tổng giờ cho nhân viên này
                 if ($employee->code == $record->employee_code) {
-                    $employeeTotalHours['totalHourMonth'] += $record->total_hours;
-                    $employeeTotalHours['totalHourTC'] += $record->overtime_hours;
+                    $employeeTotalHours['totalHourMonth'] += (float) $record->total_hours;
+                    $employeeTotalHours['totalHourTC'] += (float) $record->overtime_hours;
                     if ($record->shift === 'Ca 1') {
-                        $employeeTotalHours['totalHourDay'] += $record->administrative_hours; // Giờ hành chính
+                        $employeeTotalHours['totalHourDay'] += (float) $record->administrative_hours;
+                        // Giờ hành chính
                         if ($record->administrative_hours > 5) {
                             $employeeforPC['PCTCNgay'] += 1; // Tăng PCTCNgay
                         }
                     } elseif ($record->shift === 'Ca 2') {
-                        $employeeTotalHours['totalHourNight'] += $record->administrative_hours; // Giờ đêm
+                        $employeeTotalHours['totalHourNight'] += (float) $record->administrative_hours;
+                        // Giờ đêm
                         if ($record->administrative_hours > 5) {
                             $employeeforPC['PCTCDem'] += 1; // Tăng PCTCDem
                         }
