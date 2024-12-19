@@ -147,11 +147,11 @@
         }
 
         /*
-                    .btn-outline-success:focus {
-                        box-shadow: none;
-                        background-color: transparent;
-                        border-color: #198754;
-                    } */
+                                                        .btn-outline-success:focus {
+                                                            box-shadow: none;
+                                                            background-color: transparent;
+                                                            border-color: #198754;
+                                                        } */
 
         /* btn Danh sách (Info) */
         .btn-outline-info:hover {
@@ -201,12 +201,36 @@
                             class="btn btn-outline-success btn-sm rounded-pill shadow-sm">
                             <i class="fas fa-history me-1"></i> Lịch Sử Chấm Công
                         </a>
+                        <a href="#" id="attendance-search-button"
+                            class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
+                            <i class="fas fa-search me-1"></i> Tìm Chấm Công Thực Tế
+                        </a>
+
+                        <script>
+                            document.getElementById('attendance-search-button').addEventListener('click', function(e) {
+                                e.preventDefault(); // Ngăn không cho tự động chuyển hướng
+                                Swal.fire({
+                                    title: 'Bạn đã đổi qua mạng Vinh Vinh Phát chưa?',
+                                    text: "Vui lòng kiểm tra và xác nhận trước khi tiếp tục.",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Đã đổi mạng',
+                                    cancelButtonText: 'Chưa đổi mạng'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.open('http://192.168.1.2/doc/index.html#/eventSearch?t=1731739764211', '_blank');
+                                    }
+                                });
+                            });
+                        </script>
                     </div>
 
                     <!-- Ô Tìm Kiếm -->
                     <div class="search-box position-relative flex-grow-1">
                         <input type="text" id="search" class="form-control form-control-sm rounded-pill"
-                            placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công">
+                            placeholder="Tìm kiếm nhân viên hoặc ngày chấm công">
                         <i class="fas fa-search search-icon"></i>
                     </div>
 
@@ -382,6 +406,7 @@
         </div>
     </div>
 
+    <!-- Modal tìm kiếm -->
     <div class="modal fade" id="todayEmployeesModal" tabindex="-1" aria-labelledby="todayEmployeesModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
