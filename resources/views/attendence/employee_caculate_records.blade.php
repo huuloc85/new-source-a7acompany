@@ -22,6 +22,8 @@
                 display: block;
                 margin-bottom: 10px;
                 border: 1px solid #ddd;
+                border-radius: 5px;
+                overflow: hidden;
             }
 
             td {
@@ -31,86 +33,26 @@
                 padding: 10px;
                 position: relative;
                 border-bottom: 1px solid #ddd;
-                min-width: 150px;
                 word-wrap: break-word;
-                word-break: break-all;
-
+                word-break: break-word;
             }
 
             td::before {
                 content: attr(data-label);
                 position: absolute;
-                left: 0;
-                width: 50%;
-                padding-left: 10px;
-                white-space: nowrap;
+                top: 10px;
+                left: 10px;
                 font-weight: bold;
-                text-align: left;
+                white-space: nowrap;
+            }
+
+            td:last-child {
+                border-bottom: none;
             }
 
             table th:nth-child(1),
             table td:nth-child(1) {
                 display: none;
-            }
-
-            input[type="checkbox"] {
-                display: none;
-            }
-
-            label[for="filter_absent"] {
-                display: inline-block;
-                padding: 10px 15px;
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-            }
-
-            label[for="filter_absent"]:hover {
-                background-color: #0056b3;
-            }
-
-            input[type="checkbox"]:checked+label[for="filter_absent"] {
-                background-color: #28a745;
-            }
-        }
-
-        @media (max-width: 400px) {
-            td {
-                font-size: 12px;
-                padding: 5px;
-                overflow-wrap: break-word;
-                white-space: normal;
-                word-wrap: break-word;
-            }
-
-            td::before {
-                font-size: 10px;
-                padding-left: 5px;
-            }
-
-            input[type="checkbox"] {
-                display: none;
-            }
-
-            label[for="filter_absent"] {
-                display: inline-block;
-                padding: 8px 12px;
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-                font-size: 12px;
-            }
-
-            label[for="filter_absent"]:hover {
-                background-color: #0056b3;
-            }
-
-            input[type="checkbox"]:checked+label[for="filter_absent"] {
-                background-color: #28a745;
             }
         }
 
@@ -125,14 +67,32 @@
 
             table {
                 font-size: 12px;
+                width: 100%;
+                border-collapse: collapse;
             }
 
             th,
             td {
                 padding: 8px;
+                border: 1px solid #ddd;
+                text-align: center;
+            }
+
+            th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #f1f1f1;
             }
         }
     </style>
+
 
     <div class="row">
         <div class="col-12">
@@ -171,7 +131,7 @@
                         @if ($records->isEmpty())
                             <p class="text-center">Hiện tại chưa có thông tin nào.</p>
                         @else
-                            <div class="form-check form-switch">
+                            <div class="form-check form-switch ps-5">
                                 <input class="form-check-input" type="checkbox" role="switch" id="filter_absent">
                                 <label class="form-check-label" for="filter_absent">Hiển thị những ngày quên chấm
                                     công</label>

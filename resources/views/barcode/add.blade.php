@@ -146,12 +146,11 @@
                                                                 <td colspan="4" class="align-content-center">
                                                                     <div class="qrcode-img">
                                                                         VINH VINH PHAT ONE MEMBER CO., LTD<br>
-                                                                        Add: 851 Highway 1A, Binh Hung Hoa A Ward, Binh Tan
-                                                                        District, HCM City<br>
+                                                                        Add: 359 Ap Chien Luoc Street, Khu Pho 2, Binh Hung
+                                                                        Hoa A Ward, Binh Tan District, Ho Chi Minh City<br>
                                                                         Fac: 2861, National Highway 1, Hamlet 3, Binh Chanh
                                                                         Commune, Binh Chanh District, HCM City<br>
-                                                                        Tel: 84-0272.3630.655 or 84-0272.3630.656 Fax:
-                                                                        84-0272.3630.657<br>
+                                                                        Tel: 0283.620.4978 Fax: 0283.620.4978<br>
                                                                         Made in Viet Nam
                                                                     </div>
                                                                 </td>
@@ -177,7 +176,7 @@
                                                                     CODE
                                                                 </td>
                                                                 <td colspan="2" class="text-center">
-                                                                    <p class="fw-bold mb-0">{{ $product->code }}</p>
+                                                                    <p class="fw-bold mb-0 fs-13">{{ $product->code }}</p>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -205,7 +204,7 @@
                                                                 </td>
                                                                 <td colspan="5"
                                                                     class="text-center align-content-center">
-                                                                    <p class="fw-bold mb-0">
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         {{ $product->quanEntityBin }}PCS</p>
                                                                 </td>
                                                             </tr>
