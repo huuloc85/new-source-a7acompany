@@ -38,7 +38,7 @@ class ProductController extends Controller
         $listMonthExport = TotalMonthQuantity::where('status', 3)->distinct()->pluck('month');
         $orderBy = $request->orderBy;
         $filter = 'desc';
-        if (count($listMonth) != 0) {
+        if (count($listMonth) == 0) {
             $monthNearly = $listMonth[count($listMonth) - 1];
         }
         $products = Product::query();

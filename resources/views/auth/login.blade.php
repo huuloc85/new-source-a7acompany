@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('assets/img/vvp.jpg') }}">
     <title>
-        Đăng Nhập Vinh Vinh Phát
+        Vinh Vinh Phát
     </title>
     <!--     Fonts and icons     -->
     <link rel="stylesheet" type="text/css"
@@ -20,436 +20,146 @@
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/hope-ui.css?v=1.1.0') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
     {{-- <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script> --}}
+    {{-- <script type="text/javascript" src="{{ asset('assets/js/fireworks.js') }}"></script> --}}
+
     <style>
-        .form-check {
-            padding-left: 0px !important;
+        :root {
+            --d: 0.5s;
         }
 
-        .snowflake {
-            color: #fff;
-            font-size: 4em;
-            font-family: Arial;
-            text-shadow: 0 0 5px #000;
-        }
-
-        @-webkit-keyframes snowflakes-fall {
-            0% {
-                top: -10%
-            }
-
-            100% {
-                top: 100%
-            }
-        }
-
-        @-webkit-keyframes snowflakes-shake {
-            0% {
-                -webkit-transform: translateX(0px);
-                transform: translateX(0px)
-            }
-
-            50% {
-                -webkit-transform: translateX(80px);
-                transform: translateX(80px)
-            }
-
-            100% {
-                -webkit-transform: translateX(0px);
-                transform: translateX(0px)
-            }
-        }
-
-        @keyframes snowflakes-fall {
-            0% {
-                top: -10%
-            }
-
-            100% {
-                top: 100%
-            }
-        }
-
-        @keyframes snowflakes-shake {
-            0% {
-                transform: translateX(0px)
-            }
-
-            50% {
-                transform: translateX(80px)
-            }
-
-            100% {
-                transform: translateX(0px)
-            }
-        }
-
-        .snowflake {
+        canvas {
             position: fixed;
-            top: -10%;
-            z-index: 9999;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            cursor: default;
-            -webkit-animation-name: snowflakes-fall, snowflakes-shake;
-            -webkit-animation-duration: 3s, 3s;
-            -webkit-animation-timing-function: linear, ease-in-out;
-            -webkit-animation-iteration-count: infinite, infinite;
-            -webkit-animation-play-state: running, running;
-            animation-name: snowflakes-fall, snowflakes-shake;
-            animation-duration: 3s, 3s;
-            animation-timing-function: linear, ease-in-out;
-            animation-iteration-count: infinite, infinite;
-            animation-play-state: running, running
-        }
-
-        .snowflake:nth-of-type(0) {
-            left: 1%;
-            -webkit-animation-delay: 0s, 0s;
-            animation-delay: 0s, 0s
-        }
-
-        .snowflake:nth-of-type(1) {
-            left: 10%;
-            -webkit-animation-delay: 1s, 1s;
-            animation-delay: 1s, 1s
-        }
-
-        .snowflake:nth-of-type(2) {
-            left: 20%;
-            -webkit-animation-delay: 6s, .5s;
-            animation-delay: 6s, .5s
-        }
-
-        .snowflake:nth-of-type(3) {
-            left: 30%;
-            -webkit-animation-delay: 4s, 2s;
-            animation-delay: 4s, 2s
-        }
-
-        .snowflake:nth-of-type(4) {
-            left: 40%;
-            -webkit-animation-delay: 2s, 2s;
-            animation-delay: 2s, 2s
-        }
-
-        .snowflake:nth-of-type(5) {
-            left: 50%;
-            -webkit-animation-delay: 8s, 3s;
-            animation-delay: 8s, 3s
-        }
-
-        .snowflake:nth-of-type(6) {
-            left: 60%;
-            -webkit-animation-delay: 6s, 2s;
-            animation-delay: 6s, 2s
-        }
-
-        .snowflake:nth-of-type(7) {
-            left: 70%;
-            -webkit-animation-delay: 2.5s, 1s;
-            animation-delay: 2.5s, 1s
-        }
-
-        .snowflake:nth-of-type(8) {
-            left: 80%;
-            -webkit-animation-delay: 1s, 0s;
-            animation-delay: 1s, 0s
-        }
-
-        .snowflake:nth-of-type(9) {
-            left: 90%;
-            -webkit-animation-delay: 3s, 1.5s;
-            animation-delay: 3s, 1.5s
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-
-        snowman .body {
-            width: 200px;
-            height: 200px;
-            background: #ecf0f1;
-            box-shadow: -13px -8px 0px rgba(0, 0, 0, 0.1) inset;
-            border-radius: 50%;
-            margin-top: -100px;
-            position: absolute;
-            right: 0;
+            top: 0;
             left: 0;
-            margin: 0 auto;
-            margin-top: 270px;
         }
 
-        snowman .body:before {
-            width: 100px;
-            height: 100px;
-            background: #ecf0f1;
-            box-shadow: -5px 0px 0px rgba(0, 0, 0, 0.1) inset;
-            border-radius: 50%;
-            display: inline-block;
-            content: "";
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .btn.btn-primary {
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border: 2px solid white !important;
+            padding: 12px 20px !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            border-radius: 5px !important;
+            width: 100% !important;
+            transition: all 0.3s !important;
+        }
+
+        .btn.btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3) !important;
+            color: black !important;
+        }
+
+        .btn.btn-primary:focus {
+            border-color: rgba(255, 255, 255, 1) !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* Ensures full height for the wrapper and main content */
+        .wrapper,
+        .bg-primary,
+        .bg-mobile-image {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Background styling for login section */
+        .login-content .row.m-0.align-items-center {
+            background-image: url('{{ asset('assets/img/auth/new-year-4.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
             position: relative;
-            top: -191px;
-            left: 46px;
-            z-index: 30;
+            justify-content: center;
+            /* Center content horizontally */
         }
 
-        snowman .body:after {
-            width: 160px;
-            height: 160px;
-            background: #ecf0f1;
-            box-shadow: -7px -5px 0px rgba(0, 0, 0, 0.1) inset;
-            border-radius: 50%;
-            display: inline-block;
-            content: "";
-            position: relative;
-            top: -203px;
-            left: 20px;
-        }
-
-        snowman .body .head {
-            width: 0px;
-            height: 0px;
-            border-style: solid;
-            border-width: 8px 41px 8px 0;
-            border-color: transparent #FA9A20 transparent transparent;
-            content: "";
-            position: relative;
-            top: -229px;
-            display: inline-block;
-            left: -50px;
-            -webkit-transform: rotate(10deg);
-            -moz-transform: rotate(10deg);
-            transform: rotate(10deg);
-            box-shadow: 0px 43px rgba(0, 0, 0, 0.2) inset;
-            z-index: 30;
-        }
-
-        snowman .body .head:before {
-            content: "";
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #2c3e50;
-            display: inline-block;
-            position: absolute;
-            top: -23px;
-            left: 20px;
-        }
-
-        snowman .body .head:after {
-            content: "";
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #2c3e50;
-            display: inline-block;
-            position: absolute;
-            top: -26px;
-            left: 40px;
-        }
-
-        .scarf {
-            border-bottom: 21px solid rgb(243, 77, 77);
-            border-left: 18px solid transparent;
-            border-right: 29px solid transparent;
-            height: 0;
-            width: 104px;
-            position: absolute;
-            top: -101px;
-            z-index: 30;
-            left: 50px;
-            border-radius: 0px 100% 5px 10px;
-        }
-
-        .scarf:after {
-            width: 74px;
-            height: 17px;
-            -webkit-transform: rotate(86deg);
-            -moz-transform: rotate(86deg);
-            transform: rotate(86deg);
-            background: rgb(243, 77, 77);
-            display: inline-block;
+        /* Overlay for the background */
+        .login-content .row.m-0.align-items-center::before {
             content: "";
             position: absolute;
-            top: 34px;
-            left: 15px;
-            border-radius: 50% 0% 50% 50%;
-            box-shadow: -4px 0px rgba(0, 0, 0, 0.1) inset;
-        }
-
-        snowman .body .shadow {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 50%;
-            width: 190px;
-            height: 30px;
-            position: absolute;
-            bottom: -29px;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            /* Dark overlay */
             z-index: 1;
-            left: 30px;
         }
 
-        .left-hand {
-            position: absolute;
-            top: -30px;
-            left: -7px;
-            -webkit-transform: rotate(15deg);
-            -moz-transform: rotate(15deg);
-            transform: rotate(15deg);
-            border-bottom: 6px solid rgba(151, 102, 13, 1);
-            border-left: 2px solid transparent;
-            border-right: 0 solid transparent;
-            height: 0;
-            width: 36px;
+        /* Ensure content appears above overlay */
+        .login-content .row.m-0.align-items-center * {
+            position: relative;
+            z-index: 2;
         }
 
-        .left-hand:before {
-            width: 81px;
-            left: -82px;
-            position: absolute;
-            content: "";
-            display: inline-block;
-            -webkit-transform: rotate(-12deg);
-            -moz-transform: rotate(-12deg);
-            transform: rotate(-12deg);
-            top: 8px;
-            border-bottom: 7px solid rgba(128, 84, 6, 1);
-            border-left: 3px solid transparent;
-            border-right: 3px solid transparent;
-            height: 0;
-            z-index: 30;
+        /* Form content and its layout */
+        .login-content .col-md-6 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            /* Full height */
         }
 
-        .left-hand:after {
-            width: 47px;
-            left: -88px;
-            position: absolute;
-            content: "";
-            display: inline-block;
-            -webkit-transform: rotate(17deg);
-            -moz-transform: rotate(17deg);
-            transform: rotate(17deg);
-            top: 3px;
-            border-bottom: 4px solid rgba(128, 84, 6, 1);
-            border-left: 3px solid transparent;
-            border-right: 3px solid transparent;
-            height: 0;
-            border-radius: 20px 50% 10% 20%;
+
+        /* Đảm bảo các input hòa trộn vào background */
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            /* Nền mờ cho input */
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            /* Viền input mờ */
+            color: white;
+            box-shadow: none;
+            /* Loại bỏ bóng mặc định của input */
         }
 
-        .right-hand {
-            position: absolute;
-            top: -30px;
-            right: -37px;
-            -webkit-transform: rotate(-12deg);
-            -moz-transform: rotate(-12deg);
-            transform: rotate(-12deg);
-            border-bottom: 6px solid rgba(151, 102, 13, 1);
-            border-right: 2px solid transparent;
-            border-left: 0 solid transparent;
-            height: 0;
-            width: 66px;
+        /* Center the title and other text elements */
+        h1.text-icons,
+        h2,
+        h6.text-icons {
+            text-align: center;
         }
 
-        .right-hand:before {
-            width: 80px;
-            right: -82px;
-            position: absolute;
-            content: "";
-            display: inline-block;
-            -webkit-transform: rotate(10deg);
-            -moz-transform: rotate(10deg);
-            transform: rotate(10deg);
-            top: 7px;
-            border-bottom: 6px solid rgba(128, 84, 6, 1);
-            border-right: 3px solid transparent;
-            border-left: 3px solid transparent;
-            height: 0;
-            z-index: 30;
+        /* Style for inputs and labels */
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
-        .right-hand:after {
-            width: 47px;
-            right: -47px;
-            position: absolute;
-            content: "";
-            display: inline-block;
-            -webkit-transform: rotate(-16deg);
-            -moz-transform: rotate(-16deg);
-            transform: rotate(-16deg);
-            top: -6px;
-            border-bottom: 4px solid rgba(128, 84, 6, 1);
-            border-right: 3px solid transparent;
-            border-lrgy: 3px solid transparent;
-            height: 0;
-            border-radius: 20px 50% 10% 20%;
+        .form-label {
+            font-size: 1.1rem;
+            font-weight: bold;
         }
 
-        snowman .hat {
-            top: -253px;
-            left: 76px;
-            -webkit-transform: rotate(10deg);
-            -moz-transform: rotate(10deg);
-            transform: rotate(10deg);
-            position: absolute;
-            border-radius: 0;
-            z-index: 20;
-            border-top: 56px solid rgb(37, 37, 37);
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            height: 0;
-            width: 60px;
-            border-bottom: 27px solid rgb(246, 62, 62);
+        /* Button styling */
+        .btn-primary {
+            padding: 0.75rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            width: 100%;
+            /* Make the button full width */
         }
 
-        snowman .buttons {
-            height: 8px;
-            width: 8px;
-            background: #2c3e50;
-            position: absolute;
-            border-radius: 50%;
-            left: 60px;
-            top: -23px;
-            z-index: 30;
+
+        /* Hide countdown and text icons */
+        .countdown,
+        .text-icons {
+            display: none;
         }
 
-        snowman .buttons:before {
-            height: 10px;
-            width: 10px;
-            background: #2c3e50;
-            position: absolute;
-            content: "";
-            display: inline-block;
-            border-radius: 50%;
-            top: -30px;
-            left: 5px;
-        }
-
-        snowman .buttons:after {
-            height: 6px;
-            width: 6px;
-            background: #2c3e50;
-            position: absolute;
-            content: "";
-            display: inline-block;
-            border-radius: 50%;
-            top: 30px;
-            left: 5px;
-        }
-
+        /* Mobile styles */
         @media (max-width: 767px) {
 
-            /* Nền và nội dung chính */
+            /* Login container styles */
             .login-content .row.m-0.align-items-center {
                 position: relative;
-                background-image: url('{{ asset('assets/img/auth/noel-4.jpg') }}');
+                background-image: url('{{ asset('assets/img/auth/new-year-4.jpg') }}');
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
@@ -459,240 +169,91 @@
             .login-content .row.m-0.align-items-center::before {
                 content: "";
                 position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.3);
-                /* Lớp phủ */
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                /* Màu đen với độ mờ 50% */
                 z-index: 1;
-                /* Đảm bảo lớp phủ nằm trên hình nền */
             }
+
 
             .login-content .row.m-0.align-items-center * {
                 position: relative;
                 z-index: 2;
-                /* Đảm bảo nội dung nằm trên lớp phủ */
             }
 
-            /* Label */
-            .login-content .form-group .form-label {
-                color: rgba(255, 255, 255, 0.9);
-                /* Màu chữ rõ ràng hơn */
-                font-weight: 500;
-                /* Giữ kiểu chữ thanh thoát */
+            /* Form elements */
+            .login-content {
+                .form-group {
+                    margin-bottom: 20px;
+
+                    .form-label {
+                        color: rgba(255, 255, 255, 0.9);
+                        font-weight: 500;
+                    }
+
+                    .form-control {
+                        background: rgba(255, 255, 255, 0.1);
+                        color: white;
+                        border: 1px solid rgba(255, 255, 255, 0.7);
+                        border-radius: 5px;
+                        padding: 10px;
+                        font-size: 16px;
+                        width: 100%;
+                        box-sizing: border-box;
+                        transition: border-color 0.3s, box-shadow 0.3s;
+
+                        &:focus,
+                        &:hover {
+                            border-color: rgba(255, 255, 255, 1);
+                            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+                            outline: none;
+                        }
+
+                        &::placeholder {
+                            color: white;
+                            opacity: 0.7;
+                        }
+                    }
+
+                    .position-relative .fa-eye {
+                        color: rgba(255, 255, 255, 0.8);
+                    }
+                }
+
+                .btn-primary {
+                    background: rgba(255, 255, 255, 0.2);
+                    color: white;
+                    border: 2px solid white;
+                    padding: 12px 20px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    border-radius: 5px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    text-transform: uppercase;
+                    transition: all 0.3s;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.3);
+                        color: black;
+                    }
+
+                    &:focus {
+                        border-color: rgba(255, 255, 255, 1);
+                        box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+                    }
+                }
             }
 
-            /* Input */
-            .login-content .form-group .form-control {
-                background: rgba(255, 255, 255, 0.1);
-                /* Nền mờ hòa hợp với nền chính */
+            /* Text animation styles */
+            .text-icons {
+                display: block;
+                justify-content: center;
                 color: white;
-                border: 1px solid rgba(255, 255, 255, 0.7);
-                /* Viền mờ nhẹ */
-                border-radius: 5px;
-                padding: 10px;
-                font-size: 16px;
-                transition: border-color 0.3s, box-shadow 0.3s;
-                width: 100%;
-                box-sizing: border-box;
-            }
-
-            /* Input khi focus */
-            .login-content .form-group .form-control:focus {
-                border-color: rgba(255, 255, 255, 1);
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-                outline: none;
-            }
-
-            /* Nút đăng nhập */
-            .login-content .col-md-6 .btn-primary {
-                background: rgba(255, 255, 255, 0.2);
-                /* Nền mờ cho nút */
-                color: white;
-                border: 2px solid white;
-                padding: 12px 20px;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 5px;
-                transition: all 0.3s;
-                width: 100%;
-                box-sizing: border-box;
-                text-transform: uppercase;
-                /* Viết hoa toàn bộ chữ */
-            }
-
-            /* Hiệu ứng hover cho nút */
-            .login-content .col-md-6 .btn-primary:hover {
-                background: rgba(255, 255, 255, 0.3);
-                /* Tăng độ sáng khi hover */
-                color: black;
-                /* Chữ đổi màu đen khi hover */
-            }
-
-            /* Biểu tượng mắt */
-            .login-content .form-group .position-relative .fa-eye {
-                color: rgba(255, 255, 255, 0.8);
-            }
-
-            /* Hiệu ứng hover và focus cho input */
-            .login-content .form-group .form-control:hover,
-            .login-content .col-md-6 .btn-primary:focus {
-                border-color: rgba(255, 255, 255, 1);
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            }
-
-            /* Thêm khoảng cách hợp lý giữa các phần tử */
-            .login-content .form-group {
-                margin-bottom: 20px;
-            }
-
-            .form-control::placeholder {
-                color: white;
-                /* Màu trắng cho placeholder */
-                opacity: 0.7;
-                /* Đảm bảo không bị mờ */
-            }
-        }
-
-
-        .countdown {
-            display: none;
-        }
-
-        .text-icons {
-            display: none;
-        }
-
-
-        @media (max-width: 768px) {
-            :root {
-                --d: 0.5s;
-                /* Định nghĩa giá trị cho biến */
-            }
-
-            @import url(https://fonts.bunny.net/css?family=aclonica:400|economica:400,700);
-
-            h1 {
-                font-size: clamp(1rem, 3.5vw - 0.5rem, 2.5rem);
-                /* Giảm kích thước chữ */
-                font-weight: 1000;
-                letter-spacing: 0.05em;
                 text-align: center;
             }
 
-            /* Link font chữ từ Google Fonts */
-            @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Playwrite+ES+Deco+Guides&display=swap');
-
-            .text-icons {
-                display: inline-block;
-                /* Đảm bảo chữ không bị tách ra thành dòng mới */
-                justify-content: center;
-                color: white;
-                font-family: "Playwrite ES Deco Guides", serif;
-                font-weight: 400;
-                font-style: normal;
-                /* Áp dụng font chữ viết tay */
-                font-size: 20px;
-                /* Kích thước chữ */
-                white-space: nowrap;
-                /* Đảm bảo chữ không bị xuống dòng */
-                overflow: hidden;
-                /* Ẩn phần chữ chưa được hiển thị */
-                animation: moveText 4s linear infinite;
-                /* Chạy chữ từ trái qua phải */
-            }
-
-            /* Hiệu ứng chuyển động chữ từ trái qua phải */
-            @keyframes moveText {
-                0% {
-                    transform: translateX(-100%);
-                    /* Bắt đầu từ bên trái ngoài màn hình */
-                }
-
-                100% {
-                    transform: translateX(100%);
-                    /* Di chuyển đến bên phải ngoài màn hình */
-                }
-            }
-
-            /* Hiệu ứng sóng cho chữ */
-            .text-icons span {
-                display: inline-block;
-                animation: wave 2s infinite ease-in-out;
-
-                /* Áp dụng hiệu ứng sóng cho chữ */
-            }
-
-            /* Hiệu ứng cong lên xuống */
-            @keyframes wave {
-                0% {
-                    transform: translateY(0) rotate(0deg);
-                    /* Vị trí ban đầu */
-                }
-
-                25% {
-                    transform: translateY(-10px) rotate(-10deg);
-                    /* Di chuyển lên và quay nhẹ */
-                }
-
-                50% {
-                    transform: translateY(0) rotate(0deg);
-                    /* Vị trí bình thường */
-                }
-
-                75% {
-                    transform: translateY(10px) rotate(10deg);
-                    /* Di chuyển xuống và quay nhẹ */
-                }
-
-                100% {
-                    transform: translateY(0) rotate(0deg);
-                    /* Quay lại vị trí ban đầu */
-                }
-            }
-
-            /* Thêm hiệu ứng cho từng chữ cái để tạo sóng */
-            .text-icons span:nth-child(1) {
-                animation-delay: 0s;
-            }
-
-            .text-icons span:nth-child(2) {
-                animation-delay: 0.1s;
-            }
-
-            .text-icons span:nth-child(3) {
-                animation-delay: 0.2s;
-            }
-
-            .text-icons span:nth-child(4) {
-                animation-delay: 0.3s;
-            }
-
-            /* Tiếp tục cho các chữ cái sau nếu cần */
-
-            /* Cải tiến hiệu ứng cho các SVG */
-            .text-icons svg {
-                animation: bounce 4s infinite ease-in-out;
-                /* margin: 0 5px; */
-            }
-
-            /* Hiệu ứng bounce cho SVG */
-            @keyframes bounce {
-                0% {
-                    transform: translateY(0);
-                }
-
-                50% {
-                    transform: translateY(-5px);
-                }
-
-                100% {
-                    transform: translateY(0);
-                }
-            }
-
-
+            /* Countdown container styles */
             .countdown {
                 width: 100%;
                 display: flex;
@@ -700,66 +261,88 @@
                 align-items: center;
                 gap: 0.75rem;
                 margin-inline: auto;
+
+                >div {
+                    background: transparent;
+                    color: white;
+                    padding: 0.75rem 0.75rem 2.5rem;
+                    border-radius: 0.5rem;
+                    position: relative;
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    overflow: hidden;
+                    transition: all 0.2s;
+                    flex: 1;
+                    text-align: center;
+
+                    >span {
+                        display: grid;
+                        place-content: center;
+                        font-weight: bold;
+                    }
+
+                    &::after {
+                        content: attr(data-desc);
+                        font-size: 0.8rem;
+                        position: absolute;
+                        text-transform: capitalize;
+                        bottom: 1rem;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        transition: 300ms ease-in-out var(--d);
+                    }
+                }
             }
 
-            .countdown>div {
-                background: transparent;
-                color: white;
-                padding: 0.75rem 0.75rem 2.5rem;
-                border-radius: 0.5rem;
-                position: relative;
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                overflow: hidden;
-                transition: all 0.2s;
-                flex: 1;
+            h1 {
+                font-size: clamp(1rem, 3.5vw - 0.5rem, 2.5rem);
+                font-weight: 1000;
+                letter-spacing: 0.05em;
                 text-align: center;
             }
+        }
 
-            .countdown>div>span {
-                display: grid;
-                place-content: center;
-                font-weight: bold;
+        /* Animation keyframes */
+        @keyframes moveText {
+            0% {
+                transform: translateX(-100%);
             }
 
-            .countdown>div::after {
-                content: attr(data-desc);
-                font-size: 0.8rem;
-                position: absolute;
-                text-transform: capitalize;
-                bottom: 1rem;
-                left: 50%;
-                transform: translateX(-50%);
-                transition: 300ms ease-in-out var(--d);
-
+            100% {
+                transform: translateX(100%);
             }
         }
 
-        body,
-        html {
-            overflow: hidden;
-            height: 100%;
+        @keyframes wave {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-10px) rotate(-10deg);
+            }
+
+            50% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            75% {
+                transform: translateY(10px) rotate(10deg);
+            }
         }
 
-        /* Đảm bảo phần background ở bên phải không bị cuộn */
-        .wrapper {
-            height: 100vh;
-            overflow: hidden;
-        }
+        @keyframes bounce {
 
-        /* Nếu bạn có một class nào đó liên quan đến phần background, ví dụ, .bg-primary */
-        .bg-primary {
-            height: 100vh;
-            /* Chiều cao của phần bên phải */
-            overflow: hidden;
-            /* Ẩn cuộn */
-            position: relative;
-        }
+            0%,
+            100% {
+                transform: translateY(0);
+            }
 
-        /* Đảm bảo phần mobile background image không cuộn */
-        .bg-mobile-image {
-            height: 100vh;
-            overflow: hidden;
+            50% {
+                transform: translateY(-5px);
+            }
         }
     </style>
 
@@ -767,41 +350,318 @@
 
 <body>
     <audio id="background-music" autoplay="autoplay" loop>
-        <source src="{{ asset('assets/music/noel.mp3') }}" type="audio/mp3">
+        <source src="{{ asset('assets/music/new-year.mp3') }}" type="audio/mp3">
     </audio>
 
-    <div class="snowflakes" aria-hidden="true">
-        <div class="snowflake">
-            ❅
-        </div>
-        <div class="snowflake">
-            ❅
-        </div>
-        <div class="snowflake">
-            ❆
-        </div>
-        <div class="snowflake">
-            ❄
-        </div>
-        <div class="snowflake">
-            ❅
-        </div>
-        <div class="snowflake">
-            ❆
-        </div>
-        <div class="snowflake">
-            ❄
-        </div>
-        <div class="snowflake">
-            ❅
-        </div>
-        <div class="snowflake">
-            ❆
-        </div>
-        <div class="snowflake">
-            ❄
-        </div>
-    </div>
+    <script>
+        var SCREEN_WIDTH = window.innerWidth,
+            SCREEN_HEIGHT = window.innerHeight,
+            mousePos = {
+                x: 400,
+                y: 300
+            },
+            canvas = document.createElement('canvas'),
+            context = canvas.getContext('2d'),
+            particles = [],
+            rockets = [],
+            MAX_PARTICLES = 1000,
+            colorCode = 0;
+
+        // init
+        $(document).ready(function() {
+            document.body.appendChild(canvas);
+            canvas.width = SCREEN_WIDTH;
+            canvas.height = SCREEN_HEIGHT;
+
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.zIndex = '1';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.background = 'transparent';
+
+            setInterval(launch, 400);
+            setInterval(loop, 1000 / 60);
+        });
+        // //bắn khi type
+        // $(document).keydown(function(e) {
+        //     // Bắn một rocket tại vị trí ngẫu nhiên khi nhấn phím
+        //     launchFrom(Math.random() * SCREEN_WIDTH);
+        // });
+        // update mouse position
+        $(document).mousemove(function(e) {
+            e.preventDefault();
+            mousePos = {
+                x: e.clientX,
+                y: e.clientY
+            };
+        });
+
+        // launch more rockets!!!
+        $(document).mousedown(function(e) {
+            for (var i = 0; i < 8; i++) {
+                launchFrom(Math.random() * SCREEN_WIDTH * 2 / 3 + SCREEN_WIDTH / 6);
+            }
+        });
+
+        function launch() {
+            launchFrom(mousePos.x);
+            if (Math.random() < 10) {
+                launchFrom(Math.random() * SCREEN_WIDTH);
+            }
+        }
+
+        function launchFrom(x) {
+            if (rockets.length < 20) {
+                var rocket = new Rocket(x);
+                rocket.explosionColor = Math.floor(Math.random() * 360 / 10) * 20;
+                rocket.vel.y = Math.random() * -8 - 10;
+                rocket.vel.x = Math.random() * 10 - 5;
+                rocket.size = 12;
+                rocket.shrink = 0.998;
+                rocket.gravity = 0.02;
+                rockets.push(rocket);
+            }
+        }
+
+        function loop() {
+            if (SCREEN_WIDTH != window.innerWidth) {
+                canvas.width = SCREEN_WIDTH = window.innerWidth;
+            }
+            if (SCREEN_HEIGHT != window.innerHeight) {
+                canvas.height = SCREEN_HEIGHT = window.innerHeight;
+            }
+
+            context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+            var existingRockets = [];
+
+            for (var i = 0; i < rockets.length; i++) {
+                rockets[i].update();
+                rockets[i].render(context);
+
+                var distance = Math.sqrt(Math.pow(mousePos.x - rockets[i].pos.x, 2) + Math.pow(mousePos.y - rockets[i].pos
+                    .y, 2));
+                var randomChance = rockets[i].pos.y < (SCREEN_HEIGHT * 2 / 3) ? (Math.random() * 100 <= 1) : false;
+
+                if (rockets[i].pos.y < SCREEN_HEIGHT / 5 || rockets[i].vel.y >= 0 || distance < 50 || randomChance) {
+                    rockets[i].explode();
+                } else {
+                    existingRockets.push(rockets[i]);
+                }
+            }
+
+            rockets = existingRockets;
+
+            var existingParticles = [];
+
+            for (var i = 0; i < particles.length; i++) {
+                particles[i].update();
+
+                if (particles[i].exists()) {
+                    particles[i].render(context);
+                    existingParticles.push(particles[i]);
+                }
+            }
+
+            particles = existingParticles;
+
+            while (particles.length > MAX_PARTICLES) {
+                particles.shift();
+            }
+        }
+
+        function Particle(pos) {
+            this.pos = {
+                x: pos ? pos.x : 0,
+                y: pos ? pos.y : 0
+            };
+            this.vel = {
+                x: 0,
+                y: 0
+            };
+            this.shrink = .97;
+            this.size = 2;
+
+            this.resistance = 1;
+            this.gravity = 0;
+
+            this.flick = false;
+
+            this.alpha = 1;
+            this.fade = 0;
+            this.color = 0;
+        }
+
+        Particle.prototype.update = function() {
+            this.vel.x *= this.resistance;
+            this.vel.y *= this.resistance;
+
+            this.vel.y += this.gravity;
+
+            this.pos.x += this.vel.x;
+            this.pos.y += this.vel.y;
+
+            this.size *= this.shrink;
+
+            this.alpha -= this.fade;
+        };
+
+        Particle.prototype.render = function(c) {
+            if (!this.exists()) {
+                return;
+            }
+
+            c.save();
+            c.globalCompositeOperation = 'lighter';
+
+            var x = this.pos.x,
+                y = this.pos.y,
+                r = this.size / 2;
+
+            var gradient = c.createRadialGradient(x, y, 0.1, x, y, r * 2);
+            gradient.addColorStop(0, "rgba(255,255,255," + this.alpha + ")");
+            gradient.addColorStop(0.4, "hsla(" + this.color + ", 100%, 50%, " + this.alpha + ")");
+            gradient.addColorStop(1, "hsla(" + this.color + ", 100%, 50%, 0)");
+
+            c.fillStyle = gradient;
+
+            c.beginPath();
+            c.arc(this.pos.x, this.pos.y, this.flick ? Math.random() * this.size * 1.2 : this.size, 0, Math.PI * 2,
+                true);
+            c.closePath();
+            c.fill();
+
+            c.restore();
+        };
+
+        Particle.prototype.exists = function() {
+            return this.alpha >= 0.1 && this.size >= 1;
+        };
+
+        function Rocket(x) {
+            Particle.apply(this, [{
+                x: x,
+                y: SCREEN_HEIGHT
+            }]);
+
+            this.explosionColor = 0;
+        }
+
+        Rocket.prototype = new Particle();
+        Rocket.prototype.constructor = Rocket;
+
+        Rocket.prototype.explode = function() {
+            // Tạo cánh hoa chính
+            var petalCount = 8; // Số cánh hoa
+            var particlesPerPetal = 30; // Số particles trên mỗi cánh
+            var centerParticles = 50; // Số particles ở tâm
+
+            // Tạo tâm hoa
+            for (var i = 0; i < centerParticles; i++) {
+                var particle = new Particle(this.pos);
+                var angle = Math.random() * Math.PI * 2;
+                var speed = Math.random() * 2 + 1;
+
+                particle.vel.x = Math.cos(angle) * speed;
+                particle.vel.y = Math.sin(angle) * speed;
+                particle.size = 8;
+                particle.gravity = 0.1;
+                particle.resistance = 0.98;
+                particle.shrink = 0.96;
+                particle.fade = 0.02;
+                particle.color = this.explosionColor;
+                particles.push(particle);
+            }
+
+            // Tạo các cánh hoa
+            for (var i = 0; i < petalCount; i++) {
+                var petalAngle = (i / petalCount) * Math.PI * 2;
+
+                // Tạo particles cho mỗi cánh
+                for (var j = 0; j < particlesPerPetal; j++) {
+                    var particle = new Particle(this.pos);
+
+                    var spread = (Math.random() - 0.5) * 0.6;
+                    var angle = petalAngle + spread;
+
+                    var speed = Math.cos(j / particlesPerPetal * Math.PI) * 15;
+
+                    particle.vel.x = Math.cos(angle) * speed;
+                    particle.vel.y = Math.sin(angle) * speed;
+
+                    particle.size = 10 - (j / particlesPerPetal) * 5;
+
+                    particle.gravity = 0.05;
+                    particle.resistance = 0.95;
+                    particle.shrink = 0.97;
+                    particle.fade = 0.015;
+                    particle.color = this.explosionColor;
+
+                    particles.push(particle);
+                }
+            }
+
+            // Tạo hiệu ứng lá
+            var leafCount = 12;
+            for (var i = 0; i < leafCount; i++) {
+                var particle = new Particle(this.pos);
+                var angle = (i / leafCount) * Math.PI * 2;
+                var speed = Math.random() * 5 + 10;
+
+                particle.vel.x = Math.cos(angle) * speed;
+                particle.vel.y = Math.sin(angle) * speed;
+                particle.size = 6;
+                particle.gravity = 0.2;
+                particle.resistance = 0.95;
+                particle.shrink = 0.98;
+                particle.color = (this.explosionColor + 120) % 360;
+
+                particles.push(particle);
+            }
+        };
+
+        Rocket.prototype.render = function(c) {
+            if (!this.exists()) {
+                return;
+            }
+
+            c.save();
+
+            c.globalCompositeOperation = 'lighter';
+
+            var x = this.pos.x,
+                y = this.pos.y,
+                r = this.size / 2;
+
+            // Tạo đuôi pháo sáng
+            var gradient = c.createLinearGradient(x, y, x, y + 10);
+            gradient.addColorStop(0, "rgba(255, 220, 110, " + this.alpha + ")");
+            gradient.addColorStop(0.5, "rgba(255, 140, 0, " + this.alpha * 0.7 + ")");
+            gradient.addColorStop(1, "rgba(255, 50, 0, 0)");
+
+            c.fillStyle = gradient;
+
+            c.beginPath();
+            c.moveTo(x - r, y);
+            c.quadraticCurveTo(x, y + 10, x + r, y);
+            c.closePath();
+            c.fill();
+
+            // Thêm điểm sáng ở đầu
+            var headGradient = c.createRadialGradient(x, y, 0, x, y, r);
+            headGradient.addColorStop(0, "rgba(255, 255, 255, " + this.alpha + ")");
+            headGradient.addColorStop(0.3, "rgba(255, 220, 110, " + this.alpha * 0.8 + ")");
+            headGradient.addColorStop(1, "rgba(255, 140, 0, 0)");
+
+            c.fillStyle = headGradient;
+            c.beginPath();
+            c.arc(x, y, r * 1.5, 0, Math.PI * 2, true);
+            c.fill();
+
+            c.restore();
+        };
+    </script>
     @include('sweetalert::alert')
 
     <div class="wrapper">
@@ -812,7 +672,7 @@
                         <div class="col-md-10">
                             <div class="my-5">
                                 <div class="card-body">
-                                    <h1 class="text-white ">SỐ NGÀY ĐẾN GIÁNG SINH</h1>
+                                    <h1 class="text-white text-icons">SỐ NGÀY ĐẾN TẾT NGUYÊN ĐÁN</h1>
                                     <div class="countdown">
                                         <div id="months" data-desc="Tháng" class="animate-in " style="--d:1800ms">
                                             <span>2</span>
@@ -836,69 +696,38 @@
                                         </div>
                                     </div>
                                     <h2 class="mb-2 text-center text-white">Đăng Nhập</h2>
-                                    <h6 class="text-icons">
-                                        Chúc Mừng Giáng Sinh
-                                        <span class="mx-2">
-                                            <!-- SVG Cây Thông 1 -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="30"
-                                                height="60">
-                                                <!-- Tầng dưới -->
-                                                <polygon points="50,10 90,50 10,50" fill="#008000" />
-                                                <!-- Tầng giữa -->
-                                                <polygon points="50,25 80,60 20,60" fill="#007000" />
-                                                <!-- Tầng trên -->
-                                                <polygon points="50,40 70,70 30,70" fill="#006000" />
-                                                <!-- Thân cây -->
-                                                <rect x="45" y="70" width="10" height="20" fill="#8B4513" />
-                                                <!-- Trang trí -->
-                                                <circle cx="40" cy="40" r="2" fill="red" />
-                                                <circle cx="60" cy="30" r="2" fill="yellow" />
-                                                <circle cx="30" cy="50" r="2" fill="blue" />
-                                                <circle cx="70" cy="55" r="2" fill="pink" />
-                                                <circle cx="50" cy="60" r="2" fill="white" />
-                                            </svg>
-
-                                            <!-- SVG Mũ -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"
-                                                width="25" height="60">
-                                                <!-- Mũ -->
-                                                <path d="M20,30 Q60,-10 100,30" fill="red" />
-                                                <circle cx="105" cy="35" r="8" fill="white" />
-                                                <!-- Mặt -->
-                                                <circle cx="60" cy="60" r="30" fill="#FFCC99" />
-                                                <!-- Mắt -->
-                                                <circle cx="50" cy="55" r="5" fill="black" />
-                                                <circle cx="70" cy="55" r="5" fill="black" />
-                                                <!-- Mũi -->
-                                                <circle cx="60" cy="65" r="4" fill="red" />
-                                                <!-- Miệng -->
-                                                <path d="M50,75 Q60,85 70,75" fill="none" stroke="black"
-                                                    stroke-width="2" />
-                                                <!-- Râu -->
-                                                <path d="M40,70 Q60,100 80,70" fill="white" />
-                                                <!-- Thân -->
-                                                <rect x="40" y="90" width="40" height="20" fill="red" />
-                                            </svg>
-
-                                            <!-- SVG Cây Thông 2 -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120"
-                                                width="30" height="60">
-                                                <!-- Tầng dưới -->
-                                                <polygon points="50,10 90,50 10,50" fill="#008000" />
-                                                <!-- Tầng giữa -->
-                                                <polygon points="50,25 80,60 20,60" fill="#007000" />
-                                                <!-- Tầng trên -->
-                                                <polygon points="50,40 70,70 30,70" fill="#006000" />
-                                                <!-- Thân cây -->
-                                                <rect x="45" y="70" width="10" height="20" fill="#8B4513" />
-                                                <!-- Trang trí -->
-                                                <circle cx="40" cy="40" r="2" fill="red" />
-                                                <circle cx="60" cy="30" r="2" fill="yellow" />
-                                                <circle cx="30" cy="50" r="2" fill="blue" />
-                                                <circle cx="70" cy="55" r="2" fill="pink" />
-                                                <circle cx="50" cy="60" r="2" fill="white" />
-                                            </svg>
+                                    <h6 class="text-icons" style="text-align: center; margin-top: 20px;">
+                                        <span class="new-year-text">
+                                            Happy New Year
                                         </span>
+                                        <style>
+                                            /* Font style for Happy New Year */
+                                            .new-year-text {
+                                                font-size: 60px;
+                                                font-weight: bold;
+                                                font-family: 'Pacifico', cursive;
+                                                background: linear-gradient(to right, #e0e0e0, #f0f0f0, #ffffff, #e0e0e0);
+                                                -webkit-background-clip: text;
+                                                color: transparent;
+                                                text-shadow: 0 0 4px #d4d4d4, 0 0 8px #e0e0e0;
+                                                animation: text-animation 3s infinite ease-in-out;
+                                            }
+
+                                            /* Text animation */
+                                            @keyframes text-animation {
+
+                                                0%,
+                                                100% {
+                                                    transform: scale(1);
+                                                    letter-spacing: 0px;
+                                                }
+
+                                                50% {
+                                                    transform: scale(1.1);
+                                                    letter-spacing: 2px;
+                                                }
+                                            }
+                                        </style>
                                     </h6>
                                     <form method="POST" action="{{ route('handleLogin') }}" data-toggle="validator">
                                         @csrf
@@ -942,120 +771,124 @@
                 </div>
 
                 <!-- Hidden for mobile -->
-                <div class="col-md-6 d-md-block d-none bg-primary p-0 mt-n1 vh-100 overflow-hidden">
-                    <img src="{{ asset('assets/img/auth/noel-4.jpg') }}"
+                {{-- <div class="col-md-6 d-md-block d-none bg-primary p-0 mt-n1 vh-100 overflow-hidden">
+                    <img src="{{ asset('assets/img/auth/new-year-4.jpg') }}"
                         class="img-fluid gradient-main animated-scaleX w-100 h-100 object-fit-cover" alt="images">
-                </div>
+                </div> --}}
 
                 <!-- Mobile background image -->
                 <div class="bg-mobile-image"></div>
             </div>
         </section>
-
-
-
     </div>
+
+
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        // Audio handling
+        document.addEventListener("DOMContentLoaded", () => {
             const audio = document.getElementById("background-music");
-            const isMusicPlaying = localStorage.getItem("musicPlaying");
+
             document.body.addEventListener("click", () => {
                 audio.muted = false;
                 audio.play();
                 localStorage.setItem("musicPlaying", "true");
             });
         });
-        //
-        console.clear();
-        const today = new Date();
-        const currentYear = today.getFullYear();
 
-        // Check if Christmas has passed for the current year
-        const christmasThisYear = new Date(`${currentYear}-12-25T00:00:00`);
-        const EXP_DATE = today <= christmasThisYear ? christmasThisYear : new Date(`${currentYear + 1}-12-25T00:00:00`);
-        const SPEED = 150;
+        // Constants and utilities
+        const padTo2 = num => num.toString().padStart(2, "0");
 
-        /***************** COUNTDOWN ********************/
-        const panelCountdown = document.querySelector("#panel-countdown");
+        const getCurrentYear = () => new Date().getFullYear();
+        const getExpirationDate = () => {
+            const today = new Date();
+            const year = getCurrentYear();
+            const christmas = new Date(`${year}-01-29T00:00:00`);
+            return today <= christmas ? christmas : new Date(`${year + 1}-01-29T00:00:00`);
+        };
 
-        // Select elements and spans dynamically
-        const countdownElements = ["months", "days", "hours", "minutes", "seconds"];
-        const elements = {};
-        const currentValues = {};
+        const EXPIRATION_DATE = getExpirationDate();
+        const ANIMATION_SPEED = 150;
+        const TIME_UNITS = ["months", "days", "hours", "minutes", "seconds"];
 
-        countdownElements.forEach((id) => {
-            elements[id] = document.querySelectorAll(`#${id} span`);
-            currentValues[id] = [];
-        });
+        // DOM elements cache
+        const elements = TIME_UNITS.reduce((acc, unit) => {
+            acc[unit] = document.querySelectorAll(`#${unit} span`);
+            return acc;
+        }, {});
 
-        function getCurrentDate() {
-            const currentDate = new Date();
-            const timeDifference = EXP_DATE - currentDate;
+        // State management
+        const currentValues = TIME_UNITS.reduce((acc, unit) => {
+            acc[unit] = [];
+            return acc;
+        }, {});
+
+        // Time calculations
+        const getTimeRemaining = () => {
+            const now = new Date();
+            const timeDiff = EXPIRATION_DATE - now;
 
             return {
-                months: Math.floor((timeDifference % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44)),
-                days: Math.floor((timeDifference % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24)),
-                hours: Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-                minutes: Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)),
-                seconds: Math.floor((timeDifference % (1000 * 60)) / 1000),
+                months: Math.floor((timeDiff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44)),
+                days: Math.floor((timeDiff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                minutes: Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)),
+                seconds: Math.floor((timeDiff % (1000 * 60)) / 1000)
             };
-        }
+        };
 
-        function updateCountdown() {
-            const currentDate = getCurrentDate();
+        // Animation
+        const animateNumber = (element, newValue, duration) => {
+            element.style.transition = `transform ${duration}ms ease`;
+            element.style.transform = 'scale(0)';
 
-            countdownElements.forEach((unit, index) => {
-                const paddedValue = padTo2(currentDate[unit]);
+            setTimeout(() => {
+                element.innerText = newValue;
+                element.style.transform = 'scale(1)';
+            }, duration);
+        };
 
-                paddedValue.split("").forEach((digit, i) => {
-                    // Only update when digit has changed
+        // Update logic
+        const updateCountdown = () => {
+            const timeRemaining = getTimeRemaining();
+
+            TIME_UNITS.forEach((unit, index) => {
+                const newValue = padTo2(timeRemaining[unit]);
+                const digits = newValue.split("");
+
+                digits.forEach((digit, i) => {
                     if (digit !== currentValues[unit][i]) {
-                        changeNum(elements[unit][i], digit, SPEED * (countdownElements.length - index));
+                        animateNumber(
+                            elements[unit][i],
+                            digit,
+                            ANIMATION_SPEED * (TIME_UNITS.length - index)
+                        );
                     }
                 });
 
-                currentValues[unit] = paddedValue.split("");
+                currentValues[unit] = digits;
             });
-        }
+        };
 
-        function initialLoad() {
-            const currentDate = getCurrentDate();
+        // Initialization
+        const initialize = () => {
+            const timeRemaining = getTimeRemaining();
 
-            countdownElements.forEach((unit) => {
-                const paddedValue = padTo2(currentDate[unit]);
-                currentValues[unit] = paddedValue.split("");
+            TIME_UNITS.forEach(unit => {
+                const value = padTo2(timeRemaining[unit]);
+                currentValues[unit] = value.split("");
 
-                elements[unit][0].innerText = currentValues[unit][0];
-                elements[unit][1].innerText = currentValues[unit][1];
+                elements[unit].forEach((el, i) => {
+                    el.innerText = currentValues[unit][i];
+                });
             });
-        }
 
-        // Initialize the countdown display
-        initialLoad();
+            setInterval(updateCountdown, 500);
+        };
 
-        // Interval to update the countdown every second
-        let EXP_DATEInterval;
-
-        function startCountdownInterval() {
-            clearInterval(EXP_DATEInterval);
-            EXP_DATEInterval = setInterval(updateCountdown, 1000);
-        }
-        startCountdownInterval();
-
-        // change the numbers smoothly
-        function changeNum(el, newVal, timing) {
-            el.style.transition = `transform ${timing}ms ease`; // Smooth transition for transform
-            el.style.transform = 'scale(0)';
-            setTimeout(() => {
-                el.innerText = newVal;
-                el.style.transform = 'scale(1)';
-            }, timing);
-        }
-
-        function padTo2(num) {
-            return num.toString().padStart(2, "0");
-        }
+        // Start the countdown
+        initialize();
     </script>
 </body>
 
