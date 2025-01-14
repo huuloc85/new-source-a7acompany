@@ -2,7 +2,7 @@
 return [
     // chấm công
     "ca1_start_time" => "06:00:00",
-    "ca1_end_time" => "20:30:00",
+    "ca1_end_time" => "23:30:00",
     "list_category" => [
         'working_hours' => 'Nhân viên hành chính (07:30 - 17:00)',
         'qc_day' => 'Nhân viên QC Ca Ngày (07:30 - 19:30)',
@@ -13,7 +13,7 @@ return [
     "list_category_ca1" => ['working_hours', 'qc_day'],
     "list_category_ca2" => ['rotating_shift_mk', 'rotating_shift_jp', 'technical'],
     "ca2_min_start_time" => "18:00:00",
-    "ca2_max_end_time" => "09:00:00",
+    "ca2_max_end_time" => "11:30:00",
     "ca1_work_start_time" => "07:30:00",
     "ca1_work_end_time_wh" => "17:00:00",
     "ca1_work_end_time_qd" => "19:30:00",
