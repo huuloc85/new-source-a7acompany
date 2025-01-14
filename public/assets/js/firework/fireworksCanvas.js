@@ -55,6 +55,19 @@ const COLOR = {
   Purple: "#e60aff",
   Gold: "#ffbf36",
   White: "#ffffff",
+  Yellow: "#fff200", // Vàng rực rỡ
+  Orange: "#ff7300", // Cam
+  Pink: "#ff69b4", // Hồng
+  Cyan: "#00ffff", // Xanh ngọc
+  Magenta: "#ff00ff", // Tím hồng
+  Lime: "#00ff00", // Xanh lá sáng
+  SkyBlue: "#87ceeb", // Xanh da trời
+  Lavender: "#e6e6fa", // Tím nhạt
+  Coral: "#ff7f50", // Cam san hô
+  Turquoise: "#40e0d0", // Xanh lam ngọc
+  Indigo: "#4b0082", // Chàm
+  Silver: "#c0c0c0", // Bạc
+  Maroon: "#800000", // Đỏ đậm
 };
 
 // Special invisible color (not rendered, and therefore not in COLOR map)
@@ -446,7 +459,7 @@ function seqRandomPositionFire() {
   const randomY = Math.random();
   shell.launch(randomX, randomY);
 
-  return 700; // delay time to next launch
+  return 250; // delay time to next launch
 }
 
 let isUpdatingSpeed = false;
