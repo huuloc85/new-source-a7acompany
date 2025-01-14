@@ -21,8 +21,19 @@
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css?v=1.1.0') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/hope-ui.css?v=1.1.0') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --d: 0.5s;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
         .form-control::placeholder {
             color: rgba(255, 255, 255, 1);
         }
@@ -82,7 +93,7 @@
         /* Ensure content appears above overlay */
         .login-content .row.m-0.align-items-center * {
             position: relative;
-            z-index: 2;
+            z-index: 50;
         }
 
         /* Form content and its layout */
@@ -164,7 +175,7 @@
 
             .login-content .row.m-0.align-items-center * {
                 position: relative;
-                z-index: 2;
+                z-index: 50;
             }
 
             /* Form elements */
@@ -330,6 +341,132 @@
                 transform: translateY(-5px);
             }
         }
+
+        /* Import font từ Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+        .new-year-text {
+            /* Kích thước font */
+            font-size: clamp(40px, 6vw, 80px);
+            font-weight: bold;
+            font-family: 'Pacifico', sans-serif;
+
+            padding: 15px 8px;
+            line-height: 1.4;
+            overflow: visible;
+            margin: 8px 0;
+
+            /* Gradient màu Tết - kết hợp đỏ và vàng */
+            background: linear-gradient(45deg,
+                    #FFD700 0%,
+                    /* Vàng */
+                    #FF4D4D 25%,
+                    /* Đỏ tươi */
+                    #FFD700 50%,
+                    /* Vàng */
+                    #FF4D4D 75%,
+                    /* Đỏ tươi */
+                    #FFD700 100%
+                    /* Vàng */
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+
+            /* Giảm độ sáng của text-shadow */
+            text-shadow:
+                0 0 3px rgba(255, 77, 77, 0.3),
+                0 0 6px rgba(255, 215, 0, 0.2);
+
+            /* Animations */
+            animation:
+                tetShine 4s linear infinite,
+                tetBounce 2s ease-in-out infinite,
+                tetGlow 2s ease-in-out infinite;
+
+            transform-origin: center;
+            transform-style: preserve-3d;
+            -webkit-font-smoothing: antialiased;
+
+            /* Giảm độ sáng tổng thể */
+            filter: brightness(1.05);
+        }
+
+        .new-year-container {
+            padding: 15px;
+            overflow: visible;
+            text-align: center;
+            min-height: 100px;
+        }
+
+        /* Hiệu ứng gradient di chuyển */
+        @keyframes tetShine {
+            0% {
+                background-position: 100% center;
+            }
+
+            100% {
+                background-position: -100% center;
+            }
+        }
+
+        /* Hiệu ứng nảy nhẹ nhàng */
+        @keyframes tetBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Giảm độ sáng trong animation glow */
+        @keyframes tetGlow {
+
+            0%,
+            100% {
+                text-shadow:
+                    0 0 3px rgba(255, 77, 77, 0.3),
+                    0 0 6px rgba(255, 215, 0, 0.2);
+                filter: brightness(1);
+            }
+
+            50% {
+                text-shadow:
+                    0 0 5px rgba(255, 77, 77, 0.4),
+                    0 0 8px rgba(255, 215, 0, 0.3),
+                    0 0 10px rgba(255, 77, 77, 0.2);
+                filter: brightness(1.1);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .new-year-text {
+                padding: 18px 10px;
+                line-height: 1.5;
+            }
+
+            .new-year-container {
+                padding: 18px;
+                min-height: 120px;
+            }
+
+            @keyframes tetBounce {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-3px);
+                }
+            }
+        }
     </style>
 
 </head>
@@ -373,38 +510,8 @@
                                         </div>
                                     </div>
                                     <h2 class="mb-2 text-center text-white">Đăng Nhập</h2>
-                                    <h6 class="text-icons" style="text-align: center; margin-top: 20px;">
-                                        <span class="new-year-text">
-                                            Happy New Year
-                                        </span>
-                                        <style>
-                                            /* Font style for Happy New Year */
-                                            .new-year-text {
-                                                font-size: 60px;
-                                                font-weight: bold;
-                                                font-family: 'Pacifico', cursive;
-                                                background: linear-gradient(to right, #e0e0e0, #f0f0f0, #ffffff, #e0e0e0);
-                                                -webkit-background-clip: text;
-                                                color: transparent;
-                                                text-shadow: 0 0 4px #d4d4d4, 0 0 8px #e0e0e0;
-                                                animation: text-animation 3s infinite ease-in-out;
-                                            }
-
-                                            /* Text animation */
-                                            @keyframes text-animation {
-
-                                                0%,
-                                                100% {
-                                                    transform: scale(1);
-                                                    letter-spacing: 0px;
-                                                }
-
-                                                50% {
-                                                    transform: scale(1.1);
-                                                    letter-spacing: 2px;
-                                                }
-                                            }
-                                        </style>
+                                    <h6 class="text-icons" style="text-align: center; margin-top: 10px;">
+                                        <div class="new-year-text">Happy New Year 2025!</div>
                                     </h6>
                                     <form method="POST" action="{{ route('handleLogin') }}" data-toggle="validator">
                                         @csrf
@@ -459,7 +566,12 @@
         </section>
     </div>
 
+    {{-- Fireworks --}}
+    <canvas id="fireworksCanvas"></canvas>
 
+    <script src="{{ asset('assets/js/firework/MyMath.js') }}"></script>
+    <script src="{{ asset('assets/js/firework/Stage.js') }}"></script>
+    <script src="{{ asset('assets/js/firework/fireworksCanvas.js') }}"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
