@@ -35,6 +35,7 @@
             position: fixed;
             top: 0;
             left: 0;
+            z-index: 2;
         }
 
         .form-control::placeholder {
@@ -96,7 +97,7 @@
         /* Ensure content appears above overlay */
         .login-content .row.m-0.align-items-center * {
             position: relative;
-            z-index: 2;
+            z-index: 50;
         }
 
         /* Form content and its layout */
@@ -178,7 +179,7 @@
 
             .login-content .row.m-0.align-items-center * {
                 position: relative;
-                z-index: 2;
+                z-index: 50;
             }
 
             /* Form elements */
@@ -352,7 +353,7 @@
     <audio id="background-music" autoplay="autoplay" loop>
         <source src="{{ asset('assets/music/new-year.mp3') }}" type="audio/mp3">
     </audio>
-    
+
     @include('sweetalert::alert')
 
     <div class="wrapper">
@@ -475,8 +476,8 @@
 
     {{-- Fireworks --}}
     <canvas id="fireworksCanvas"></canvas>
-    <script src="{{ asset('assets/js/fireworksCanvas.js')}}"></script>
-    
+    <script src="{{ asset('assets/js/fireworksCanvas.js') }}"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
         // Audio handling

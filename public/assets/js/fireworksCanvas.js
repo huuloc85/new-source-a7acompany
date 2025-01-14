@@ -18,55 +18,15 @@ const getRandomColor = () => {
   return { hue, color: `hsl(${hue}, ${saturation}%, ${lightness}%)` };
 };
 
-class Star {
-  constructor() {
-    this.reset();
-  }
-
-  reset() {
-    this.x = random(0, canvas.width);
-    this.y = random(0, canvas.height);
-    this.size = random(0.5, 1.5);
-    this.baseAlpha = random(0.3, 0.8);
-    this.alpha = this.baseAlpha;
-    this.twinkleSpeed = random(0.005, 0.02);
-    this.twinkleDirection = Math.random() < 0.5 ? 1 : -1;
-  }
-
-  update() {
-    this.alpha += this.twinkleSpeed * this.twinkleDirection;
-    if (this.alpha >= 1) {
-      this.alpha = 1;
-      this.twinkleDirection = -1;
-    } else if (this.alpha <= this.baseAlpha) {
-      this.alpha = this.baseAlpha;
-      this.twinkleDirection = 1;
-    }
-  }
-
-  draw() {
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = "white";
-    ctx.fill();
-    ctx.closePath();
-    ctx.restore();
-  }
-}
-
 class Firework {
-  constructor(isTextFirework = false, text = "") {
-    this.isTextFirework = isTextFirework;
-    this.text = text;
+  constructor() {
     this.reset();
   }
 
   reset() {
     this.x = random(100, canvas.width - 100);
     this.y = canvas.height;
-    this.speed = this.isTextFirework ? random(4, 6) : random(3, 7);
+    this.speed = random(7, 12);
     const angle = random((-5 * Math.PI) / 12, (-7 * Math.PI) / 12);
     this.vx = Math.cos(angle) * this.speed;
     this.vy = Math.sin(angle) * this.speed;
@@ -282,35 +242,19 @@ class Particle {
 
 let fireworks = [];
 
-const stars = [];
-
-const starCount = 100;
-for (let i = 0; i < starCount; i++) {
-  stars.push(new Star());
-}
-
-let lastTextExplosionTime = 0;
-const textExplosionInterval = 5000;
-
-const createFirework = (isTextFirework = false, text = "") => {
-  fireworks.push(new Firework(isTextFirework, text));
+const createFirework = () => {
+  fireworks.push(new Firework());
 };
 
 for (let i = 0; i < 5; i++) {
   setTimeout(() => createFirework(), i * 1000);
 }
 
-
 const animate = () => {
   requestAnimationFrame(animate);
 
-  stars.forEach((star) => {
-    star.update();
-    star.draw();
-  });
-
   ctx.globalCompositeOperation = "destination-out";
-  ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+  ctx.fillStyle = "rgba(0, 0, 0, 0.17)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.globalCompositeOperation = "lighter";
@@ -322,31 +266,6 @@ const animate = () => {
     createFirework();
   }
 
-  const currentTime = Date.now();
-  if (currentTime - lastTextExplosionTime > textExplosionInterval) {
-    const activeTextExplosions = fireworks.filter(
-      (firework) => firework.isTextFirework && !firework.exploded
-    );
-    if (activeTextExplosions.length === 0) {
-      const texts = ["Frohes Neues Jahr", "codepen"];
-      const selectedText = texts[Math.floor(Math.random() * texts.length)];
-      createFirework(true, selectedText);
-      lastTextExplosionTime = currentTime;
-    }
-  }
-
   fireworks = fireworks.filter((firework) => !firework.done);
 };
-
 animate();
-
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  const firework = new Firework();
-  firework.x = x;
-  firework.y = canvas.height;
-  firework.targetY = y;
-  fireworks.push(firework);
-});
