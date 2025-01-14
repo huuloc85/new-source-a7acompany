@@ -1,4 +1,4 @@
-@extends('master')
+@extends('layouts.layout')
 @section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/add-barcode.css') }}">
     <div class="row">

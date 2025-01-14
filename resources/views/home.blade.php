@@ -52,7 +52,7 @@
         white-space: normal;
     }
 </style>
-@extends('master')
+@extends('layouts.layout')
 @section('content')
 
     @if (session('birthday_check'))

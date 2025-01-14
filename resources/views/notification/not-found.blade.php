@@ -1,5 +1,5 @@
 
-@extends('master')
+@extends('layouts.layout')
 @section('content')
 <style>
     @media (max-width: 600px) {

@@ -427,21 +427,22 @@
             border-radius: 4px;
         }
     </style>
+    @yield('styles')
 </head>
 
-<body class="">
+<body>
     <div id="loading">
         <div class="loader simple-loader animate__animated animate__fadeOut d-none">
             <div class="loader-body"></div>
         </div>
     </div>
     <!-- ======= Sidebar ======= -->
-    @include('layout.sidebar')
+    @include('partials.sidebar')
     <main class="main-content">
         <!-- ======= Header ======= -->
-        <div class="position-relative no-print">
-            @include('layout.header')
-        </div>
+        <header class="position-relative no-print">
+            @include('partials.header')
+        </header>
         <!-- End Header -->
 
         <div class="container-fluid content-inner mt-n5 py-0">
@@ -449,7 +450,7 @@
             @yield('content')
         </div>
         <!-- ======= Footer ======= -->
-        @include('layout.footer')
+        @include('partials.footer')
         <!-- End Footer -->
     </main>
     <!--   Core JS Files   -->
@@ -458,6 +459,7 @@
     <script src="{{ asset('assets/js/hope-ui.js') }}"></script>
     <script src="{{ asset('assets/js/modelview.js') }}"></script>
     <script src="{{ asset('assets/js/charts/dashboard.js') }}"></script>
+    @yield('scripts')
 </body>
 
 </html>

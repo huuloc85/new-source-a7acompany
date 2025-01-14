@@ -1,4 +1,4 @@
-@extends('master')
+@extends('layouts.layout')
 @section('content')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <link rel="stylesheet" href="{{ asset('assets/css/scan-barcode.css') }}">

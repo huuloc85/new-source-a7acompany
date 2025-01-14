@@ -3,7 +3,7 @@
         <ul class="left-panel list-inline mb-0 p-0">
         </ul>
         <div class="align">
-            ©
+            &copy;
             <script>
                 document.write(new Date().getFullYear())
             </script> {{ env('APP_NAME') }}
