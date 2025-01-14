@@ -59,6 +59,10 @@
         @include('modal.birthday')
     @endif
 
+    @if (session('has_duties'))
+        @include('modal.on-duty')
+    @endif
+
     @if (Auth()->user()->role->role_name == 'admin' ||
             Auth()->user()->role->role_name == 'manager' ||
             Auth()->user()->role->role_name == 'accountant')
@@ -876,4 +880,13 @@
             $('#birthdayModal').modal('show');
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            // Kiểm tra nếu modal tồn tại, hiển thị nó
+            if ($('#cleaningDutyModal').length) {
+                $('#cleaningDutyModal').modal('show');
+            }
+        });
+    </script>
+
 @endsection
