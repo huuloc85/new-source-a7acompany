@@ -476,7 +476,10 @@
 
     {{-- Fireworks --}}
     <canvas id="fireworksCanvas"></canvas>
-    <script src="{{ asset('assets/js/fireworksCanvas.js') }}"></script>
+
+    <script src="{{ asset('assets/js/firework/MyMath.js') }}"></script>
+    <script src="{{ asset('assets/js/firework/Stage.js') }}"></script>
+    <script src="{{ asset('assets/js/firework/fireworksCanvas.js') }}"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
