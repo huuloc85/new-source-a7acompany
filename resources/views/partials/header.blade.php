@@ -176,14 +176,12 @@
     </div>
 
 </div>
-<script src="{{ asset('assets/js/libs.min.js') }}"></script>
-<script src="{{ asset('assets/js/hope-ui.js') }}"></script>
-<script src="{{ asset('assets/js/modelview.js') }}"></script>
 <script src="{{ asset('vendor/Leaflet/leaflet.js') }} "></script>
 <script>
     // JavaScript to handle navbar and dropdown toggling
     document.addEventListener('DOMContentLoaded', function() {
         var navbarToggler = document.getElementById('navbarToggler');
+        var navbarDropdown = document.getElementById('navbarDropdown');
         var navbarNav = document.getElementById('navbarNav');
         var dropdownMenu = navbarDropdown.nextElementSibling;
 
