@@ -32,7 +32,7 @@
                     <div>
                         <button type="button" class='btn btn-primary' data-bs-toggle="modal"
                             data-bs-target="#searchModal">Tìm kiếm</button>
-                        @include('product.search-advand', ['href' => 'admin.product.getTrash'])
+                        @include('product.search-advance', ['href' => 'admin.product.getTrash'])
                     </div>
                 </div>
             </div>
