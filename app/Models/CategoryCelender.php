@@ -11,27 +11,27 @@ class CategoryCelender extends Model
 
     //paginate
     public const paginate = 10;
+
     public const listCate = [
-        "qc_day" => 2,
-        "rotating_shift_jp" => 3,
-        "working_hours" => 4,
-        "technical" => 5,
-        "rotating_shift_mk" => 6,
+        'qc_day' => 2,
+        'rotating_shift_jp' => 3,
+        'working_hours' => 4,
+        'technical' => 5,
+        'rotating_shift_mk' => 6,
     ];
 
     public const listCateforEmployee = [
-        2 => "qc_day",
-        3 => "rotating_shift_jp",
-        4 => "working_hours",
-        5 => "technical",
-        6 => "rotating_shift_mk",
+        2 => 'qc_day',
+        3 => 'rotating_shift_jp',
+        4 => 'working_hours',
+        5 => 'technical',
+        6 => 'rotating_shift_mk',
     ];
 
-
-    protected $table = "categories_celender";
+    protected $table = 'categories_celender';
 
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     //relationship employees
@@ -44,8 +44,9 @@ class CategoryCelender extends Model
     public function scopeSearch($query)
     {
         if ($key = request()->key) {
-            $query = $query->where('name', 'like', '%' . $key . '%');
+            $query = $query->where('name', 'like', '%'.$key.'%');
         }
+
         return $query;
     }
 

@@ -3,7 +3,6 @@
 namespace App\DataTables;
 
 use App\Models\User;
-use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
@@ -12,7 +11,7 @@ class UsersDataTable extends DataTable
     /**
      * Build DataTable class.
      *
-     * @param mixed $query Results from query() method.
+     * @param  mixed  $query  Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query)
@@ -38,13 +37,15 @@ class UsersDataTable extends DataTable
                         $status = 'dark';
                         break;
                 }
-                return '<span class="text-capitalize badge bg-' . $status . '">' . $query->status . '</span>';
+
+                return '<span class="text-capitalize badge bg-'.$status.'">'.$query->status.'</span>';
             })
             ->editColumn('created_at', function ($query) {
                 return date('Y/m/d', strtotime($query->created_at));
             })
             ->filterColumn('full_name', function ($query, $keyword) {
                 $sql = "CONCAT(users.first_name,' ',users.last_name)  like ?";
+
                 return $query->whereRaw($sql, ["%{$keyword}%"]);
             })
             ->filterColumn('userProfile.company_name', function ($query, $keyword) {
@@ -64,12 +65,13 @@ class UsersDataTable extends DataTable
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\User $model
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query()
     {
         $model = User::query()->with('userProfile');
+
         return $this->applyScopes($model);
     }
 
@@ -81,17 +83,15 @@ class UsersDataTable extends DataTable
     public function html()
     {
         return $this->builder()
-                    ->setTableId('dataTable')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    ->dom('<"row align-items-center"<"col-md-2" l><"col-md-6" B><"col-md-4"f>><"table-responsive my-3" rt><"row align-items-center" <"col-md-6" i><"col-md-6" p>><"clear">')
-
-                    ->parameters([
-                        "processing" => true,
-                        "autoWidth" => false,
-                    ]);
+            ->setTableId('dataTable')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->dom('<"row align-items-center"<"col-md-2" l><"col-md-6" B><"col-md-4"f>><"table-responsive my-3" rt><"row align-items-center" <"col-md-6" i><"col-md-6" p>><"clear">')
+            ->parameters([
+                'processing' => true,
+                'autoWidth' => false,
+            ]);
     }
-
 
     /**
      * Get columns.

@@ -32,9 +32,12 @@
                                 <td>{{ $product->quantity_per_package }}</td>
                                 <td>{{ $product->quanEntityBin }}</td>
                                 <td>
-                                    <a href="{{ route('admin.product.editTest', $product->id) }}"
-                                        class="btn btn-warning btn-sm">Chỉnh
-                                        sửa</a>
+                                    <a
+                                        href="{{ route('admin.product.editTest', $product->id) }}"
+                                        class="btn btn-warning btn-sm"
+                                    >
+                                        Chỉnh sửa
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

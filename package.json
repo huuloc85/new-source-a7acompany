@@ -18,9 +18,10 @@
         "vite": "^4.0.0"
     },
     "lint-staged": {
-        "*.*": [
-            "php ./vendor/bin/pint",
-            "prettier --write"
+        "*": [
+            "php ./vendor/bin/pint .",
+            "prettier --write .",
+            "git add ."
         ]
     }
 }

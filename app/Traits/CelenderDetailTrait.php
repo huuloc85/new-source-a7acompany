@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
-use Illuminate\Http\Request;
 use App\Models\CelenderDetailHNHC;
+use Illuminate\Http\Request;
 
 trait CelenderDetailTrait
 {
@@ -19,14 +19,15 @@ trait CelenderDetailTrait
             })
             ->get()
             ->filter(function ($detail) use ($day) {
-                $columnName = "day" . $day;
+                $columnName = 'day'.$day;
                 $workValues = ['N', 'LN', 'TC', 'D'];
                 $columnValue = $detail->$columnName;
+
                 return in_array($columnValue, $workValues);
             });
 
         foreach ($employeesToday as $detail) {
-            $currentDayValue = $detail->{'day' . $day};
+            $currentDayValue = $detail->{'day'.$day};
             if (in_array($currentDayValue, ['N', 'LN'])) {
                 $detail->shift = 'Ca 1';
             } elseif (in_array($currentDayValue, ['TC', 'D'])) {

@@ -21,7 +21,6 @@
         }
 
         @media (max-width: 768px) {
-
             .mb-2,
             .btn {
                 width: 100%;
@@ -32,8 +31,7 @@
             }
 
             .form-control-search {
-
-                width: 100%
+                width: 100%;
             }
         }
 
@@ -77,7 +75,6 @@
         .employee-list {
             max-height: 500px;
             overflow-y: auto;
-
         }
 
         .employee-card {
@@ -177,169 +174,296 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
-                    <div class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between">
+                <div
+                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
+                >
+                    <div
+                        class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between"
+                    >
                         <h4>
                             Bảng Tính Công
                             @if (request('start_date') && request('end_date'))
-                                từ {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }} đến
+                                từ
+                                {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }}
+                                đến
                                 {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
                             @else
-                                Tháng {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                                Tháng
+                                {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
                             @endif
                         </h4>
                     </div>
                 </div>
-                <div class="d-flex flex-wrap align-items-center gap-3 my-2 px-2">
+                <div
+                    class="d-flex flex-wrap align-items-center gap-3 my-2 px-2"
+                >
                     <!-- Nút Lọc Thông Tin và Lịch Sử Chấm Công -->
                     <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm"
-                            data-bs-toggle="modal" data-bs-target="#filterModal">
-                            <i class="fas fa-filter me-1"></i> Lọc Thông Tin
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary btn-sm rounded-pill shadow-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#filterModal"
+                        >
+                            <i class="fas fa-filter me-1"></i>
+                            Lọc Thông Tin
                         </button>
-                        <a href="{{ route('admin.attendence.index') }}"
-                            class="btn btn-outline-success btn-sm rounded-pill shadow-sm">
-                            <i class="fas fa-history me-1"></i> Lịch Sử Chấm Công
+                        <a
+                            href="{{ route('admin.attendence.index') }}"
+                            class="btn btn-outline-success btn-sm rounded-pill shadow-sm"
+                        >
+                            <i class="fas fa-history me-1"></i>
+                            Lịch Sử Chấm Công
                         </a>
-                        <a href="#" id="attendance-search-button"
-                            class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm">
-                            <i class="fas fa-search me-1"></i> Tìm Chấm Công Thực Tế
+                        <a
+                            href="#"
+                            id="attendance-search-button"
+                            class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm"
+                        >
+                            <i class="fas fa-search me-1"></i>
+                            Tìm Chấm Công Thực Tế
                         </a>
 
                         <script>
-                            document.getElementById('attendance-search-button').addEventListener('click', function(e) {
-                                e.preventDefault(); // Ngăn không cho tự động chuyển hướng
-                                Swal.fire({
-                                    title: 'Bạn đã đổi qua mạng Vinh Vinh Phát chưa?',
-                                    text: "Vui lòng kiểm tra và xác nhận trước khi tiếp tục.",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'Đã đổi mạng',
-                                    cancelButtonText: 'Chưa đổi mạng'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.open('http://192.168.1.2/doc/index.html#/eventSearch?t=1731739764211', '_blank');
-                                    }
+                            document
+                                .getElementById('attendance-search-button')
+                                .addEventListener('click', function (e) {
+                                    e.preventDefault(); // Ngăn không cho tự động chuyển hướng
+                                    Swal.fire({
+                                        title: 'Bạn đã đổi qua mạng Vinh Vinh Phát chưa?',
+                                        text: 'Vui lòng kiểm tra và xác nhận trước khi tiếp tục.',
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#d33',
+                                        confirmButtonText: 'Đã đổi mạng',
+                                        cancelButtonText: 'Chưa đổi mạng',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.open(
+                                                'http://192.168.1.2/doc/index.html#/eventSearch?t=1731739764211',
+                                                '_blank',
+                                            );
+                                        }
+                                    });
                                 });
-                            });
                         </script>
                     </div>
 
                     <!-- Ô Tìm Kiếm -->
                     <div class="search-box position-relative flex-grow-1">
-                        <input type="text" id="search" class="form-control form-control-sm rounded-pill"
-                            placeholder="Tìm kiếm nhân viên hoặc ngày chấm công">
+                        <input
+                            type="text"
+                            id="search"
+                            class="form-control form-control-sm rounded-pill"
+                            placeholder="Tìm kiếm nhân viên hoặc ngày chấm công"
+                        />
                         <i class="fas fa-search search-icon"></i>
                     </div>
 
                     <!-- Form Export -->
-                    <form id="export-form" class="d-flex align-items-center gap-2">
+                    <form
+                        id="export-form"
+                        class="d-flex align-items-center gap-2"
+                    >
                         <div class="d-flex align-items-center gap-1">
-                            <label for="start_date" class="form-label mb-0 me-1">Từ:</label>
-                            <input type="date" id="start_date" name="start_date"
-                                class="form-control form-control-sm rounded-pill" required>
+                            <label
+                                for="start_date"
+                                class="form-label mb-0 me-1"
+                            >
+                                Từ:
+                            </label>
+                            <input
+                                type="date"
+                                id="start_date"
+                                name="start_date"
+                                class="form-control form-control-sm rounded-pill"
+                                required
+                            />
                         </div>
                         <div class="d-flex align-items-center gap-1">
-                            <label for="end_date" class="form-label mb-0 me-1">Đến:</label>
-                            <input type="date" id="end_date" name="end_date"
-                                class="form-control form-control-sm rounded-pill" required>
+                            <label for="end_date" class="form-label mb-0 me-1">
+                                Đến:
+                            </label>
+                            <input
+                                type="date"
+                                id="end_date"
+                                name="end_date"
+                                class="form-control form-control-sm rounded-pill"
+                                required
+                            />
                         </div>
-                        <button type="button" class="btn btn-outline-warning btn-sm rounded-pill" id="export-button">
-                            <i class="fas fa-file-export me-1"></i> Export
+                        <button
+                            type="button"
+                            class="btn btn-outline-warning btn-sm rounded-pill"
+                            id="export-button"
+                        >
+                            <i class="fas fa-file-export me-1"></i>
+                            Export
                         </button>
                     </form>
 
                     <!-- Danh Sách Nhân Viên Làm Việc Hằng Ngày -->
-                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill ms-2" data-bs-toggle="modal"
-                        data-bs-target="#todayEmployeesModal">
-                        <i class="fas fa-users me-1"></i> Danh Sách Nhân Viên Làm Việc Hằng Ngày
+                    <button
+                        type="button"
+                        class="btn btn-outline-info btn-sm rounded-pill ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#todayEmployeesModal"
+                    >
+                        <i class="fas fa-users me-1"></i>
+                        Danh Sách Nhân Viên Làm Việc Hằng Ngày
                     </button>
                 </div>
 
                 <div class="card-body">
                     <div class="table-responsive position-relative">
                         <!-- Loading Overlay -->
-                        <div id="loading-overlay"
-                            style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
+                        <div
+                            id="loading-overlay"
+                            style="
+                                display: none;
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background: rgba(0, 0, 0, 0.5);
+                                z-index: 9999;
+                                align-items: center;
+                                justify-content: center;
+                                flex-direction: column;
+                            "
+                        >
                             <div class="spinner"></div>
-                            <p style="color: white; margin-top: 10px;">Đang xuất dữ liệu...</p>
+                            <p style="color: white; margin-top: 10px">
+                                Đang xuất dữ liệu...
+                            </p>
                         </div>
                         <!-- Checkbox Lọc -->
                         <div class="form-check form-switch mx-2">
-                            <input class="form-check-input" type="checkbox" id="filter_absent" name="filter_absent">
-                            <label class="form-check-label" for="filter_absent">Chỉ hiển thị những người quên chấm
-                                công</label>
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="filter_absent"
+                                name="filter_absent"
+                            />
+                            <label class="form-check-label" for="filter_absent">
+                                Chỉ hiển thị những người quên chấm công
+                            </label>
                         </div>
                         @if ($records->isEmpty())
-                            <p class="text-center text-danger">Hiện tại chưa có thông tin nào.</p>
+                            <p class="text-center text-danger">
+                                Hiện tại chưa có thông tin nào.
+                            </p>
                         @else
-                            <table id="attendanceTable" class="table table-hover mb-4">
+                            <table
+                                id="attendanceTable"
+                                class="table table-hover mb-4"
+                            >
                                 <thead class="text-center">
                                     <tr>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            STT</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            STT
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Mã Nhân Viên</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Mã Nhân Viên
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Tên Nhân Viên</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Tên Nhân Viên
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Ngày Chấm</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Ngày Chấm
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Ngày Trong Tuần</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Ngày Trong Tuần
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Giờ Vào</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Giờ Vào
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Giờ Ra</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Giờ Ra
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Ca Làm Việc</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Ca Làm Việc
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Tổng Giờ Làm Việc(H)</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Tổng Giờ Làm Việc(H)
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Giờ Hành Chính(H)</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Giờ Hành Chính(H)
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Giờ Tăng Ca(H)</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Giờ Tăng Ca(H)
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($records as $record)
                                         <tr class="text-center">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $record->employee_code }}</td>
-                                            <td>{{ $record->employee ? $record->employee->name : 'Không xác định' }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}</td>
+                                            <td>
+                                                {{ $record->employee_code }}
+                                            </td>
+                                            <td>
+                                                {{ $record->employee ? $record->employee->name : 'Không xác định' }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}
+                                            </td>
                                             <td>{{ $record->day_of_week }}</td>
-                                            <td class="{{ $record->time_in ? '' : 'text-danger' }}">
+                                            <td
+                                                class="{{ $record->time_in ? '' : 'text-danger' }}"
+                                            >
                                                 {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                             </td>
-                                            <td class="{{ $record->time_out ? '' : 'text-danger' }}">
+                                            <td
+                                                class="{{ $record->time_out ? '' : 'text-danger' }}"
+                                            >
                                                 {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                             </td>
                                             <td>{{ $record->shift }}</td>
-                                            <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
+                                            <td
+                                                class="{{ $record->total_hours ? '' : 'text-danger' }}"
+                                            >
                                                 @if ($record->total_hours)
-                                                    <strong>{{ $record->total_hours }}</strong>
+                                                    <strong>
+                                                        {{ $record->total_hours }}
+                                                    </strong>
                                                 @else
                                                     {{ 'Chấm công không đủ' }}
                                                 @endif
                                             </td>
                                             <td>
-                                                <strong>{{ $record->administrative_hours > 0 ? number_format($record->administrative_hours, 2) : '0' }}</strong>
+                                                <strong>
+                                                    {{ $record->administrative_hours > 0 ? number_format($record->administrative_hours, 2) : '0' }}
+                                                </strong>
                                             </td>
                                             <td>
-                                                <strong>{{ $record->overtime_hours > 0 ? number_format($record->overtime_hours, 2) : '0' }}</strong>
+                                                <strong>
+                                                    {{ $record->overtime_hours > 0 ? number_format($record->overtime_hours, 2) : '0' }}
+                                                </strong>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -348,48 +472,100 @@
                         @endif
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <!-- Modal tìm kiếm -->
-    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div
+        class="modal fade"
+        id="filterModal"
+        tabindex="-1"
+        aria-labelledby="filterModalLabel"
+        aria-hidden="true"
+    >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="filterModalLabel">Tìm Kiếm Thông Tin</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="filterModalLabel">
+                        Tìm Kiếm Thông Tin
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
                 </div>
                 <div class="modal-body">
-                    <form method="GET" action="{{ route('admin.attendence.records') }}">
+                    <form
+                        method="GET"
+                        action="{{ route('admin.attendence.records') }}"
+                    >
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label for="month" class="form-label">Tháng:</label>
-                                <input type="month" name="month" id="month" class="form-control"
-                                    placeholder="Chọn tháng" value="{{ request('month', $currentMonth) }}">
+                                <label for="month" class="form-label">
+                                    Tháng:
+                                </label>
+                                <input
+                                    type="month"
+                                    name="month"
+                                    id="month"
+                                    class="form-control"
+                                    placeholder="Chọn tháng"
+                                    value="{{ request('month', $currentMonth) }}"
+                                />
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label for="employee_name" class="form-label">Tên Nhân Viên:</label>
-                                <input type="text" id="employee_name" name="employee_name" class="form-control"
-                                    value="{{ request('employee_name') }}">
+                                <label for="employee_name" class="form-label">
+                                    Tên Nhân Viên:
+                                </label>
+                                <input
+                                    type="text"
+                                    id="employee_name"
+                                    name="employee_name"
+                                    class="form-control"
+                                    value="{{ request('employee_name') }}"
+                                />
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label for="start_date" class="form-label">Từ ngày:</label>
-                                <input type="date" id="start_date" name="start_date" class="form-control"
-                                    value="{{ request('start_date') }}">
+                                <label for="start_date" class="form-label">
+                                    Từ ngày:
+                                </label>
+                                <input
+                                    type="date"
+                                    id="start_date"
+                                    name="start_date"
+                                    class="form-control"
+                                    value="{{ request('start_date') }}"
+                                />
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label for="end_date" class="form-label">Đến ngày:</label>
-                                <input type="date" id="end_date" name="end_date" class="form-control"
-                                    value="{{ request('end_date') }}">
+                                <label for="end_date" class="form-label">
+                                    Đến ngày:
+                                </label>
+                                <input
+                                    type="date"
+                                    id="end_date"
+                                    name="end_date"
+                                    class="form-control"
+                                    value="{{ request('end_date') }}"
+                                />
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label for="time_filter" class="form-label">Danh mục làm việc:</label>
-                                <select id="time_filter" name="time_filter" class="form-select">
+                                <label for="time_filter" class="form-label">
+                                    Danh mục làm việc:
+                                </label>
+                                <select
+                                    id="time_filter"
+                                    name="time_filter"
+                                    class="form-select"
+                                >
                                     @foreach (config('a7a.list_category') as $key => $record)
-                                        <option value="{{ $key }}"
-                                            {{ request('time_filter') === $key ? 'selected' : '' }}>
+                                        <option
+                                            value="{{ $key }}"
+                                            {{ request('time_filter') === $key ? 'selected' : '' }}
+                                        >
                                             {{ $record }}
                                         </option>
                                     @endforeach
@@ -397,8 +573,16 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Đóng
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Tìm Kiếm
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -407,8 +591,13 @@
     </div>
 
     <!-- Modal tìm kiếm -->
-    <div class="modal fade" id="todayEmployeesModal" tabindex="-1" aria-labelledby="todayEmployeesModalLabel"
-        aria-hidden="true">
+    <div
+        class="modal fade"
+        id="todayEmployeesModal"
+        tabindex="-1"
+        aria-labelledby="todayEmployeesModalLabel"
+        aria-hidden="true"
+    >
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -421,17 +610,31 @@
                         @endif
                         ({{ $employeesTodayCount }} nhân viên)
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
                 </div>
                 <div class="modal-body">
                     <!-- Form Lọc Ngày -->
                     <div class="form-group">
                         <label for="day">Chọn ngày:</label>
-                        <select name="day" id="day" class="form-control" required>
+                        <select
+                            name="day"
+                            id="day"
+                            class="form-control"
+                            required
+                        >
                             <option value="">Chọn ngày</option>
                             @for ($i = 1; $i <= 31; $i++)
-                                <option value="{{ $i }}" {{ $day == $i ? 'selected' : '' }}>Ngày
-                                    {{ $i }}</option>
+                                <option
+                                    value="{{ $i }}"
+                                    {{ $day == $i ? 'selected' : '' }}
+                                >
+                                    Ngày {{ $i }}
+                                </option>
                             @endfor
                         </select>
                     </div>
@@ -443,21 +646,30 @@
                             @foreach ($employeesToday as $detail)
                                 <div class="col-3 employee-card">
                                     <p>{{ $detail->employee->name }}</p>
-                                    <p><strong>Ca làm việc:</strong> {{ $detail->shift }}</p>
+                                    <p>
+                                        <strong>Ca làm việc:</strong>
+                                        {{ $detail->shift }}
+                                    </p>
                                 </div>
                             @endforeach
                         </div>
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Đóng
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('search');
             const filterCheckbox = document.getElementById('filter_absent');
             const attendanceTable = document.getElementById('attendanceTable');
@@ -467,24 +679,30 @@
                 const searchTerm = searchInput.value.toLowerCase();
                 const showAbsentOnly = filterCheckbox.checked;
 
-                rows.forEach(row => {
+                rows.forEach((row) => {
                     const cells = row.querySelectorAll('td');
                     let found = false;
 
                     // Kiểm tra từ khóa tìm kiếm
-                    cells.forEach(cell => {
-                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                    cells.forEach((cell) => {
+                        if (
+                            cell.textContent.toLowerCase().includes(searchTerm)
+                        ) {
                             found = true;
                         }
                     });
 
                     const timeInCell = row.cells[5]; // Giờ Vào
                     const timeOutCell = row.cells[6]; // Giờ Ra
-                    const isAbsent = timeInCell.textContent.includes('Chưa chấm công vào') ||
+                    const isAbsent =
+                        timeInCell.textContent.includes('Chưa chấm công vào') ||
                         timeOutCell.textContent.includes('Chưa chấm công ra');
 
                     // Điều kiện hiển thị hàng
-                    if ((searchTerm === '' || found) && (!showAbsentOnly || isAbsent)) {
+                    if (
+                        (searchTerm === '' || found) &&
+                        (!showAbsentOnly || isAbsent)
+                    ) {
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';
@@ -498,57 +716,73 @@
             // Lắng nghe sự kiện thay đổi trên checkbox
             filterCheckbox.addEventListener('change', filterRows);
         });
-        document.getElementById('export-button').addEventListener('click', function() {
-            // Hiển thị overlay loading
-            document.getElementById('loading-overlay').style.display = 'flex';
+        document
+            .getElementById('export-button')
+            .addEventListener('click', function () {
+                // Hiển thị overlay loading
+                document.getElementById('loading-overlay').style.display =
+                    'flex';
 
-            // Lấy giá trị ngày bắt đầu và kết thúc
-            const startDateInput = document.getElementById('start_date').value;
-            const endDateInput = document.getElementById('end_date').value;
+                // Lấy giá trị ngày bắt đầu và kết thúc
+                const startDateInput =
+                    document.getElementById('start_date').value;
+                const endDateInput = document.getElementById('end_date').value;
 
-            // Chuyển đổi sang định dạng d-m-Y
-            const formatDate = (dateString) => {
-                const date = new Date(dateString);
-                const day = String(date.getDate()).padStart(2, '0'); // Lấy ngày và thêm số 0 nếu cần
-                const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
-                const year = date.getFullYear();
-                return `${day}-${month}-${year}`; // Định dạng d-m-Y
-            };
+                // Chuyển đổi sang định dạng d-m-Y
+                const formatDate = (dateString) => {
+                    const date = new Date(dateString);
+                    const day = String(date.getDate()).padStart(2, '0'); // Lấy ngày và thêm số 0 nếu cần
+                    const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`; // Định dạng d-m-Y
+                };
 
-            const formattedStartDate = formatDate(startDateInput);
-            const formattedEndDate = formatDate(endDateInput);
+                const formattedStartDate = formatDate(startDateInput);
+                const formattedEndDate = formatDate(endDateInput);
 
-            // Thực hiện yêu cầu AJAX
-            fetch("{{ route('admin.attendance.export') }}?start_date=" + startDateInput + "&end_date=" +
-                    endDateInput)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.blob(); // Chuyển đổi phản hồi thành blob
-                })
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    // Tạo tên tệp dựa trên formattedStartDate và formattedEndDate
-                    const fileName = 'Bảng Tính Công Từ ' + formattedStartDate + ' Đến ' + formattedEndDate +
-                        '.xlsx';
-                    link.setAttribute('download', fileName); // Tên tệp đã chỉnh sửa
-                    document.body.appendChild(link);
-                    link.click(); // Tự động tải xuống
-                    document.body.removeChild(link); // Xóa link sau khi tải xong
+                // Thực hiện yêu cầu AJAX
+                fetch(
+                    '{{ route('admin.attendance.export') }}?start_date=' +
+                        startDateInput +
+                        '&end_date=' +
+                        endDateInput,
+                )
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob(); // Chuyển đổi phản hồi thành blob
+                    })
+                    .then((blob) => {
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        // Tạo tên tệp dựa trên formattedStartDate và formattedEndDate
+                        const fileName =
+                            'Bảng Tính Công Từ ' +
+                            formattedStartDate +
+                            ' Đến ' +
+                            formattedEndDate +
+                            '.xlsx';
+                        link.setAttribute('download', fileName); // Tên tệp đã chỉnh sửa
+                        document.body.appendChild(link);
+                        link.click(); // Tự động tải xuống
+                        document.body.removeChild(link); // Xóa link sau khi tải xong
 
-                    // Ẩn overlay loading
-                    document.getElementById('loading-overlay').style.display = 'none';
-                })
-                .catch(error => {
-                    document.getElementById('loading-overlay').style.display = 'none';
-                    alert('Có lỗi xảy ra khi xuất dữ liệu');
-                    console.error(error);
-                });
-        });
-        document.addEventListener("DOMContentLoaded", () => {
+                        // Ẩn overlay loading
+                        document.getElementById(
+                            'loading-overlay',
+                        ).style.display = 'none';
+                    })
+                    .catch((error) => {
+                        document.getElementById(
+                            'loading-overlay',
+                        ).style.display = 'none';
+                        alert('Có lỗi xảy ra khi xuất dữ liệu');
+                        console.error(error);
+                    });
+            });
+        document.addEventListener('DOMContentLoaded', () => {
             const daySelect = document.getElementById('day');
             const urlParams = new URLSearchParams(window.location.search);
             const currentDay = {{ $currentDay }}; // Ngày hiện tại từ server-side
@@ -572,7 +806,9 @@
 
             // Tự động mở modal nếu ngày được chọn khác ngày hiện tại và có showModal
             if (showModal && selectedDay !== currentDay) {
-                new bootstrap.Modal(document.getElementById('todayEmployeesModal')).show();
+                new bootstrap.Modal(
+                    document.getElementById('todayEmployeesModal'),
+                ).show();
             }
         });
     </script>

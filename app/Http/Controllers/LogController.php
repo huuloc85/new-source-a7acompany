@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Log;
-use Illuminate\Http\Request;
 
 class LogController extends Controller
 {
@@ -12,6 +11,7 @@ class LogController extends Controller
     {
         $logs = Log::orderBy('id', 'DESC')->paginate(Log::paginate);
         $total = Log::count();
+
         return view('log.index', compact('logs', 'total'));
     }
 
@@ -22,9 +22,11 @@ class LogController extends Controller
             $log = Log::find($id);
             $log->delete();
             toast('Xóa log thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.log');
         } catch (\Exception $e) {
             toast('Xóa log không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.log');
         }
     }
@@ -35,9 +37,11 @@ class LogController extends Controller
         try {
             Log::truncate();
             toast('Xóa tất cả log thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.log');
         } catch (\Exception $e) {
             toast('Xóa tất cả log không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.log');
         }
     }

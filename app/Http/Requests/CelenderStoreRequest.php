@@ -26,10 +26,10 @@ class CelenderStoreRequest extends FormRequest
         return [
             'title' => ['required', Rule::unique('celenders')],
             'date' => ['required',
-                function($attribute, $value, Closure $fail){
+                function ($attribute, $value, Closure $fail) {
                     $dayofweek = date('d', strtotime($value));
-                    if($dayofweek != '01'){
-                        $fail("Ngày bắt đầu phải là ngày đầu tiên của tháng!");
+                    if ($dayofweek != '01') {
+                        $fail('Ngày bắt đầu phải là ngày đầu tiên của tháng!');
                     }
                 }],
             'fileImport' => ['required', 'mimes:xls,xlsx'],

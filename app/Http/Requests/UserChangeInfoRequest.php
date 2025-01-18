@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Closure;
 
 class UserChangeInfoRequest extends FormRequest
 {

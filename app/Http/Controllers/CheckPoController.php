@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DailyQuantity;
-use Carbon\Carbon;
-use App\Models\TotalMonthQuantity;
-use App\Models\TotalDailyQuantity;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Traits\CalenderTranslate;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Checkpo\ExportMultiSheetsPo;
+use App\Models\DailyQuantity;
 use App\Models\DailyQuantityPO;
+use App\Models\Product;
+use App\Models\TotalDailyQuantity;
 use App\Models\TotalDailyQuantityPO;
+use App\Models\TotalMonthQuantity;
+use App\Traits\CalenderTranslate;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CheckPoController extends Controller
 {
@@ -67,7 +67,7 @@ class CheckPoController extends Controller
 
             $week[$dateAfter] = $quantities;
 
-            if ($nameDay == "Sunday" || $dateAfter == $endOfMonth->format('d/m/Y')) {
+            if ($nameDay == 'Sunday' || $dateAfter == $endOfMonth->format('d/m/Y')) {
                 array_push($months, $week);
                 $week = [];
             }
@@ -88,7 +88,8 @@ class CheckPoController extends Controller
 
         $listDate = $this->handleDayInMonth($selectedMonth);
         $currentDate = Carbon::now()->format('d-m-Y');
-        return view('checkpo.index', compact('months', 'products', 'listDate',  'currentDate', 'totalMonthQuantities', 'selectedMonth', 'productNearData'));
+
+        return view('checkpo.index', compact('months', 'products', 'listDate', 'currentDate', 'totalMonthQuantities', 'selectedMonth', 'productNearData'));
     }
 
     public function handleAddPoExport(Request $request)
@@ -105,12 +106,14 @@ class CheckPoController extends Controller
             // Kiểm tra xem dữ liệu đã được cung cấp đầy đủ hay không
             if (empty($date) || empty($listProductId) || empty($listQuantity) || empty($status)) {
                 toast('Vui lòng nhập đầy đủ thông tin sản lượng.', 'error', ['position' => 'top-right']);
+
                 return redirect()->back();
             }
 
             // Kiểm tra xem có dữ liệu sản lượng được cung cấp hay không
             if (empty(array_filter($listQuantity)) || empty(array_filter($listProductId))) {
                 toast('Vui lòng nhập thông tin sản lượng cho ít nhất một sản phẩm.', 'error', ['position' => 'top-right']);
+
                 return redirect()->back();
             }
 
@@ -128,10 +131,10 @@ class CheckPoController extends Controller
                                 // Xác định thời gian tạo bản ghi theo ca làm việc
                                 if ($shift == 1) {
                                     // Nếu là ca 1 là 19:30 sáng cùng ngày
-                                    $created_at = $date . '19:30:00 ';
+                                    $created_at = $date.'19:30:00 ';
                                 } else {
                                     // Nếu là ca 2 tạo bản ghi là 7:30 sáng của ngày sau
-                                    $created_at = date('Y-m-d', strtotime($date . ' +1 day'))  . '07:30:00 ';;
+                                    $created_at = date('Y-m-d', strtotime($date.' +1 day')).'07:30:00 ';
                                 }
                             } else {
                                 // Nếu status khác 1 hoặc shift không có giá trị
@@ -139,7 +142,7 @@ class CheckPoController extends Controller
                                 $created_at = Carbon::now();
                             }
                             // Cập nhật sản lượng ngày
-                            $dailyQuan = new DailyQuantity();
+                            $dailyQuan = new DailyQuantity;
                             $dailyQuan->product_id = $product->id;
                             $dailyQuan->employee_id = Auth()->user()->id;
                             $dailyQuan->quantity = $listQuantity[$i];
@@ -156,7 +159,7 @@ class CheckPoController extends Controller
                                 $totalDaily->totalQuan += $listQuantity[$i];
                                 $totalDaily->save();
                             } else {
-                                $totalDaily = new TotalDailyQuantity();
+                                $totalDaily = new TotalDailyQuantity;
                                 $totalDaily->product_id = $product->id;
                                 $totalDaily->date = $date;
                                 $totalDaily->status = $status;
@@ -173,7 +176,7 @@ class CheckPoController extends Controller
                                 $totalMonth->totalQuan += $listQuantity[$i];
                                 $totalMonth->save();
                             } else {
-                                $totalMonth = new TotalMonthQuantity();
+                                $totalMonth = new TotalMonthQuantity;
                                 $totalMonth->product_id = $product->id;
                                 $totalMonth->month = $month;
                                 $totalMonth->status = $status;
@@ -187,11 +190,13 @@ class CheckPoController extends Controller
 
             DB::commit();
             toast('Cập nhật số lượng thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.checkpo.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -221,7 +226,7 @@ class CheckPoController extends Controller
                             ->first();
 
                         // Tạo bản ghi mới ngay cả khi tồn tại bản ghi khớp
-                        $totalDaily = new DailyQuantityPO();
+                        $totalDaily = new DailyQuantityPO;
                         $totalDaily->product_id = $productId;
                         $totalDaily->status = $status;
                         $totalDaily->quantity = $quantity;
@@ -238,7 +243,7 @@ class CheckPoController extends Controller
                             $totalDailyPO->totalQuan += $quantity;
                             $totalDailyPO->save();
                         } else {
-                            $totalDailyPO = new TotalDailyQuantityPO();
+                            $totalDailyPO = new TotalDailyQuantityPO;
                             $totalDailyPO->product_id = $product->id;
                             $totalDailyPO->date = $date;
                             $totalDailyPO->status = $status;
@@ -250,11 +255,13 @@ class CheckPoController extends Controller
             }
             DB::commit();
             toast('Cập nhật số lượng thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.checkpo.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error: ' . $e->getMessage() . ' at Line ' . $e->getLine());
+            Log::error('Error: '.$e->getMessage().' at Line '.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -288,7 +295,7 @@ class CheckPoController extends Controller
                         $totalMonth->totalQuan = $quantity;
                         $totalMonth->save();
                     } else {
-                        $totalMonth = new TotalMonthQuantity();
+                        $totalMonth = new TotalMonthQuantity;
                         $totalMonth->product_id = $productId;
                         $totalMonth->month = $month;
                         $totalMonth->status = $status;
@@ -304,11 +311,13 @@ class CheckPoController extends Controller
             }
             DB::commit();
             toast('Cập nhật số lượng thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.checkpo.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error: ' . $e->getMessage() . ' at Line ' . $e->getLine());
+            Log::error('Error: '.$e->getMessage().' at Line '.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -357,13 +366,14 @@ class CheckPoController extends Controller
 
             $week[$dateAfter] = $quantities;
 
-            if ($nameDay == "Sunday" || $dateAfter == $endOfMonth->format('d/m/Y')) {
+            if ($nameDay == 'Sunday' || $dateAfter == $endOfMonth->format('d/m/Y')) {
                 array_push($months, $week);
                 $week = [];
             }
         }
+
         // Add data to $months array here if needed
-        return Excel::download(new ExportMultiSheetsPo($filterMonth, $months), 'THEO DÕI PO THÁNG ' . $filterMonth . '.xlsx', \Maatwebsite\Excel\Excel::XLSX, [
+        return Excel::download(new ExportMultiSheetsPo($filterMonth, $months), 'THEO DÕI PO THÁNG '.$filterMonth.'.xlsx', \Maatwebsite\Excel\Excel::XLSX, [
             'Content-Type' => 'text/xlsx',
         ]);
     }
@@ -421,7 +431,7 @@ class CheckPoController extends Controller
                             $dailyQuantity->save();
                         }
                     } else {
-                        $dailyQuantity = new DailyQuantityPO();
+                        $dailyQuantity = new DailyQuantityPO;
                         $dailyQuantity->product_id = $productId;
                         $dailyQuantity->quantity = $newQuantity;
                         $dailyQuantity->employee_id = Auth::id();
@@ -439,7 +449,7 @@ class CheckPoController extends Controller
                         $totalDailyQuantity->status = $status;
                         $totalDailyQuantity->save();
                     } else {
-                        $totalDailyQuantity = new TotalDailyQuantityPo();
+                        $totalDailyQuantity = new TotalDailyQuantityPo;
                         $totalDailyQuantity->product_id = $productId;
                         $totalDailyQuantity->date = $date;
                         $totalDailyQuantity->status = $status;
@@ -458,10 +468,9 @@ class CheckPoController extends Controller
         return redirect()->route('admin.history-import-quantity', [
             'month' => $request->input('month'),
             'date' => $date,
-            'status' => $status
+            'status' => $status,
         ]);
     }
-
 
     public function deletePO($id)
     {

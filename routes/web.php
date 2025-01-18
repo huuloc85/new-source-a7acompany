@@ -5,21 +5,19 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryCelenderController;
 use App\Http\Controllers\CelenderController;
 use App\Http\Controllers\CheckEmployeeController;
+use App\Http\Controllers\CheckPoController;
 use App\Http\Controllers\DailyProductivityHistoryController;
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HistoryPrintController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\LoginHistoryController;
+use App\Http\Controllers\MaterialProductController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CheckPoController;
 use App\Http\Controllers\StampController;
-use App\Http\Controllers\ProductionPlanController;
-use App\Http\Controllers\BarCodeController;
-use App\Http\Controllers\HistoryPrintController;
-use App\Http\Controllers\MaterialProductController;
-use App\Models\LoginHistory;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +35,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'handleLogin'])->name('handleLogin');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/home', [DashBoardController::class, 'index'])->name('admin.home');
@@ -70,7 +67,6 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/attendence', [AttendanceRecordController::class, 'employeeViewRecords'])->name('admin.employee.attendence');
         Route::get('/attendence-caculate', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('admin.employee.attendence_caculate_records');
     });
-
 
     //chức năng của Admin CheckEmployee
     Route::middleware(['authAdmin'])->prefix('/check-employee')->group(function () {

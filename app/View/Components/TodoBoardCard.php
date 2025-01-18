@@ -11,12 +11,13 @@ class TodoBoardCard extends Component
     public $class;
 
     public $title;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($id,$class = '',$title)
+    public function __construct($id, $class, $title)
     {
         $this->id = $id;
         $this->class = $class;

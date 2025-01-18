@@ -29,29 +29,29 @@ class Celender extends Model
     ];
 
     //relationship celenderDetailsHNHC
-    function celenderDetailsHNHC()
+    public function celenderDetailsHNHC()
     {
         return $this->hasMany(CelenderDetailHNHC::class, 'celender_id', 'id');
     }
 
     //relationship celenderDetailsHNHC
-    function celenderDetailsEatroom()
+    public function celenderDetailsEatroom()
     {
         return $this->hasMany(CelenderDetailEatroom::class, 'celender_id', 'id');
     }
 
     //relationship celenderDetailsHNHC
-    function celenderDetailsWC()
+    public function celenderDetailsWC()
     {
         return $this->hasMany(CelenderDetailWC::class, 'celender_id', 'id');
     }
 
-    function celenderDetailsWCCleanWomen()
+    public function celenderDetailsWCCleanWomen()
     {
         return $this->hasMany(CelenderDetailWCCleanMen::class, 'celender_id', 'id');
     }
 
-    function celenderDetailsWCCleanMen()
+    public function celenderDetailsWCCleanMen()
     {
         return $this->hasMany(CelenderDetailWCCleanMen::class, 'celender_id', 'id');
     }
@@ -60,8 +60,9 @@ class Celender extends Model
     public function scopeName($query, $request)
     {
         if ($request->has('key')) {
-            return $query->where('title', 'like', '%' . $request->key . '%');
+            return $query->where('title', 'like', '%'.$request->key.'%');
         }
+
         return $query;
     }
 
@@ -88,7 +89,7 @@ class Celender extends Model
     {
         $dayofweek = $this->formatTimeDMY($date);
         $dayofweek = date('l', strtotime($date));
-        $result = "";
+        $result = '';
         switch ($dayofweek) {
             case 'Monday':
                 $result = 'T2';
@@ -112,6 +113,7 @@ class Celender extends Model
                 $result = 'CN';
                 break;
         }
+
         return $result;
     }
 
@@ -121,12 +123,13 @@ class Celender extends Model
         $dayofweek = $this->formatTimeDMY($date);
         $dayofweek = strtolower(date('l', strtotime($date)));
         if ($this->checkIncrease($date, $celender, $increases)) {
-            return "Tăng cường";
+            return 'Tăng cường';
         } else {
             if ($celender->$dayofweek != 1) {
-                return "Nghỉ";
+                return 'Nghỉ';
             }
-            return "Làm";
+
+            return 'Làm';
         }
     }
 
@@ -140,6 +143,7 @@ class Celender extends Model
                 break;
             }
         }
+
         return $check;
     }
 }

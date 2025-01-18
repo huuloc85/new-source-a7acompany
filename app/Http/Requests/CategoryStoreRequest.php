@@ -23,7 +23,7 @@ class CategoryStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', Rule::unique('categories_celender')]
+            'name' => ['required', Rule::unique('categories_celender')],
         ];
     }
 

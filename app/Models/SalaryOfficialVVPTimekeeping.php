@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class SalaryOfficialVVPTimekeeping extends Model
 {
     use HasFactory;
+
     protected $table = 'timekeeping_officials_vvp';
+
     protected $fillable = [
         'salary_official_vvp_id',
         'timekeeping_date',         //ngày chấm công

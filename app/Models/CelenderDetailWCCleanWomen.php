@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class CelenderDetailWCCleanWomen extends Model
 {
-
     use HasFactory;
 
     //paginate
@@ -54,13 +53,13 @@ class CelenderDetailWCCleanWomen extends Model
     ];
 
     //relationship celender
-    function celender()
+    public function celender()
     {
         return $this->belongsTo(Celender::class);
     }
 
     //relationship role
-    function employee()
+    public function employee()
     {
         return $this->belongsTo(Employee::class);
     }

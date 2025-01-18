@@ -12,7 +12,7 @@ class SalaryManager extends Model
     //paginate
     public const paginate = 10;
 
-    protected $table = "salaries_manager";
+    protected $table = 'salaries_manager';
 
     protected $fillable = [
         'title',
@@ -43,8 +43,9 @@ class SalaryManager extends Model
     public function scopeName($query, $request)
     {
         if ($request->has('key')) {
-            return $query->where('title', 'like', '%' . $request->key . '%');
+            return $query->where('title', 'like', '%'.$request->key.'%');
         }
+
         return $query;
     }
 }

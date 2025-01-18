@@ -13,13 +13,13 @@ class Log extends Model
     public const paginate = 10;
 
     //table
-    protected $table = "logs";
+    protected $table = 'logs';
 
     //fillable
     protected $fillable = [
         'table',
         'content',
-        'row'
+        'row',
 
     ];
 }

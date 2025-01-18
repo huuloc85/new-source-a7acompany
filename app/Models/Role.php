@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Role extends Model
 {
@@ -14,14 +13,14 @@ class Role extends Model
     public const paginate = 10;
 
     //table
-    protected $table = "roles";
+    protected $table = 'roles';
 
     //filds
     protected $fillable = [
         'id',
         'role_name',
     ];
-    
+
     //relationship employees
     public function employees()
     {
@@ -32,8 +31,9 @@ class Role extends Model
     public function scopeSearch($query)
     {
         if ($key = request()->key) {
-            $query = $query->where('role_name', 'like', '%' . $key . '%');
+            $query = $query->where('role_name', 'like', '%'.$key.'%');
         }
+
         return $query;
     }
 

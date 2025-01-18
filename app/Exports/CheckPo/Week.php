@@ -6,18 +6,20 @@ use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-class Week extends DefaultValueBinder implements FromView, ShouldAutoSize, WithTitle, WithEvents
+class Week extends DefaultValueBinder implements FromView, ShouldAutoSize, WithEvents, WithTitle
 {
     protected $index;
-    protected $weekDates;
-    protected $sheetName;
-    protected $month;
 
+    protected $weekDates;
+
+    protected $sheetName;
+
+    protected $month;
 
     public function __construct($i, $weekArray, $sheetName, $month)
     {
@@ -32,12 +34,13 @@ class Week extends DefaultValueBinder implements FromView, ShouldAutoSize, WithT
         $weekDates = $this->weekDates;
         $index = $this->index;
         $products = Product::all();
+
         return view('export/checkpo/week', compact('products', 'weekDates', 'index'));
     }
 
     public function title(): string
     {
-        return $this->sheetName . ' - Tháng ' . $this->month;
+        return $this->sheetName.' - Tháng '.$this->month;
     }
 
     public function registerEvents(): array

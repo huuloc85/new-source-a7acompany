@@ -3,24 +3,26 @@
 namespace App\Exports\Product;
 
 use App\Models\Product;
-use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-
-
-class ProductError extends  DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithTitle, WithEvents
+class ProductError extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithTitle
 {
     protected $time;
+
     protected $delimiter;
+
     protected $daysInMonth;
+
     protected $daysInMonthYMD;
-    const ERROR_PRODUCT  = 6;
+
+    const ERROR_PRODUCT = 6;
 
     public function __construct($time, $daysInMonth, $daysInMonthYMD)
     {
@@ -28,6 +30,7 @@ class ProductError extends  DefaultValueBinder implements FromView, ShouldAutoSi
         $this->daysInMonth = $daysInMonth;
         $this->daysInMonthYMD = $daysInMonthYMD;
     }
+
     public function view(): View
     {
         $daysInMonth = $this->daysInMonth;
@@ -55,11 +58,12 @@ class ProductError extends  DefaultValueBinder implements FromView, ShouldAutoSi
             $data[] = [
                 'name' => $product->name,
                 'totalQuantityMonth' => $totalQuantityMonth,
-                'totalQuantityPerDay' => $totalQuantityPerDay
+                'totalQuantityPerDay' => $totalQuantityPerDay,
             ];
         }
 
         $title = 'Danh sách hàng hóa';
+
         return view('export/product/error', compact('data', 'title', 'daysInMonth'));
     }
 

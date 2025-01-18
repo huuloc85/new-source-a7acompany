@@ -15,12 +15,12 @@ class CheckAccountant
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth()->user()->role->role_name == 'admin' || 
-            Auth()->user()->role->role_name == 'accountant') 
-        {
+        if (Auth()->user()->role->role_name == 'admin' ||
+            Auth()->user()->role->role_name == 'accountant') {
             return $next($request);
         }
-        toast('Bạn không có quyền truy cập!','error','top-right');
+        toast('Bạn không có quyền truy cập!', 'error', 'top-right');
+
         return redirect()->route('admin.home');
     }
 }

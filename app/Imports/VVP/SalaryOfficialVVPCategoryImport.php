@@ -5,26 +5,19 @@ namespace App\Imports\VVP;
 use App\Helpers\LogHelper;
 use App\Models\Employee;
 use App\Models\SalaryOfficialVVP;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Validators\Failure;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialVVPCategoryImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    WithHeadingRow,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithStartRow
-
+class SalaryOfficialVVPCategoryImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithHeadingRow, WithStartRow
 {
     public $salaryManagerId;
+
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -35,9 +28,6 @@ class SalaryOfficialVVPCategoryImport implements
         return 'Danh muc'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         // dd($rows);
@@ -71,7 +61,7 @@ class SalaryOfficialVVPCategoryImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Category-VVP', $e->getMessage(), $e->getLine());
-            Log::error('errors cate::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors cate::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -100,9 +90,6 @@ class SalaryOfficialVVPCategoryImport implements
     //     ];
     // }
 
-    /**
-     *
-     */
     // public function customValidationMessages()
     // {
     //     return [
@@ -132,8 +119,9 @@ class SalaryOfficialVVPCategoryImport implements
         //5
         return 8;
     }
+
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

@@ -1,14 +1,13 @@
 @extends('layouts.layout')
 @section('content')
-
     <style>
         .form-control {
             border: 1px solid #d2d6da !important;
             padding-left: 10px;
         }
 
-        .active>.page-link {
-            color: white !important
+        .active > .page-link {
+            color: white !important;
         }
 
         .href {
@@ -30,7 +29,7 @@
 
         .date-list {
             margin-left: 0px !important;
-            padding: 0px !important
+            padding: 0px !important;
         }
 
         .mw-input {
@@ -87,81 +86,171 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                <div
+                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
+                >
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
                         <h4 class="card-title mb-0">{{ $calendarTitle }}</h4>
                     </div>
                 </div>
                 <div class="ps-2 d-flex my-2">
-                    <a class="btn btn-success" href="{{ route('admin.celender.home') }}">Lịch làm việc</a>
+                    <a
+                        class="btn btn-success"
+                        href="{{ route('admin.celender.home') }}"
+                    >
+                        Lịch làm việc
+                    </a>
                 </div>
                 <div class="px-0 pb-2">
                     <ul class="nav nav-tabs px-4" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="VVP-tab" data-bs-toggle="tab" data-bs-target="#VVP"
-                                type="button" role="tab" aria-controls="VVP" aria-selected="true">Hàng Nhật - Hàng
-                                Chợ</button>
+                            <button
+                                class="nav-link active"
+                                id="VVP-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#VVP"
+                                type="button"
+                                role="tab"
+                                aria-controls="VVP"
+                                aria-selected="true"
+                            >
+                                Hàng Nhật - Hàng Chợ
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="A7A-tab" data-bs-toggle="tab" data-bs-target="#A7A"
-                                type="button" role="tab" aria-controls="A7A" aria-selected="false">Trực Phòng
-                                Ăn</button>
+                            <button
+                                class="nav-link"
+                                id="A7A-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#A7A"
+                                type="button"
+                                role="tab"
+                                aria-controls="A7A"
+                                aria-selected="false"
+                            >
+                                Trực Phòng Ăn
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="parttime-tab" data-bs-toggle="tab" data-bs-target="#parttime"
-                                type="button" role="tab" aria-controls="parttime" aria-selected="false">Đổ Rác
-                                WC</button>
+                            <button
+                                class="nav-link"
+                                id="parttime-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#parttime"
+                                type="button"
+                                role="tab"
+                                aria-controls="parttime"
+                                aria-selected="false"
+                            >
+                                Đổ Rác WC
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="women-tab" data-bs-toggle="tab" data-bs-target="#women"
-                                type="button" role="tab" aria-controls="women" aria-selected="false">Trực WC
-                                Nữ</button>
+                            <button
+                                class="nav-link"
+                                id="women-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#women"
+                                type="button"
+                                role="tab"
+                                aria-controls="women"
+                                aria-selected="false"
+                            >
+                                Trực WC Nữ
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="men-tab" data-bs-toggle="tab" data-bs-target="#men"
-                                type="button" role="tab" aria-controls="men" aria-selected="false">Trực WC Nam</button>
+                            <button
+                                class="nav-link"
+                                id="men-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#men"
+                                type="button"
+                                role="tab"
+                                aria-controls="men"
+                                aria-selected="false"
+                            >
+                                Trực WC Nam
+                            </button>
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
                         <!-- Hàng Nhật -->
-                        <div class="tab-pane fade show active" id="VVP" role="tabpanel" aria-labelledby="VVP-tab">
+                        <div
+                            class="tab-pane fade show active"
+                            id="VVP"
+                            role="tabpanel"
+                            aria-labelledby="VVP-tab"
+                        >
                             <!-- Nội dung cho tab VVP -->
                             <div class="px-0 pb-2 d-flex mt-4">
-                                <div class="ms-2"><label class="N keywork">N </label><label for="">Ca ngày</label>
+                                <div class="ms-2">
+                                    <label class="N keywork">N</label>
+                                    <label for="">Ca ngày</label>
                                 </div>
-                                <div class="ms-4"><label class="D keywork">D </label><label for="">Ca đêm</label>
+                                <div class="ms-4">
+                                    <label class="D keywork">D</label>
+                                    <label for="">Ca đêm</label>
                                 </div>
-                                <div class="ms-4"><label class="X keywork">X </label><label for="">Nghĩ</label>
+                                <div class="ms-4">
+                                    <label class="X keywork">X</label>
+                                    <label for="">Nghĩ</label>
                                 </div>
-                                <div class="ms-4"><label class="TC keywork bg-yellow">TC </label><label
-                                        for="">Tăng cường đêm</label></div>
-                                <div class="ms-4"><label class="LN keywork bg-yellow">LN </label><label for="">Làm
-                                        thêm ca ngày</label></div>
+                                <div class="ms-4">
+                                    <label class="TC keywork bg-yellow">
+                                        TC
+                                    </label>
+                                    <label for="">Tăng cường đêm</label>
+                                </div>
+                                <div class="ms-4">
+                                    <label class="LN keywork bg-yellow">
+                                        LN
+                                    </label>
+                                    <label for="">Làm thêm ca ngày</label>
+                                </div>
                             </div>
                             <div class="px-0 pb-2">
                                 <div class="table-responsive p-0 d-flex">
                                     <div class="">
-                                        <table class="table align-items-center mb-4">
+                                        <table
+                                            class="table align-items-center mb-4"
+                                        >
                                             <tbody>
                                                 @if (isset($categories))
                                                     @foreach ($categories as $key => $category)
                                                         <tr>
                                                             <th
-                                                                class="text-uppercase text-xxs font-weight-bolder col-1 text-center">
-                                                                Mã NV<br>&nbsp;</th>
+                                                                class="text-uppercase text-xxs font-weight-bolder col-1 text-center"
+                                                            >
+                                                                Mã NV
+                                                                <br />
+                                                                &nbsp;
+                                                            </th>
                                                             <th
-                                                                class="text-uppercase text-xxs font-weight-bolder ps-2 col-1 text-center">
-                                                                Họ và tên<br>&nbsp;</th>
+                                                                class="text-uppercase text-xxs font-weight-bolder ps-2 col-1 text-center"
+                                                            >
+                                                                Họ và tên
+                                                                <br />
+                                                                &nbsp;
+                                                            </th>
                                                             @foreach ($dates as $key => $date)
                                                                 <th
-                                                                    class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center">
-                                                                    {{ $formatDate->formatTimeDate($date) }}<br>{{ $formatDate->dayOfWeek($date) }}
+                                                                    class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center"
+                                                                >
+                                                                    {{ $formatDate->formatTimeDate($date) }}
+                                                                    <br />
+                                                                    {{ $formatDate->dayOfWeek($date) }}
                                                                 </th>
                                                             @endforeach
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="34" class="text-center bg-info">
-                                                                <p class="text-xs font-weight-bold mb-0 px-3">
+                                                            <td
+                                                                colspan="34"
+                                                                class="text-center bg-info"
+                                                            >
+                                                                <p
+                                                                    class="text-xs font-weight-bold mb-0 px-3"
+                                                                >
                                                                     {{ $category->name }}
                                                                 </p>
                                                             </td>
@@ -171,23 +260,29 @@
                                                                 @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
                                                                     <tr>
                                                                         <td>
-                                                                            <p class="text-xs font-weight-bold mb-0">
+                                                                            <p
+                                                                                class="text-xs font-weight-bold mb-0"
+                                                                            >
                                                                                 {{ $celenderDetailHNHC->employee->code }}
                                                                             </p>
                                                                         </td>
                                                                         <td>
-                                                                            <p class="text-xs font-weight-bold mb-0">
+                                                                            <p
+                                                                                class="text-xs font-weight-bold mb-0"
+                                                                            >
                                                                                 {{ $celenderDetailHNHC->employee->name }}
                                                                             </p>
                                                                         </td>
                                                                         @foreach ($dates as $key => $date)
-                                                                            <?php $fill = 'day' . $key + 1; ?>
+                                                                            <?php $fill = 'day'.$key + 1; ?>
+
                                                                             <td>
                                                                                 <input
                                                                                     class="form-controll mw-input {{ $celenderDetailHNHC->$fill ?? '' }}"
                                                                                     type="text"
                                                                                     value="{{ $celenderDetailHNHC->$fill ?? '' }}"
-                                                                                    disabled>
+                                                                                    disabled
+                                                                                />
                                                                             </td>
                                                                         @endforeach
                                                                     </tr>
@@ -204,26 +299,48 @@
                         </div>
 
                         <!-- Trực Nhà Ăn -->
-                        <div class="tab-pane fade" id="A7A" role="tabpanel" aria-labelledby="A7A-tab">
+                        <div
+                            class="tab-pane fade"
+                            id="A7A"
+                            role="tabpanel"
+                            aria-labelledby="A7A-tab"
+                        >
                             <!-- Nội dung cho tab Trực Nhà Ăn -->
                             <div class="px-0 pb-2 d-flex ms-4 mt-4">
-                                <div class="ms-5"><label class="X keywork">X </label><label for="">Ngày trực vệ
-                                        sinh</label></div>
+                                <div class="ms-5">
+                                    <label class="X keywork">X</label>
+                                    <label for="">Ngày trực vệ sinh</label>
+                                </div>
                             </div>
                             <div class="px-0 pb-2">
                                 <div class="table-responsive p-0 d-flex">
                                     <div class="">
-                                        <table class="table align-items-center mb-0">
+                                        <table
+                                            class="table align-items-center mb-0"
+                                        >
                                             <thead>
                                                 <tr>
-                                                    <th class="text-uppercase text-xxs font-weight-bolder col-1">Mã
-                                                        NV<br>&nbsp;</th>
-                                                    <th class="text-uppercase text-xxs font-weight-bolder ps-2 col-1">Họ và
-                                                        tên<br>&nbsp;</th>
+                                                    <th
+                                                        class="text-uppercase text-xxs font-weight-bolder col-1"
+                                                    >
+                                                        Mã NV
+                                                        <br />
+                                                        &nbsp;
+                                                    </th>
+                                                    <th
+                                                        class="text-uppercase text-xxs font-weight-bolder ps-2 col-1"
+                                                    >
+                                                        Họ và tên
+                                                        <br />
+                                                        &nbsp;
+                                                    </th>
                                                     @foreach ($dates as $key => $date)
                                                         <th
-                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center">
-                                                            {{ $formatDate->formatTimeDate($date) }}<br>{{ $formatDate->dayOfWeek($date) }}
+                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center"
+                                                        >
+                                                            {{ $formatDate->formatTimeDate($date) }}
+                                                            <br />
+                                                            {{ $formatDate->dayOfWeek($date) }}
                                                         </th>
                                                     @endforeach
                                                 </tr>
@@ -233,23 +350,29 @@
                                                     @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
                                                         <tr>
                                                             <td>
-                                                                <p class="text-xs font-weight-bold mb-0">
+                                                                <p
+                                                                    class="text-xs font-weight-bold mb-0"
+                                                                >
                                                                     {{ $celenderDetailEatroom->employee->code }}
                                                                 </p>
                                                             </td>
                                                             <td>
-                                                                <p class="text-xs font-weight-bold mb-0">
+                                                                <p
+                                                                    class="text-xs font-weight-bold mb-0"
+                                                                >
                                                                     {{ $celenderDetailEatroom->employee->name }}
                                                                 </p>
                                                             </td>
                                                             @foreach ($dates as $key => $date)
-                                                                <?php $fill = 'day' . $key + 1; ?>
+                                                                <?php $fill = 'day'.$key + 1; ?>
+
                                                                 <td>
                                                                     <input
                                                                         class="form-controll mw-input {{ $celenderDetailEatroom->$fill ?? '' }}"
                                                                         type="text"
                                                                         value="{{ $celenderDetailEatroom->$fill ?? '' }}"
-                                                                        disabled>
+                                                                        disabled
+                                                                    />
                                                                 </td>
                                                             @endforeach
                                                         </tr>
@@ -263,26 +386,48 @@
                         </div>
 
                         <!-- VỨt Rác WC -->
-                        <div class="tab-pane fade" id="parttime" role="tabpanel" aria-labelledby="parttime-tab">
+                        <div
+                            class="tab-pane fade"
+                            id="parttime"
+                            role="tabpanel"
+                            aria-labelledby="parttime-tab"
+                        >
                             <!-- Nội dung cho tab Vứt Rác WC -->
                             <div class="px-0 pb-2 d-flex ms-4 mt-4">
-                                <div class="ms-5"><label class="X keywork">X </label><label for="">Ngày trực vệ
-                                        sinh</label></div>
+                                <div class="ms-5">
+                                    <label class="X keywork">X</label>
+                                    <label for="">Ngày trực vệ sinh</label>
+                                </div>
                             </div>
                             <div class="px-0 pb-2">
                                 <div class="table-responsive p-0 d-flex">
-                                    <table class="table align-items-center mb-0">
+                                    <table
+                                        class="table align-items-center mb-0"
+                                    >
                                         <thead>
                                             <tr>
-                                                <th class="text-uppercase text-xxs font-weight-bolder col-1">Mã
-                                                    NV<br>&nbsp;</th>
-                                                <th class="text-uppercase text-xxs font-weight-bolder ps-2 col-1">Họ và
-                                                    tên<br>&nbsp;</th>
+                                                <th
+                                                    class="text-uppercase text-xxs font-weight-bolder col-1"
+                                                >
+                                                    Mã NV
+                                                    <br />
+                                                    &nbsp;
+                                                </th>
+                                                <th
+                                                    class="text-uppercase text-xxs font-weight-bolder ps-2 col-1"
+                                                >
+                                                    Họ và tên
+                                                    <br />
+                                                    &nbsp;
+                                                </th>
                                                 @foreach ($dates as $key => $date)
                                                     @if ($formatDate->dayOfWeek($date) == 'T7')
                                                         <th
-                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center">
-                                                            {{ $formatDate->formatTimeDate($date) }}<br>{{ $formatDate->dayOfWeek($date) }}
+                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center"
+                                                        >
+                                                            {{ $formatDate->formatTimeDate($date) }}
+                                                            <br />
+                                                            {{ $formatDate->dayOfWeek($date) }}
                                                         </th>
                                                     @endif
                                                 @endforeach
@@ -293,26 +438,36 @@
                                                 @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
                                                     <tr>
                                                         <td>
-                                                            <p class="text-xs font-weight-bold mb-0">
+                                                            <p
+                                                                class="text-xs font-weight-bold mb-0"
+                                                            >
                                                                 {{ $celenderDetailWC->employee->code }}
                                                             </p>
                                                         </td>
                                                         <td>
-                                                            <p class="text-xs font-weight-bold mb-0">
+                                                            <p
+                                                                class="text-xs font-weight-bold mb-0"
+                                                            >
                                                                 {{ $celenderDetailWC->employee->name }}
                                                             </p>
                                                         </td>
+
                                                         <?php $keyDate = 0; ?>
+
                                                         @foreach ($dates as $key => $date)
                                                             @if ($formatDate->dayOfWeek($date) == 'T7')
-                                                                <?php $fill = 'day' . $keyDate + 1;
+                                                                <?php $fill = 'day'.$keyDate + 1;
                                                                 $keyDate += 1; ?>
-                                                                <td class="text-center">
+
+                                                                <td
+                                                                    class="text-center"
+                                                                >
                                                                     <input
                                                                         class="form-controll mw-input-wc {{ $celenderDetailWC->$fill ?? '' }}"
                                                                         type="text"
                                                                         value="{{ $celenderDetailWC->$fill ?? '' }}"
-                                                                        disabled>
+                                                                        disabled
+                                                                    />
                                                                 </td>
                                                             @endif
                                                         @endforeach
@@ -326,26 +481,48 @@
                         </div>
 
                         <!-- Women Tab -->
-                        <div class="tab-pane fade" id="women" role="tabpanel" aria-labelledby="women-tab">
+                        <div
+                            class="tab-pane fade"
+                            id="women"
+                            role="tabpanel"
+                            aria-labelledby="women-tab"
+                        >
                             <!-- Nội dung cho tab Women -->
                             <div class="px-0 pb-2 d-flex ms-4 mt-4">
-                                <div class="ms-5"><label class="X keywork">X </label><label for="">Ngày trực vệ
-                                        sinh</label></div>
+                                <div class="ms-5">
+                                    <label class="X keywork">X</label>
+                                    <label for="">Ngày trực vệ sinh</label>
+                                </div>
                             </div>
                             <div class="px-0 pb-2">
                                 <div class="table-responsive p-0 d-flex">
                                     <div class="">
-                                        <table class="table align-items-center mb-0">
+                                        <table
+                                            class="table align-items-center mb-0"
+                                        >
                                             <thead>
                                                 <tr>
-                                                    <th class="text-uppercase text-xxs font-weight-bolder col-1">Mã
-                                                        NV<br>&nbsp;</th>
-                                                    <th class="text-uppercase text-xxs font-weight-bolder ps-2 col-1">Họ và
-                                                        tên<br>&nbsp;</th>
+                                                    <th
+                                                        class="text-uppercase text-xxs font-weight-bolder col-1"
+                                                    >
+                                                        Mã NV
+                                                        <br />
+                                                        &nbsp;
+                                                    </th>
+                                                    <th
+                                                        class="text-uppercase text-xxs font-weight-bolder ps-2 col-1"
+                                                    >
+                                                        Họ và tên
+                                                        <br />
+                                                        &nbsp;
+                                                    </th>
                                                     @foreach ($dates as $key => $date)
                                                         <th
-                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center">
-                                                            {{ $formatDate->formatTimeDate($date) }}<br>{{ $formatDate->dayOfWeek($date) }}
+                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center"
+                                                        >
+                                                            {{ $formatDate->formatTimeDate($date) }}
+                                                            <br />
+                                                            {{ $formatDate->dayOfWeek($date) }}
                                                         </th>
                                                     @endforeach
                                                 </tr>
@@ -355,23 +532,29 @@
                                                     @foreach ($celenderDetailsWCCleanWomen as $key => $celenderDetailWCClean)
                                                         <tr>
                                                             <td>
-                                                                <p class="text-xs font-weight-bold mb-0">
+                                                                <p
+                                                                    class="text-xs font-weight-bold mb-0"
+                                                                >
                                                                     {{ $celenderDetailWCClean->employee->code }}
                                                                 </p>
                                                             </td>
                                                             <td>
-                                                                <p class="text-xs font-weight-bold mb-0">
+                                                                <p
+                                                                    class="text-xs font-weight-bold mb-0"
+                                                                >
                                                                     {{ $celenderDetailWCClean->employee->name }}
                                                                 </p>
                                                             </td>
                                                             @foreach ($dates as $key => $date)
-                                                                <?php $fill = 'day' . $key + 1; ?>
+                                                                <?php $fill = 'day'.$key + 1; ?>
+
                                                                 <td>
                                                                     <input
                                                                         class="form-controll mw-input {{ $celenderDetailWCClean->$fill ?? '' }}"
                                                                         type="text"
                                                                         value="{{ $celenderDetailWCClean->$fill ?? '' }}"
-                                                                        disabled>
+                                                                        disabled
+                                                                    />
                                                                 </td>
                                                             @endforeach
                                                         </tr>
@@ -385,26 +568,48 @@
                         </div>
 
                         <!-- Men Tab -->
-                        <div class="tab-pane fade" id="men" role="tabpanel" aria-labelledby="men-tab">
+                        <div
+                            class="tab-pane fade"
+                            id="men"
+                            role="tabpanel"
+                            aria-labelledby="men-tab"
+                        >
                             <!-- Nội dung cho tab Men -->
                             <div class="px-0 pb-2 d-flex ms-4 mt-4">
-                                <div class="ms-5"><label class="X keywork">X </label><label for="">Ngày trực vệ
-                                        sinh</label></div>
+                                <div class="ms-5">
+                                    <label class="X keywork">X</label>
+                                    <label for="">Ngày trực vệ sinh</label>
+                                </div>
                             </div>
                             <div class="px-0 pb-2">
                                 <div class="table-responsive p-0 d-flex">
                                     <div class="">
-                                        <table class="table align-items-center mb-0">
+                                        <table
+                                            class="table align-items-center mb-0"
+                                        >
                                             <thead>
                                                 <tr>
-                                                    <th class="text-uppercase text-xxs font-weight-bolder col-1">Mã
-                                                        NV<br>&nbsp;</th>
-                                                    <th class="text-uppercase text-xxs font-weight-bolder ps-2 col-1">Họ và
-                                                        tên<br>&nbsp;</th>
+                                                    <th
+                                                        class="text-uppercase text-xxs font-weight-bolder col-1"
+                                                    >
+                                                        Mã NV
+                                                        <br />
+                                                        &nbsp;
+                                                    </th>
+                                                    <th
+                                                        class="text-uppercase text-xxs font-weight-bolder ps-2 col-1"
+                                                    >
+                                                        Họ và tên
+                                                        <br />
+                                                        &nbsp;
+                                                    </th>
                                                     @foreach ($dates as $key => $date)
                                                         <th
-                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center">
-                                                            {{ $formatDate->formatTimeDate($date) }}<br>{{ $formatDate->dayOfWeek($date) }}
+                                                            class="text-uppercase text-xxs font-weight-bolder col-1 date-list text-center"
+                                                        >
+                                                            {{ $formatDate->formatTimeDate($date) }}
+                                                            <br />
+                                                            {{ $formatDate->dayOfWeek($date) }}
                                                         </th>
                                                     @endforeach
                                                 </tr>
@@ -414,23 +619,29 @@
                                                     @foreach ($celenderDetailsWCCleanMen as $key => $celenderDetailWCClean)
                                                         <tr>
                                                             <td>
-                                                                <p class="text-xs font-weight-bold mb-0">
+                                                                <p
+                                                                    class="text-xs font-weight-bold mb-0"
+                                                                >
                                                                     {{ $celenderDetailWCClean->employee->code }}
                                                                 </p>
                                                             </td>
                                                             <td>
-                                                                <p class="text-xs font-weight-bold mb-0">
+                                                                <p
+                                                                    class="text-xs font-weight-bold mb-0"
+                                                                >
                                                                     {{ $celenderDetailWCClean->employee->name }}
                                                                 </p>
                                                             </td>
                                                             @foreach ($dates as $key => $date)
-                                                                <?php $fill = 'day' . $key + 1; ?>
+                                                                <?php $fill = 'day'.$key + 1; ?>
+
                                                                 <td>
                                                                     <input
                                                                         class="form-controll mw-input {{ $celenderDetailWCClean->$fill ?? '' }}"
                                                                         type="text"
                                                                         value="{{ $celenderDetailWCClean->$fill ?? '' }}"
-                                                                        disabled>
+                                                                        disabled
+                                                                    />
                                                                 </td>
                                                             @endforeach
                                                         </tr>
@@ -443,15 +654,21 @@
                             </div>
                         </div>
                     </div>
-                    <a href="{{ route('admin.celender.home') }}" type="button" class="btn btn-danger ms-2">Quay lại</a>
+                    <a
+                        href="{{ route('admin.celender.home') }}"
+                        type="button"
+                        class="btn btn-danger ms-2"
+                    >
+                        Quay lại
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const listClass = ['N', 'D', 'X', 'TC', 'LN'];
-            $('input').on('keyup', function() {
+            $('input').on('keyup', function () {
                 $(this).val($(this).val().toUpperCase());
                 for (let i = 0; i < listClass.length; i++) {
                     if ($(this).hasClass(listClass[i])) {

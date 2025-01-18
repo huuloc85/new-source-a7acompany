@@ -24,13 +24,19 @@
                 <div class="col-auto">
                     <div class="avatar avatar-xl position-relative">
                         @if (Auth()->user()->role->role_name == 'admin' ||
-                                Auth()->user()->role->role_name == 'manager' ||
-                                Auth()->user()->role->role_name == 'accountant')
-                            <img src="{{ asset('storage/admin/' . Auth()->user()->photo) }}" alt="profile_image"
-                                class="w-100 border-radius-lg shadow-sm">
+                             Auth()->user()->role->role_name == 'manager' ||
+                             Auth()->user()->role->role_name == 'accountant')
+                            <img
+                                src="{{ asset('storage/admin/'.Auth()->user()->photo) }}"
+                                alt="profile_image"
+                                class="w-100 border-radius-lg shadow-sm"
+                            />
                         @else
-                            <img src="{{ asset('storage/employee/' . Auth()->user()->photo) }}" alt="profile_image"
-                                class="w-100 border-radius-lg shadow-sm">
+                            <img
+                                src="{{ asset('storage/employee/'.Auth()->user()->photo) }}"
+                                alt="profile_image"
+                                class="w-100 border-radius-lg shadow-sm"
+                            />
                         @endif
                     </div>
                 </div>
@@ -51,153 +57,370 @@
                 <div class="col-12 col-lg-6">
                     <div class="info mb-4">
                         @if (Auth()->user()->role->role_name == 'admin' ||
-                                Auth()->user()->role->role_name == 'manager' ||
-                                Auth()->user()->role->role_name == 'accountant')
+                             Auth()->user()->role->role_name == 'manager' ||
+                             Auth()->user()->role->role_name == 'accountant')
                             <h5 class="text-center">Thay đổi thông tin</h5>
-                            <form action="{{ route('admin.change-profile') }}" method="post" enctype="multipart/form-data">
+                            <form
+                                action="{{ route('admin.change-profile') }}"
+                                method="post"
+                                enctype="multipart/form-data"
+                            >
                                 @csrf
                                 <div class="row">
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label for="name" class="form-label" for="">Tên</label>
-                                            <input type="text" value="{{ old('name') ?? (Auth()->user()->name ?? '') }}"
-                                                name="name" id="name" class="form-control @error('name') is-invalid @enderror"
-                                                placeholder="Tên" disabled>
+                                            <label
+                                                for="name"
+                                                class="form-label"
+                                                for=""
+                                            >
+                                                Tên
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ old('name') ?? (Auth()->user()->name ?? '') }}"
+                                                name="name"
+                                                id="name"
+                                                class="form-control @error('name') is-invalid @enderror"
+                                                placeholder="Tên"
+                                                disabled
+                                            />
                                             @error('name')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label for="phone" class="form-label" for="">Tên đăng nhập</label>
-                                            <input type="text" value="{{ old('phone') ?? (Auth()->user()->phone ?? '') }}"
-                                                name="phone" id="phone" class="form-control @error('phone') is-invalid @enderror"
-                                                placeholder="Tên đăng nhập" disabled>
+                                            <label
+                                                for="phone"
+                                                class="form-label"
+                                                for=""
+                                            >
+                                                Tên đăng nhập
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ old('phone') ?? (Auth()->user()->phone ?? '') }}"
+                                                name="phone"
+                                                id="phone"
+                                                class="form-control @error('phone') is-invalid @enderror"
+                                                placeholder="Tên đăng nhập"
+                                                disabled
+                                            />
                                             @error('phone')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="photo">Ảnh</label>
-                                            <input accept="image/*" type='file' id="inputFile" name="photo" id="photo"
-                                                class="form-control">
-                                            <img type="hidden" width="66px" height="66px" id="blah1"
-                                                src="{{ asset('storage/admin/' . Auth()->user()->photo) }}"
-                                                alt="" />
+                                            <label
+                                                class="form-label"
+                                                for="photo"
+                                            >
+                                                Ảnh
+                                            </label>
+                                            <input
+                                                accept="image/*"
+                                                type="file"
+                                                id="inputFile"
+                                                name="photo"
+                                                id="photo"
+                                                class="form-control"
+                                            />
+                                            <img
+                                                type="hidden"
+                                                width="66px"
+                                                height="66px"
+                                                id="blah1"
+                                                src="{{ asset('storage/admin/'.Auth()->user()->photo) }}"
+                                                alt=""
+                                            />
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
-                                <a href="{{ route('logout') }}" class="btn btn-danger">Đăng xuất</a>
+                                <button type="submit" class="btn btn-primary">
+                                    Cập nhật thông tin
+                                </button>
+                                <a
+                                    href="{{ route('logout') }}"
+                                    class="btn btn-danger"
+                                >
+                                    Đăng xuất
+                                </a>
                             </form>
                         @else
                             <h5 class="text-center">Thông tin tài khoản</h5>
                             <div class="row">
-                                <form action="{{ route('admin.change-info') }}" method="post">
+                                <form
+                                    action="{{ route('admin.change-info') }}"
+                                    method="post"
+                                >
                                     @csrf
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="name">Tên</label>
-                                            <input type="text" value="{{ Auth()->user()->name ?? '' }}" name="name" id="name"
-                                                class="form-control">
+                                            <label
+                                                class="form-label"
+                                                for="name"
+                                            >
+                                                Tên
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ Auth()->user()->name ?? '' }}"
+                                                name="name"
+                                                id="name"
+                                                class="form-control"
+                                            />
                                             @error('name')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="phone">Số điện thoại</label>
-                                            <input type="text" value="{{ Auth()->user()->phone ?? '' }}" name="phone" id="phone"
-                                                class="form-control">
+                                            <label
+                                                class="form-label"
+                                                for="phone"
+                                            >
+                                                Số điện thoại
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ Auth()->user()->phone ?? '' }}"
+                                                name="phone"
+                                                id="phone"
+                                                class="form-control"
+                                            />
                                             @error('phone')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label for="email" class="form-label">Email</label>
-                                            <input type="text" value="{{ Auth()->user()->email ?? '' }}" name="email" id="email"
-                                                class="form-control">
+                                            <label
+                                                for="email"
+                                                class="form-label"
+                                            >
+                                                Email
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ Auth()->user()->email ?? '' }}"
+                                                name="email"
+                                                id="email"
+                                                class="form-control"
+                                            />
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="code">Mã nhân viên</label>
-                                            <input type="text" value="{{ Auth()->user()->code ?? '' }}" name="code" id="code"
-                                                class="form-control">
+                                            <label
+                                                class="form-label"
+                                                for="code"
+                                            >
+                                                Mã nhân viên
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ Auth()->user()->code ?? '' }}"
+                                                name="code"
+                                                id="code"
+                                                class="form-control"
+                                            />
                                             @error('code')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="birthday">Ngày tháng năm sinh</label>
-                                            <input type="date" value="{{ Auth()->user()->birthday ?? '' }}"
-                                                name="birthday" class="form-control" id="birthday">
+                                            <label
+                                                class="form-label"
+                                                for="birthday"
+                                            >
+                                                Ngày tháng năm sinh
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value="{{ Auth()->user()->birthday ?? '' }}"
+                                                name="birthday"
+                                                class="form-control"
+                                                id="birthday"
+                                            />
                                             @error('birthday')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="date_joining">Ngày vào công ty</label>
-                                            <input type="date" value="{{ Auth()->user()->date_joining ?? '' }}"
-                                                name="date_joining" id="date_joining" class="form-control">
+                                            <label
+                                                class="form-label"
+                                                for="date_joining"
+                                            >
+                                                Ngày vào công ty
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value="{{ Auth()->user()->date_joining ?? '' }}"
+                                                name="date_joining"
+                                                id="date_joining"
+                                                class="form-control"
+                                            />
                                             @error('date_joining')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Ảnh</label><br>
-                                            <img type="hidden" width="66px" height="66px" id="blah1"
-                                                src="{{ asset('storage/employee/' . Auth()->user()->photo) }}"
-                                                alt="" />
+                                            <label class="form-label" for="">
+                                                Ảnh
+                                            </label>
+                                            <br />
+                                            <img
+                                                type="hidden"
+                                                width="66px"
+                                                height="66px"
+                                                id="blah1"
+                                                src="{{ asset('storage/employee/'.Auth()->user()->photo) }}"
+                                                alt=""
+                                            />
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label" for="address">Tạm trú</label>
-                                            <textarea name="address" class="form-control" id="address" cols="30" rows="3">{{ Auth()->user()->address ?? '' }}</textarea>
+                                            <label
+                                                class="form-label"
+                                                for="address"
+                                            >
+                                                Tạm trú
+                                            </label>
+                                            <textarea
+                                                name="address"
+                                                class="form-control"
+                                                id="address"
+                                                cols="30"
+                                                rows="3"
+                                            >
+{{ Auth()->user()->address ?? '' }}</textarea
+                                            >
                                             @error('address')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="home_town">Quê quán</label>
-                                            <textarea name="home_town" class="form-control" id="home_town" cols="30" rows="3">{{ Auth()->user()->home_town ?? '' }}</textarea>
+                                            <label
+                                                class="form-label"
+                                                for="home_town"
+                                            >
+                                                Quê quán
+                                            </label>
+                                            <textarea
+                                                name="home_town"
+                                                class="form-control"
+                                                id="home_town"
+                                                cols="30"
+                                                rows="3"
+                                            >
+{{ Auth()->user()->home_town ?? '' }}</textarea
+                                            >
                                             @error('home_town')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="CCCD">Số CCCD</label>
-                                            <input type="text" value="{{ Auth()->user()->CCCD ?? '' }}"
-                                                name="CCCD" class="form-control" id="CCCD">
+                                            <label
+                                                class="form-label"
+                                                for="CCCD"
+                                            >
+                                                Số CCCD
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ Auth()->user()->CCCD ?? '' }}"
+                                                name="CCCD"
+                                                class="form-control"
+                                                id="CCCD"
+                                            />
                                             @error('CCCD')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="gender">Giới tính</label>
-                                            <input type="text" value="{{ Auth()->user()->gender ?? '' }}"
-                                                name="gender" class="form-control" id="gender">
+                                            <label
+                                                class="form-label"
+                                                for="gender"
+                                            >
+                                                Giới tính
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ Auth()->user()->gender ?? '' }}"
+                                                name="gender"
+                                                class="form-control"
+                                                id="gender"
+                                            />
                                             @error('gender')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="marital_status">Tình trạng hôn nhân</label>
-                                            <input type="text" value="{{ Auth()->user()->marital_status ?? '' }}"
-                                                name="marital_status" class="form-control" id="marital_status">
+                                            <label
+                                                class="form-label"
+                                                for="marital_status"
+                                            >
+                                                Tình trạng hôn nhân
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="{{ Auth()->user()->marital_status ?? '' }}"
+                                                name="marital_status"
+                                                class="form-control"
+                                                id="marital_status"
+                                            />
                                             @error('marital_status')
-                                                <div class="text text-danger">{{ $message }}</div>
+                                                <div class="text text-danger">
+                                                    {{ $message }}
+                                                </div>
                                             @enderror
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label" for="">Ảnh thẻ</label><br>
-                                            <img type="hidden" width="66px" height="66px" id="blah1"
-                                                src="{{ asset('storage/employee/card/' . Auth()->user()->card_photo) }}"
-                                                alt="" />
+                                            <label class="form-label" for="">
+                                                Ảnh thẻ
+                                            </label>
+                                            <br />
+                                            <img
+                                                type="hidden"
+                                                width="66px"
+                                                height="66px"
+                                                id="blah1"
+                                                src="{{ asset('storage/employee/card/'.Auth()->user()->card_photo) }}"
+                                                alt=""
+                                            />
                                         </div>
                                     </div>
                                     <div class="row d-flex bd-highlight">
-                                        <div class="col-12 col-sm-6 bd-highlight">
-                                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                                        <div
+                                            class="col-12 col-sm-6 bd-highlight"
+                                        >
+                                            <button
+                                                type="submit"
+                                                class="btn btn-primary"
+                                            >
+                                                Cập nhật
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -208,70 +431,126 @@
                 <div class="col-12 col-lg-6">
                     <div class="info">
                         <h5 class="text-center">Thay đổi mật khẩu</h5>
-                        <form action="{{ route('admin.change-password') }}" method="post">
+                        <form
+                            action="{{ route('admin.change-password') }}"
+                            method="post"
+                        >
                             @csrf
                             <div class="row">
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="newpassword">Mật khẩu mới</label>
-                                        <input type="password" value="" name="newpassword"
+                                        <label
+                                            class="form-label"
+                                            for="newpassword"
+                                        >
+                                            Mật khẩu mới
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value=""
+                                            name="newpassword"
                                             class="form-control @error('newpassword') is-invalid @enderror"
-                                            placeholder="Mật khẩu mới" id="newpassword" required>
+                                            placeholder="Mật khẩu mới"
+                                            id="newpassword"
+                                            required
+                                        />
                                         @error('newpassword')
-                                            <div class="text text-danger">{{ $message }}</div>
+                                            <div class="text text-danger">
+                                                {{ $message }}
+                                            </div>
                                         @enderror
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="renewpassword">Nhập lại mật khẩu mới</label>
-                                        <input type="password" value="" name="renewpassword"
+                                        <label
+                                            class="form-label"
+                                            for="renewpassword"
+                                        >
+                                            Nhập lại mật khẩu mới
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value=""
+                                            name="renewpassword"
                                             class="form-control @error('renewpassword') is-invalid @enderror"
-                                            placeholder="Nhập lại mật khẩu mới" id="renewpassword" required>
+                                            placeholder="Nhập lại mật khẩu mới"
+                                            id="renewpassword"
+                                            required
+                                        />
                                         @error('renewpassword')
-                                            <div class="text text-danger">{{ $message }}</div>
+                                            <div class="text text-danger">
+                                                {{ $message }}
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label" for="password">Mật khẩu cũ</label>
-                                        <input type="password" value="" name="password"
+                                        <label
+                                            class="form-label"
+                                            for="password"
+                                        >
+                                            Mật khẩu cũ
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value=""
+                                            name="password"
                                             class="form-control @error('password') is-invalid @enderror"
-                                            placeholder="Mật khẩu cũ" required id="password">
+                                            placeholder="Mật khẩu cũ"
+                                            required
+                                            id="password"
+                                        />
                                         @error('password')
-                                            <div class="text text-danger">{{ $message }}</div>
+                                            <div class="text text-danger">
+                                                {{ $message }}
+                                            </div>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
                             <div class="row d-flex bd-highlight">
                                 <div class="col-12 col-sm-6 bd-highlight">
-                                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
+                                        Cập nhật
+                                    </button>
                                 </div>
                             </div>
                         </form>
                         <div class="col-12 col-sm-6 flex-shrink-1 bd-highlight">
-                            <form action="{{ route('admin.reset-password', Auth()->user()->id) }}" method="post">
+                            <form
+                                action="{{ route('admin.reset-password', Auth()->user()->id) }}"
+                                method="post"
+                            >
                                 @csrf
-                                <button type="submit"
+                                <button
+                                    type="submit"
                                     onclick="return confirm('Bạn có chắc chắn muốn khôi phục lại mật khẩu?');"
-                                    class="btn btn-danger">Khôi phục mật khẩu</button>
+                                    class="btn btn-danger"
+                                >
+                                    Khôi phục mật khẩu
+                                </button>
                             </form>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-lg-6 mt-4">
-                    <a class="btn btn-danger" href="{{ route('admin.home') }}">Quay lại</a>
+                    <a class="btn btn-danger" href="{{ route('admin.home') }}">
+                        Quay lại
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        jQuery(document).ready(function() {
+        jQuery(document).ready(function () {
             if ($('#blah').hide()) {
                 $('#blah').hide();
             }
-            jQuery('#inputFile').change(function() {
+            jQuery('#inputFile').change(function () {
                 $('#blah').show();
                 const file = jQuery(this)[0].files;
                 if (file[0]) {

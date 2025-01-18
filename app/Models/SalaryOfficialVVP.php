@@ -10,12 +10,12 @@ class SalaryOfficialVVP extends Model
     use HasFactory;
 
     //table
-    protected $table = "salary_officials_vvp";
+    protected $table = 'salary_officials_vvp';
 
     //paginate
     public const paginate = 100;
 
-    protected $fillable  = [
+    protected $fillable = [
         ///danh muc
         'salaries_manager_id',
         'employee_id',
@@ -25,14 +25,14 @@ class SalaryOfficialVVP extends Model
         'probationary_salary_basic_hours',              // Lương CB thử việc / 1 giờ
         'probationary_salary_basic_extra_hours',        // Lương CB thử việc tăng ca / 1 giờ
         'allowance_apprentice',                         // phụ cấp học việc
-        'salary_basic',                                 // Lương CB chính thức/ 26 ngày 
-        'regular_salary_hour',                          // Lương CB/ giờ 
+        'salary_basic',                                 // Lương CB chính thức/ 26 ngày
+        'regular_salary_hour',                          // Lương CB/ giờ
         'salary_overtime',                              // Lương tăng ca/giờ
-        'allowance_diligence',                          // Chuyên cần 
-        'allowance_responsibility',                     // Trách nhiệm 
-        'allowance_overtime',                           // Phụ cấp tăng ca/ ngày 
-        'allowance_night',                              // Phụ cấp đêm 
-        'allowance_rice',                               // Phụ cấp cơm trưa 
+        'allowance_diligence',                          // Chuyên cần
+        'allowance_responsibility',                     // Trách nhiệm
+        'allowance_overtime',                           // Phụ cấp tăng ca/ ngày
+        'allowance_night',                              // Phụ cấp đêm
+        'allowance_rice',                               // Phụ cấp cơm trưa
         'company_insurance',                            // BHXH công ty đóng
         'insurance',                                    // BHXH người lao động đóng
 
@@ -60,7 +60,7 @@ class SalaryOfficialVVP extends Model
         'overtime_hours_detail',                        //số giờ tăng ca
         'overtime_salary',                              //lương tăng ca
         'overtime_salary_notice',                       //lương tăng ca Ghi Chú
-        'number_of_work_days',                          // Số công ngày 
+        'number_of_work_days',                          // Số công ngày
         'allowance_rice_detail',                        //phụ cấp cơm ca ngày
         'allowance_rice_detail_notice',                 //phụ cấp cơm ca ngày Ghi Chú
         'number_of_work_nights',                        // Số công đêm
@@ -93,12 +93,12 @@ class SalaryOfficialVVP extends Model
         'sickness_notice',                              //Ốm đau Ghi Chú
         'funeral',                                      //Ma chay
         'funeral_notice',                               //Ma chay Ghi Chú
-        'birthday_money',                               //Tiền sinh nhật 
+        'birthday_money',                               //Tiền sinh nhật
         'birthday_money_notice',                        //Tiền sinh nhật Ghi Chú
-        'previous_period_debt',                         //Tiền lương tháng trước bị thiếu 
+        'previous_period_debt',                         //Tiền lương tháng trước bị thiếu
         'previous_period_debt_notice',                  //Tiền lương tháng trước bị thiếu Ghi Chú
-        'total_income',                                 //Tổng thu nhập 
-        'insurance_detail',                             //Khấu trừ BHXH 10.5% 
+        'total_income',                                 //Tổng thu nhập
+        'insurance_detail',                             //Khấu trừ BHXH 10.5%
         'insurance_detail_notice',                      //Khấu trừ BHXH 10.5% Ghi Chú
         'advance_money',                                //tạm ứng
         'advance_money_notice',                         //tạm ứng Ghi Chú
@@ -119,7 +119,7 @@ class SalaryOfficialVVP extends Model
         'subtract_error_minor_notice',                  //Trừ tiền số lỗi nhẹ Ghi Chú
         'kpi_subtraction',                              //trừ KPI
         'kpi_subtraction_notice',                       //trừ KPI Ghi Chú
-        'actually_received',                            //thực lãnh 
+        'actually_received',                            //thực lãnh
         'forms_of_payment',                             //hình thức thanh toán
         'company_insurance_detail',                     //BHXH (21.5%) công ty đóng cho NLĐ
 

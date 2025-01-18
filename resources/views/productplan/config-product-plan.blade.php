@@ -116,42 +116,65 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    {{-- <div class="card-header d-flex justify-content-between align-items-center">
+                    {{--
+                        <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">Nhập Kế Hoạch Sản Xuất</h4>
-                    </div> --}}
-                    <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
+                        </div>
+                    --}}
+                    <div
+                        class="card-header p-1 position-relative mt-n1 mx-1 no-print"
+                    >
                         <div class="border-radius-lg ps-2 pt-4 pb-3">
-                            <h4 class="card-title mb-0">Nhập Kế Hoạch Sản Xuất</h4>
+                            <h4 class="card-title mb-0">
+                                Nhập Kế Hoạch Sản Xuất
+                            </h4>
                         </div>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('admin.product-plan.handleConfig') }}">
+                        <form
+                            method="POST"
+                            action="{{ route('admin.product-plan.handleConfig') }}"
+                        >
                             @csrf
 
                             <table class="table">
                                 <thead>
                                     <tr>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Sản phẩm</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Sản phẩm
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Kế hoạch sản xuất</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Kế hoạch sản xuất
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Tỉ lệ sản phẩm</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Tỉ lệ sản phẩm
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Số lượng bao bì mỗi thùng</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Số lượng bao bì mỗi thùng
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Số sản phẩm mỗi thùng</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Số sản phẩm mỗi thùng
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Chu kỳ</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Chu kỳ
+                                        </th>
                                         <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                                            Số lượng cavity</th>
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        >
+                                            Số lượng cavity
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -159,49 +182,78 @@
                                         <tr>
                                             <td>{{ $plan->product->name }}</td>
                                             <td>
-                                                <input type="hidden" name="plans[{{ $plan->id }}][id]"
-                                                    value="{{ $plan->id }}">
-                                                <input type="hidden" name="plans[{{ $plan->id }}][product_id]"
-                                                    value="{{ $plan->product_id }}">
+                                                <input
+                                                    type="hidden"
+                                                    name="plans[{{ $plan->id }}][id]"
+                                                    value="{{ $plan->id }}"
+                                                />
+                                                <input
+                                                    type="hidden"
+                                                    name="plans[{{ $plan->id }}][product_id]"
+                                                    value="{{ $plan->product_id }}"
+                                                />
 
-                                                <input type="number" name="plans[{{ $plan->id }}][production_plan]"
+                                                <input
+                                                    type="number"
+                                                    name="plans[{{ $plan->id }}][production_plan]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.production_plan', $plan->production_plan) }}">
+                                                    value="{{ old('plans.'.$plan->id.'.production_plan', $plan->production_plan) }}"
+                                                />
                                             </td>
                                             <td>
-                                                <input type="number" name="plans[{{ $plan->id }}][product_density]"
+                                                <input
+                                                    type="number"
+                                                    name="plans[{{ $plan->id }}][product_density]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.product_density', $plan->product_density) }}">
+                                                    value="{{ old('plans.'.$plan->id.'.product_density', $plan->product_density) }}"
+                                                />
                                             </td>
                                             <td>
-                                                <input type="number"
+                                                <input
+                                                    type="number"
                                                     name="plans[{{ $plan->id }}][packaging_count_per_box]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.packaging_count_per_box', $plan->packaging_count_per_box) }}">
+                                                    value="{{ old('plans.'.$plan->id.'.packaging_count_per_box', $plan->packaging_count_per_box) }}"
+                                                />
                                             </td>
                                             <td>
-                                                <input type="number" name="plans[{{ $plan->id }}][products_per_box]"
+                                                <input
+                                                    type="number"
+                                                    name="plans[{{ $plan->id }}][products_per_box]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.products_per_box', $plan->products_per_box) }}">
+                                                    value="{{ old('plans.'.$plan->id.'.products_per_box', $plan->products_per_box) }}"
+                                                />
                                             </td>
                                             <td>
-                                                <input type="number" name="plans[{{ $plan->id }}][cycle]"
+                                                <input
+                                                    type="number"
+                                                    name="plans[{{ $plan->id }}][cycle]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.cycle', $plan->cycle) }}">
+                                                    value="{{ old('plans.'.$plan->id.'.cycle', $plan->cycle) }}"
+                                                />
                                             </td>
                                             <td>
-                                                <input type="number" name="plans[{{ $plan->id }}][cavity_count]"
+                                                <input
+                                                    type="number"
+                                                    name="plans[{{ $plan->id }}][cavity_count]"
                                                     class="form-control"
-                                                    value="{{ old('plans.' . $plan->id . '.cavity_count', $plan->cavity_count) }}">
+                                                    value="{{ old('plans.'.$plan->id.'.cavity_count', $plan->cavity_count) }}"
+                                                />
                                             </td>
                                         </tr>
                                     @endforeach
-
                                 </tbody>
                             </table>
                             <div class="form-buttons">
-                                <button type="submit" class="btn btn-primary">Cập nhật tất cả kế hoạch sản xuất</button>
-                                <a href="{{ route('admin.product-plan.index') }}" class="btn btn-secondary">Hủy</a>
+                                <button type="submit" class="btn btn-primary">
+                                    Cập nhật tất cả kế hoạch sản xuất
+                                </button>
+                                <a
+                                    href="{{ route('admin.product-plan.index') }}"
+                                    class="btn btn-secondary"
+                                >
+                                    Hủy
+                                </a>
                             </div>
                         </form>
                     </div>

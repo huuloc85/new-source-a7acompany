@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class HistoryPrintController extends Controller
 {
-
     public function index(Request $request)
     {
         $query = HistoryPrint::query();

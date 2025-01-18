@@ -18,7 +18,8 @@ class PackingStamp
         if (Auth()->user()->role->role_name == 'QA-QC' || Auth()->user()->role->role_name == 'admin') {
             return $next($request);
         }
-        toast('Bạn không có quyền truy cập!','error','top-right');
+        toast('Bạn không có quyền truy cập!', 'error', 'top-right');
+
         return redirect()->route('admin.home');
     }
 }
