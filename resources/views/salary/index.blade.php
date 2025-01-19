@@ -8,7 +8,7 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Danh Sách Bảng Lương</h4>
+            <h4>Danh Sách Bảng Lương</h4>
         </div>
         <div class="card-body">
             <div
@@ -26,7 +26,7 @@
                             name="key"
                             value="{{ request()->key }}"
                             type="text"
-                            class="form-control search-role"
+                            class="form-control"
                             placeholder="Nhập từ khóa..."
                         />
                         <button type="submit" class="btn btn-primary">
