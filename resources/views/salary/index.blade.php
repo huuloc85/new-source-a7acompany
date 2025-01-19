@@ -94,7 +94,7 @@
                                 <td class="text-center" scope="row">
                                     <a
                                         href="{{ route('admin.salary.detail', $salaryManager->id) }}"
-                                        class="btn btn-primary mb-0"
+                                        class="btn btn-primary"
                                     >
                                         Chi tiết
                                     </a>
@@ -141,12 +141,12 @@
                                         <div class="modal-footer">
                                             <form
                                                 action="{{ route('admin.salary.delete', $salaryManager->id) }}"
-                                                method="delete"
+                                                method="post"
                                             >
                                                 @method('DELETE')
                                                 @csrf
                                                 <button
-                                                    type="button"
+                                                    type="submit"
                                                     class="btn btn-danger"
                                                 >
                                                     Xóa
@@ -170,7 +170,6 @@
                                 <td colspan="6" class="text-center">
                                     Hiện tại chưa có bảng lương nào. Vui lòng
                                     <a
-                                        class="href"
                                         href="{{ route('admin.salary.getimport') }}"
                                     >
                                         Thêm bảng lương

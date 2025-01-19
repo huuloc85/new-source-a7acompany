@@ -91,7 +91,7 @@
                                 <td class="text-center" scope="row">
                                     <a
                                         href="{{ route('admin.category.edit', $category->id) }}"
-                                        class="btn btn-primary mb-0"
+                                        class="btn btn-primary"
                                     >
                                         Cập nhật
                                     </a>
@@ -138,12 +138,12 @@
                                         <div class="modal-footer">
                                             <form
                                                 action="{{ route('admin.category.delete', $category->id) }}"
-                                                method="delete"
+                                                method="post"
                                             >
                                                 @method('DELETE')
                                                 @csrf
                                                 <button
-                                                    type="button"
+                                                    type="submit"
                                                     class="btn btn-danger"
                                                 >
                                                     Xóa
@@ -167,7 +167,6 @@
                                 <td colspan="5" class="text-center">
                                     Hiện tại chưa có danh mục nào. Vui lòng
                                     <a
-                                        class="href"
                                         href="{{ route('admin.category.add') }}"
                                     >
                                         Thêm danh mục

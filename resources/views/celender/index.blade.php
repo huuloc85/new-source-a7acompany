@@ -1,191 +1,191 @@
 @extends('layouts.layout')
+@php
+    $isManager = Auth()->user()->role_id != 14 || Auth()->user()->role_id != 18;
+    $startValue = count($celenders) > 0 ? $celenders->firstItem() : 0;
+    $toValue = count($celenders) > 0 ? $celenders->lastItem() : 0;
+@endphp
+
 @section('content')
-    <style>
-        .form-control {
-            border: 1px solid #d2d6da !important;
-            padding-left: 10px;
-        }
-
-        .active > .page-link {
-            color: white !important;
-        }
-
-        .href {
-            color: blue !important;
-        }
-
-        .search-role {
-            height: 37px;
-        }
-    </style>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">
-                            Thêm Danh Sách Lịch Làm Việc
-                        </h4>
-                    </div>
-                </div>
-                <div class="p-4 pb-0 d-flex">
-                    <div style="">
-                        <div>
-                            @if (Auth()->user()->role_id != 14 && Auth()->user()->role_id != 18)
-                                <button
-                                    type="button"
-                                    class="btn btn-primary"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#importCelender"
-                                >
-                                    Import lịch làm việc
-                                </button>
-                                @include('celender.import')
-                                @error('title')
-                                    <div class="text text-danger">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-
-                                @error('date')
-                                    <div class="text text-danger">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-
-                                @error('fileImport')
-                                    <div class="text text-danger">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            @endif
+    <div class="card">
+        <div class="card-header">
+            <h4>Danh Sách Lịch Làm Việc</h4>
+        </div>
+        <div class="card-body">
+            <div
+                class="d-flex justify-content-between align-items-center flex-wrap"
+            >
+                @if ($isManager)
+                    <button
+                        type="button"
+                        class="btn btn-success mb-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#importCelender"
+                    >
+                        Import lịch làm việc
+                    </button>
+                    @include('celender.import')
+                    @error('title')
+                        <div class="text text-danger">
+                            {{ $message }}
                         </div>
+                    @enderror
+
+                    @error('date')
+                        <div class="text text-danger">
+                            {{ $message }}
+                        </div>
+                    @enderror
+
+                    @error('fileImport')
+                        <div class="text text-danger">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                @endif
+
+                <form action="" class="mb-2">
+                    <div class="input-group input-group-outline">
+                        <input
+                            name="key"
+                            value="{{ request()->key }}"
+                            type="text"
+                            class="form-control"
+                            placeholder="Nhập tiêu đề..."
+                        />
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                            <span hidden>Search</span>
+                        </button>
                     </div>
-                    <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                        <form action="">
-                            <div class="input-group input-group-outline">
-                                <input
-                                    name="key"
-                                    value="{{ request()->key }}"
-                                    type="text"
-                                    class="form-control search-role"
-                                    placeholder="Nhập tiêu đề..."
-                                />
-                                <button type="submit" class="btn btn-primary">
-                                    Tìm kiếm
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="ps-4 d-flex">
-                    Tổng : {{ count($celenders) }}/{{ $total }}
-                </div>
-                <div class="px-0 pb-2">
-                    <div class="table-responsive p-0">
-                        <table
-                            class="table align-items-center mb-0 table-hover"
-                        >
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3"
+                </form>
+            </div>
+            <div class="mb-2">
+                From
+                <span class="fw-bold">
+                    {{ $startValue }}
+                </span>
+                to
+                <span class="fw-bold">
+                    {{ $toValue }}
+                </span>
+                of
+                <span class="fw-bold">
+                    {{ $total }}
+                </span>
+                entires
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-uppercase text-center" scope="col">
+                                STT
+                            </th>
+                            <th class="text-uppercase" scope="col">Tiêu đề</th>
+                            <th class="text-uppercase text-center" scope="col">
+                                Ngày bắt đầu
+                            </th>
+                            <th class="text-uppercase text-center" scope="col">
+                                Chức năng
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($celenders as $key => $celender)
+                            <tr>
+                                <td class="fw-bold text-center" scope="row">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td scope="row">
+                                    {{ $celender->title }}
+                                </td>
+                                <td class="text-center" scope="row">
+                                    {{ $celender->formatTimeDMY($celender->date) }}
+                                </td>
+                                <td class="text-center" scope="row">
+                                    <a
+                                        href="{{ route('admin.celender.detail', $celender->id) }}"
+                                        class="btn btn-primary"
                                     >
-                                        STT
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3 px-4"
+                                        Chi tiết
+                                    </a>
+                                    <!-- Button trigger modal delete -->
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalDelete-{{ $celender->id }}"
                                     >
-                                        Tiêu đề
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3"
-                                    >
-                                        Ngày bắt đầu
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3"
-                                    >
-                                        Chức năng
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($celenders as $key => $celender)
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex px-3 py-1">
-                                                {{ $loop->iteration }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <p
-                                                class="text-xs font-weight-bold mb-0 px-3"
+                                        Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Modal delete -->
+                            <div
+                                class="modal fade"
+                                id="modalDelete-{{ $celender->id }}"
+                                tabindex="-1"
+                                aria-labelledby="modalDeleteLabel-{{ $celender->id }}"
+                                aria-hidden="true"
+                            >
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1
+                                                class="modal-title fs-5"
+                                                id="modalDeleteLabel-{{ $celender->id }}"
                                             >
-                                                {{ $celender->title }}
+                                                Xóa lịch làm việc
+                                            </h1>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>
+                                                Hành động không thể khôi phục!!
+                                                Bạn có chắc xoá lịch làm việc
+                                                <span class="fw-bold">
+                                                    {{ $celender->title }}
+                                                </span>
+                                                không?
                                             </p>
-                                        </td>
-                                        <td>
-                                            <p
-                                                class="text-xs font-weight-bold mb-0 px-3"
-                                            >
-                                                {{ $celender->formatTimeDMY($celender->date) }}
-                                            </p>
-                                        </td>
-                                        <td class="align-middle">
+                                        </div>
+                                        <div class="modal-footer">
                                             <form
                                                 action="{{ route('admin.celender.delete', $celender->id) }}"
                                                 method="post"
                                             >
                                                 @method('DELETE')
                                                 @csrf
-                                                <a
-                                                    href="{{ route('admin.celender.detail', $celender->id) }}"
-                                                    class="btn btn-primary mb-0"
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger"
                                                 >
-                                                    Chi tiết
-                                                </a>
-                                                @if (Auth()->user()->role_id != 14 && Auth()->user()->role_id != 18)
-                                                    <button
-                                                        onclick="return confirm('Hành động không thể khôi phục!! Bạn có chắc xoá lịch làm việc này không?');"
-                                                        class="btn btn-danger mb-0"
-                                                        type="submit"
-                                                    >
-                                                        Xóa
-                                                    </button>
-                                                @endif
+                                                    Xóa
+                                                </button>
                                             </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-
-                                @if ($total == 0)
-                                    <tr>
-                                        <td
-                                            colspan="6"
-                                            class="text-center pt-4"
-                                        >
-                                            Hiện tại chưa có lịch làm việc nào.
-                                        </td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                        <div
-                            style="
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                margin: 20px;
-                            "
-                        >
-                            <div>
-                                {{ $celenders->appends(request()->all())->links() }}
+                                            <button
+                                                type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal"
+                                            >
+                                                Đóng
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        @endforeach
+
+                        @if ($total == 0)
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    Hiện tại chưa có lịch làm việc nào.
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-center">
+                    {{ $celenders->appends(request()->all())->links() }}
                 </div>
             </div>
         </div>
