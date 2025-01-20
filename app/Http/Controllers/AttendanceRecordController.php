@@ -45,7 +45,8 @@ class AttendanceRecordController extends Controller
             });
         }
 
-        $records = $query->paginate(AttendanceRecord::paginate);
+        $limit = $request->input('limit', 50);
+        $records = $query->paginate($limit);
 
         return view('attendence.index', compact('records', 'currentMonth', 'categories', 'employees'));
     }

@@ -1,167 +1,162 @@
 @extends('layouts.layout')
+@php
+    $startValue = count($records) > 0 ? $records->firstItem() : 0;
+    $toValue = count($records) > 0 ? $records->lastItem() : 0;
+    $total = $records->total();
+
+    $limitList = [50, 100, 200, 300, 500];
+    $currentLimit = request('limit') ?? 50;
+@endphp
 
 @section('content')
-    <style>
-        .form-control,
-        .form-select {
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-        }
-
-        .form-control-search {
-            padding-left: 2.5rem;
-            border-radius: 25px;
-            border: 1px solid #ced4da;
-            font-size: 0.875rem;
-        }
-
-        .position-relative {
-            position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1rem;
-            color: #6c757d;
-        }
-
-        .form-control::placeholder {
-            color: #6c757d;
-        }
-
-        input#search:focus::placeholder {
-            color: transparent;
-        }
-
-        @media (max-width: 768px) {
-            .mb-2,
-            .btn {
-                width: 100%;
-            }
-
-            .btn {
-                margin-bottom: 0.5rem;
-            }
-        }
-    </style>
-
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">
-                            Bảng Lịch Sử Chấm Công Tháng
-                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
-                        </h4>
-                    </div>
+                <div class="card-header">
+                    <h4 class="card-title">
+                        Lịch Sử Chấm Công Tháng
+                        {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                    </h4>
                 </div>
-                <div
-                    class="d-flex flex-wrap align-items-center gap-3 my-2 px-2"
-                >
+                <div class="card-body">
                     <form
                         method="GET"
                         action="{{ route('admin.attendence.index') }}"
-                        class="d-flex flex-wrap w-100"
                     >
-                        <div class="mb-2 me-2">
-                            <input
-                                type="month"
-                                name="month"
-                                id="month"
-                                class="form-control"
-                                placeholder="Chọn tháng"
-                                value="{{ $currentMonth }}"
-                                onchange="this.form.submit()"
-                            />
-                        </div>
-                        <div class="mb-2 me-2">
-                            <select
-                                name="category"
-                                id="category"
-                                class="form-select"
-                                onchange="this.form.submit()"
-                            >
-                                <option value="">Tất cả</option>
-                                @foreach ($categories as $category)
-                                    <option
-                                        value="{{ $category->id }}"
-                                        {{ request('category') == $category->id ? 'selected' : '' }}
-                                    >
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-2 me-2 flex-grow-1 position-relative">
-                            <input
-                                type="text"
-                                id="search"
-                                class="form-control form-control-search"
-                                placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công"
-                            />
-                            <i class="search-icon fas fa-search"></i>
-                        </div>
-                        <div class="mb-2 d-flex">
+                        <div
+                            class="d-flex align-items-center flex-wrap gap-2 mb-2"
+                        >
                             <button
                                 type="button"
                                 class="btn btn-success btn-sm shadow-sm me-2"
                                 data-bs-toggle="modal"
                                 data-bs-target="#addDataModal"
                             >
-                                Thêm Dữ Liệu Chấm Công
+                                <i class="fas fa-plus"></i>
+                                <span>Thêm Dữ Liệu Chấm Công</span>
                             </button>
                             <a
                                 href="{{ route('admin.attendence.records') }}"
                                 class="btn btn-primary btn-sm shadow-sm"
                             >
-                                Bảng Tính Công
+                                <div class="fas fa-table"></div>
+                                <span>Bảng Tính Công</span>
                             </a>
                         </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-12 col-sm-4 col-md-3">
+                                <input
+                                    type="month"
+                                    name="month"
+                                    id="month"
+                                    class="form-control col-auto"
+                                    placeholder="Chọn tháng"
+                                    value="{{ $currentMonth }}"
+                                    onchange="this.form.submit()"
+                                />
+                            </div>
+                            <div class="col-12 col-sm-4 col-md-3">
+                                <select
+                                    name="category"
+                                    id="category"
+                                    class="form-select"
+                                    onchange="this.form.submit()"
+                                >
+                                    <option value="">Tất cả</option>
+                                    @foreach ($categories as $category)
+                                        <option
+                                            value="{{ $category->id }}"
+                                            {{ request('category') == $category->id ? 'selected' : '' }}
+                                        >
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-4 col-md-6">
+                                <input
+                                    type="text"
+                                    id="search"
+                                    class="form-control"
+                                    placeholder="Tìm kiếm theo tên nhân viên hoặc ngày chấm công"
+                                />
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            From
+                            <span class="fw-bold">
+                                {{ $startValue }}
+                            </span>
+                            to
+                            <span class="fw-bold">
+                                {{ $toValue }}
+                            </span>
+                            of
+                            <span class="fw-bold">
+                                {{ $total }}
+                            </span>
+                            entires
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-auto">
+                                <label class="col-form-label">Số lượng:</label>
+                            </div>
+                            <div class="col-auto">
+                                <select
+                                    name="limit"
+                                    class="form-select"
+                                    onchange="this.form.submit()"
+                                >
+                                    @foreach ($limitList as $limit)
+                                        <option
+                                            value="{{ $limit }}"
+                                            {{ $currentLimit == $limit ? 'selected' : '' }}
+                                        >
+                                            {{ $limit }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </form>
-                </div>
-                <div class="card-body">
+
                     <div class="table-responsive">
-                        <table class="table table-hover mb-4">
-                            <thead class="text-center">
+                        <table class="table table-hover">
+                            <thead class="table-light">
                                 <tr>
                                     <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        class="text-uppercase text-center"
+                                        scope="col"
                                     >
                                         STT
                                     </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
+                                    <th class="text-uppercase" scope="col">
                                         Mã Nhân Viên
                                     </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
+                                    <th class="text-uppercase" scope="col">
                                         Tên Nhân Viên
                                     </th>
                                     <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        class="text-uppercase text-center"
+                                        scope="col"
                                     >
                                         Ngày Chấm
                                     </th>
                                     <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        class="text-uppercase text-center"
+                                        scope="col"
                                     >
                                         Thời Gian
                                     </th>
                                     <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        class="text-uppercase text-center"
+                                        scope="col"
                                     >
                                         Danh Mục Làm Việc
                                     </th>
                                     <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
+                                        class="text-uppercase text-center"
+                                        scope="col"
                                     >
                                         Hành Động
                                     </th>
@@ -169,141 +164,175 @@
                             </thead>
                             <tbody>
                                 @foreach ($records as $record)
-                                    <tr class="text-center">
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $record->employee_code }}</td>
-                                        <td>
+                                    <tr>
+                                        <td
+                                            class="fw-bold text-center"
+                                            scope="row"
+                                        >
+                                            {{ $loop->iteration + $startValue - 1 }}
+                                        </td>
+                                        <td scope="row">
+                                            {{ $record->employee_code }}
+                                        </td>
+                                        <td scope="row">
                                             {{ $record->employee ? $record->employee->name : 'Không xác định' }}
                                         </td>
-                                        <td>
+                                        <td class="text-center" scope="row">
                                             {{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}
                                         </td>
-                                        <td>
+                                        <td class="text-center" scope="row">
                                             {{ \Carbon\Carbon::parse($record->datetime)->format('H:i:s') }}
                                         </td>
-                                        <td>
+                                        <td class="text-center" scope="row">
                                             {{ $record->employee ? $record->employee->category_celender->name : 'Không xác định' }}
                                         </td>
-                                        <td>
-                                            <!-- Delete Button -->
-                                            <form
-                                                method="POST"
-                                                action="{{ route('admin.attendence.destroy', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}"
-                                                style="display: inline"
-                                            >
-                                                @csrf
-                                                @method('DELETE')
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Bạn có chắc chắn muốn xóa không?');"
-                                                >
-                                                    Xóa
-                                                </button>
-                                            </form>
-
-                                            <!-- Update Button (Triggering Modal) -->
+                                        <td class="text-center" scope="row">
+                                            <!-- Update Button -->
                                             <button
                                                 type="button"
-                                                class="btn btn-primary btn-sm"
+                                                class="btn btn-primary"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#updateModal-{{ $loop->iteration }}"
                                             >
                                                 Cập Nhật
                                             </button>
-
-                                            <!-- Update Modal -->
-                                            <div
-                                                class="modal fade"
-                                                id="updateModal-{{ $loop->iteration }}"
-                                                tabindex="-1"
-                                                aria-labelledby="updateModalLabel-{{ $loop->iteration }}"
-                                                aria-hidden="true"
+                                            <!-- Delete Button -->
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalDelete-{{ $loop->iteration }}"
                                             >
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <form
-                                                            method="POST"
-                                                            action="{{ route('admin.attendence.update', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}"
-                                                        >
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <div
-                                                                class="modal-header"
-                                                            >
-                                                                <h5
-                                                                    class="modal-title"
-                                                                >
-                                                                    Cập Nhật
-                                                                    Thời Gian
-                                                                </h5>
-                                                                <button
-                                                                    type="button"
-                                                                    class="btn-close"
-                                                                    data-bs-dismiss="modal"
-                                                                    aria-label="Close"
-                                                                ></button>
-                                                            </div>
-                                                            <div
-                                                                class="modal-body"
-                                                            >
-                                                                <div
-                                                                    class="mb-3"
-                                                                >
-                                                                    <label
-                                                                        for="datetime"
-                                                                        class="form-label"
-                                                                    >
-                                                                        Thời
-                                                                        Gian
-                                                                    </label>
-                                                                    <input
-                                                                        type="datetime"
-                                                                        class="form-control"
-                                                                        name="datetime"
-                                                                        value="{{ \Carbon\Carbon::parse($record->datetime) }}"
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div
-                                                                class="modal-footer"
-                                                            >
-                                                                <button
-                                                                    type="button"
-                                                                    class="btn btn-secondary"
-                                                                    data-bs-dismiss="modal"
-                                                                >
-                                                                    Đóng
-                                                                </button>
-                                                                <button
-                                                                    type="submit"
-                                                                    class="btn btn-primary"
-                                                                >
-                                                                    Lưu Thay Đổi
-                                                                </button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                Xóa
+                                            </button>
                                         </td>
                                     </tr>
+                                    <!-- Update Modal -->
+                                    <div
+                                        class="modal fade"
+                                        id="updateModal-{{ $loop->iteration }}"
+                                        tabindex="-1"
+                                        aria-labelledby="updateModalLabel-{{ $loop->iteration }}"
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            class="modal-dialog modal-dialog-centered"
+                                        >
+                                            <div class="modal-content">
+                                                <form
+                                                    method="POST"
+                                                    action="{{ route('admin.attendence.update', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}"
+                                                >
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            Cập Nhật Thời Gian
+                                                        </h5>
+                                                        <button
+                                                            type="button"
+                                                            class="btn-close"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close"
+                                                        ></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label
+                                                                for="datetime"
+                                                                class="form-label"
+                                                            >
+                                                                Thời Gian
+                                                            </label>
+                                                            <input
+                                                                type="datetime"
+                                                                class="form-control"
+                                                                name="datetime"
+                                                                value="{{ \Carbon\Carbon::parse($record->datetime) }}"
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-secondary"
+                                                            data-bs-dismiss="modal"
+                                                        >
+                                                            Đóng
+                                                        </button>
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-primary"
+                                                        >
+                                                            Lưu Thay Đổi
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Modal delete -->
+                                    <div
+                                        class="modal fade"
+                                        id="modalDelete-{{ $loop->iteration }}"
+                                        tabindex="-1"
+                                        aria-labelledby="modalDeleteLabel-{{ $loop->iteration }}"
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            class="modal-dialog modal-dialog-centered"
+                                        >
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1
+                                                        class="modal-title fs-5"
+                                                        id="modalDeleteLabel-{{ $loop->iteration }}"
+                                                    >
+                                                        Xóa dữ liệu chấm công
+                                                    </h1>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>
+                                                        Bạn có chắc chắn muốn
+                                                        xóa dữ liệu chấm công
+                                                        <span class="fw-bold">
+                                                            #{{ $loop->iteration }}
+                                                        </span>
+                                                        không?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form
+                                                        action="{{ route('admin.attendence.destroy', ['employee_code' => $record->employee_code, 'datetime' => $record->datetime]) }}"
+                                                        method="post"
+                                                    >
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-danger"
+                                                        >
+                                                            Xóa
+                                                        </button>
+                                                    </form>
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal"
+                                                    >
+                                                        Đóng
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
-                        <div
-                            style="
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                margin: 20px;
-                            "
-                        >
-                            <div>
-                                {{ $records->appends(request()->all())->links() }}
-                            </div>
-                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-2">
+                        {{ $records->appends(request()->all())->links() }}
                     </div>
                 </div>
             </div>
@@ -408,6 +437,9 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('search');
