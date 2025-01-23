@@ -2,123 +2,90 @@
 
 @section('content')
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">
-                            Cập Nhật Loại Sản Phẩm Cần Kiểm Hàng Hoặc Sản Xuất
-                        </h4>
+                <div class="card-header">
+                    <h4>Cập Nhật Loại Sản Phẩm Cần Kiểm Hàng Hoặc Sản Xuất</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-column flex-sm-row gap-2 mb-3">
+                        <a
+                            class="btn btn-dark text-uppercase"
+                            href="{{ route('admin.home') }}"
+                        >
+                            <i class="fas fa-home"></i>
+                            Trang chủ
+                        </a>
+                        <a
+                            class="btn btn-warning text-uppercase"
+                            href="{{ route('admin.employee-history-check') }}"
+                        >
+                            <i class="fas fa-history"></i>
+                            Lịch Sử Sản Phẩm Đã Chọn Để Hoạt Động
+                        </a>
+                        <a
+                            href="{{ route('admin.product.update-quantity') }}"
+                            class="btn btn-success"
+                        >
+                            <i class="fas fa-edit"></i>
+                            Cập Nhật Sản Lượng
+                        </a>
                     </div>
-                </div>
-                <div class="p-4 pb-0 d-flex flex-column flex-sm-row">
-                    <a
-                        class="btn btn-dark mb-2 mb-sm-0 me-sm-2 text-uppercase"
-                        href="{{ route('admin.home') }}"
-                    >
-                        <i class="fas fa-home"></i>
-                        Trang chủ
-                    </a>
-                    <a
-                        class="btn btn-warning mb-2 mb-sm-0 me-sm-2 text-uppercase"
-                        href="{{ route('admin.employee-history-check') }}"
-                    >
-                        <i class="fas fa-history"></i>
-                        Lịch Sử Sản Phẩm Đã Chọn Để Hoạt Động
-                    </a>
-                    <a
-                        href="{{ route('admin.product.update-quantity') }}"
-                        class="btn btn-success mb-2 mb-sm-0 me-sm-2"
-                    >
-                        <i class="fas fa-edit"></i>
-                        Cập Nhật Sản Lượng
-                    </a>
-                </div>
 
-                <form
-                    action="{{ route('admin.employee.handle.check-employee-todo') }}"
-                    method="POST"
-                >
-                    @csrf
-                    <div class="px-4 pb-2">
-                        <h5 class="text-center">Thông tin cập nhật</h5>
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                                <div>
-                                    <label class="form-label fw-bold" for="">
-                                        Tên nhân viên:
-                                        <label>
-                                            {{ Auth()->user()->name ?? '' }}
-                                        </label>
+                    <h5 class="text-center">Thông tin cập nhật</h5>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div>
+                                <span class="fw-bold">Tên nhân viên:</span>
+                                {{ Auth()->user()->name ?? '' }}
+                            </div>
+                            <div>
+                                <span class="fw-bold">Mã nhân viên:</span>
+                                {{ Auth()->user()->code ?? '' }}
+                            </div>
+                            <div>
+                                <span class="fw-bold">Bộ phận:</span>
+                                {{ Auth()->user()->role->role_name ?? '' }}
+                            </div>
+                            <div>
+                                <span class="fw-bold">Danh mục:</span>
+                                {{ Auth()->user()->category_celender->name ?? '' }}
+                            </div>
+                            <div>
+                                <span class="fw-bold">Ca làm việc:</span>
+                                {{ $calendarDetail ?? '' }}
+                            </div>
+                            <form
+                                action="{{ route('admin.employee.handle.check-employee-todo') }}"
+                                method="POST"
+                            >
+                                @csrf
+                                <div class="form-group">
+                                    <label class="form-label" for="">
+                                        Chọn sản phẩm:
                                     </label>
-                                </div>
-                                <div>
-                                    <label class="form-label fw-bold" for="">
-                                        Mã nhân viên:
-                                        <label>
-                                            {{ Auth()->user()->code ?? '' }}
-                                        </label>
-                                    </label>
-                                </div>
-                                <div>
-                                    <label class="form-label fw-bold" for="">
-                                        Bộ phận:
-                                        <label>
-                                            {{ Auth()->user()->role->role_name ?? '' }}
-                                        </label>
-                                    </label>
-                                </div>
-                                <div>
-                                    <label class="form-label fw-bold" for="">
-                                        Danh mục:
-                                        <label>
-                                            {{ Auth()->user()->category_celender->name ?? '' }}
-                                        </label>
-                                    </label>
-                                </div>
-                                <div>
-                                    <label class="form-label fw-bold" for="">
-                                        Ca làm việc:
-                                        <label>
-                                            {{ $calendarDetail ?? '' }}
-                                        </label>
-                                    </label>
-                                </div>
-                                <div class="justify-content-between">
-                                    <div class="text-start">
-                                        <label class="form-label" for="">
-                                            Chọn sản phẩm:
-                                        </label>
-                                    </div>
-                                    <div class="text-end">
-                                        <select
-                                            class="form-control @error('product_id') is-invalid @enderror"
-                                            name="product_id"
-                                            required
-                                        >
+                                    <select
+                                        class="form-control @error('product_id') is-invalid @enderror"
+                                        name="product_id"
+                                        required
+                                    >
+                                        <option class="text-center" value="">
+                                            Chọn sản phẩm
+                                        </option>
+                                        @foreach ($products as $product)
                                             <option
-                                                style="text-align: center"
-                                                value=""
+                                                {{ old('product_id') == $product->id ? 'selected' : '' }}
+                                                value="{{ $product->id }}"
                                             >
-                                                Chọn sản phẩm
+                                                {{ $product->name }}
                                             </option>
-                                            @foreach ($products as $product)
-                                                <option
-                                                    {{ old('product_id') == $product->id ? 'selected' : '' }}
-                                                    value="{{ $product->id }}"
-                                                >
-                                                    {{ $product->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('product_id')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
+                                        @endforeach
+                                    </select>
+                                    @error('product_id')
+                                        <div class="text text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                                 </div>
                                 <input
                                     type="hidden"
@@ -130,15 +97,13 @@
                                     name="status"
                                     value="{{ $status }}"
                                 />
-                            </div>
+                                <button type="submit" class="btn btn-success">
+                                    Cập Nhật
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    <div class="p-4 pb-4 d-flex">
-                        <button type="submit" class="btn btn-success">
-                            Cập Nhật
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
