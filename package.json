@@ -4,8 +4,8 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "format": "npx prettier --write resources/",
-        "lint": "npx prettier --check resources/",
+        "format": "prettier --write resources/",
+        "lint": "prettier --check resources/",
         "prepare": "husky"
     },
     "devDependencies": {
@@ -18,10 +18,11 @@
         "vite": "^4.0.0"
     },
     "lint-staged": {
-        "*": [
-            "php ./vendor/bin/pint .",
-            "prettier --write .",
-            "git add ."
+        "*.php": [
+            "php ./vendor/bin/pint"
+        ],
+        "*.{js,blade.php,css,scss,json,md}": [
+            "prettier --write"
         ]
     }
 }

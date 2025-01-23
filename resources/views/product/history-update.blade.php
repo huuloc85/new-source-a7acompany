@@ -1,115 +1,85 @@
 @extends('layouts.layout')
 @section('content')
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Lịch Sử Nhập Sản Lượng</h4>
-                    </div>
+                <div class="card-header">
+                    <h4>Lịch Sử Nhập Sản Lượng</h4>
                 </div>
-                <div class="p-4 pb-0 d-flex">
+                <div class="card-body">
                     <a
-                        class="btn btn-danger"
+                        class="btn btn-primary"
                         href="{{ route('admin.product.update-quantity') }}"
                     >
-                        <i class="fas fa-arrow-left me-1"></i>
+                        <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
-                </div>
-                <div class="px-4 pb-2">
                     <h5 class="text-center">Thông tin cập nhật</h5>
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <div>
-                                <label class="form-label fw-bold" for="">
-                                    Tên nhân viên:
-                                    <label>
-                                        {{ Auth()->user()->name ?? '' }}
-                                    </label>
-                                </label>
+                                <span class="fw-bold">Tên nhân viên:</span>
+                                {{ Auth()->user()->name ?? '' }}
                             </div>
                             <div>
-                                <label class="form-label fw-bold" for="">
-                                    Mã nhân viên:
-                                    <label>
-                                        {{ Auth()->user()->code ?? '' }}
-                                    </label>
-                                </label>
+                                <span class="fw-bold">Mã nhân viên:</span>
+                                {{ Auth()->user()->code ?? '' }}
                             </div>
-                            <div>
-                                <form action="" id="searchForm">
-                                    <div style="display: flex">
-                                        <select
-                                            class="form-control"
-                                            style="
-                                                height: 35px;
-                                                margin-right: 10px;
-                                            "
-                                            name="month"
-                                            id="monthSelect"
-                                            onchange="document.getElementById('searchForm').submit();"
-                                        >
-                                            @foreach ($listMonth as $month)
-                                                <option
-                                                    {{ $month == $monthNearly ? 'selected' : '' }}
-                                                    value="{{ $month }}"
-                                                >
-                                                    {{ $month }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <select
-                                            class="form-control"
-                                            style="
-                                                height: 35px;
-                                                margin-right: 10px;
-                                            "
-                                            name="product_id"
-                                            id="productSelect"
-                                            onchange="document.getElementById('searchForm').submit();"
-                                        >
+                            <form action="" id="searchForm" class="my-3">
+                                <div
+                                    class="d-flex flex-column flex-sm-row gap-3"
+                                >
+                                    <select
+                                        class="form-control"
+                                        name="month"
+                                        id="monthSelect"
+                                    >
+                                        @foreach ($listMonth as $month)
                                             <option
-                                                {{ $product_id == '' ? 'selected' : '' }}
-                                                value=""
+                                                {{ $month == $monthNearly ? 'selected' : '' }}
+                                                value="{{ $month }}"
                                             >
-                                                Chọn sản phẩm
+                                                {{ $month }}
                                             </option>
-                                            @foreach ($listProduct as $product)
-                                                <option
-                                                    {{ $product_id == $product->id ? 'selected' : '' }}
-                                                    value="{{ $product->id }}"
-                                                >
-                                                    {{ $product->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
+                                        @endforeach
+                                    </select>
+
+                                    <select
+                                        class="form-control"
+                                        name="product_id"
+                                        id="productSelect"
+                                    >
+                                        <option
+                                            {{ $product_id == '' ? 'selected' : '' }}
+                                            value=""
+                                        >
+                                            Chọn sản phẩm
+                                        </option>
+                                        @foreach ($listProduct as $product)
+                                            <option
+                                                {{ $product_id == $product->id ? 'selected' : '' }}
+                                                value="{{ $product->id }}"
+                                            >
+                                                {{ $product->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </form>
                             <div class="d-flex justify-content-between">
-                                <div class="text-start pt-1">
-                                    <h6 class="mb-0">Ngày</h6>
-                                </div>
-                                <div class="text-end pt-1">
-                                    <h6 class="mb-0">Số lượng</h6>
-                                </div>
+                                <h6>Ngày</h6>
+                                <h6>Số lượng</h6>
                             </div>
                             @foreach ($datas as $data)
-                                <div class="d-flex justify-content-between">
-                                    <div class="text-start pt-1">
-                                        <label
-                                            class="form-label fw-bold"
-                                            for=""
-                                        >
-                                            {{ $data->date }}
-                                        </label>
-                                    </div>
-                                    <div class="text-end pt-1">
-                                        <label>{{ $data->quantity }}</label>
-                                    </div>
+                                <div
+                                    class="d-flex justify-content-between pb-1"
+                                >
+                                    <span>
+                                        {{ $data->date }}
+                                    </span>
+                                    <span>
+                                        {{ $data->quantity }}
+                                    </span>
                                 </div>
                             @endforeach
 
@@ -124,6 +94,9 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
     <script>
         document
             .getElementById('monthSelect')
