@@ -1,134 +1,121 @@
 @extends('layouts.layout')
 
-@section('content')
+{{--
     <style>
-        @media (max-width: 768px) {
-            .table-wrapper {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            thead {
-                display: none;
-            }
-
-            tr {
-                display: block;
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                overflow: hidden;
-            }
-
-            td {
-                display: block;
-                text-align: right;
-                font-size: 14px;
-                padding: 10px;
-                position: relative;
-                border-bottom: 1px solid #ddd;
-                word-wrap: break-word;
-                word-break: break-word;
-            }
-
-            td::before {
-                content: attr(data-label);
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                font-weight: bold;
-                white-space: nowrap;
-            }
-
-            td:last-child {
-                border-bottom: none;
-            }
-
-            table th:nth-child(1),
-            table td:nth-child(1) {
-                display: none;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .form-label {
-                font-size: 14px;
-            }
-
-            .form-control {
-                font-size: 14px;
-            }
-
-            table {
-                font-size: 12px;
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            th,
-            td {
-                padding: 8px;
-                border: 1px solid #ddd;
-                text-align: center;
-            }
-
-            th {
-                background-color: #f8f9fa;
-                font-weight: bold;
-            }
-
-            tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
-
-            tr:hover {
-                background-color: #f1f1f1;
-            }
-        }
+    @media (max-width: 768px) {
+    .table-wrapper {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    }
+    
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    }
+    
+    thead {
+    display: none;
+    }
+    
+    tr {
+    display: block;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    }
+    
+    td {
+    display: block;
+    text-align: right;
+    font-size: 14px;
+    padding: 10px;
+    position: relative;
+    border-bottom: 1px solid #ddd;
+    word-wrap: break-word;
+    word-break: break-word;
+    }
+    
+    td::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+    }
+    
+    td:last-child {
+    border-bottom: none;
+    }
+    
+    table th:nth-child(1),
+    table td:nth-child(1) {
+    display: none;
+    }
+    }
+    
+    @media (min-width: 769px) {
+    .form-label {
+    font-size: 14px;
+    }
+    
+    .form-control {
+    font-size: 14px;
+    }
+    
+    table {
+    font-size: 12px;
+    width: 100%;
+    border-collapse: collapse;
+    }
+    
+    th,
+    td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+    }
+    
+    th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+    background-color: #f9f9f9;
+    }
+    
+    tr:hover {
+    background-color: #f1f1f1;
+    }
+    }
     </style>
-
+--}}
+@section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div
-                        class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between"
-                    >
-                        <h4 class="card-title mb-0">
-                            Bảng Tính Công Tháng
-                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
-                        </h4>
-                    </div>
+                <div class="card-header">
+                    <h4>
+                        Bảng Tính Công Tháng
+                        {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                    </h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div>
-                            <label class="form-label fw-bold">
-                                Tên nhân viên:
-                                <span>{{ Auth()->user()->name ?? '' }}</span>
-                            </label>
+                            <span class="fw-bold">Tên nhân viên:</span>
+                            {{ Auth()->user()->name ?? '' }}
                         </div>
                         <div>
-                            <label class="form-label fw-bold">
-                                Mã nhân viên:
-                                <span>{{ Auth()->user()->code ?? '' }}</span>
-                            </label>
+                            <span class="fw-bold">Mã nhân viên:</span>
+                            {{ Auth()->user()->code ?? '' }}
                         </div>
                         <div>
-                            <label class="form-label fw-bold">
-                                Bộ phận:
-                                <span>
-                                    {{ Auth()->user()->role->role_name ?? '' }}
-                                </span>
-                            </label>
+                            <span class="fw-bold">Bộ phận:</span>
+                            {{ Auth()->user()->role->role_name ?? '' }}
                         </div>
                     </div>
                     <form
@@ -136,7 +123,9 @@
                         action="{{ route('admin.employee.attendence_caculate_records') }}"
                     >
                         <div class="form-group">
-                            <label for="month">Chọn tháng:</label>
+                            <label class="form-label" for="month">
+                                Chọn tháng:
+                            </label>
                             <input
                                 type="month"
                                 id="month"
@@ -147,8 +136,7 @@
                             />
                         </div>
                     </form>
-
-                    <div class="table-wrapper">
+                    <div class="table-responsive">
                         @if ($records->isEmpty())
                             <p class="text-center">
                                 Hiện tại chưa có thông tin nào.
@@ -161,10 +149,7 @@
                                     role="switch"
                                     id="filter_absent"
                                 />
-                                <label
-                                    class="form-check-label"
-                                    for="filter_absent"
-                                >
+                                <label class="form-check-label">
                                     Hiển thị những ngày quên chấm công
                                 </label>
                             </div>
@@ -173,56 +158,30 @@
                                 class="table table-hover mb-4"
                             >
                                 <thead>
-                                    <tr>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            STT
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
+                                    <tr class="text-center">
+                                        <th class="text-uppercase">STT</th>
+                                        <th class="text-uppercase">
                                             Mã Nhân Viên
                                         </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
+                                        <th class="text-uppercase">
                                             Tên Nhân Viên
                                         </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
+                                        <th class="text-uppercase">
                                             Ngày Chấm
                                         </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
+                                        <th class="text-uppercase">
                                             Ngày Trong Tuần
                                         </th>
 
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Giờ Vào
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Giờ Ra
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
+                                        <th class="text-uppercase">Giờ Vào</th>
+                                        <th class="text-uppercase">Giờ Ra</th>
+                                        <th class="text-uppercase">
                                             Tổng Giờ Làm Việc (H)
                                         </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
+                                        <th class="text-uppercase">
                                             Giờ Hành Chính (H)
                                         </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
+                                        <th class="text-uppercase">
                                             Giờ Tăng Ca (H)
                                         </th>
                                     </tr>
@@ -284,6 +243,9 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const filterCheckbox = document.getElementById('filter_absent');
