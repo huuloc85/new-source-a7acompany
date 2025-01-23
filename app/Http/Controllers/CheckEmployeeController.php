@@ -23,12 +23,12 @@ class CheckEmployeeController extends Controller
         $date = $request->input('filter_date', Carbon::today()->toDateString());
         $filterDate = Carbon::parse($date);
 
-        $checkEmployeeHistoryforAdmin = CheckEmployee::with(['employee', 'product'])
+        $checkEmployeeHistoryForAdmin = CheckEmployee::with(['employee', 'product'])
             ->whereDate('date', $filterDate)
             ->orderBy('date', 'desc')
             ->get();
 
-        $checkEmployeeHistoryforAdmin->each(function ($checkEmployee) {
+        $checkEmployeeHistoryForAdmin->each(function ($checkEmployee) {
             $checkEmployee->date = Carbon::parse($checkEmployee->date);
             $dailyQuantities = DailyQuantity::where('employee_id', $checkEmployee->employee_id)
                 ->where('product_id', $checkEmployee->product_id)
@@ -46,7 +46,7 @@ class CheckEmployeeController extends Controller
         $products = Product::all();
 
         return view('checkemployee.view-employee-todo', [
-            'checkEmployeeHistoryforAdmin' => $checkEmployeeHistoryforAdmin,
+            'checkEmployeeHistoryForAdmin' => $checkEmployeeHistoryForAdmin,
             'products' => $products,
             'filterDate' => $filterDate->toDateString(),
         ]);
