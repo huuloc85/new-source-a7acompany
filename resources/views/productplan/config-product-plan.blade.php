@@ -1,183 +1,42 @@
 @extends('layouts.layout')
 
 @section('content')
-    <style>
-        .container {
-            margin-top: 20px;
-            width: 100%;
-            padding: 0 15px;
-            /* Thêm padding để tránh bị dính vào mép */
-        }
-
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            /* Đảm bảo card chiếm toàn bộ chiều rộng của cột */
-            overflow: hidden;
-        }
-
-        .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #ddd;
-            padding: 16px;
-        }
-
-        .card-title {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .card-body {
-            padding: 16px;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .table th,
-        .table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-control {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 8px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            color: #fff;
-            padding: 8px 16px;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border: none;
-            color: #fff;
-            padding: 8px 16px;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-buttons {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .form-buttons .btn {
-            margin: 0 5px;
-        }
-    </style>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    {{--
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title">Nhập Kế Hoạch Sản Xuất</h4>
-                        </div>
-                    --}}
-                    <div
-                        class="card-header p-1 position-relative mt-n1 mx-1 no-print"
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Nhập Kế Hoạch Sản Xuất</h4>
+                </div>
+                <div class="card-body">
+                    <form
+                        method="POST"
+                        action="{{ route('admin.product-plan.handleConfig') }}"
                     >
-                        <div class="border-radius-lg ps-2 pt-4 pb-3">
-                            <h4 class="card-title mb-0">
-                                Nhập Kế Hoạch Sản Xuất
-                            </h4>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <form
-                            method="POST"
-                            action="{{ route('admin.product-plan.handleConfig') }}"
-                        >
-                            @csrf
-
+                        @csrf
+                        <div class="table-responsive mb-3">
                             <table class="table">
-                                <thead>
+                                <thead
+                                    class="text-uppercase text-center align-middle"
+                                >
                                     <tr>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Sản phẩm
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Kế hoạch sản xuất
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Tỉ lệ sản phẩm
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Số lượng bao bì mỗi thùng
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Số sản phẩm mỗi thùng
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Chu kỳ
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Số lượng cavity
-                                        </th>
+                                        <th>Sản phẩm</th>
+                                        <th>Kế hoạch sản xuất</th>
+                                        <th>Tỉ lệ sản phẩm</th>
+                                        <th>Số lượng bao bì mỗi thùng</th>
+                                        <th>Số sản phẩm mỗi thùng</th>
+                                        <th>Chu kỳ</th>
+                                        <th>Số lượng cavity</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @if (count($productionPlans) == 0)
+                                        <tr>
+                                            <td colspan="7" class="text-center">
+                                                Không có kế hoạch sản xuất nào
+                                            </td>
+                                        </tr>
+                                    @endif
+
                                     @foreach ($productionPlans as $plan)
                                         <tr>
                                             <td>{{ $plan->product->name }}</td>
@@ -244,19 +103,19 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="form-buttons">
-                                <button type="submit" class="btn btn-primary">
-                                    Cập nhật tất cả kế hoạch sản xuất
-                                </button>
-                                <a
-                                    href="{{ route('admin.product-plan.index') }}"
-                                    class="btn btn-secondary"
-                                >
-                                    Hủy
-                                </a>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                Cập nhật
+                            </button>
+                            <a
+                                href="{{ route('admin.product-plan.index') }}"
+                                class="btn btn-secondary"
+                            >
+                                Hủy
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
