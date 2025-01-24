@@ -1,155 +1,171 @@
 @extends('layouts.layout')
+@php
+    $startValue = count($roles) > 0 ? $roles->firstItem() : 0;
+    $toValue = count($roles) > 0 ? $roles->lastItem() : 0;
+@endphp
+
 @section('content')
-    <style>
-        .form-control {
-            border: 1px solid #d2d6da !important;
-            padding-left: 10px;
-        }
-
-        .active > .page-link {
-            color: white !important;
-        }
-
-        .href {
-            color: blue !important;
-        }
-
-        .search-role {
-            height: 37px;
-        }
-    </style>
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Danh Sách Chức Vụ</h4>
-                    </div>
+                <div class="card-header">
+                    <h4>Danh Sách Chức Vụ</h4>
                 </div>
-                <div class="p-4 pb-0 d-flex">
-                    <a
-                        href="{{ route('admin.role.add') }}"
-                        type="button"
-                        class="btn btn-success"
+                <div class="card-body">
+                    <div
+                        class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2"
                     >
-                        Thêm Chức Vụ
-                    </a>
-                    <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                        <a
+                            href="{{ route('admin.role.add') }}"
+                            type="button"
+                            class="btn btn-success"
+                        >
+                            <i class="fas fa-plus"></i>
+                            Thêm Chức Vụ
+                        </a>
                         <form action="">
-                            <div class="input-group input-group-outline">
+                            <div class="input-group">
                                 <input
                                     name="key"
                                     value="{{ request()->key }}"
                                     type="text"
-                                    class="form-control search-role"
+                                    class="form-control"
                                     placeholder="Nhận từ khóa..."
                                 />
                                 <button type="submit" class="btn btn-primary">
-                                    Tìm kiếm
+                                    <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </form>
                     </div>
-                </div>
-                <div class="ps-4 d-flex">
-                    Tổng : {{ count($roles) }}/{{ $total }}
-                </div>
-                <div class="px-0 pb-2">
-                    <div class="table-responsive p-0">
-                        <table
-                            class="table align-items-center mb-0 table-hover"
-                        >
-                            <thead>
+                    <div class="mb-2">
+                        From
+                        <span class="fw-bold">
+                            {{ $startValue }}
+                        </span>
+                        to
+                        <span class="fw-bold">
+                            {{ $toValue }}
+                        </span>
+                        of
+                        <span class="fw-bold">
+                            {{ $total }}
+                        </span>
+                        entires
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light text-uppercase">
                                 <tr>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3"
-                                    >
-                                        STT
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3 px-4"
-                                    >
-                                        Tên chức vụ
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3"
-                                    >
-                                        Ngày tạo
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3"
-                                    >
-                                        Ngày cập nhật
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3"
-                                    >
-                                        Chức Năng
-                                    </th>
+                                    <th class="text-center">STT</th>
+                                    <th>Tên chức vụ</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Ngày cập nhật</th>
+                                    <th class="text-center">Chức Năng</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="align-middle">
                                 @foreach ($roles as $key => $role)
                                     <tr>
-                                        <td>
-                                            <div class="d-flex px-3 py-1">
-                                                {{ $loop->iteration }}
-                                            </div>
+                                        <td class="text-center fw-bold">
+                                            {{ $loop->iteration + $roles->firstItem() - 1 }}
                                         </td>
                                         <td>
-                                            <p
-                                                class="text-xs font-weight-bold mb-0 px-3"
-                                            >
-                                                {{ $role->role_name }}
-                                            </p>
+                                            {{ $role->role_name }}
                                         </td>
                                         <td>
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $role->formatTimeDMY($role->created_at) }}
-                                            </p>
+                                            {{ $role->formatTimeDMY($role->created_at) }}
                                         </td>
                                         <td>
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $role->formatTimeDMY($role->updated_at) }}
-                                            </p>
+                                            {{ $role->formatTimeDMY($role->updated_at) }}
                                         </td>
-                                        <td class="align-middle">
-                                            <form
-                                                action="{{ route('admin.role.delete', $role->id) }}"
-                                                method="post"
+                                        <td class="text-center">
+                                            <a
+                                                href="{{ route('admin.role.edit', $role->id) }}"
+                                                class="btn btn-primary"
                                             >
-                                                @method('DELETE')
-                                                @csrf
-                                                <a
-                                                    href="{{ route('admin.role.edit', $role->id) }}"
-                                                    class="btn btn-primary mb-0"
-                                                >
-                                                    Cập nhật
-                                                </a>
-                                                <button
-                                                    onclick="return confirm('Hành động này không thể khôi phục! Bạn có chắc muốn xóa chức vụ này không?');"
-                                                    class="btn btn-danger mb-0"
-                                                    type="submit"
-                                                >
-                                                    Xóa
-                                                </button>
-                                            </form>
+                                                Cập nhật
+                                            </a>
+                                            {{-- Button delete --}}
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal-{{ $role->id }}"
+                                            >
+                                                Xóa
+                                            </button>
                                         </td>
                                     </tr>
+
+                                    {{-- Modal Delete --}}
+                                    <div
+                                        class="modal fade"
+                                        id="deleteModal-{{ $role->id }}"
+                                        tabindex="-1"
+                                        aria-labelledby="deleteModalLabel-{{ $role->id }}"
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            class="modal-dialog modal-dialog-centered"
+                                        >
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1
+                                                        class="modal-title fs-5"
+                                                        id="deleteModalLabel-{{ $role->id }}"
+                                                    >
+                                                        Xóa chức vụ
+                                                    </h1>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close"
+                                                    ></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>
+                                                        Hành động này không thể
+                                                        khôi phục! Bạn có chắc
+                                                        muốn xóa chức vụ
+                                                        <span class="fw-bold">
+                                                            "{{ $role->role_name }}"
+                                                        </span>
+                                                        không?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form
+                                                        action="{{ route('admin.role.delete', $role->id) }}"
+                                                        method="post"
+                                                    >
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-danger"
+                                                        >
+                                                            Xóa
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-secondary"
+                                                            data-bs-dismiss="modal"
+                                                        >
+                                                            Hủy
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
 
                                 @if ($total == 0)
                                     <tr>
-                                        <td
-                                            colspan="6"
-                                            class="text-center pt-4"
-                                        >
+                                        <td colspan="5" class="text-center">
                                             Hiện tại chưa có Chức vụ nào. Vui
                                             lòng
                                             <a
@@ -163,18 +179,9 @@
                                 @endif
                             </tbody>
                         </table>
-                        <div
-                            style="
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                margin: 20px;
-                            "
-                        >
-                            <div>
-                                {{ $roles->appends(request()->all())->links() }}
-                            </div>
-                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        {{ $roles->appends(request()->all())->links() }}
                     </div>
                 </div>
             </div>
