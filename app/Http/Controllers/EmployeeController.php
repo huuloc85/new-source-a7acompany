@@ -73,7 +73,8 @@ class EmployeeController extends Controller
             ->where('role_id', '!=', 17)
             ->where('deleted_at', null);
         $totalEmployee = $employees->get();
-        $employees = $employees->orderBy('id', 'DESC')->paginate(Employee::paginate);
+        $limit = $request->limit ?? Employee::paginate;
+        $employees = $employees->orderBy('id', 'DESC')->paginate($limit);
         $total = count($totalEmployee);
         $roles = Role::where('id', '!=', 15)
             ->where('id', '!=', 16)

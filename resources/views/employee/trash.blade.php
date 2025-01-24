@@ -1,166 +1,186 @@
 @extends('layouts.layout')
+
+@php
+    $defaultAvatar = asset('img/default-avatar.jpg');
+
+    $startValue = count($employees) == 0 ? 0 : $employees->firstItem();
+    $toValue = count($employees) == 0 ? 0 : $employees->lastItem();
+@endphp
+
 @section('content')
-    <style>
-        .form-control {
-            border: 1px solid #d2d6da !important;
-            padding-left: 10px;
-        }
-
-        .active > .page-link {
-            color: white !important;
-        }
-
-        .href {
-            color: blue !important;
-        }
-    </style>
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">
-                            Danh Sách Nhân Viên Đã Nghỉ Việc
-                        </h4>
-                    </div>
+                <div class="card-header">
+                    <h4>Danh Sách Nhân Viên Đã Nghỉ Việc</h4>
                 </div>
-                <div class="p-4 pb-0 d-flex">
+                <div class="card-body">
                     <a
                         href="{{ route('admin.employee.home') }}"
                         type="button"
-                        class="btn btn-success"
+                        class="btn btn-link mb-3"
                     >
-                        Danh Sách Nhân Viên
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại
                     </a>
                     <div
-                        style="
-                            flex-grow: 1;
-                            display: flex;
-                            justify-content: end;
-                        "
+                        class="d-flex flex-wrap-reverse justify-content-between align-items-center gap-3 mb-3"
                     >
                         <div>
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                data-bs-toggle="modal"
-                                data-bs-target="#searchModal"
-                            >
-                                Tìm kiếm
-                            </button>
-                            @include('employee.search-advand', ['href' => 'admin.employee.getTrash'])
+                            From
+                            <span class="fw-bold">
+                                {{ $startValue }}
+                            </span>
+                            to
+                            <span class="fw-bold">
+                                {{ $toValue }}
+                            </span>
+                            of
+                            <span class="fw-bold">
+                                {{ $total }}
+                            </span>
+                            entires
                         </div>
-                    </div>
-                </div>
-                <div class="ps-4 d-flex">
-                    Tổng : {{ count($employees) }}/{{ $total }}
-                </div>
-                <div class="px-0 pb-2">
-                    <div class="table-responsive p-0">
-                        <table
-                            class="table align-items-center mb-0 table-hover"
+                        <button
+                            type="button"
+                            class="btn btn-dark"
+                            data-bs-toggle="modal"
+                            data-bs-target="#searchModal"
                         >
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        @include('employee.search-advand', ['href' => 'admin.employee.getTrash'])
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
                             <thead>
-                                <tr>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                    >
-                                        STT
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                    >
-                                        Tên/Điện thoại
-                                    </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                    >
-                                        Chức vụ
-                                    </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                    >
-                                        Mã nhân viên
-                                    </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                    >
-                                        Danh mục lịch làm việc
-                                    </th>
-                                    <th class=""></th>
+                                <tr
+                                    class="text-uppercase table-light text-center"
+                                >
+                                    <th>STT</th>
+                                    <th>Tên/Điện thoại</th>
+                                    <th>Chức vụ</th>
+                                    <th>Mã nhân viên</th>
+                                    <th>Danh mục lịch làm việc</th>
+                                    <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($employees as $key => $employee)
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex px-3 py-1">
-                                                {{ $loop->iteration }}
-                                            </div>
+                                    <tr class="align-middle text-center">
+                                        <td class="fw-bold">
+                                            {{ $loop->iteration + $startValue - 1 }}
                                         </td>
-                                        <td>
-                                            <div class="d-flex px-2 py-1">
+                                        <td class="text-start">
+                                            <div
+                                                class="d-flex align-items-center gap-3"
+                                            >
+                                                <img
+                                                    src="{{ asset('storage/employee/'.$employee->photo) }}"
+                                                    class="avatar avatar-sm border-radius-lg shadow"
+                                                    alt="avatar"
+                                                    onerror="this.src='{{ $defaultAvatar }}';"
+                                                />
                                                 <div>
-                                                    <img
-                                                        src="{{ asset('storage/employee/'.$employee->photo) }}"
-                                                        class="avatar avatar-sm me-3 border-radius-lg"
-                                                        alt="user1"
-                                                    />
-                                                </div>
-                                                <div
-                                                    class="d-flex flex-column justify-content-center"
-                                                >
-                                                    <h6 class="mb-0 text-sm">
+                                                    <h6>
                                                         {{ $employee->name }}
                                                     </h6>
-                                                    <p
-                                                        class="text-xs text-secondary mb-0"
+                                                    <div
+                                                        class="text-xs text-secondary"
                                                     >
                                                         {{ $employee->phone }}
-                                                    </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $employee->role->role_name }}
-                                            </p>
+                                        <td>
+                                            {{ $employee->role->role_name }}
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $employee->code }}
-                                            </p>
+                                        <td>
+                                            {{ $employee->code }}
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $employee->category_celender->name }}
-                                            </p>
+                                        <td>
+                                            {{ $employee->category_celender->name }}
                                         </td>
-                                        <td class="align-middle">
-                                            <form
-                                                action="{{ route('admin.employee.restore', $employee->id) }}"
-                                                method="put"
+                                        <td>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-warning"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#revertModal-{{ $employee->id }}"
                                             >
-                                                @method('PUT')
-                                                @csrf
-                                                <button
-                                                    onclick="return confirm('Bạn có chắc muốn khôi phục nhân viên này không?');"
-                                                    class="btn btn-danger"
-                                                    type="submit"
-                                                >
-                                                    Khôi Phục
-                                                </button>
-                                            </form>
+                                                <i
+                                                    class="fas fa-rotate-left"
+                                                ></i>
+                                                Khôi Phục
+                                            </button>
                                         </td>
                                     </tr>
+
+                                    {{-- Modal revert --}}
+                                    <div
+                                        class="modal fade"
+                                        id="revertModal-{{ $employee->id }}"
+                                        tabindex="-1"
+                                        aria-labelledby="revertModalLabel-{{ $employee->id }}"
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            class="modal-dialog modal-dialog-centered"
+                                        >
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5
+                                                        class="modal-title"
+                                                        id="revertModalLabel-{{ $employee->id }}"
+                                                    >
+                                                        Khôi phục nhân viên
+                                                    </h5>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close"
+                                                    ></button>
+                                                </div>
+                                                <div
+                                                    class="modal-body text-start"
+                                                >
+                                                    <p>
+                                                        Bạn có chắc muốn khôi
+                                                        phục nhân viên
+                                                        <span class="fw-bold">
+                                                            {{ $employee->code.' - '.$employee->name }}
+                                                        </span>
+                                                        không?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form
+                                                        action="{{ route('admin.employee.restore', $employee->id) }}"
+                                                        method="put"
+                                                    >
+                                                        @method('PUT')
+                                                        @csrf
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-warning"
+                                                        >
+                                                            Khôi Phục
+                                                        </button>
+                                                    </form>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal"
+                                                    >
+                                                        Đóng
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
 
                                 @if ($total == 0)

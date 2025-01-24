@@ -14,7 +14,7 @@ class Employee extends Authenticatable
     use Notifiable;
 
     //paginate
-    public const paginate = 10000;
+    public const paginate = 50;
 
     //table
     protected $table = 'employees';
