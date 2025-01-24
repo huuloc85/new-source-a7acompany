@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Log;
+use Illuminate\Http\Request;
 
 class LogController extends Controller
 {
     //list log
-    public function index()
+    public function index(Request $request)
     {
-        $logs = Log::orderBy('id', 'DESC')->paginate(Log::paginate);
+        $limit = $request->limit ?? Log::paginate;
+        $logs = Log::orderBy('id', 'DESC')->paginate($limit);
         $total = Log::count();
 
         return view('log.index', compact('logs', 'total'));
