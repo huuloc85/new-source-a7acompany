@@ -1,106 +1,53 @@
 @extends('layouts.layout')
 
 @section('content')
-    <style>
-        .form-control {
-            border: 1px solid #d2d6da !important;
-            padding-left: 10px;
-        }
-
-        .active > .page-link {
-            color: white !important;
-        }
-
-        .href {
-            color: blue !important;
-        }
-
-        .search-role {
-            height: 37px;
-        }
-
-        .table td,
-        .table th {
-            white-space: normal;
-        }
-
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-        }
-
-        .card-body > * {
-            margin-bottom: 5px;
-        }
-
-        .card-body form {
-            display: flex;
-            align-items: center;
-        }
-
-        .card-body form .form-group {
-            margin-right: 10px;
-        }
-    </style>
-
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">
-                            Lịch Sử Truy Cập Trang Web
-                        </h4>
-                    </div>
+                <div class="card-header">
+                    <h4>Lịch Sử Truy Cập Trang Web</h4>
                 </div>
                 <div class="card-body">
-                    <div
-                        class="d-flex justify-content-between align-items-center mb-3"
+                    <form
+                        action="{{ route('admin.delete.history.day') }}"
+                        method="POST"
+                        class="d-flex flex-wrap align-items-center gap-3 mb-3"
                     >
-                        <form
-                            action="{{ route('admin.delete.history.day') }}"
-                            method="POST"
-                            class="d-flex align-items-center"
+                        @csrf
+                        <div>
+                            <input
+                                type="date"
+                                class="form-control"
+                                name="date"
+                                id="date"
+                                required
+                            />
+                        </div>
+
+                        <button
+                            onclick="return confirm('Bạn có chắc muốn xoá lịch sử ngày này không?');"
+                            class="btn btn-danger"
+                            type="submit"
                         >
-                            @csrf
-                            <div class="form-group me-2 mb-0">
-                                <input
-                                    type="date"
-                                    class="form-control"
-                                    name="date"
-                                    id="date"
-                                    required
-                                />
-                            </div>
-                            <button
-                                onclick="return confirm('Bạn có chắc muốn xoá lịch sử ngày này không?');"
-                                class="btn btn-danger"
-                                type="submit"
-                            >
-                                <i class="fas fa-trash-alt"></i>
-                                Xóa
-                            </button>
-                        </form>
+                            <i class="fas fa-trash-alt"></i>
+                            Xóa
+                        </button>
                         <a
                             href="{{ route('admin.history.view.all.quantity') }}"
-                            class="btn btn-primary mx-2"
+                            class="btn btn-primary"
                             aria-label="Danh sách lịch sử nhân viên nhập sản lượng hàng ngày"
                         >
                             <i class="fas fa-history"></i>
                             Lịch sử nhập hàng ngày
                         </a>
-                    </div>
-
+                    </form>
                     <form
                         action="{{ route('admin.history.home') }}"
                         method="get"
                         id="submitForm"
-                        class="row gx-3 gy-2 align-items-center mb-2"
+                        class="row g-3 align-items-center mb-3"
                     >
-                        <div class="col-auto">
+                        <div class="col-12 col-sm-auto">
                             <select
                                 name="date"
                                 id="date-select"
@@ -118,7 +65,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-12 col-sm-auto">
                             <select
                                 name="activity_type"
                                 id="activity-type"
@@ -141,7 +88,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-12 col-sm-auto">
                             <select
                                 name="month"
                                 id="month-select"
@@ -160,134 +107,74 @@
                             </select>
                         </div>
                     </form>
+
                     <div>
                         Tổng số lượng truy cập: {{ $totalHistoryCurrentPage }}
                         / {{ $totalHistoryOverall }}
                     </div>
-                </div>
-                <div class="px-2 pb-2">
+                    @if ($totalHistoryCurrentPage == 0)
+                        <div class="text-center my-2">
+                            Hiện tại chưa có lịch sử.
+                        </div>
+                    @endif
+
                     <div class="table-responsive">
-                        <table
-                            class="table align-items-center mb-0 table-hover"
-                        >
-                            <thead>
+                        <table class="table table-hover">
+                            <thead
+                                class="text-uppercase text-center align-middle bg-light"
+                            >
                                 <tr>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        STT
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Tên Nhân Viên
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Mã Nhân Viên
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Số Lần Đăng Nhập
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Thời gian hoạt động cuối cùng
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Hoạt Động
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Ngày Tháng
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Ca Làm Việc
-                                    </th>
+                                    <th>STT</th>
+                                    <th>Tên Nhân Viên</th>
+                                    <th>Mã Nhân Viên</th>
+                                    <th>Số Lần Đăng Nhập</th>
+                                    <th>Thời gian hoạt động cuối cùng</th>
+                                    <th>Hoạt Động</th>
+                                    <th>Ngày Tháng</th>
+                                    <th>Ca Làm Việc</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($loginHistory as $key => $history)
-                                    <tr>
-                                        <td class="text-center">
-                                            <div
-                                                class="d-flex px-3 py-1 justify-content-center"
-                                            >
-                                                {{ $loop->iteration }}
-                                            </div>
+                                    <tr class="text-center align-middle">
+                                        <td class="fw-bold">
+                                            {{ $loop->iteration }}
                                         </td>
-                                        <td class="text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $history->employee_name }}
-                                            </p>
+                                        <td>
+                                            {{ $history->employee_name }}
                                         </td>
-                                        <td class="text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $history->employee_code }}
-                                            </p>
+                                        <td>
+                                            {{ $history->employee_code }}
                                         </td>
-                                        <td class="text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $history->login_count }}
-                                            </p>
+                                        <td>
+                                            {{ $history->login_count }}
                                         </td>
-                                        <td class="text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $history->updated_at }}
-                                            </p>
+                                        <td>
+                                            {{ $history->updated_at }}
                                         </td>
-                                        <td class="text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $history->description }}
-                                            </p>
+                                        <td class="text-start">
+                                            {{ $history->description }}
                                         </td>
-                                        <td class="text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                {{ $history->date }}
-                                            </p>
+                                        <td>
+                                            {{ $history->date }}
                                         </td>
-                                        <td class="text-center">
-                                            <p
-                                                class="text-xs font-weight-bold mb-0"
-                                            >
-                                                @if (isset($translatedCalendarDetails[$history->employee_id]))
-                                                    {{ $translatedCalendarDetails[$history->employee_id] }}
-                                                @endif
-                                            </p>
+                                        <td>
+                                            @if (isset($translatedCalendarDetails[$history->employee_id]))
+                                                {{ $translatedCalendarDetails[$history->employee_id] }}
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                    @if ($totalHistoryCurrentPage == 0)
-                        <div class="text-center">Hiện tại chưa có lịch sử.</div>
-                    @endif
                 </div>
             </div>
         </div>
     </div>
+@endsection
 
+@section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var tooltipTriggerList = [].slice.call(
