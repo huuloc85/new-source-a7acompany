@@ -10,7 +10,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">
@@ -28,7 +28,7 @@
                         >
                             <button
                                 type="button"
-                                class="btn btn-success btn-sm shadow-sm me-2"
+                                class="btn btn-success"
                                 data-bs-toggle="modal"
                                 data-bs-target="#addDataModal"
                             >
@@ -37,7 +37,7 @@
                             </button>
                             <a
                                 href="{{ route('admin.attendence.records') }}"
-                                class="btn btn-primary btn-sm shadow-sm"
+                                class="btn btn-primary"
                             >
                                 <div class="fas fa-table"></div>
                                 <span>Bảng Tính Công</span>
@@ -49,7 +49,7 @@
                                     type="month"
                                     name="month"
                                     id="month"
-                                    class="form-control col-auto"
+                                    class="form-control"
                                     placeholder="Chọn tháng"
                                     value="{{ $currentMonth }}"
                                     onchange="this.form.submit()"
@@ -122,42 +122,21 @@
 
                     <div class="table-responsive">
                         <table class="table table-hover">
-                            <thead class="table-light">
+                            <thead class="table-light text-uppercase">
                                 <tr>
-                                    <th
-                                        class="text-uppercase text-center"
-                                        scope="col"
-                                    >
-                                        STT
-                                    </th>
-                                    <th class="text-uppercase" scope="col">
-                                        Mã Nhân Viên
-                                    </th>
-                                    <th class="text-uppercase" scope="col">
-                                        Tên Nhân Viên
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-center"
-                                        scope="col"
-                                    >
+                                    <th class="text-center" scope="col">STT</th>
+                                    <th scope="col">Mã Nhân Viên</th>
+                                    <th scope="col">Tên Nhân Viên</th>
+                                    <th class="text-center" scope="col">
                                         Ngày Chấm
                                     </th>
-                                    <th
-                                        class="text-uppercase text-center"
-                                        scope="col"
-                                    >
+                                    <th class="text-center" scope="col">
                                         Thời Gian
                                     </th>
-                                    <th
-                                        class="text-uppercase text-center"
-                                        scope="col"
-                                    >
+                                    <th class="text-center" scope="col">
                                         Danh Mục Làm Việc
                                     </th>
-                                    <th
-                                        class="text-uppercase text-center"
-                                        scope="col"
-                                    >
+                                    <th class="text-center" scope="col">
                                         Hành Động
                                     </th>
                                 </tr>
@@ -346,8 +325,14 @@
         aria-labelledby="addDataModalLabel"
         aria-hidden="true"
     >
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered">
+            <form
+                id="addDataForm"
+                action="{{ route('admin.attendence.handleRecords') }}"
+                method="POST"
+                class="modal-content"
+            >
+                @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="addDataModalLabel">
                         Thêm Dữ Liệu Chấm Công
@@ -360,81 +345,74 @@
                     ></button>
                 </div>
                 <div class="modal-body">
-                    <form
-                        id="addDataForm"
-                        action="{{ route('admin.attendence.handleRecords') }}"
-                        method="POST"
-                    >
-                        @csrf
-                        <div class="mb-3">
-                            <label for="employee_name" class="form-label">
-                                Chọn Nhân Viên
-                            </label>
-                            <select
-                                class="form-control"
-                                id="employee_name"
-                                name="employee_name"
-                                required
-                            >
-                                <option value="">Chọn nhân viên</option>
-                                @foreach ($employees as $employee)
-                                    <option
-                                        value="{{ $employee->name }}"
-                                        data-code="{{ $employee->code }}"
-                                    >
-                                        {{ $employee->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="employee_code" class="form-label">
-                                Mã Nhân Viên
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="employee_code"
-                                name="employee_code"
-                                required
-                                readonly
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="date" class="form-label">
-                                Ngày Chấm
-                            </label>
-                            <input
-                                type="date"
-                                class="form-control"
-                                id="date"
-                                name="date"
-                                required
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="time" class="form-label">Giờ</label>
-                            <input
-                                type="time"
-                                class="form-control"
-                                id="time"
-                                name="time"
-                                required
-                            />
-                        </div>
+                    <div class="mb-3">
+                        <label for="employee_name" class="form-label">
+                            Chọn Nhân Viên
+                        </label>
+                        <select
+                            class="form-control"
+                            id="employee_name"
+                            name="employee_name"
+                            required
+                        >
+                            <option value="">Chọn nhân viên</option>
+                            @foreach ($employees as $employee)
+                                <option
+                                    value="{{ $employee->name }}"
+                                    data-code="{{ $employee->code }}"
+                                >
+                                    {{ $employee->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employee_code" class="form-label">
+                            Mã Nhân Viên
+                        </label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="employee_code"
+                            name="employee_code"
+                            required
+                            readonly
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Ngày Chấm</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="date"
+                            name="date"
+                            required
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="time" class="form-label">Giờ</label>
+                        <input
+                            type="time"
+                            class="form-control"
+                            id="time"
+                            name="time"
+                            required
+                        />
+                    </div>
 
-                        {{--
-                            <div class="mb-3">
-                            <label for="shift" class="form-label">Ca Làm Việc</label>
-                            <input type="text" class="form-control" id="shift" name="shift">
-                            </div>
-                        --}}
-                        <button type="submit" class="btn btn-primary">
-                            Lưu Dữ Liệu
-                        </button>
-                    </form>
+                    {{--
+                        <div class="mb-3">
+                        <label for="shift" class="form-label">Ca Làm Việc</label>
+                        <input type="text" class="form-control" id="shift" name="shift">
+                        </div>
+                    --}}
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        Lưu Dữ Liệu
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 @endsection

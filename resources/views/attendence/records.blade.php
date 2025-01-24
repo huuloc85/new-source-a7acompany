@@ -1,322 +1,312 @@
 @extends('layouts.layout')
 
 @section('content')
-    <style>
+    {{--
+        <style>
         .form-control,
         .form-select {
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
         }
-
+        
         .position-relative {
-            position: relative;
+        position: relative;
         }
-
+        
         .form-control::placeholder {
-            color: #6c757d;
+        color: #6c757d;
         }
-
+        
         input#search:focus::placeholder {
-            color: transparent;
+        color: transparent;
         }
-
+        
         @media (max-width: 768px) {
-            .mb-2,
-            .btn {
-                width: 100%;
-            }
-
-            .btn {
-                margin-bottom: 0.5rem;
-            }
-
-            .form-control-search {
-                width: 100%;
-            }
+        .mb-2,
+        .btn {
+        width: 100%;
         }
-
+        
+        .btn {
+        margin-bottom: 0.5rem;
+        }
+        
+        .form-control-search {
+        width: 100%;
+        }
+        }
+        
         .position-relative {
-            position: relative;
+        position: relative;
         }
-
+        
         #loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            /* Tạo hiệu ứng mờ nền */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        /* Tạo hiệu ứng mờ nền */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
         }
-
+        
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
         }
-
+        
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+        0% {
+        transform: rotate(0deg);
         }
-
+        
+        100% {
+        transform: rotate(360deg);
+        }
+        }
+        
         .employee-list {
-            max-height: 500px;
-            overflow-y: auto;
+        max-height: 500px;
+        overflow-y: auto;
         }
-
+        
         .employee-card {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: center;
-            background-color: #f9f9f9;
-            margin-bottom: 10px;
-            min-height: 50px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: center;
+        background-color: #f9f9f9;
+        margin-bottom: 10px;
+        min-height: 50px;
         }
-
+        
         .modal-lg {
-            max-width: 80%;
+        max-width: 80%;
         }
-
+        
         .search-box {
-            position: relative;
+        position: relative;
         }
-
+        
         .search-box .search-icon {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: #6c757d;
-            pointer-events: none;
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        font-size: 14px;
+        color: #6c757d;
+        pointer-events: none;
         }
-
+        
         input.form-control-search {
-            padding-right: 30px;
+        padding-right: 30px;
         }
-
+        
         /* btn Lọc thông tin (Primary) */
         .btn-outline-primary:hover {
-            color: #fff;
-            background-color: #0d6efd;
-            /* Màu chuẩn của Bootstrap cho Primary */
-            border-color: #0d6efd;
+        color: #fff;
+        background-color: #0d6efd;
+        /* Màu chuẩn của Bootstrap cho Primary */
+        border-color: #0d6efd;
         }
-
+        
         .btn-outline-primary:active {
-            color: #0d6efd;
-            background-color: transparent;
-            border-color: #0d6efd;
+        color: #0d6efd;
+        background-color: transparent;
+        border-color: #0d6efd;
         }
-
+        
         .btn-outline-primary:focus {
-            box-shadow: none;
-            background-color: transparent;
-            border-color: #0d6efd;
+        box-shadow: none;
+        background-color: transparent;
+        border-color: #0d6efd;
         }
-
+        
         /* btn Lịch sử (Success) */
         .btn-outline-success:hover {
-            color: #fff;
-            background-color: #198754;
-            /* Màu chuẩn của Bootstrap cho Success */
-            border-color: #198754;
+        color: #fff;
+        background-color: #198754;
+        /* Màu chuẩn của Bootstrap cho Success */
+        border-color: #198754;
         }
-
+        
         .btn-outline-success:active {
-            color: #198754;
-            background-color: transparent;
-            border-color: #198754;
+        color: #198754;
+        background-color: transparent;
+        border-color: #198754;
         }
-
+        
         /*
-                                                        .btn-outline-success:focus {
-                                                            box-shadow: none;
-                                                            background-color: transparent;
-                                                            border-color: #198754;
-                                                        } */
-
+        .btn-outline-success:focus {
+        box-shadow: none;
+        background-color: transparent;
+        border-color: #198754;
+        } */
+        
         /* btn Danh sách (Info) */
         .btn-outline-info:hover {
-            color: #fff;
-            background-color: #0dcaf0;
-            /* Màu chuẩn của Bootstrap cho Info */
-            border-color: #0dcaf0;
+        color: #fff;
+        background-color: #0dcaf0;
+        /* Màu chuẩn của Bootstrap cho Info */
+        border-color: #0dcaf0;
         }
-
+        
         .btn-outline-info:active {
-            color: #0dcaf0;
-            background-color: transparent;
-            border-color: #0dcaf0;
+        color: #0dcaf0;
+        background-color: transparent;
+        border-color: #0dcaf0;
         }
-
+        
         .btn-outline-info:focus {
-            box-shadow: none;
-            background-color: transparent;
-            border-color: #0dcaf0;
+        box-shadow: none;
+        background-color: transparent;
+        border-color: #0dcaf0;
         }
-    </style>
+        </style>
+    --}}
 
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div
-                        class="border-radius-lg ps-2 pt-4 pb-3 d-flex align-items-center justify-content-between"
-                    >
-                        <h4>
-                            Bảng Tính Công
-                            @if (request('start_date') && request('end_date'))
-                                từ
-                                {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }}
-                                đến
-                                {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
-                            @else
-                                Tháng
-                                {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
-                            @endif
-                        </h4>
-                    </div>
-                </div>
-                <div
-                    class="d-flex flex-wrap align-items-center gap-3 my-2 px-2"
-                >
-                    <!-- Nút Lọc Thông Tin và Lịch Sử Chấm Công -->
-                    <div class="d-flex align-items-center gap-2">
-                        <button
-                            type="button"
-                            class="btn btn-outline-primary btn-sm rounded-pill shadow-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#filterModal"
-                        >
-                            <i class="fas fa-filter me-1"></i>
-                            Lọc Thông Tin
-                        </button>
-                        <a
-                            href="{{ route('admin.attendence.index') }}"
-                            class="btn btn-outline-success btn-sm rounded-pill shadow-sm"
-                        >
-                            <i class="fas fa-history me-1"></i>
-                            Lịch Sử Chấm Công
-                        </a>
-                        <a
-                            href="#"
-                            id="attendance-search-button"
-                            class="btn btn-outline-secondary btn-sm rounded-pill shadow-sm"
-                        >
-                            <i class="fas fa-search me-1"></i>
-                            Tìm Chấm Công Thực Tế
-                        </a>
-
-                        <script>
-                            document
-                                .getElementById('attendance-search-button')
-                                .addEventListener('click', function (e) {
-                                    e.preventDefault(); // Ngăn không cho tự động chuyển hướng
-                                    Swal.fire({
-                                        title: 'Bạn đã đổi qua mạng Vinh Vinh Phát chưa?',
-                                        text: 'Vui lòng kiểm tra và xác nhận trước khi tiếp tục.',
-                                        icon: 'warning',
-                                        showCancelButton: true,
-                                        confirmButtonColor: '#3085d6',
-                                        cancelButtonColor: '#d33',
-                                        confirmButtonText: 'Đã đổi mạng',
-                                        cancelButtonText: 'Chưa đổi mạng',
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            window.open(
-                                                'http://192.168.1.2/doc/index.html#/eventSearch?t=1731739764211',
-                                                '_blank',
-                                            );
-                                        }
-                                    });
-                                });
-                        </script>
-                    </div>
-
-                    <!-- Ô Tìm Kiếm -->
-                    <div class="search-box position-relative flex-grow-1">
-                        <input
-                            type="text"
-                            id="search"
-                            class="form-control form-control-sm rounded-pill"
-                            placeholder="Tìm kiếm nhân viên hoặc ngày chấm công"
-                        />
-                        <i class="fas fa-search search-icon"></i>
-                    </div>
-
-                    <!-- Form Export -->
-                    <form
-                        id="export-form"
-                        class="d-flex align-items-center gap-2"
-                    >
-                        <div class="d-flex align-items-center gap-1">
-                            <label
-                                for="start_date"
-                                class="form-label mb-0 me-1"
-                            >
-                                Từ:
-                            </label>
-                            <input
-                                type="date"
-                                id="start_date"
-                                name="start_date"
-                                class="form-control form-control-sm rounded-pill"
-                                required
-                            />
-                        </div>
-                        <div class="d-flex align-items-center gap-1">
-                            <label for="end_date" class="form-label mb-0 me-1">
-                                Đến:
-                            </label>
-                            <input
-                                type="date"
-                                id="end_date"
-                                name="end_date"
-                                class="form-control form-control-sm rounded-pill"
-                                required
-                            />
-                        </div>
-                        <button
-                            type="button"
-                            class="btn btn-outline-warning btn-sm rounded-pill"
-                            id="export-button"
-                        >
-                            <i class="fas fa-file-export me-1"></i>
-                            Export
-                        </button>
-                    </form>
-
-                    <!-- Danh Sách Nhân Viên Làm Việc Hằng Ngày -->
-                    <button
-                        type="button"
-                        class="btn btn-outline-info btn-sm rounded-pill ms-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#todayEmployeesModal"
-                    >
-                        <i class="fas fa-users me-1"></i>
-                        Danh Sách Nhân Viên Làm Việc Hằng Ngày
-                    </button>
+                <div class="card-header">
+                    <h4>
+                        Bảng Tính Công
+                        @if (request('start_date') && request('end_date'))
+                            từ
+                            {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }}
+                            đến
+                            {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
+                        @else
+                            Tháng
+                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                        @endif
+                    </h4>
                 </div>
 
                 <div class="card-body">
-                    <div class="table-responsive position-relative">
+                    <div class="mb-3">
+                        <!-- Nút Lọc Thông Tin và Lịch Sử Chấm Công -->
+                        <div
+                            class="d-flex flex-wrap align-items-center gap-2 mb-2"
+                        >
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#filterModal"
+                            >
+                                <i class="fas fa-filter"></i>
+                                Lọc Thông Tin
+                            </button>
+                            <a
+                                href="{{ route('admin.attendence.index') }}"
+                                class="btn btn-success"
+                            >
+                                <i class="fas fa-history"></i>
+                                Lịch Sử Chấm Công
+                            </a>
+                            <a
+                                href="#"
+                                id="attendance-search-button"
+                                class="btn btn-secondary"
+                            >
+                                <i class="fas fa-search"></i>
+                                Tìm Chấm Công Thực Tế
+                            </a>
+                            <button
+                                type="button"
+                                class="btn btn-info"
+                                data-bs-toggle="modal"
+                                data-bs-target="#todayEmployeesModal"
+                            >
+                                <i class="fas fa-users"></i>
+                                Danh Sách Nhân Viên Làm Việc Hằng Ngày
+                            </button>
+                        </div>
+                        <!-- Danh Sách Nhân Viên Làm Việc Hằng Ngày -->
+
+                        <!-- Form Export -->
+                        <form
+                            id="export-form"
+                            class="d-flex flex-wrap align-items-center gap-2 mb-2"
+                        >
+                            <div class="row g-1 align-items-center">
+                                <div class="col-auto">
+                                    <label
+                                        for="start_date"
+                                        class="col-form-label"
+                                    >
+                                        Từ:
+                                    </label>
+                                </div>
+                                <div class="col-auto">
+                                    <input
+                                        type="date"
+                                        id="start_date"
+                                        name="start_date"
+                                        class="form-control"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="row g-1 align-items-center">
+                                <div class="col-auto">
+                                    <label
+                                        for="end_date"
+                                        class="col-form-label"
+                                    >
+                                        Đến:
+                                    </label>
+                                </div>
+                                <div class="col-auto">
+                                    <input
+                                        type="date"
+                                        id="end_date"
+                                        name="end_date"
+                                        class="form-control"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-warning"
+                                id="export-button"
+                            >
+                                <i class="fas fa-file-export"></i>
+                                Export
+                            </button>
+                        </form>
+                        <!-- Ô Tìm Kiếm -->
+                        <input
+                            type="text"
+                            id="search"
+                            class="form-control"
+                            placeholder="Tìm kiếm nhân viên hoặc ngày chấm công"
+                            style="max-width: 25rem"
+                        />
+                    </div>
+                    <!-- Checkbox Lọc -->
+                    <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="filter_absent"
+                            name="filter_absent"
+                        />
+                        <label class="form-check-label" for="filter_absent">
+                            Chỉ hiển thị những người quên chấm công
+                        </label>
+                    </div>
+                    <div class="table-responsive">
                         <!-- Loading Overlay -->
                         <div
                             id="loading-overlay"
@@ -334,23 +324,12 @@
                                 flex-direction: column;
                             "
                         >
-                            <div class="spinner"></div>
+                            <div class="spinner-border" role="status"></div>
                             <p style="color: white; margin-top: 10px">
                                 Đang xuất dữ liệu...
                             </p>
                         </div>
-                        <!-- Checkbox Lọc -->
-                        <div class="form-check form-switch mx-2">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="filter_absent"
-                                name="filter_absent"
-                            />
-                            <label class="form-check-label" for="filter_absent">
-                                Chỉ hiển thị những người quên chấm công
-                            </label>
-                        </div>
+
                         @if ($records->isEmpty())
                             <p class="text-center text-danger">
                                 Hiện tại chưa có thông tin nào.
@@ -360,69 +339,27 @@
                                 id="attendanceTable"
                                 class="table table-hover mb-4"
                             >
-                                <thead class="text-center">
+                                <thead class="text-uppercase text-center">
                                     <tr>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            STT
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Mã Nhân Viên
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Tên Nhân Viên
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Ngày Chấm
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Ngày Trong Tuần
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Giờ Vào
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Giờ Ra
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Ca Làm Việc
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Tổng Giờ Làm Việc(H)
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Giờ Hành Chính(H)
-                                        </th>
-                                        <th
-                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                        >
-                                            Giờ Tăng Ca(H)
-                                        </th>
+                                        <th>STT</th>
+                                        <th>Mã Nhân Viên</th>
+                                        <th>Tên Nhân Viên</th>
+                                        <th>Ngày Chấm</th>
+                                        <th>Ngày Trong Tuần</th>
+                                        <th>Giờ Vào</th>
+                                        <th>Giờ Ra</th>
+                                        <th>Ca Làm Việc</th>
+                                        <th>Tổng Giờ Làm Việc(H)</th>
+                                        <th>Giờ Hành Chính(H)</th>
+                                        <th>Giờ Tăng Ca(H)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($records as $record)
                                         <tr class="text-center">
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td class="fw-bold">
+                                                {{ $loop->iteration }}
+                                            </td>
                                             <td>
                                                 {{ $record->employee_code }}
                                             </td>
@@ -484,8 +421,12 @@
         aria-labelledby="filterModalLabel"
         aria-hidden="true"
     >
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered">
+            <form
+                method="GET"
+                action="{{ route('admin.attendence.records') }}"
+                class="modal-content"
+            >
                 <div class="modal-header">
                     <h5 class="modal-title" id="filterModalLabel">
                         Tìm Kiếm Thông Tin
@@ -498,95 +439,88 @@
                     ></button>
                 </div>
                 <div class="modal-body">
-                    <form
-                        method="GET"
-                        action="{{ route('admin.attendence.records') }}"
-                    >
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="month" class="form-label">
-                                    Tháng:
-                                </label>
-                                <input
-                                    type="month"
-                                    name="month"
-                                    id="month"
-                                    class="form-control"
-                                    placeholder="Chọn tháng"
-                                    value="{{ request('month', $currentMonth) }}"
-                                />
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label for="employee_name" class="form-label">
-                                    Tên Nhân Viên:
-                                </label>
-                                <input
-                                    type="text"
-                                    id="employee_name"
-                                    name="employee_name"
-                                    class="form-control"
-                                    value="{{ request('employee_name') }}"
-                                />
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label for="start_date" class="form-label">
-                                    Từ ngày:
-                                </label>
-                                <input
-                                    type="date"
-                                    id="start_date"
-                                    name="start_date"
-                                    class="form-control"
-                                    value="{{ request('start_date') }}"
-                                />
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label for="end_date" class="form-label">
-                                    Đến ngày:
-                                </label>
-                                <input
-                                    type="date"
-                                    id="end_date"
-                                    name="end_date"
-                                    class="form-control"
-                                    value="{{ request('end_date') }}"
-                                />
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label for="time_filter" class="form-label">
-                                    Danh mục làm việc:
-                                </label>
-                                <select
-                                    id="time_filter"
-                                    name="time_filter"
-                                    class="form-select"
-                                >
-                                    @foreach (config('a7a.list_category') as $key => $record)
-                                        <option
-                                            value="{{ $key }}"
-                                            {{ request('time_filter') === $key ? 'selected' : '' }}
-                                        >
-                                            {{ $record }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="month" class="form-label">Tháng:</label>
+                            <input
+                                type="month"
+                                name="month"
+                                id="month"
+                                class="form-control"
+                                placeholder="Chọn tháng"
+                                value="{{ request('month', $currentMonth) }}"
+                            />
                         </div>
-                        <div class="modal-footer">
-                            <button
-                                type="button"
-                                class="btn btn-secondary"
-                                data-bs-dismiss="modal"
+                        <div class="col-md-12 mb-3">
+                            <label for="employee_name" class="form-label">
+                                Tên Nhân Viên:
+                            </label>
+                            <input
+                                type="text"
+                                id="employee_name"
+                                name="employee_name"
+                                class="form-control"
+                                value="{{ request('employee_name') }}"
+                            />
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="start_date" class="form-label">
+                                Từ ngày:
+                            </label>
+                            <input
+                                type="date"
+                                id="start_date"
+                                name="start_date"
+                                class="form-control"
+                                value="{{ request('start_date') }}"
+                            />
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="end_date" class="form-label">
+                                Đến ngày:
+                            </label>
+                            <input
+                                type="date"
+                                id="end_date"
+                                name="end_date"
+                                class="form-control"
+                                value="{{ request('end_date') }}"
+                            />
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="time_filter" class="form-label">
+                                Danh mục làm việc:
+                            </label>
+                            <select
+                                id="time_filter"
+                                name="time_filter"
+                                class="form-select"
                             >
-                                Đóng
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                Tìm Kiếm
-                            </button>
+                                @foreach (config('a7a.list_category') as $key => $record)
+                                    <option
+                                        value="{{ $key }}"
+                                        {{ request('time_filter') === $key ? 'selected' : '' }}
+                                    >
+                                        {{ $record }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Đóng
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Tìm Kiếm
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -667,7 +601,33 @@
             </div>
         </div>
     </div>
+@endsection
 
+@section('scripts')
+    <script>
+        document
+            .getElementById('attendance-search-button')
+            .addEventListener('click', function (e) {
+                e.preventDefault(); // Ngăn không cho tự động chuyển hướng
+                Swal.fire({
+                    title: 'Bạn đã đổi qua mạng Vinh Vinh Phát chưa?',
+                    text: 'Vui lòng kiểm tra và xác nhận trước khi tiếp tục.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đã đổi mạng',
+                    cancelButtonText: 'Chưa đổi mạng',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.open(
+                            'http://192.168.1.2/doc/index.html#/eventSearch?t=1731739764211',
+                            '_blank',
+                        );
+                    }
+                });
+            });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('search');
