@@ -18,6 +18,7 @@
                     class="btn btn-success mb-2"
                     href="{{ route('admin.salary.getimport') }}"
                 >
+                    <i class="fas fa-plus"></i>
                     Import Bảng Lương
                 </a>
                 <form action="" class="mb-2">
@@ -96,6 +97,7 @@
                                         href="{{ route('admin.salary.detail', $salaryManager->id) }}"
                                         class="btn btn-primary"
                                     >
+                                        <i class="fas fa-circle-info"></i>
                                         Chi tiết
                                     </a>
 
@@ -106,6 +108,7 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalDelete-{{ $salaryManager->id }}"
                                     >
+                                        <i class="fas fa-trash-alt"></i>
                                         Xóa
                                     </button>
                                 </td>
@@ -131,11 +134,11 @@
                                         <div class="modal-body">
                                             <p>
                                                 Hành động không thể khôi phục!!
-                                                Bạn có chắc xoá bảng lương
+                                                Bạn có chắc xoá bảng lương "
                                                 <span class="fw-bold">
                                                     {{ $salaryManager->title }}
                                                 </span>
-                                                không?
+                                                " không?
                                             </p>
                                         </div>
                                         <div class="modal-footer">
