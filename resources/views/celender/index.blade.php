@@ -21,6 +21,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#importCelender"
                     >
+                        <i class="fas fa-plus"></i>
                         Import lịch làm việc
                     </button>
                     @include('celender.import')
@@ -44,7 +45,7 @@
                 @endif
 
                 <form action="" class="mb-2">
-                    <div class="input-group input-group-outline">
+                    <div class="input-group">
                         <input
                             name="key"
                             value="{{ request()->key }}"
@@ -77,36 +78,31 @@
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-light">
-                        <tr>
-                            <th class="text-uppercase text-center" scope="col">
-                                STT
-                            </th>
-                            <th class="text-uppercase" scope="col">Tiêu đề</th>
-                            <th class="text-uppercase text-center" scope="col">
-                                Ngày bắt đầu
-                            </th>
-                            <th class="text-uppercase text-center" scope="col">
-                                Chức năng
-                            </th>
+                        <tr class="text-uppercase text-center">
+                            <th scope="col">STT</th>
+                            <th class="text-start" scope="col">Tiêu đề</th>
+                            <th scope="col">Ngày bắt đầu</th>
+                            <th scope="col">Chức năng</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($celenders as $key => $celender)
-                            <tr>
-                                <td class="fw-bold text-center" scope="row">
-                                    {{ $loop->iteration }}
+                            <tr class="text-center">
+                                <td class="fw-bold" scope="row">
+                                    {{ $loop->iteration + $celenders->firstItem() - 1 }}
                                 </td>
-                                <td scope="row">
+                                <td class="text-start" scope="row">
                                     {{ $celender->title }}
                                 </td>
-                                <td class="text-center" scope="row">
+                                <td scope="row">
                                     {{ $celender->formatTimeDMY($celender->date) }}
                                 </td>
-                                <td class="text-center" scope="row">
+                                <td scope="row">
                                     <a
                                         href="{{ route('admin.celender.detail', $celender->id) }}"
                                         class="btn btn-primary"
                                     >
+                                        <i class="fas fa-circle-info"></i>
                                         Chi tiết
                                     </a>
                                     <!-- Button trigger modal delete -->
@@ -116,6 +112,7 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalDelete-{{ $celender->id }}"
                                     >
+                                        <i class="fas fa-trash-alt"></i>
                                         Xóa
                                     </button>
                                 </td>

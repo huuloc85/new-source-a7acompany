@@ -1,22 +1,10 @@
-<style>
-    .importance {
-        color: red;
-        font-weight: bold;
-    }
-    .note {
-        color: red;
-    }
-    .required {
-        color: red;
-    }
-</style>
 <div
     class="modal fade"
     id="importCelender"
     aria-labelledby="exampleModalLabel"
     aria-hidden="true"
 >
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <form
             action="{{ route('admin.celender.add') }}"
             method="post"
@@ -41,7 +29,7 @@
                             <div class="mb-3">
                                 <label for="import-title" class="form-label">
                                     Tiêu đề
-                                    <span class="required">*</span>
+                                    <span class="text-danger">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -58,9 +46,9 @@
                             <div class="mb-3">
                                 <label for="import-date" class="form-label">
                                     Chọn ngày (
-                                    <span class="importance">*</span>
+                                    <span class="text-danger">*</span>
                                     )
-                                    <span class="note">
+                                    <span class="text-danger">
                                         Chọn ngày đầu tiên của tháng!!!
                                     </span>
                                 </label>
@@ -78,7 +66,7 @@
                             <div class="mb-3">
                                 <label for="import-file" class="form-label">
                                     Chọn file
-                                    <span class="required">*</span>
+                                    <span class="text-danger">*</span>
                                 </label>
                                 <input
                                     type="file"

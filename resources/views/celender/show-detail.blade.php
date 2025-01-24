@@ -1,23 +1,7 @@
 @extends('layouts.layout')
-@section('content')
+
+@section('styles')
     <style>
-        .form-control {
-            border: 1px solid #d2d6da !important;
-            padding-left: 10px;
-        }
-
-        .active > .page-link {
-            color: white !important;
-        }
-
-        .href {
-            color: blue !important;
-        }
-
-        .search-role {
-            height: 37px;
-        }
-
         .test {
             max-width: 70%;
             overflow-x: auto;
@@ -83,25 +67,23 @@
             background-color: yellow;
         }
     </style>
+@endsection
+
+@section('content')
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">{{ $calendarTitle }}</h4>
-                    </div>
+                <div class="card-header">
+                    <h4>{{ $calendarTitle }}</h4>
                 </div>
-                <div class="ps-2 d-flex my-2">
+                <div class="card-body">
                     <a
-                        class="btn btn-success"
+                        class="btn btn-link mb-3"
                         href="{{ route('admin.celender.home') }}"
                     >
-                        Lịch làm việc
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại
                     </a>
-                </div>
-                <div class="px-0 pb-2">
                     <ul class="nav nav-tabs px-4" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button
@@ -183,26 +165,28 @@
                             aria-labelledby="VVP-tab"
                         >
                             <!-- Nội dung cho tab VVP -->
-                            <div class="px-0 pb-2 d-flex mt-4">
-                                <div class="ms-2">
+                            <div
+                                class="d-flex flex-wrap gap-2 align-items-center mt-4"
+                            >
+                                <div>
                                     <label class="N keywork">N</label>
                                     <label for="">Ca ngày</label>
                                 </div>
-                                <div class="ms-4">
+                                <div>
                                     <label class="D keywork">D</label>
                                     <label for="">Ca đêm</label>
                                 </div>
-                                <div class="ms-4">
+                                <div>
                                     <label class="X keywork">X</label>
                                     <label for="">Nghĩ</label>
                                 </div>
-                                <div class="ms-4">
+                                <div>
                                     <label class="TC keywork bg-yellow">
                                         TC
                                     </label>
                                     <label for="">Tăng cường đêm</label>
                                 </div>
-                                <div class="ms-4">
+                                <div>
                                     <label class="LN keywork bg-yellow">
                                         LN
                                     </label>
@@ -655,10 +639,10 @@
                         </div>
                     </div>
                     <a
+                        class="btn btn-link mt-3"
                         href="{{ route('admin.celender.home') }}"
-                        type="button"
-                        class="btn btn-danger ms-2"
                     >
+                        <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
                 </div>
