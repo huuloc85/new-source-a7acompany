@@ -19,6 +19,7 @@
                     type="button"
                     class="btn btn-success mb-2"
                 >
+                    <i class="fas fa-plus"></i>
                     Thêm Danh Mục
                 </a>
                 <form action="" class="mb-2">
@@ -55,44 +56,35 @@
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-light">
-                        <tr>
-                            <th class="text-uppercase text-center" scope="col">
-                                STT
-                            </th>
-                            <th class="text-uppercase" scope="col">
-                                Tên danh mục
-                            </th>
-                            <th class="text-uppercase text-center" scope="col">
-                                Ngày tạo
-                            </th>
-                            <th class="text-uppercase text-center" scope="col">
-                                Ngày cập nhật
-                            </th>
-                            <th class="text-uppercase text-center" scope="col">
-                                Chức Năng
-                            </th>
+                        <tr class="text-uppercase text-center">
+                            <th scope="col">STT</th>
+                            <th class="text-start" scope="col">Tên danh mục</th>
+                            <th scope="col">Ngày tạo</th>
+                            <th scope="col">Ngày cập nhật</th>
+                            <th scope="col">Chức Năng</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($categories as $key => $category)
-                            <tr>
-                                <td class="fw-bold text-center" scope="row">
+                            <tr class="text-center">
+                                <td class="fw-bold text-start" scope="row">
                                     {{ $loop->iteration + $startValue - 1 }}
                                 </td>
                                 <td scope="row">
                                     {{ $category->name }}
                                 </td>
-                                <td class="text-center" scope="row">
+                                <td scope="row">
                                     {{ $category->formatTimeDMY($category->created_at) }}
                                 </td>
-                                <td class="text-center" scope="row">
+                                <td scope="row">
                                     {{ $category->formatTimeDMY($category->updated_at) }}
                                 </td>
-                                <td class="text-center" scope="row">
+                                <td scope="row">
                                     <a
                                         href="{{ route('admin.category.edit', $category->id) }}"
                                         class="btn btn-primary"
                                     >
+                                        <i class="fas fa-edit"></i>
                                         Cập nhật
                                     </a>
                                     <!-- Button trigger modal delete -->
@@ -102,6 +94,7 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalDelete-{{ $category->id }}"
                                     >
+                                        <i class="fas fa-trash-alt"></i>
                                         Xóa
                                     </button>
                                 </td>
