@@ -87,19 +87,17 @@
                         class="d-flex flex-wrap-reverse align-items-center justify-content-between gap-3 mb-3"
                     >
                         <div>
-                            From
                             <span class="fw-bold">
                                 {{ $startValue }}
                             </span>
-                            to
+                            -
                             <span class="fw-bold">
                                 {{ $toValue }}
                             </span>
-                            of
+                            của
                             <span class="fw-bold">
                                 {{ $total }}
                             </span>
-                            entires
                         </div>
                         <div class="d-flex align-items-center border rounded">
                             <i class="fas fa-search ps-2"></i>

@@ -27,19 +27,17 @@
                         class="d-flex flex-wrap-reverse justify-content-between align-items-center gap-3 mb-3"
                     >
                         <div>
-                            From
                             <span class="fw-bold">
                                 {{ $startValue }}
                             </span>
-                            to
+                            -
                             <span class="fw-bold">
                                 {{ $toValue }}
                             </span>
-                            of
+                            của
                             <span class="fw-bold">
                                 {{ $total }}
                             </span>
-                            entires
                         </div>
                         <button
                             type="button"
@@ -202,17 +200,8 @@
                                 @endif
                             </tbody>
                         </table>
-                        <div
-                            style="
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                margin: 20px;
-                            "
-                        >
-                            <div>
-                                {{ $employees->appends(request()->all())->links() }}
-                            </div>
+                        <div class="d-flex justify-content-center">
+                            {{ $employees->appends(request()->all())->links() }}
                         </div>
                     </div>
                 </div>

@@ -61,19 +61,17 @@
                 </form>
             </div>
             <div class="mb-2">
-                From
                 <span class="fw-bold">
                     {{ $startValue }}
                 </span>
-                to
+                -
                 <span class="fw-bold">
                     {{ $toValue }}
                 </span>
-                of
+                của
                 <span class="fw-bold">
                     {{ $total }}
                 </span>
-                entires
             </div>
             <div class="table-responsive">
                 <table class="table table-hover">
