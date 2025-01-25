@@ -1,50 +1,45 @@
 @extends('layouts.layout')
-@section('content')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+@section('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/scan-barcode.css') }}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+@endsection
+
+@section('content')
     <div class="row">
         <div class="col-12">
-            <div class="card my-4">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Quét Mã Vạch</h4>
-                    </div>
+            <div class="card">
+                <div class="card-header">
+                    <h4>Quét Mã Vạch</h4>
                 </div>
-                <div class="px-0 pb-2">
-                    <div class="table-responsive p-4">
+                <div class="card-body">
+                    <div class="table-responsives">
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
-                                    <label class="form-label title">
-                                        Hướng dẫn quét mã vạch
-                                        <span class="required">*</span>
-                                        :
-                                    </label>
-                                    <br />
-                                    <label class="form-label content">
-                                        Bước 1: Đưa mã vạch vào khung màn hình
-                                        quét.
-                                    </label>
-                                    <br />
-                                    <label class="form-label content">
-                                        Bước 2: Cân chỉnh để camera có thể nhận
-                                        diện mã vạch rõ ràng.
-                                    </label>
-                                    <br />
-                                    <label class="form-label content">
-                                        Bước 3: Đợi đến khi có thông báo quét
-                                        mã.
-                                    </label>
-                                    <br />
-                                    <label class="form-label content">
-                                        Lưu ý: Khoảng nghĩ giữa 2 lần quét mã
-                                        thành công là
-                                        <span class="required">5 giây</span>
+                                    <h2 class="fs-2 mb-3">
+                                        <span class="text-danger">*</span>
+                                        Hướng dẫn quét mã vạch:
+                                    </h2>
+                                    <p class="fs-6">
+                                        <span class="fw-bold">Bước 1:</span>
+                                        Đưa mã vạch vào khung màn hình quét.
+                                    </p>
+                                    <p class="fs-6">
+                                        <span class="fw-bold">Bước 2:</span>
+                                        Cân chỉnh để camera có thể nhận diện mã
+                                        vạch rõ ràng.
+                                    </p>
+                                    <p class="fs-6">
+                                        <span class="fw-bold">Bước 3:</span>
+                                        Đợi đến khi có thông báo quét mã.
+                                    </p>
+                                    <p class="fs-6">
+                                        <span class="fw-bold">Lưu ý:</span>
+                                        Khoảng nghĩ giữa 2 lần quét mã thành
+                                        công là
+                                        <span class="text-danger">5 giây</span>
                                         .
-                                    </label>
-                                    <br />
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -72,7 +67,9 @@
             </div>
         </div>
     </div>
+@endsection
 
+@section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var startApi = true;
