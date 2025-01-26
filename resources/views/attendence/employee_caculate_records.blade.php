@@ -1,98 +1,97 @@
 @extends('layouts.layout')
 
-{{--
-    <style>
+<style>
     @media (max-width: 768px) {
-    .table-wrapper {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+        .table-wrapper {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            display: block;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        td {
+            display: block;
+            text-align: right;
+            font-size: 14px;
+            padding: 10px;
+            position: relative;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        td::before {
+            content: attr(data-label);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        td:last-child {
+            border-bottom: none;
+        }
+
+        table th:nth-child(1),
+        table td:nth-child(1) {
+            display: none;
+        }
     }
-    
-    table {
-    width: 100%;
-    border-collapse: collapse;
-    }
-    
-    thead {
-    display: none;
-    }
-    
-    tr {
-    display: block;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-    }
-    
-    td {
-    display: block;
-    text-align: right;
-    font-size: 14px;
-    padding: 10px;
-    position: relative;
-    border-bottom: 1px solid #ddd;
-    word-wrap: break-word;
-    word-break: break-word;
-    }
-    
-    td::before {
-    content: attr(data-label);
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-weight: bold;
-    white-space: nowrap;
-    }
-    
-    td:last-child {
-    border-bottom: none;
-    }
-    
-    table th:nth-child(1),
-    table td:nth-child(1) {
-    display: none;
-    }
-    }
-    
+
     @media (min-width: 769px) {
-    .form-label {
-    font-size: 14px;
+        .form-label {
+            font-size: 14px;
+        }
+
+        .form-control {
+            font-size: 14px;
+        }
+
+        table {
+            font-size: 12px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
     }
-    
-    .form-control {
-    font-size: 14px;
-    }
-    
-    table {
-    font-size: 12px;
-    width: 100%;
-    border-collapse: collapse;
-    }
-    
-    th,
-    td {
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: center;
-    }
-    
-    th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    }
-    
-    tr:nth-child(even) {
-    background-color: #f9f9f9;
-    }
-    
-    tr:hover {
-    background-color: #f1f1f1;
-    }
-    }
-    </style>
---}}
+</style>
+
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -149,13 +148,16 @@
                                     role="switch"
                                     id="filter_absent"
                                 />
-                                <label class="form-check-label">
+                                <label
+                                    class="form-check-label"
+                                    for="filter_absent"
+                                >
                                     Hiển thị những ngày quên chấm công
                                 </label>
                             </div>
                             <table
                                 id="attendanceTable"
-                                class="table table-hover mb-4"
+                                class="table table-hover table-bordered"
                             >
                                 <thead>
                                     <tr class="text-center">
