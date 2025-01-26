@@ -1,867 +1,263 @@
 @extends('layouts.layout')
+
+@php
+    $dataProductStatus = [
+        'product' => ['data' => $dailyQuanStatus1, 'tabTitle' => 'LỊCH SỬ SẢN XUẤT (100%)', 'status' => 1],
+        'check-100' => ['data' => $dailyQuanStatus2, 'tabTitle' => 'LỊCH SỬ HÀNG KIỂM (200%)', 'status' => 2],
+        'import-200' => ['data' => $dailyQuanStatus3, 'tabTitle' => 'LỊCH SỬ XUẤT HÀNG (200%)', 'status' => 3],
+        'import-300' => ['data' => $dailyQuanStatus6, 'tabTitle' => 'LỊCH SỬ HÀNG LỖI', 'status' => 6],
+    ];
+@endphp
+
 @section('content')
-    <style>
-        .form-control {
-            border: 1px solid #d2d6da !important;
-            padding-left: 10px;
-        }
-
-        .active > .page-link {
-            color: white !important;
-        }
-
-        .href {
-            color: blue !important;
-        }
-
-        .trash {
-            margin-left: 10px;
-        }
-
-        .product-tab {
-            max-width: 75%;
-            overflow-x: auto;
-        }
-
-        .product-tab-2 {
-            max-width: 70%;
-            overflow-x: auto;
-        }
-
-        @media (max-width: 768px) {
-            .d-flex {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .form-control {
-                width: 100%;
-            }
-        }
-    </style>
-
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">
-                            Danh Sách Lịch Sử Cập Nhật Sản Phẩm
-                        </h4>
-                    </div>
+                <div class="card-header">
+                    <h4>Danh Sách Lịch Sử Cập Nhật Sản Phẩm</h4>
                 </div>
-                <div class="p-4 pb-0 d-flex">
+                <div class="card-body">
                     <a
                         href="{{ route('admin.product.home') }}"
                         type="button"
-                        class="btn btn-success"
+                        class="btn btn-link mb-3"
                     >
+                        <i class="fas fa-arrow-left"></i>
                         Danh Sách Sản Phẩm
                     </a>
-                    <a
-                        href="{{ route('admin.product.update-quantity-admin', $id) }}"
-                        type="button"
-                        class="btn btn-warning ms-2"
-                    >
-                        Cập nhật sản lượng
-                    </a>
-                    <div
-                        style="
-                            flex-grow: 1;
-                            display: flex;
-                            justify-content: end;
-                        "
-                    >
-                        <div style="display: flex">
-                            <form action="" method="get" style="display: flex">
-                                @csrf
-                                <select
-                                    class="form-control"
-                                    style="height: 35px; margin-right: 10px"
-                                    name="month"
-                                >
-                                    @foreach ($listMonth as $month)
-                                        <option
-                                            <?= $month == $monthNearly ? "selected" : "" ?>
-                                            value="{{ $month }}"
-                                        >
-                                            {{ $month }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <button
-                                    style="width: 230px"
-                                    type="submit"
-                                    class="btn btn-primary"
-                                >
-                                    Tìm kiếm
-                                </button>
-                            </form>
+                    <div class="fs-5 mb-3">
+                        <div>
+                            <span class="fw-bold">Tên sản phẩm:</span>
+                            {{ $product->name }}
+                        </div>
+                        <div>
+                            <span class="fw-bold">Mã sản phẩm:</span>
+                            {{ $product->code }}
                         </div>
                     </div>
-                </div>
-                <div class="ps-4 d-flex"></div>
-                <div class="px-0 pb-2">
-                    <ul class="nav nav-tabs px-4" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button
-                                class="nav-link tab-vvp active"
-                                id="product-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#product"
-                                type="button"
-                                role="tab"
-                                aria-controls="product"
-                                aria-selected="true"
+                    <div
+                        class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3"
+                    >
+                        <a
+                            href="{{ route('admin.product.update-quantity-admin', $id) }}"
+                            type="button"
+                            class="btn btn-primary"
+                        >
+                            Cập nhật sản lượng
+                        </a>
+                        <form action="" method="get">
+                            @csrf
+                            <select
+                                class="form-control"
+                                name="month"
+                                onchange="this.form.submit()"
                             >
-                                LỊCH SỬ SẢN XUẤT (100%)
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button
-                                class="nav-link tab-vvp"
-                                id="check-100-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#check-100"
-                                type="button"
-                                role="tab"
-                                aria-controls="check-100"
-                                aria-selected="false"
-                            >
-                                LỊCH SỬ HÀNG KIỂM (200%)
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button
-                                class="nav-link tab-vvp"
-                                id="import-200-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#import-200"
-                                type="button"
-                                role="tab"
-                                aria-controls="import-200"
-                                aria-selected="false"
-                            >
-                                LỊCH SỬ XUẤT HÀNG (200%)
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button
-                                class="nav-link tab-vvp"
-                                id="import-300-tab"
-                                data-bs-toggle="tab"
-                                data-bs-target="#import-300"
-                                type="button"
-                                role="tab"
-                                aria-controls="import-300"
-                                aria-selected="false"
-                            >
-                                LỊCH SỬ HÀNG LỖI
-                            </button>
-                        </li>
+                                @foreach ($listMonth as $month)
+                                    <option
+                                        <?= $month == $monthNearly ? "selected" : "" ?>
+                                        value="{{ $month }}"
+                                    >
+                                        {{ $month }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
+
+                    <ul
+                        class="nav nav-tabs flex-nowrap text-nowrap overflow-x-auto overflow-y-hidden"
+                        id="myTab"
+                        role="tablist"
+                    >
+                        @foreach ($dataProductStatus as $key => $tab)
+                            <li class="nav-item" role="presentation">
+                                <button
+                                    class="nav-link tab-vvp {{ $loop->first ? 'active' : '' }}"
+                                    id="{{ $key }}-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#{{ $key }}"
+                                    type="button"
+                                    role="tab"
+                                    aria-controls="{{ $key }}"
+                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                                >
+                                    {{ $tab['tabTitle'] }}
+                                </button>
+                            </li>
+                        @endforeach
                     </ul>
                     <div class="tab-content" id="myTabContent">
-                        <div style="margin-top: 20px; margin-left: 20px">
-                            <label style="font-size: 18px" for="">
-                                Tên sản phẩm: {{ $product->name }}
-                            </label>
-                            <label
-                                style="font-size: 18px; margin-left: 20px"
-                                for=""
-                            >
-                                Mã sản phẩm: {{ $product->code }}
-                            </label>
-                        </div>
-                        <div
-                            class="tab-pane tab-vvp fade show active"
-                            id="product"
-                            role="tabpanel"
-                            aria-labelledby="product-tab"
-                        >
-                            <div class="px-0 pb-2">
-                                <div class="table-responsive p-0 d-flex">
-                                    <div class="col-12">
-                                        <table
-                                            class="table align-items-center mb-0 table-hover"
-                                        >
-                                            <thead>
-                                                <tr>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        STT
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Tên nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Mã nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cập nhật sản
-                                                        lượng
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cuối cùng cập
-                                                        nhật
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Số lượng
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-xxs font-weight-bolder col-2"
-                                                        rowspan="2"
-                                                    >
-                                                        Thao tác
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($dailyQuanStatus1 as $key => $daily)
-                                                    <tr>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $loop->iteration }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->name }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->code }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->date }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->created_at }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ number_format($daily->quantity) }}
-                                                            </div>
-                                                        </td>
-                                                        <td
-                                                            style="
-                                                                display: flex;
-                                                            "
-                                                        >
-                                                            <button
-                                                                data-daily-id="{{ $daily->id }}"
-                                                                data-daily-quan="{{ $daily->quantity }}"
-                                                                data-product-id="{{ $daily->product_id }}"
-                                                                data-status="1"
-                                                                type="button"
-                                                                class="btn btn-primary"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#updateDetail"
-                                                            >
-                                                                Cập nhật
-                                                            </button>
-                                                            <form
-                                                                class="ms-2"
-                                                                action="{{ route('admin.product.delete-update-quantity', $daily->id) }}"
-                                                                method="post"
-                                                            >
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button
-                                                                    onclick="return confirm('Bạn có chắc muốn xoá cập nhật sản lượng này không?');"
-                                                                    class="btn btn-danger"
-                                                                >
-                                                                    Xoá
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-
-                                                @if ($total1 == 0)
-                                                    <tr>
-                                                        <td
-                                                            colspan="7"
-                                                            class="text-center pt-4"
-                                                        >
-                                                            Hiện tại chưa có
-                                                            lịch sử sản xuất.
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+                        @foreach ($dataProductStatus as $key => $tabpanel)
                             <div
-                                style="
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    margin: 20px;
-                                "
+                                class="tab-pane tab-vvp fade {{ $loop->first ? 'show active' : '' }}"
+                                id="{{ $key }}"
+                                role="tabpanel"
+                                aria-labelledby="{{ $key }}-tab"
                             >
-                                <div>
-                                    {{ $dailyQuanStatus1->appends(request()->all())->links() }}
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="tab-pane tab-vvp fade"
-                            id="check-100"
-                            role="tabpanel"
-                            aria-labelledby="check-100-tab"
-                        >
-                            <div class="px-0 pb-2">
-                                <div class="table-responsive p-0 d-flex">
-                                    <div class="col-12">
-                                        <table
-                                            class="table align-items-center mb-0 table-hover"
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead
+                                            class="table-light text-uppercase text-center"
                                         >
-                                            <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Tên nhân viên</th>
+                                                <th>Mã nhân viên</th>
+                                                <th>Thời gian cập nhật</th>
+                                                <th>
+                                                    Thời gian cuối cùng cập nhật
+                                                </th>
+                                                <th>Số lượng</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center align-middle">
+                                            @foreach ($tabpanel['data'] as $key => $daily)
                                                 <tr>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        STT
+                                                    <th>
+                                                        {{ $loop->iteration }}
                                                     </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Tên nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Mã nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cập nhật
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cuối cùng cập
-                                                        nhật
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Số lượng
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thao tác
-                                                    </th>
+                                                    <td class="text-start">
+                                                        {{ $daily->employee->name }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $daily->employee->code }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $daily->date }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $daily->created_at }}
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format($daily->quantity) }}
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            data-daily-id="{{ $daily->id }}"
+                                                            data-daily-quan="{{ $daily->quantity }}"
+                                                            data-product-id="{{ $daily->product_id }}"
+                                                            data-status="{{ $tabpanel['status'] }}"
+                                                            type="button"
+                                                            class="btn btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#updateDetail"
+                                                        >
+                                                            Cập nhật
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modalDelete-{{ $daily->id }}"
+                                                        >
+                                                            Xoá
+                                                        </button>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($dailyQuanStatus2 as $key => $daily)
-                                                    <tr>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $loop->iteration }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->name }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->code }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->date }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->created_at }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ number_format($daily->quantity) }}
-                                                            </div>
-                                                        </td>
-                                                        <td
-                                                            style="
-                                                                display: flex;
-                                                            "
+                                                {{-- Modal delete --}}
+                                                <div
+                                                    class="modal fade"
+                                                    id="modalDelete-{{ $daily->id }}"
+                                                    tabindex="-1"
+                                                    aria-labelledby="modalDeleteLabel-{{ $daily->id }}"
+                                                    aria-hidden="true"
+                                                >
+                                                    <div
+                                                        class="modal-dialog modal-dialog-centered"
+                                                    >
+                                                        <div
+                                                            class="modal-content"
                                                         >
-                                                            <button
-                                                                data-daily-id="{{ $daily->id }}"
-                                                                data-daily-quan="{{ $daily->quantity }}"
-                                                                data-product-id="{{ $id }}"
-                                                                data-status="2"
-                                                                type="button"
-                                                                style="
-                                                                    margin-bottom: 0px;
-                                                                    height: 38px;
-                                                                "
-                                                                class="btn btn-primary"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#updateDetail"
+                                                            <div
+                                                                class="modal-header"
                                                             >
-                                                                Cập nhật
-                                                            </button>
-                                                            <form
-                                                                class="ms-2"
-                                                                action="{{ route('admin.product.delete-update-quantity', $daily->id) }}"
-                                                                method="post"
-                                                            >
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button
-                                                                    onclick="return confirm('Bạn có chắc muốn xoá cập nhật sản lượng này không?');"
-                                                                    class="btn btn-danger"
+                                                                <h1
+                                                                    class="modal-title fs-5"
+                                                                    id="modalDeleteLabel-{{ $daily->id }}"
                                                                 >
-                                                                    Xoá
+                                                                    Xóa lịch sử
+                                                                    cập nhật
+                                                                </h1>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-label="Close"
+                                                                ></button>
+                                                            </div>
+                                                            <div
+                                                                class="modal-body"
+                                                            >
+                                                                <p>
+                                                                    Hành động
+                                                                    không thể
+                                                                    khôi phục!!
+                                                                    Bạn có chắc
+                                                                    muốn xoá
+                                                                    lịch sử cập
+                                                                    <span
+                                                                        class="fw-bold"
+                                                                    >
+                                                                        {{ '#'.$loop->iteration }}
+                                                                        -
+                                                                        {{ $daily->employee->name }}
+                                                                        -
+                                                                        {{ $daily->created_at }}
+                                                                    </span>
+                                                                    nhật sản
+                                                                    phẩm không?
+                                                                </p>
+                                                            </div>
+                                                            <div
+                                                                class="modal-footer"
+                                                            >
+                                                                <form
+                                                                    class="ms-2"
+                                                                    action="{{ route('admin.product.delete-update-quantity', $daily->id) }}"
+                                                                    method="post"
+                                                                >
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button
+                                                                        type="submit"
+                                                                        class="btn btn-danger"
+                                                                    >
+                                                                        Xoá
+                                                                    </button>
+                                                                </form>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal"
+                                                                >
+                                                                    Đóng
                                                                 </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
 
-                                                @if ($total2 == 0)
-                                                    <tr>
-                                                        <td
-                                                            colspan="7"
-                                                            class="text-center pt-4"
-                                                        >
-                                                            Hiện tại chưa có
-                                                            lịch sử hàng kiểm
-                                                            200%.
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                style="
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    margin: 20px;
-                                "
-                            >
-                                <div>
-                                    {{ $dailyQuanStatus2->appends(request()->all())->links() }}
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="tab-pane tab-vvp fade"
-                            id="import-200"
-                            role="tabpanel"
-                            aria-labelledby="import-200-tab"
-                        >
-                            <div class="px-0 pb-2">
-                                <div class="table-responsive p-0 d-flex">
-                                    <div class="col-12">
-                                        <table
-                                            class="table align-items-center mb-0 table-hover"
-                                        >
-                                            <thead>
+                                            @if ($tabpanel['data']->isEmpty())
                                                 <tr>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
+                                                    <td
+                                                        colspan="7"
+                                                        class="text-center pt-4"
                                                     >
-                                                        STT
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Tên nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Mã nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cập nhật
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cuối cùng cập
-                                                        nhật
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Số lượng
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thao tác
-                                                    </th>
+                                                        Hiện tại chưa có lịch
+                                                        sử.
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($dailyQuanStatus3 as $key => $daily)
-                                                    <tr>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $loop->iteration }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->name }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->code }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->date }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->created_at }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ number_format($daily->quantity) }}
-                                                            </div>
-                                                        </td>
-                                                        <td
-                                                            style="
-                                                                display: flex;
-                                                            "
-                                                        >
-                                                            <button
-                                                                data-daily-id="{{ $daily->id }}"
-                                                                data-daily-quan="{{ $daily->quantity }}"
-                                                                data-product-id="{{ $id }}"
-                                                                data-status="3"
-                                                                type="button"
-                                                                style="
-                                                                    margin-bottom: 0px;
-                                                                    height: 38px;
-                                                                "
-                                                                class="btn btn-primary"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#updateDetail"
-                                                            >
-                                                                Cập nhật
-                                                            </button>
-                                                            <form
-                                                                class="ms-2"
-                                                                action="{{ route('admin.product.delete-update-quantity', $daily->id) }}"
-                                                                method="post"
-                                                            >
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button
-                                                                    onclick="return confirm('Bạn có chắc muốn xoá cập nhật sản lượng này không?');"
-                                                                    class="btn btn-danger"
-                                                                >
-                                                                    Xoá
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-
-                                                @if ($total3 == 0)
-                                                    <tr>
-                                                        <td
-                                                            colspan="7"
-                                                            class="text-center pt-4"
-                                                        >
-                                                            Hiện tại chưa có
-                                                            lịch sử hàng xuất
-                                                            200%.
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    {{ $tabpanel['data']->appends(request()->all())->links() }}
                                 </div>
                             </div>
-                            <div
-                                style="
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    margin: 20px;
-                                "
-                            >
-                                <div>
-                                    {{ $dailyQuanStatus3->appends(request()->all())->links() }}
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Tab Error-->
-                        <div
-                            class="tab-pane tab-vvp fade"
-                            id="import-300"
-                            role="tabpanel"
-                            aria-labelledby="import-300-tab"
-                        >
-                            <div class="px-0 pb-2">
-                                <div class="table-responsive p-0 d-flex">
-                                    <div class="col-12">
-                                        <table
-                                            class="table align-items-center mb-0 table-hover"
-                                        >
-                                            <thead>
-                                                <tr>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        STT
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Tên nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Mã nhân viên
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cập nhật
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thời gian cuối cùng cập
-                                                        nhật
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Số lượng
-                                                    </th>
-                                                    <th
-                                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                                        rowspan="2"
-                                                    >
-                                                        Thao tác
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($dailyQuanStatus6 as $key => $daily)
-                                                    <tr>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $loop->iteration }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->name }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->employee->code }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->date }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ $daily->created_at }}
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div
-                                                                class="d-flex px-3 py-1"
-                                                            >
-                                                                {{ number_format($daily->quantity) }}
-                                                            </div>
-                                                        </td>
-                                                        <td
-                                                            style="
-                                                                display: flex;
-                                                            "
-                                                        >
-                                                            <button
-                                                                data-daily-id="{{ $daily->id }}"
-                                                                data-daily-quan="{{ $daily->quantity }}"
-                                                                data-product-id="{{ $id }}"
-                                                                data-status="6"
-                                                                type="button"
-                                                                style="
-                                                                    margin-bottom: 0px;
-                                                                    height: 38px;
-                                                                "
-                                                                class="btn btn-primary"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#updateDetail"
-                                                            >
-                                                                Cập nhật
-                                                            </button>
-                                                            <form
-                                                                class="ms-2"
-                                                                action="{{ route('admin.product.delete-update-quantity', $daily->id) }}"
-                                                                method="post"
-                                                            >
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button
-                                                                    onclick="return confirm('Bạn có chắc muốn xoá cập nhật sản lượng này không?');"
-                                                                    class="btn btn-danger"
-                                                                >
-                                                                    Xoá
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-
-                                                @if ($total6 == 0)
-                                                    <tr>
-                                                        <td
-                                                            colspan="7"
-                                                            class="text-center pt-4"
-                                                        >
-                                                            Hiện tại chưa có
-                                                            lịch sử hàng lỗi.
-                                                        </td>
-                                                    </tr>
-                                                @endif
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                style="
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    margin: 20px;
-                                "
-                            >
-                                <div>
-                                    {{ $dailyQuanStatus6->appends(request()->all())->links() }}
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

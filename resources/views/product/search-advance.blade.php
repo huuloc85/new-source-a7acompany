@@ -1,14 +1,15 @@
 <div
     class="modal fade"
     id="searchModal"
-    aria-labelledby="exampleModalLabel"
+    tabindex="-1"
+    aria-labelledby="searchModalLabel"
     aria-hidden="true"
 >
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <form method="get">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
+                    <h5 class="modal-title" id="searchModalLabel">
                         Tìm kiếm nâng cao
                     </h5>
                     <button
@@ -20,7 +21,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-12">
                             <div class="mb-3">
                                 <label class="form-label" for="">
                                     Kích thước khuôn
@@ -29,9 +30,8 @@
                                     class="form-control"
                                     name="moldSize"
                                     id="moldSize"
-                                    style="width: 470px"
                                 >
-                                    <option style="text-align: center" value="">
+                                    <option class="text-center" value="">
                                         ----- Chọn kích thước khuôn -----
                                     </option>
                                     @foreach ($modelSizes as $modelSize)
@@ -54,9 +54,8 @@
                                     class="form-control"
                                     name="binCode"
                                     id="binCode"
-                                    style="width: 470px"
                                 >
-                                    <option style="text-align: center" value="">
+                                    <option class="text-center" value="">
                                         ----- Chọn mã thùng -----
                                     </option>
                                     @foreach ($models as $model)
@@ -70,7 +69,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-12 col-sm-6">
                             <div class="mb-3">
                                 <label class="form-label" for="">
                                     Mã linh kiện
@@ -84,7 +83,7 @@
                                 />
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-12 col-sm-6">
                             <div class="mb-3">
                                 <label class="form-label" for="">
                                     Tên linh kiện
@@ -103,9 +102,8 @@
                 <div class="modal-footer">
                     <a
                         href="{{ route($href) }}"
-                        style="float: left"
                         type="submit"
-                        class="btn btn-warning"
+                        class="btn btn-secondary"
                     >
                         Đặt lại
                     </a>

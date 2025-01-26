@@ -1,33 +1,31 @@
 @extends('layouts.layout')
 @section('content')
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">
-                            Cập Nhật Sản Lượng MOQ Tồn Đầu Kỳ Tồn 200%
-                        </h4>
-                    </div>
+                <div class="card-header">
+                    <h4>Cập Nhật Sản Lượng MOQ Tồn Đầu Kỳ Tồn 200%</h4>
                 </div>
                 <div class="card-body">
+                    <a
+                        href="{{ route('admin.product.home') }}"
+                        class="btn btn-link mb-3"
+                    >
+                        <i class="fas fa-arrow-left"></i>
+                        Quay lại
+                    </a>
                     <form
                         action="{{ route('admin.product.handle-update-moq') }}"
                         method="post"
                     >
                         @csrf
-                        <div class="form-inline">
-                            <div
-                                class="form-group"
-                                style="display: inline-block"
-                            >
+                        <div class="d-sm-flex align-items-center gap-3">
+                            <div class="form-group">
                                 <label for="month" class="form-label">
                                     Chọn tháng cập nhật:
                                 </label>
                                 <select
-                                    class="form-select w-auto"
+                                    class="form-select"
                                     name="month"
                                     aria-label="Chọn tháng cập nhật"
                                 >
@@ -41,15 +39,12 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div
-                                class="form-group ml-3"
-                                style="display: inline-block"
-                            >
+                            <div class="form-group">
                                 <label for="status" class="form-label">
                                     Loại Sản Lượng:
                                 </label>
                                 <select
-                                    class="form-select w-auto"
+                                    class="form-select"
                                     name="status"
                                     id="status"
                                     required
@@ -67,45 +62,28 @@
                                 @enderror
                             </div>
                         </div>
-                        <div
-                            style="
-                                display: grid;
-                                grid-template-columns: repeat(5, 1fr);
-                                gap: 30px;
-                            "
-                            class="my-4"
-                        >
-                            @if (! empty($products))
+                        <div class="row">
+                            <h4 class="card-title">Sản phẩm</h4>
+                            <hr />
+                            @if (empty($products))
+                                <div class="text-center">
+                                    Không có sản phẩm nào
+                                </div>
+                            @else
                                 @foreach ($products as $product)
                                     <div
-                                        style="
-                                            display: flex;
-                                            justify-content: space-between;
-                                        "
+                                        class="form-group col-6 col-sm-4 col-md-3"
                                     >
-                                        <div>
-                                            <input
-                                                type="hidden"
-                                                style="margin-top: -3px"
-                                                name="productId[]"
-                                                value="{{ $product->id }}"
-                                            />
-                                            <label
-                                                class="me-2"
-                                                style="margin-top: 3px"
-                                                for="html"
-                                            >
-                                                {{ $product->name }} :
-                                            </label>
-                                        </div>
+                                        <input
+                                            type="hidden"
+                                            name="productId[]"
+                                            value="{{ $product->id }}"
+                                        />
+                                        <label class="form-label">
+                                            {{ $product->name }} :
+                                        </label>
                                         <input
                                             type="number"
-                                            style="
-                                                height: 27px;
-                                                width: 150px;
-                                                margin-right: 100px;
-                                                text-align: center;
-                                            "
                                             min="0"
                                             class="form-control quantity-input"
                                             name="quantity[]"
@@ -118,18 +96,14 @@
                         <button type="submit" class="btn btn-success">
                             Cập nhật
                         </button>
-                        <a
-                            href="{{ route('admin.product.home') }}"
-                            class="btn btn-danger"
-                        >
-                            Quay lại
-                        </a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+@endsection
 
+@section('scripts')
     <script>
         var productNearData = @json($productNearData);
 

@@ -1,7 +1,13 @@
 @extends('layouts.layout')
 
 @php
-    //
+    $tabProducts = [
+        'product' => ['title' => 'TỔNG QUAN', 'data' => $products, 'page' => 'product', 'status' => 1],
+        'check-100' => ['title' => 'Hàng Sản Xuất', 'data' => $products, 'page' => 'produce', 'status' => 1],
+        'import-200' => ['title' => 'Hàng Kiểm 200%', 'data' => $products, 'page' => 'check200', 'status' => 2],
+        'import-300' => ['title' => 'Hàng Lỗi (200%)', 'data' => $products, 'page' => 'error200', 'status' => 6],
+        'export-200' => ['title' => 'Xuất Hàng', 'data' => $products, 'page' => 'export', 'status' => 3],
+    ];
 @endphp
 
 @section('content')
@@ -10,8 +16,8 @@
             <h4 class="card-title">Danh Sách Sản Phẩm</h4>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-wrap justify-content-between gap-2">
-                <div class="flex align-items-center flex-wrap gap-2">
+            <div class="d-flex flex-wrap justify-content-between gap-3">
+                <div class="flex flex-wrap align-items-center gap-3">
                     <a
                         href="{{ route('admin.product.add') }}"
                         class="btn btn-primary rounded mb-2"
@@ -66,8 +72,8 @@
                         </button>
                     </form>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <form method="get" class="d-flex gap-2" id="searchForm">
+                <div class="d-flex align-items-center gap-3">
+                    <form method="get" class="d-flex gap-3" id="searchForm">
                         @csrf
                         <input type="hidden" name="page" value="{{ $page }}" />
                         <select
@@ -122,572 +128,367 @@
                 <strong>{{ count($products) }}</strong>
             </div>
             <section>
-                <div
+                <ul
                     class="nav nav-tabs flex-nowrap text-nowrap overflow-x-auto overflow-y-hidden"
                     id="myTab"
                     role="tablist"
                     data-url="{{ route('admin.product.home') }}"
                 >
-                    <button
-                        class="nav-link text-uppercase"
-                        id="product-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#product"
-                        type="button"
-                        role="tab"
-                        aria-controls="product"
-                        aria-selected="true"
-                    >
-                        TỔNG QUAN
-                    </button>
-                    <button
-                        class="nav-link text-uppercase"
-                        id="check-100-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#check-100"
-                        type="button"
-                        role="tab"
-                        aria-controls="check-100"
-                        aria-selected="false"
-                    >
-                        Hàng Sản Xuất
-                    </button>
-                    <button
-                        class="nav-link text-uppercase"
-                        id="import-200-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#import-200"
-                        type="button"
-                        role="tab"
-                        aria-controls="import-200"
-                        aria-selected="false"
-                    >
-                        Hàng Kiểm 200%
-                    </button>
-                    <button
-                        class="nav-link text-uppercase"
-                        id="import-300-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#import-300"
-                        type="button"
-                        role="tab"
-                        aria-controls="import-300"
-                        aria-selected="false"
-                    >
-                        Hàng Lỗi (200%)
-                    </button>
-                    <button
-                        class="nav-link text-uppercase"
-                        id="export-200-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#export-200"
-                        type="button"
-                        role="tab"
-                        aria-controls="export-200"
-                        aria-selected="false"
-                    >
-                        Xuất Hàng
-                    </button>
-                </div>
+                    @foreach ($tabProducts as $key => $tabProduct)
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link text-uppercase {{ $page == $tabProduct['page'] ? 'active' : '' }}"
+                                id="{{ $key }}-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#{{ $key }}"
+                                type="button"
+                                role="tab"
+                                aria-controls="{{ $key }}"
+                                aria-selected="{{ $page == $tabProduct['page'] ? 'true' : 'false' }}"
+                            >
+                                {{ $tabProduct['title'] }}
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
                 <div class="tab-content" id="myTabContent">
-                    @if ($page == 'product')
-                        <div
-                            class="tab-pane fade"
-                            id="product"
-                            role="tabpanel"
-                            aria-labelledby="product-tab"
-                            tabindex="0"
-                        >
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="text-uppercase font-weight-bolder px-3"
-                                                rowspan="2"
-                                            >
-                                                STT
-                                            </th>
-                                            <th
-                                                class="text-uppercas font-weight-bolder px-4"
-                                                rowspan="2"
-                                            >
-                                                Tên linh kiện
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1 bg-body-secondary"
-                                                rowspan="2"
-                                            >
-                                                SẢN LƯỢNG
-                                                <br />
-                                                (MOQ)
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1 bg-body-secondary"
-                                                rowspan="2"
-                                            >
-                                                THUNG CATON/THANG
-                                                <br />
-                                                (MOQ)
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                Dự định
-                                                <br />
-                                                Thời gian hoạt động thiết bị
-                                                <br />
-                                                (ngày/tháng)
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                Thực tế
-                                                <br />
-                                                Thời gian hoạt động thiết bị
-                                                <br />
-                                                (ngày/tháng)
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1 bg-body-secondary"
-                                                rowspan="2"
-                                            >
-                                                FAPV出荷
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1 bg-body-secondary"
-                                                rowspan="2"
-                                            >
-                                                FASV出荷
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1 bg-body-secondary"
-                                                rowspan="2"
-                                            >
-                                                FAVV出荷
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                TỔNG SỐ LƯỢNG
-                                                <br />
-                                                TỒN ĐẦU KỲ
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                TỔNG THỰC TẾ
-                                                <br />
-                                                SẢN XUẤT(cái/tháng)
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                TỔNG SỐ LƯỢNG
-                                                <br />
-                                                ĐÃ XUẤT
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                SỐ LƯỢNG
-                                                <br />
-                                                ĐÃ KIỂM 200%
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                SỐ LƯỢNG
-                                                <br />
-                                                HÀNG CHƯA KIỂM 200%
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                TỔNG SỐ LƯỢNG
-                                                <br />
-                                                TỒN CUỐI KỲ
-                                            </th>
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                SỐ NGÀY
-                                                <br />
-                                                TỒN KHO
-                                            </th>
-                                            @foreach ($listMonthExport as $monthExport)
-                                                <th
-                                                    class="text-uppercase font-weight-bolder text-center col-1 bg-body-secondary"
-                                                    rowspan="2"
-                                                >
+                    @foreach ($tabProducts as $key => $tabProduct)
+                        @if ($key == 'product')
+                            <div
+                                class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
+                                id="{{ $key }}"
+                                role="tabpanel"
+                                aria-labelledby="{{ $key }}-tab"
+                                tabindex="0"
+                            >
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead
+                                            class="table-light text-center align-middle text-uppercase"
+                                        >
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Tên linh kiện</th>
+                                                <th class="bg-body-secondary">
+                                                    SẢN LƯỢNG
+                                                    <br />
+                                                    (MOQ)
+                                                </th>
+                                                <th class="bg-body-secondary">
+                                                    THUNG CATON/THANG
+                                                    <br />
+                                                    (MOQ)
+                                                </th>
+                                                <th>
+                                                    Dự định
+                                                    <br />
+                                                    Thời gian hoạt động thiết bị
+                                                    <br />
+                                                    (ngày/tháng)
+                                                </th>
+                                                <th>
+                                                    Thực tế
+                                                    <br />
+                                                    Thời gian hoạt động thiết bị
+                                                    <br />
+                                                    (ngày/tháng)
+                                                </th>
+                                                <th class="bg-body-secondary">
+                                                    FAPV出荷
+                                                </th>
+                                                <th class="bg-body-secondary">
+                                                    FASV出荷
+                                                </th>
+                                                <th class="bg-body-secondary">
+                                                    FAVV出荷
+                                                </th>
+                                                <th>
+                                                    TỔNG SỐ LƯỢNG
+                                                    <br />
+                                                    TỒN ĐẦU KỲ
+                                                </th>
+                                                <th>
+                                                    TỔNG THỰC TẾ
+                                                    <br />
+                                                    SẢN XUẤT(cái/tháng)
+                                                </th>
+                                                <th>
+                                                    TỔNG SỐ LƯỢNG
+                                                    <br />
+                                                    ĐÃ XUẤT
+                                                </th>
+                                                <th>
                                                     SỐ LƯỢNG
                                                     <br />
-                                                    ĐÃ XUẤT THÁNG
-                                                    {{ $monthExport }}
+                                                    ĐÃ KIỂM 200%
                                                 </th>
-                                            @endforeach
-
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                THAO TÁC
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($products as $key => $product)
-                                            @php
-                                                $prorealityQuan =
-                                                    $product
-                                                        ->TotalMonthQuantities()
-                                                        ->where('month', $monthNearly)
-                                                        ->where('status', 1)
-                                                        ->value('totalQuan') ?? 0; //tổng hàng sản xuất
-                                                $importedQuan =
-                                                    $product
-                                                        ->TotalMonthQuantities()
-                                                        ->where('month', $monthNearly)
-                                                        ->where('status', 2)
-                                                        ->value('totalQuan') ?? 0; //tổng hàng kiểm 200%
-                                                $exportedQuan =
-                                                    $product
-                                                        ->TotalMonthQuantities()
-                                                        ->where('month', $monthNearly)
-                                                        ->where('status', 3)
-                                                        ->value('totalQuan') ?? 0; //tổng số lượng đã xuất
-                                                $stockQuan =
-                                                    $product
-                                                        ->TotalMonthQuantities()
-                                                        ->where('month', $monthNearly)
-                                                        ->where('status', 4)
-                                                        ->value('totalQuan') ?? 0; //tồn đầu kỳ
-                                                $stockQuan200 =
-                                                    $product
-                                                        ->TotalMonthQuantities()
-                                                        ->where('month', $monthNearly)
-                                                        ->where('status', 5)
-                                                        ->value('totalQuan') ?? 0; //tồn đầu kỳ 200%
-                                                $errorQuantity =
-                                                    $product
-                                                        ->TotalMonthQuantities()
-                                                        ->where('month', $monthNearly)
-                                                        ->where('status', 6)
-                                                        ->value('totalQuan') ?? 0; //hàng lỗi
-                                                $stockQuanMOQ =
-                                                    $product
-                                                        ->TotalMonthQuantities()
-                                                        ->where('month', $monthNearly)
-                                                        ->where('status', 7)
-                                                        ->value('totalQuan') ?? 0; // MOQ
-
-                                                $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; //đã kiểm 200%
-                                                $stockEndQuan =
-                                                    $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; //tồn cuối kỳ
-                                                $stockNoneCheck200 =
-                                                    $stockQuan +
-                                                    $prorealityQuan -
-                                                    $exportedQuan -
-                                                    $checked200 -
-                                                    $errorQuantity; //số lượng hàng chưa kiểm 200%
-                                                $quantityCaTon = $stockQuanMOQ / $product->quanEntityBin;
-                                                $planTime =
-                                                    (((($stockQuanMOQ / $product->CAV) * $product->cycle) / 3600 / 24) *
-                                                        100) /
-                                                    90;
-                                                $realTime =
-                                                    (((($exportedQuan / $product->CAV) * $product->cycle) / 3600 / 24) *
-                                                        100) /
-                                                    90;
-                                            @endphp
-
-                                            <tr>
                                                 <th>
-                                                    <div
-                                                        class="d-flex px-3 py-1"
-                                                    >
-                                                        {{ $loop->iteration }}
-                                                    </div>
+                                                    SỐ LƯỢNG
+                                                    <br />
+                                                    HÀNG CHƯA KIỂM 200%
                                                 </th>
-                                                <td>
-                                                    <div
-                                                        class="d-flex px-3 py-1"
+                                                <th>
+                                                    TỔNG SỐ LƯỢNG
+                                                    <br />
+                                                    TỒN CUỐI KỲ
+                                                </th>
+                                                <th>
+                                                    SỐ NGÀY
+                                                    <br />
+                                                    TỒN KHO
+                                                </th>
+                                                @foreach ($listMonthExport as $monthExport)
+                                                    <th
+                                                        class="bg-body-secondary"
                                                     >
+                                                        SỐ LƯỢNG
+                                                        <br />
+                                                        ĐÃ XUẤT THÁNG
+                                                        {{ $monthExport }}
+                                                    </th>
+                                                @endforeach
+
+                                                <th>THAO TÁC</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center align-middle">
+                                            @foreach ($products as $key => $product)
+                                                @php
+                                                    $prorealityQuan =
+                                                        $product
+                                                            ->TotalMonthQuantities()
+                                                            ->where('month', $monthNearly)
+                                                            ->where('status', 1)
+                                                            ->value('totalQuan') ?? 0; //tổng hàng sản xuất
+                                                    $importedQuan =
+                                                        $product
+                                                            ->TotalMonthQuantities()
+                                                            ->where('month', $monthNearly)
+                                                            ->where('status', 2)
+                                                            ->value('totalQuan') ?? 0; //tổng hàng kiểm 200%
+                                                    $exportedQuan =
+                                                        $product
+                                                            ->TotalMonthQuantities()
+                                                            ->where('month', $monthNearly)
+                                                            ->where('status', 3)
+                                                            ->value('totalQuan') ?? 0; //tổng số lượng đã xuất
+                                                    $stockQuan =
+                                                        $product
+                                                            ->TotalMonthQuantities()
+                                                            ->where('month', $monthNearly)
+                                                            ->where('status', 4)
+                                                            ->value('totalQuan') ?? 0; //tồn đầu kỳ
+                                                    $stockQuan200 =
+                                                        $product
+                                                            ->TotalMonthQuantities()
+                                                            ->where('month', $monthNearly)
+                                                            ->where('status', 5)
+                                                            ->value('totalQuan') ?? 0; //tồn đầu kỳ 200%
+                                                    $errorQuantity =
+                                                        $product
+                                                            ->TotalMonthQuantities()
+                                                            ->where('month', $monthNearly)
+                                                            ->where('status', 6)
+                                                            ->value('totalQuan') ?? 0; //hàng lỗi
+                                                    $stockQuanMOQ =
+                                                        $product
+                                                            ->TotalMonthQuantities()
+                                                            ->where('month', $monthNearly)
+                                                            ->where('status', 7)
+                                                            ->value('totalQuan') ?? 0; // MOQ
+
+                                                    $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; //đã kiểm 200%
+                                                    $stockEndQuan =
+                                                        $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; //tồn cuối kỳ
+                                                    $stockNoneCheck200 =
+                                                        $stockQuan +
+                                                        $prorealityQuan -
+                                                        $exportedQuan -
+                                                        $checked200 -
+                                                        $errorQuantity; //số lượng hàng chưa kiểm 200%
+                                                    $quantityCaTon = $stockQuanMOQ / $product->quanEntityBin;
+                                                    $planTime =
+                                                        (((($stockQuanMOQ / $product->CAV) * $product->cycle) /
+                                                            3600 /
+                                                            24) *
+                                                            100) /
+                                                        90;
+                                                    $realTime =
+                                                        (((($exportedQuan / $product->CAV) * $product->cycle) /
+                                                            3600 /
+                                                            24) *
+                                                            100) /
+                                                        90;
+                                                @endphp
+
+                                                <tr>
+                                                    <th>
+                                                        {{ $loop->iteration }}
+                                                    </th>
+                                                    <td class="text-start">
                                                         <a
                                                             href="{{ route('admin.product.detail', $product->id) }}"
                                                         >
                                                             {{ $product->name }}
                                                         </a>
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="text-center bg-body-secondary"
-                                                >
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
+                                                    </td>
+                                                    <td
+                                                        class="bg-body-secondary"
                                                     >
                                                         {{ number_format($stockQuanMOQ) }}
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="text-center bg-body-secondary"
-                                                >
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
+                                                    </td>
+                                                    <td
+                                                        class="bg-body-secondary"
                                                     >
                                                         {{ number_format($quantityCaTon) }}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($planTime, 1) }}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($realTime, 1) }}
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="text-center bg-body-secondary"
-                                                >
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
+                                                    </td>
+                                                    <td
+                                                        class="bg-body-secondary"
                                                     >
                                                         {{ $product->FAPV == 1 ? 'O' : '' }}
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="text-center bg-body-secondary"
-                                                >
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
+                                                    </td>
+                                                    <td
+                                                        class="bg-body-secondary"
                                                     >
                                                         {{ $product->FASV == 1 ? 'O' : '' }}
-                                                    </div>
-                                                </td>
-                                                <td
-                                                    class="text-center bg-body-secondary"
-                                                >
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
+                                                    </td>
+                                                    <td
+                                                        class="bg-body-secondary"
                                                     >
                                                         {{ $product->FAVV == 1 ? 'O' : '' }}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($stockQuan) }}
-                                                    </div>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($prorealityQuan) }}
-                                                    </div>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($exportedQuan) }}
-                                                    </div>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($checked200) }}
-                                                    </div>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($stockNoneCheck200) }}
-                                                    </div>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($stockEndQuan) }}
-                                                    </div>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
+                                                    </td>
+                                                    <td>
                                                         {{ number_format($stockQuanMOQ != 0 ? $stockEndQuan / ($stockQuanMOQ / 24) : 0, 1) }}
-                                                    </div>
-                                                </td>
-
-                                                @foreach ($listMonthExport as $monthExport)
-                                                    <td
-                                                        class="text-center bg-body-secondary"
-                                                    >
-                                                        <div
-                                                            class="d-flex px-3 py-1 justify-content-center"
+                                                    </td>
+                                                    @foreach ($listMonthExport as $monthExport)
+                                                        <td
+                                                            class="bg-body-secondary"
                                                         >
                                                             <?php
                                                             $export = $product->TotalMonthQuantities()->where('month', $monthExport)->where('status', 3)->value('totalQuan') ?? 0;
                                                             ?>
 
                                                             {{ number_format($export) }}
-                                                        </div>
-                                                    </td>
-                                                @endforeach
+                                                        </td>
+                                                    @endforeach
 
-                                                <td class="text-center">
-                                                    <form
-                                                        action="{{ route('admin.product.delete', $product->id) }}"
-                                                        method="post"
-                                                    >
-                                                        @method('DELETE')
-                                                        @csrf
+                                                    <td>
                                                         <a
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
                                                             href="{{ route('admin.product.edit', $product->id) }}"
                                                             class="btn btn-primary"
                                                         >
+                                                            <i
+                                                                class="fas fa-edit"
+                                                            ></i>
                                                             Cập nhật
                                                         </a>
                                                         <button
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
-                                                            onclick="return confirm('Bạn có chắc muốn đưa sản phẩm này vào thùng rác không?');"
-                                                            class="btn btn-danger"
                                                             type="submit"
+                                                            class="btn btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteProduct{{ $product->id }}"
                                                         >
+                                                            <i
+                                                                class="fas fa-trash-alt"
+                                                            ></i>
                                                             Xóa
                                                         </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
 
-                    @if ($page == 'produce')
-                        <div
-                            class="tab-pane fade"
-                            id="check-100"
-                            role="tabpanel"
-                            aria-labelledby="check-100-tab"
-                            tabindex="0"
-                        >
-                            <div class="table-responsive">
-                                <div class="col-9 product-tab">
+                        @if ($key == 'check-100')
+                            <div
+                                class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
+                                id="{{ $key }}"
+                                role="tabpanel"
+                                aria-labelledby="{{ $key }}-tab"
+                                tabindex="0"
+                            >
+                                <div class="table-responsive">
                                     <table class="table table-hover">
-                                        <thead>
+                                        <thead
+                                            class="table-light text-uppercase text-center align-middle"
+                                        >
                                             <tr>
-                                                <th
-                                                    class="text-uppercase"
-                                                    rowspan="2"
-                                                >
-                                                    STT
-                                                </th>
-                                                <th
-                                                    class="text-uppercase"
-                                                    rowspan="2"
-                                                >
+                                                <th rowspan="2">STT GG</th>
+                                                <th rowspan="2">
                                                     Tên linh kiện
                                                 </th>
-                                                <th
-                                                    class="text-uppercase"
-                                                    rowspan="2"
-                                                >
+                                                <th rowspan="2">
                                                     Tổng cộng
                                                     <br />
                                                 </th>
                                                 @foreach ($listDate as $key => $date)
                                                     <th
-                                                        class="text-uppercase <?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
+                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                         colspan="2"
                                                     >
                                                         {{ $date }}
                                                     </th>
                                                 @endforeach
 
-                                                <th
-                                                    class="text-uppercase"
-                                                    rowspan="2"
-                                                >
-                                                    THAO TÁC
-                                                </th>
+                                                <th rowspan="2">THAO TÁC</th>
                                             </tr>
                                             <tr>
                                                 @foreach ($listDate as $key => $date)
                                                     <th
-                                                        class="text-uppercase <?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
+                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                     >
                                                         Ca 1
                                                     </th>
                                                     <th
-                                                        class="text-uppercase <?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
+                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                     >
                                                         Ca 2
                                                     </th>
                                                 @endforeach
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody class="text-center align-middle">
                                             @foreach ($products as $key => $product)
                                                 <tr>
                                                     <th>
-                                                        <div
-                                                            class="d-flex px-3 py-1"
-                                                        >
-                                                            {{ $loop->iteration }}
-                                                        </div>
+                                                        {{ $loop->iteration }}
                                                     </th>
-                                                    <td>
-                                                        <div
-                                                            class="d-flex px-3 py-1"
+                                                    <td class="text-start">
+                                                        <a
+                                                            href="{{ route('admin.product.detail', $product->id) }}"
                                                         >
-                                                            <a
-                                                                href="{{ route('admin.product.detail', $product->id) }}"
-                                                            >
-                                                                {{ $product->name }}
-                                                            </a>
-                                                        </div>
+                                                            {{ $product->name }}
+                                                        </a>
                                                     </td>
                                                     <td>
-                                                        <div
-                                                            class="d-flex px-3 py-1 justify-content-center"
-                                                        >
-                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 1)->value('totalQuan') ?? 0) }}
-                                                        </div>
+                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 1)->value('totalQuan') ?? 0) }}
                                                     </td>
                                                     @foreach ($listDate as $key => $date)
                                                         @php
@@ -727,52 +528,36 @@
                                                         <td
                                                             class="{{ $key % 2 == 0 ? 'bg-body-secondary' : '' }}"
                                                         >
-                                                            <div
-                                                                class="d-flex px-3 py-1 justify-content-center"
-                                                            >
-                                                                {{ number_format($totalQuanDateCa1) }}
-                                                            </div>
+                                                            {{ number_format($totalQuanDateCa1) }}
                                                         </td>
                                                         <td
                                                             class="{{ $key % 2 == 0 ? 'bg-body-secondary' : '' }}"
                                                         >
-                                                            <div
-                                                                class="d-flex px-3 py-1 justify-content-center"
-                                                            >
-                                                                {{ number_format($totalQuanDateCa2) }}
-                                                            </div>
+                                                            {{ number_format($totalQuanDateCa2) }}
                                                         </td>
                                                     @endforeach
 
-                                                    <td class="text-center">
-                                                        <form
-                                                            action="{{ route('admin.product.delete', $product->id) }}"
-                                                            method="post"
+                                                    <td>
+                                                        <a
+                                                            href="{{ route('admin.product.edit', $product->id) }}"
+                                                            class="btn btn-primary"
                                                         >
-                                                            @method('DELETE')
-                                                            @csrf
-                                                            <a
-                                                                style="
-                                                                    margin-bottom: 0px;
-                                                                    height: 32px;
-                                                                "
-                                                                href="{{ route('admin.product.edit', $product->id) }}"
-                                                                class="btn btn-primary"
-                                                            >
-                                                                Cập nhật
-                                                            </a>
-                                                            <button
-                                                                style="
-                                                                    margin-bottom: 0px;
-                                                                    height: 32px;
-                                                                "
-                                                                onclick="return confirm('Bạn có chắc muốn đưa sản phẩm này vào thùng rác không?');"
-                                                                class="btn btn-danger"
-                                                                type="submit"
-                                                            >
-                                                                Xóa
-                                                            </button>
-                                                        </form>
+                                                            <i
+                                                                class="fas fa-edit"
+                                                            ></i>
+                                                            Cập nhật
+                                                        </a>
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteProduct{{ $product->id }}"
+                                                        >
+                                                            <i
+                                                                class="fas fa-trash-alt"
+                                                            ></i>
+                                                            Xóa
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -780,425 +565,135 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
 
-                    @if ($page == 'check200')
-                        <div
-                            class="tab-pane fade"
-                            id="import-200"
-                            role="tabpanel"
-                            aria-labelledby="import-200-tab"
-                            tabindex="0"
-                        >
-                            s-c
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                STT
-                                            </th>
-                                            <th
-                                                class="text-uppercase px-4"
-                                                rowspan="2"
-                                            >
-                                                Tên Linh Kiện
-                                            </th>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                Tồn đầu kỳ
-                                                <br />
-                                                hàng 200%
-                                            </th>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                Phát sinh
-                                                <br />
-                                                kiểm hàng 200%
-                                            </th>
-                                            @foreach ($listDate as $key => $date)
-                                                <th
-                                                    class="text-uppercase <?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    rowspan="2"
-                                                >
-                                                    {{ $date }}
-                                                </th>
-                                            @endforeach
-
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                THAO TÁC
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($products as $product)
+                        @if ($key == 'import-200' || $key == 'import-300' || $key == 'export-200')
+                            <div
+                                class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
+                                id="{{ $key }}"
+                                role="tabpanel"
+                                aria-labelledby="{{ $key }}-tab"
+                                tabindex="0"
+                            >
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead
+                                            class="table-light text-uppercase text-center align-middle"
+                                        >
                                             <tr>
-                                                <th>
-                                                    <div class="d-flex">
-                                                        {{ $loop->iteration }}
-                                                    </div>
-                                                </th>
-                                                <td>
-                                                    <div
-                                                        class="d-flex justify-content-start px-3 py-1"
+                                                <th>STT</th>
+                                                <th>Tên linh kiện</th>
+                                                @if ($page == 'check200')
+                                                    <th>
+                                                        Tồn đầu kỳ
+                                                        <br />
+                                                        hàng 200%
+                                                    </th>
+                                                    <th>
+                                                        Phát sinh
+                                                        <br />
+                                                        kiểm hàng 200%
+                                                    </th>
+                                                @else
+                                                    <th>Tổng cộng</th>
+                                                @endif
+
+                                                @foreach ($listDate as $key => $date)
+                                                    <th
+                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                     >
+                                                        {{ $date }}
+                                                    </th>
+                                                @endforeach
+
+                                                <th>THAO TÁC</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center align-middle">
+                                            @foreach ($products as $product)
+                                                <tr>
+                                                    <th>
+                                                        {{ $loop->iteration }}
+                                                    </th>
+                                                    <td>
                                                         <a
                                                             href="{{ route('admin.product.detail', $product->id) }}"
                                                         >
                                                             {{ $product->name }}
                                                         </a>
-                                                    </div>
-                                                </td>
+                                                    </td>
 
-                                                <td>
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
-                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0) }}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
-                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 2)->value('totalQuan') ?? 0) }}
-                                                    </div>
-                                                </td>
-                                                @foreach ($listDate as $key => $date)
-                                                    <?php
-                                                    $timestam = strtotime($date);
-                                                    $day = date('Y-m-d', $timestam);
-                                                    $totalQuanDate = $product->TotalDailyQuantities()->where('status', 2)->where('date', $day)->value('totalQuan') ?? '';
-                                                    ?>
+                                                    @if ($page == 'check200')
+                                                        <td>
+                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
+                                                        </td>
+                                                    @else
+                                                        <td>
+                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
+                                                        </td>
+                                                    @endif
 
-                                                    <td
-                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    >
-                                                        <div
-                                                            class="d-flex px-3 py-1 justify-content-center"
+                                                    @foreach ($listDate as $key => $date)
+                                                        @php
+                                                            $timestam = strtotime($date);
+                                                            $day = date('Y-m-d', $timestam);
+                                                            $totalQuanDate =
+                                                                $product
+                                                                    ->TotalDailyQuantities()
+                                                                    ->where('status', $tabProduct['status'])
+                                                                    ->where('date', $day)
+                                                                    ->value('totalQuan') ?? '';
+                                                        @endphp
+
+                                                        <td
+                                                            class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                         >
                                                             {{ number_format((float) $totalQuanDate) }}
-                                                        </div>
-                                                    </td>
-                                                @endforeach
+                                                        </td>
+                                                    @endforeach
 
-                                                <td class="text-center">
-                                                    <form
-                                                        action="{{ route('admin.product.delete', $product->id) }}"
-                                                        method="post"
-                                                    >
-                                                        @method('DELETE')
-                                                        @csrf
+                                                    <td>
                                                         <a
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
                                                             href="{{ route('admin.product.edit', $product->id) }}"
                                                             class="btn btn-primary"
                                                         >
+                                                            <i
+                                                                class="fas fa-edit"
+                                                            ></i>
                                                             Cập nhật
                                                         </a>
                                                         <button
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
-                                                            onclick="return confirm('Bạn có chắc muốn đưa sản phẩm này vào thùng rác không?');"
-                                                            class="btn btn-danger"
                                                             type="submit"
+                                                            class="btn btn-danger"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteProduct{{ $product->id }}"
                                                         >
+                                                            <i
+                                                                class="fas fa-trash-alt"
+                                                            ></i>
                                                             Xóa
                                                         </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($page == 'error200')
-                        <div
-                            class="tab-pane fade"
-                            id="import-300"
-                            role="tabpanel"
-                            aria-labelledby="import-300-tab"
-                            tabindex="0"
-                        >
-                            <div class="table-responsive p-0 d-flex">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                STT
-                                            </th>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                Tên linh kiện
-                                            </th>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                Tổng cộng
-                                            </th>
-                                            @foreach ($listDate as $key => $date)
-                                                <th
-                                                    class="text-uppercase font-weight-bolder text-center col-1 <?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    rowspan="2"
-                                                >
-                                                    {{ $date }}
-                                                </th>
+                                                    </td>
+                                                </tr>
                                             @endforeach
-
-                                            <th
-                                                class="text-uppercase font-weight-bolder text-center col-1"
-                                                rowspan="2"
-                                            >
-                                                THAO TÁC
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($products as $product)
-                                            <tr>
-                                                <th>
-                                                    <div class="d-flex">
-                                                        {{ $loop->iteration }}
-                                                    </div>
-                                                </th>
-                                                <td>
-                                                    <div
-                                                        class="d-flex justify-content-start px-3 py-1"
-                                                    >
-                                                        <a
-                                                            href="{{ route('admin.product.detail', $product->id) }}"
-                                                        >
-                                                            {{ $product->name }}
-                                                        </a>
-                                                    </div>
-                                                </td>
-
-                                                <td>
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
-                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 6)->value('totalQuan') ?? 0) }}
-                                                    </div>
-                                                </td>
-                                                @foreach ($listDate as $key => $date)
-                                                    <?php
-                                                    $timestam = strtotime($date);
-                                                    $day = date('Y-m-d', $timestam);
-                                                    $totalQuanDate = $product->TotalDailyQuantities()->where('status', 6)->where('date', $day)->value('totalQuan') ?? '';
-                                                    ?>
-
-                                                    <td
-                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    >
-                                                        <div
-                                                            class="d-flex px-3 py-1 justify-content-center"
-                                                        >
-                                                            {{ number_format((float) $totalQuanDate) }}
-                                                        </div>
-                                                    </td>
-                                                @endforeach
-
-                                                <td class="text-center">
-                                                    <form
-                                                        action="{{ route('admin.product.delete', $product->id) }}"
-                                                        method="post"
-                                                    >
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <a
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
-                                                            href="{{ route('admin.product.edit', $product->id) }}"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            Cập nhật
-                                                        </a>
-                                                        <button
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
-                                                            onclick="return confirm('Bạn có chắc muốn đưa sản phẩm này vào thùng rác không?');"
-                                                            class="btn btn-danger"
-                                                            type="submit"
-                                                        >
-                                                            Xóa
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-
-                    @if ($page == 'export')
-                        <div
-                            class="tab-pane fade"
-                            id="export-200"
-                            role="tabpanel"
-                            aria-labelledby="export-200-tab"
-                            tabindex="0"
-                        >
-                            <div class="table-responsive p-0 d-flex">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                STT
-                                            </th>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                Tên linh kiện
-                                            </th>
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                Tổng cộng
-                                            </th>
-                                            @foreach ($listDate as $key => $date)
-                                                <th
-                                                    class="text-uppercase <?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    rowspan="2"
-                                                >
-                                                    {{ $date }}
-                                                </th>
-                                            @endforeach
-
-                                            <th
-                                                class="text-uppercase"
-                                                rowspan="2"
-                                            >
-                                                THAO TÁC
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($products as $product)
-                                            <tr>
-                                                <th>
-                                                    <div class="px-3 py-1">
-                                                        {{ $loop->iteration }}
-                                                    </div>
-                                                </th>
-                                                <td>
-                                                    <div
-                                                        class="d-flex justify-content-start px-3 py-1"
-                                                    >
-                                                        <a
-                                                            href="{{ route('admin.product.detail', $product->id) }}"
-                                                        >
-                                                            {{ $product->name }}
-                                                        </a>
-                                                    </div>
-                                                </td>
-
-                                                <td>
-                                                    <div
-                                                        class="d-flex px-3 py-1 justify-content-center"
-                                                    >
-                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 3)->value('totalQuan') ?? 0) }}
-                                                    </div>
-                                                </td>
-                                                @foreach ($listDate as $key => $date)
-                                                    <?php
-                                                    $timestam = strtotime($date);
-                                                    $day = date('Y-m-d', $timestam);
-                                                    $totalQuanDate = $product->TotalDailyQuantities()->where('status', 3)->where('date', $day)->value('totalQuan') ?? '';
-                                                    ?>
-
-                                                    <td
-                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    >
-                                                        <div
-                                                            class="d-flex px-3 py-1 justify-content-center"
-                                                        >
-                                                            {{ number_format((float) $totalQuanDate) }}
-                                                        </div>
-                                                    </td>
-                                                @endforeach
-
-                                                <td class="text-center">
-                                                    <form
-                                                        action="{{ route('admin.product.delete', $product->id) }}"
-                                                        method="post"
-                                                    >
-                                                        @method('DELETE')
-                                                        @csrf
-                                                        <a
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
-                                                            href="{{ route('admin.product.edit', $product->id) }}"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            Cập nhật
-                                                        </a>
-                                                        <button
-                                                            style="
-                                                                margin-bottom: 0px;
-                                                                height: 32px;
-                                                            "
-                                                            onclick="return confirm('Bạn có chắc muốn đưa sản phẩm này vào thùng rác không?');"
-                                                            class="btn btn-danger"
-                                                            type="submit"
-                                                        >
-                                                            Xóa
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    @endif
+                        @endif
+                    @endforeach
 
                     @if ($total == 0)
                         <div class="text-center">
-                            Hiện tại chưa có Sản phẩm nào. Vui lòng
+                            Hiện tại chưa có Sản phẩm nào.
                             <a
                                 class="href"
                                 href="{{ route('admin.product.add') }}"
                             >
-                                Thêm sản phẩm
+                                Vui lòng thêm sản phẩm
                             </a>
                         </div>
                     @endif
@@ -1207,9 +702,65 @@
             <div id="loader" class="d-none"></div>
         </div>
     </div>
+
+    @foreach ($products as $key => $product)
+        {{-- Modal delete --}}
+        <div
+            class="modal fade"
+            id="deleteProduct{{ $product->id }}"
+            tabindex="-1"
+            aria-labelledby="deleteProduct{{ $product->id }}"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5
+                            class="modal-title"
+                            id="deleteProduct{{ $product->id }}"
+                        >
+                            Xác nhận xóa
+                        </h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        Bạn có chắc chắn muốn xóa sản phẩm này không?
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            Hủy
+                        </button>
+                        <form
+                            action="{{ route('admin.product.delete', $product->id) }}"
+                            method="post"
+                        >
+                            @method('DELETE')
+                            @csrf
+                            <button type="submit" class="btn btn-danger">
+                                Xóa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endsection
 
-@section('scripts')
+{{--
+    disable script
+    -- remove letter "X" to enable script
+--}}
+@section('scriptsX')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var tooltipTriggerList = [].slice.call(

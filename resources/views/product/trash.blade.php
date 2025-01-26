@@ -1,162 +1,179 @@
 @extends('layouts.layout')
+
+@php
+    $startValue = count($products) > 0 ? $products->firstItem() : 0;
+    $toValue = count($products) > 0 ? $products->lastItem() : 0;
+@endphp
+
 @section('content')
-    <style>
-        .form-control {
-            border: 1px solid #d2d6da !important;
-            padding-left: 10px;
-        }
-
-        .active > .page-link {
-            color: white !important;
-        }
-
-        .href {
-            color: blue !important;
-        }
-
-        .trash {
-            margin-left: 10px;
-        }
-    </style>
     <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
             <div class="card">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
-                    <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Thùng Rác Sản Phẩm</h4>
-                    </div>
+                <div class="card-header">
+                    <h4>Thùng Rác Sản Phẩm</h4>
                 </div>
-                <div class="p-4 pb-0 d-flex">
+                <div class="card-body">
                     <a
                         href="{{ route('admin.product.home') }}"
                         type="button"
-                        class="btn btn-success"
+                        class="btn btn-link mb-3"
                     >
+                        <i class="fas fa-arrow-left"></i>
                         Danh Sách Sản Phẩm
                     </a>
                     <div
-                        style="
-                            flex-grow: 1;
-                            display: flex;
-                            justify-content: end;
-                        "
+                        class="d-flex flex-wrap-reverse justify-content-between align-items-center gap-3 mb-3"
                     >
                         <div>
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                data-bs-toggle="modal"
-                                data-bs-target="#searchModal"
-                            >
-                                Tìm kiếm
-                            </button>
-                            @include('product.search-advance', ['href' => 'admin.product.getTrash'])
+                            <span class="fw-bold">
+                                {{ $startValue }}
+                            </span>
+                            -
+                            <span class="fw-bold">
+                                {{ $toValue }}
+                            </span>
+                            của
+                            <span class="fw-bold">
+                                {{ $total }}
+                            </span>
                         </div>
-                    </div>
-                </div>
-                <div class="ps-4 d-flex">
-                    Tổng : {{ count($products) }}/{{ $total }}
-                </div>
-                <div class="px-0 pb-2">
-                    <div class="table-responsive p-0">
-                        <table
-                            class="table align-items-center mb-0 table-hover"
+                        <button
+                            type="button"
+                            class="btn btn-dark"
+                            data-bs-toggle="modal"
+                            data-bs-target="#searchModal"
                         >
-                            <thead>
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead
+                                class="table-light text-uppercase text-center align-middle"
+                            >
                                 <tr>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-1"
-                                    >
-                                        STT
-                                    </th>
-                                    <th
-                                        class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-2"
-                                    >
-                                        Mã Linh Kiện
-                                    </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-2"
-                                    >
-                                        Tên Linh Kiện
-                                    </th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center"
-                                    >
-                                        Thao Tác
-                                    </th>
+                                    <th>STT</th>
+                                    <th>Mã Linh Kiện</th>
+                                    <th>Tên Linh Kiện</th>
+                                    <th>Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($products as $key => $product)
-                                    <tr>
+                                    <tr class="text-center align-middle">
+                                        <th>
+                                            {{ $loop->iteration }}
+                                        </th>
                                         <td>
-                                            <div class="d-flex px-3 py-1">
-                                                {{ $loop->iteration }}
-                                            </div>
+                                            {{ $product->code }}
                                         </td>
                                         <td>
-                                            <div class="d-flex px-2 py-1">
-                                                {{ $product->code }}
-                                            </div>
-                                        </td>
-                                        <td class="align-middle text-center">
                                             {{ $product->name }}
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <form
-                                                action="{{ route('admin.product.restore', $product->id) }}"
-                                                method="PUT"
+                                        <td>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-warning"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#restoreModal-{{ $product->id }}"
                                             >
-                                                @method('PUT')
-                                                @csrf
-                                                <button
-                                                    onclick="return confirm('Bạn có chắc muốn khôi phục sản phẩm này không?');"
-                                                    class="btn btn-warning"
-                                                    type="submit"
-                                                >
-                                                    Khôi phục
-                                                </button>
-                                            </form>
+                                                <i
+                                                    class="fas fa-rotate-left"
+                                                ></i>
+                                                Khôi phục
+                                            </button>
                                         </td>
                                     </tr>
+                                    {{-- Modal restore --}}
+                                    <div
+                                        class="modal fade"
+                                        id="restoreModal-{{ $product->id }}"
+                                        tabindex="-1"
+                                        aria-labelledby="restoreModalLabel-{{ $product->id }}"
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            class="modal-dialog modal-dialog-centered"
+                                        >
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5
+                                                        class="modal-title"
+                                                        id="restoreModalLabel-{{ $product->id }}"
+                                                    >
+                                                        Khôi Phục Sản Phẩm
+                                                    </h5>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close"
+                                                    ></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>
+                                                        Bạn có chắc muốn khôi
+                                                        phục sản phẩm
+                                                        <span class="fw-bold">
+                                                            {{ $product->id.'-'.$product->name }}
+                                                        </span>
+                                                        không?
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form
+                                                        action="{{ route('admin.product.restore', $product->id) }}"
+                                                        method="PUT"
+                                                    >
+                                                        @method('PUT')
+                                                        @csrf
+                                                        <button
+                                                            class="btn btn-warning"
+                                                            type="submit"
+                                                        >
+                                                            Khôi Phục
+                                                        </button>
+                                                    </form>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal"
+                                                    >
+                                                        Đóng
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
 
                                 @if ($total == 0)
                                     <tr>
                                         <td
-                                            colspan="6"
+                                            colspan="9999"
                                             class="text-center pt-4"
                                         >
                                             Hiện tại chưa có sản phẩm nào trong
-                                            thùng rác. quay lại
+                                            thùng rác.
                                             <a
                                                 class="href"
                                                 href="{{ route('admin.product.home') }}"
                                             >
-                                                danh sách sản phẩm
+                                                Quay lại danh sách sản phẩm
                                             </a>
                                         </td>
                                     </tr>
                                 @endif
                             </tbody>
                         </table>
-                        <div
-                            style="
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                margin: 20px;
-                            "
-                        >
-                            <div>
-                                {{ $products->appends(request()->all())->links() }}
-                            </div>
+                        <div class="d-flex justify-content-center">
+                            {{ $products->appends(request()->all())->links() }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    @include('product.search-advance', ['href' => 'admin.product.getTrash'])
 @endsection
