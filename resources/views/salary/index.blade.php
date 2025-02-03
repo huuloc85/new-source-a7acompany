@@ -1,131 +1,189 @@
-@extends('master')
+@extends('layouts.layout')
+
+@php
+    $startValue = count($salaryManagers) > 0 ? $salaryManagers->firstItem() : 0;
+    $toValue = count($salaryManagers) > 0 ? $salaryManagers->lastItem() : 0;
+@endphp
+
 @section('content')
-<style>
-    .form-control {
-        border: 1px solid #d2d6da !important;
-        padding-left: 10px;
-    }
-
-    .active>.page-link {
-        color: white !important
-    }
-
-    .href {
-        color: blue !important;
-    }
-
-    .search-role {
-        height: 37px;
-    }
-
-    @media screen and (max-width: 700px) {
-        .header-title {
-            display: block !important
-        }
-
-    }
-
-    .table-container {
-        overflow: auto;
-    }
-</style>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="card">
-            <div class="card-header p-1 position-relative mt-n1 mx-1 no-print">
-                <div class="border-radius-lg ps-2 pt-4 pb-3">
-                    <h4 class="card-title mb-0">Danh Sách Bảng Lương</h4>
-                </div>
+    <div class="card">
+        <div class="card-header">
+            <h4>Danh Sách Bảng Lương</h4>
+        </div>
+        <div class="card-body">
+            <div
+                class="d-flex justify-content-between align-items-center flex-wrap"
+            >
+                <a
+                    class="btn btn-success mb-2"
+                    href="{{ route('admin.salary.getimport') }}"
+                >
+                    <i class="fas fa-plus"></i>
+                    Import Bảng Lương
+                </a>
+                <form action="" class="mb-2">
+                    <div class="input-group input-group-outline">
+                        <input
+                            name="key"
+                            value="{{ request()->key }}"
+                            type="text"
+                            class="form-control"
+                            placeholder="Nhập từ khóa..."
+                        />
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                            <span hidden>Search</span>
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="p-4 pb-0 d-flex header-title">
-                <a class="btn btn-success import-salary" href="{{ route('admin.salary.getimport') }}">Import Bảng
-                    Lương</a>
-                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                    <form action="">
-                        <div class="input-group input-group-outline">
-                            <input name="key" value="{{ request()->key }}" type="text"
-                                class="form-control search-role" placeholder="Nhập từ khóa...">
-                            <button type="submit" class='btn btn-primary'>Tìm kiếm</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="mb-2">
+                <span class="fw-bold">
+                    {{ $startValue }}
+                </span>
+                -
+                <span class="fw-bold">
+                    {{ $toValue }}
+                </span>
+                của
+                <span class="fw-bold">
+                    {{ $total }}
+                </span>
             </div>
-            <div class="ps-4 d-flex">
-                Tổng : {{ count($salaryManagers) }}/{{ $total }}
-            </div>
-            <div class="px-0 pb-2 table-container">
-                <table class="table align-items-center mb-0 table-hover ">
-                    <thead>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
                         <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 px-3">STT</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3 px-4">Tiêu
-                                đề</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 col-3">
-                                Tổng (VND)</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
-                                Ngày bắt đầu</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
-                                Ngày kết thúc</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 col-3">
-                                Chức Năng</th>
+                            <th class="text-uppercase text-center" scope="col">
+                                STT
+                            </th>
+                            <th class="text-uppercase" scope="col">Tiêu đề</th>
+                            <th class="text-uppercase" scope="col">
+                                Tổng (VND)
+                            </th>
+                            <th class="text-uppercase text-center" scope="col">
+                                Ngày bắt đầu
+                            </th>
+                            <th class="text-uppercase text-center" scope="col">
+                                Ngày kết thúc
+                            </th>
+                            <th class="text-uppercase text-center" scope="col">
+                                Chức Năng
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($salaryManagers as $key => $salaryManager)
-                        <tr>
-                            <td>
-                                <div class="d-flex px-3 py-1">
-                                    {{ $loop->iteration }}
-                                </div>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0 px-3">{{ $salaryManager->title }}</p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">
+                            <tr>
+                                <td class="fw-bold text-center" scope="row">
+                                    {{ $loop->iteration + $startValue - 1 }}
+                                </td>
+                                <td scope="row">
+                                    {{ $salaryManager->title }}
+                                </td>
+                                <td scope="row">
                                     {{ number_format($salaryManager->total, 2) }}
-                                </p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">
+                                </td>
+                                <td class="text-center" scope="row">
                                     {{ $salaryManager->formatTimeDMY($salaryManager->start_date) }}
-                                </p>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">
+                                </td>
+                                <td class="text-center" scope="row">
                                     {{ $salaryManager->formatTimeDMY($salaryManager->end_date) }}
-                                </p>
-                            </td>
-                            <td class="align-middle">
-                                <form action="{{ route('admin.salary.delete', $salaryManager->id) }}"
-                                    method="post">
-                                    @method('DELETE')
-                                    @csrf
-                                    <a href="{{ route('admin.salary.detail', $salaryManager->id) }}"
-                                        class="btn btn-primary mb-0">Chi tiết</a>
+                                </td>
+                                <td class="text-center" scope="row">
+                                    <a
+                                        href="{{ route('admin.salary.detail', $salaryManager->id) }}"
+                                        class="btn btn-primary"
+                                    >
+                                        <i class="fas fa-circle-info"></i>
+                                        Chi tiết
+                                    </a>
+
+                                    <!-- Button trigger modal delete -->
                                     <button
-                                        onclick="return confirm('Hành động không thể khôi phục!! Bạn có chắc xoá bảng lương này không?');"
-                                        class='btn btn-danger mb-0' type="submit">Xóa</button>
-                                </form>
-                            </td>
-                        </tr>
+                                        type="button"
+                                        class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalDelete-{{ $salaryManager->id }}"
+                                    >
+                                        <i class="fas fa-trash-alt"></i>
+                                        Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Modal delete -->
+                            <div
+                                class="modal fade"
+                                id="modalDelete-{{ $salaryManager->id }}"
+                                tabindex="-1"
+                                aria-labelledby="modalDeleteLabel-{{ $salaryManager->id }}"
+                                aria-hidden="true"
+                            >
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1
+                                                class="modal-title fs-5"
+                                                id="modalDeleteLabel-{{ $salaryManager->id }}"
+                                            >
+                                                Xóa bảng lương
+                                            </h1>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>
+                                                Hành động không thể khôi phục!!
+                                                Bạn có chắc xoá bảng lương "
+                                                <span class="fw-bold">
+                                                    {{ $salaryManager->title }}
+                                                </span>
+                                                " không?
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form
+                                                action="{{ route('admin.salary.delete', $salaryManager->id) }}"
+                                                method="post"
+                                            >
+                                                @method('DELETE')
+                                                @csrf
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            </form>
+                                            <button
+                                                type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal"
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endforeach
+
                         @if ($total == 0)
-                        <tr>
-                            <td colspan="5" class="text-center pt-4">Hiện tại chưa có bảng lương nào. Vui lòng
-                                <a class="href" href="{{ route('admin.salary.getimport') }}">Thêm bảng lương</a>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    Hiện tại chưa có bảng lương nào. Vui lòng
+                                    <a
+                                        href="{{ route('admin.salary.getimport') }}"
+                                    >
+                                        Thêm bảng lương
+                                    </a>
+                                </td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>
-                <div style="display: flex; justify-content: center; align-items: center; margin:20px">
-                    <div>
-                        {{ $salaryManagers->appends(request()->all())->links() }}
-                    </div>
-                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                {{ $salaryManagers->appends(request()->all())->links() }}
             </div>
         </div>
     </div>
-</div>
 @endsection

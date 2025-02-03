@@ -6,19 +6,52 @@ use Illuminate\View\Component;
 
 class MembersCard extends Component
 {
-    public $img, $imgClass, $id, $title, $role, $popoverdatacontent, $popovertitle, $popoverrol, $popovertrainername, $chart, $value, $value1, $value2, $value3, $value4, $value5,$rating;
+    public $img;
+
+    public $imgClass;
+
+    public $id;
+
+    public $title;
+
+    public $role;
+
+    public $popoverdatacontent;
+
+    public $popovertitle;
+
+    public $popoverrol;
+
+    public $popovertrainername;
+
+    public $chart;
+
+    public $value;
+
+    public $value1;
+
+    public $value2;
+
+    public $value3;
+
+    public $value4;
+
+    public $value5;
+
+    public $rating;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($img = '', $imgClass = '', $id = '', $title = '', $role = '', $popoverdatacontent = '', $popovertitle = '', $popoverrol = '', $popovertrainername = '', $chart = '', $value = '', $value1 = '', $value2 = '', $value3 = '', $value4 = '', $value5 = '', $rating='')
+    public function __construct($img = '', $imgClass = '', $id = '', $title = '', $role = '', $popoverdatacontent = '', $popovertitle = '', $popoverrol = '', $popovertrainername = '', $chart = '', $value = '', $value1 = '', $value2 = '', $value3 = '', $value4 = '', $value5 = '', $rating = '')
     {
         $this->img = $img;
         $this->imgClass = $imgClass;
         $this->id = $id;
         $this->title = $title;
-        $this->role = $role;    
+        $this->role = $role;
         $this->popoverdatacontent = $popoverdatacontent;
         $this->popovertitle = $popovertitle;
         $this->popoverrol = $popoverrol;

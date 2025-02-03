@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,7 +31,7 @@ class ProductionPlan extends Model
         'remaining_production_days',                                // Số Ngày Còn SX (Ngày)
         'remaining_production_quantity',                            // Số Lượng Còn SX (PCS)
         'produced_quantity',                                        // Số Lượng Đã SX (PCS)
-        'month'                                                     // Tháng
+        'month',                                                     // Tháng
     ];
 
     public function updateProductionPlanAttributes($data)
@@ -64,7 +63,6 @@ class ProductionPlan extends Model
         $this->remaining_production_days = $this->daily_production_plan == 0 || $this->remaining_production_quantity == 0 ? 0 : $this->remaining_production_quantity / $this->daily_production_plan;
         $this->save();
     }
-
 
     public function product()
     {

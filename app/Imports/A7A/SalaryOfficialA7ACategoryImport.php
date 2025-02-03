@@ -12,19 +12,12 @@ use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
-
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialA7ACategoryImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    WithHeadingRow,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithStartRow
-
+class SalaryOfficialA7ACategoryImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithHeadingRow, WithStartRow
 {
     public $salaryManagerId;
+
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -35,9 +28,6 @@ class SalaryOfficialA7ACategoryImport implements
         return 'Danh muc'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         // dd($rows);
@@ -71,10 +61,9 @@ class SalaryOfficialA7ACategoryImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Category-A7A', $e->getMessage(), $e->getLine());
-            Log::error('errors cate-a7a::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors cate-a7a::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
-
 
     public function startRow(): int
     {
@@ -83,7 +72,7 @@ class SalaryOfficialA7ACategoryImport implements
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {
@@ -93,7 +82,6 @@ class SalaryOfficialA7ACategoryImport implements
     }
 
     //validate
-
 
     /**
      * @return array

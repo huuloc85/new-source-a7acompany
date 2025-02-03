@@ -5,24 +5,21 @@ namespace App\Imports\Celender;
 use App\Helpers\LogHelper;
 use App\Models\CelenderDetailEatroom;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class CelenderEatRoomImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
+class CelenderEatRoomImport implements HasReferencesToOtherSheets, SkipsEmptyRows,
     // WithValidation,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithStartRow
+    SkipsOnFailure, ToArray, WithStartRow
 {
     public $celenderId;
+
     public function __construct($celenderId)
     {
         $this->celenderId = $celenderId;
@@ -33,9 +30,6 @@ class CelenderEatRoomImport implements
         return 'trực phòng ăn'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         // dd($rows);
@@ -88,7 +82,7 @@ class CelenderEatRoomImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Celender-EatRoom', $e->getMessage(), $e->getLine());
-            Log::error('errors cate::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors cate::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -96,8 +90,9 @@ class CelenderEatRoomImport implements
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
-            '1' => ['required', 'in:' . implode(',', $listCode)],
+            '1' => ['required', 'in:'.implode(',', $listCode)],
             '3' => ['nullable', 'string'],
             '4' => ['nullable', 'string'],
             '5' => ['nullable', 'string'],
@@ -174,16 +169,13 @@ class CelenderEatRoomImport implements
         ];
     }
 
-    /**
-     * @return int
-     */
     public function startRow(): int
     {
         return 7;
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

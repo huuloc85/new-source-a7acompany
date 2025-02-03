@@ -3,8 +3,6 @@
 namespace App\Helpers;
 
 use App\Models\Log;
-use App\Models\LoginHistory;
-use Carbon\Carbon;
 
 class LogHelper
 {

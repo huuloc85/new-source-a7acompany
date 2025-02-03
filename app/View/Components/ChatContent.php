@@ -5,15 +5,39 @@ namespace App\View\Components;
 use Illuminate\View\Component;
 
 class ChatContent extends Component
-{  
+{
+    public $id;
 
-    public $id, $img , $name, $dateTime, $title, $activeClass, $about, $nickName, $contact, $dob, $gender, $lang, $status;
+    public $img;
+
+    public $name;
+
+    public $dateTime;
+
+    public $title;
+
+    public $activeClass;
+
+    public $about;
+
+    public $nickName;
+
+    public $contact;
+
+    public $dob;
+
+    public $gender;
+
+    public $lang;
+
+    public $status;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($id, $img , $name, $dateTime='', $title='', $activeClass='',$about='', $nickName='', $contact='', $dob='', $gender='', $lang='', $status='')
+    public function __construct($id, $img, $name, $dateTime = '', $title = '', $activeClass = '', $about = '', $nickName = '', $contact = '', $dob = '', $gender = '', $lang = '', $status = '')
     {
         $this->id = $id;
         $this->img = $img;
@@ -28,7 +52,6 @@ class ChatContent extends Component
         $this->gender = $gender;
         $this->lang = $lang;
         $this->status = $status;
-
 
     }
 

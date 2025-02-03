@@ -13,9 +13,9 @@ class authsessionstatus extends Component
      *
      * @return void
      */
-    public function __construct($status='')
+    public function __construct($status = '')
     {
-       $this -> status = $status; //
+        $this->status = $status; //
     }
 
     /**

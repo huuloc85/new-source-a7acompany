@@ -4,26 +4,33 @@ namespace App\Exports\Product;
 
 use App\Models\Product;
 use App\Models\TotalMonthQuantity;
-use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-
-class FAPVExport extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithTitle, WithEvents
+class FAPVExport extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithTitle
 {
     protected $time;
+
     protected $delimiter;
+
     const STOCK_QUANTITY200 = 5;
-    const INVENTORY_PRODUCT  = 4;
-    const EXPORT_200  = 3;
-    const IMPORTED_QUANTITY  = 2;
-    const ACTUAL_PRODUCT  = 1;
-    const ERROR_PRODUCT  = 6;
+
+    const INVENTORY_PRODUCT = 4;
+
+    const EXPORT_200 = 3;
+
+    const IMPORTED_QUANTITY = 2;
+
+    const ACTUAL_PRODUCT = 1;
+
+    const ERROR_PRODUCT = 6;
+
     public function __construct($time)
     {
         $this->time = $time;
@@ -36,7 +43,6 @@ class FAPVExport extends DefaultValueBinder implements FromView, ShouldAutoSize,
         $products = Product::all();
         $models = $productModel->models;
         $listMonthExport = TotalMonthQuantity::where('status', 3)->distinct()->pluck('month');
-
 
         $time = $this->time;
         foreach ($products as $product) {
@@ -101,10 +107,9 @@ class FAPVExport extends DefaultValueBinder implements FromView, ShouldAutoSize,
         }
 
         $title = 'Danh sách hàng hóa';
+
         return view('export/product/fapv-export', compact('data', 'title', 'models', 'listMonthExport'));
     }
-
-
 
     public function title(): string
     {
@@ -113,7 +118,7 @@ class FAPVExport extends DefaultValueBinder implements FromView, ShouldAutoSize,
 
     public function getQuantity($time, $status, $productId)
     {
-        return  Product::join('totalmonthquantities', 'products.id', '=', 'totalmonthquantities.product_id')
+        return Product::join('totalmonthquantities', 'products.id', '=', 'totalmonthquantities.product_id')
             ->where('totalmonthquantities.month', $time)
             ->where('totalmonthquantities.status', $status)
             ->where('products.id', $productId)

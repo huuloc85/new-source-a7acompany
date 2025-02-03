@@ -5,26 +5,19 @@ namespace App\Imports\parttime;
 use App\Helpers\LogHelper;
 use App\Models\Employee;
 use App\Models\SalaryParttime;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryParttimePayrollImport implements 
-ToArray, 
-HasReferencesToOtherSheets, 
-WithHeadingRow,
-WithValidation, 
-SkipsOnFailure, 
-SkipsEmptyRows
+class SalaryParttimePayrollImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithHeadingRow, WithValidation
 {
     public $salaryManagerId;
+
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -35,9 +28,6 @@ SkipsEmptyRows
         return 'Bang Thanh Toan Luong'; // Đặt tên sheet ở đây
     }
 
-    /**
-    * @param array $rows
-    */
     public function array(array $rows)
     {
         try {
@@ -60,9 +50,9 @@ SkipsEmptyRows
                 }
 
             }
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             LogHelper::saveLog('Import-Payroll-Parttime', $e->getMessage(), $e->getLine());
-            Log::error('errors payroll-parttime::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors payroll-parttime::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -76,14 +66,15 @@ SkipsEmptyRows
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
-            '4' => ['nullable','numeric'],
-            'tru_bao_hiem_105' => ['nullable','numeric'],
-            'tam_ung' => ['nullable','numeric'],
-            'bh_cty_dong_215' => ['nullable','numeric'],
-            'no_ky_truoc' => ['nullable','numeric'],
-            '9' => ['nullable','numeric'],
+            '4' => ['nullable', 'numeric'],
+            'tru_bao_hiem_105' => ['nullable', 'numeric'],
+            'tam_ung' => ['nullable', 'numeric'],
+            'bh_cty_dong_215' => ['nullable', 'numeric'],
+            'no_ky_truoc' => ['nullable', 'numeric'],
+            '9' => ['nullable', 'numeric'],
         ];
     }
 
@@ -105,7 +96,7 @@ SkipsEmptyRows
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

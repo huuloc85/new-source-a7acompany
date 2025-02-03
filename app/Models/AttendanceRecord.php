@@ -10,10 +10,15 @@ class AttendanceRecord extends Model
     use HasFactory;
 
     protected $table = 'attendencerecord'; // Tên bảng
+
     public $timestamps = false;
+
     public $incrementing = false;
+
     protected $primaryKey = null;
+
     public const paginate = 500;
+
     protected $fillable = [
         'employee_code',
         'datetime',
@@ -23,7 +28,7 @@ class AttendanceRecord extends Model
         'deviceName',
         'deviceSN',
         'employee_Name',
-        'cardNo'
+        'cardNo',
     ];
 
     public function employee()
@@ -34,13 +39,13 @@ class AttendanceRecord extends Model
     public static function getDayOfWeekMapping()
     {
         return [
-            'Monday'    => 'Thứ Hai',
-            'Tuesday'   => 'Thứ Ba',
+            'Monday' => 'Thứ Hai',
+            'Tuesday' => 'Thứ Ba',
             'Wednesday' => 'Thứ Tư',
-            'Thursday'  => 'Thứ Năm',
-            'Friday'    => 'Thứ Sáu',
-            'Saturday'  => 'Thứ Bảy',
-            'Sunday'    => 'Chủ Nhật'
+            'Thursday' => 'Thứ Năm',
+            'Friday' => 'Thứ Sáu',
+            'Saturday' => 'Thứ Bảy',
+            'Sunday' => 'Chủ Nhật',
         ];
     }
 }

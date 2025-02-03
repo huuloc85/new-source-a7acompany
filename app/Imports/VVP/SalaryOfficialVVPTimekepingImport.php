@@ -12,22 +12,18 @@ use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialVVPTimekepingImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithValidation,
-    WithStartRow
+class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
 {
     public $salaryManagerId;
+
     public $startDate;
+
     public $endDate;
+
     public function __construct($salaryManagerId, $startDate, $endDate)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -40,9 +36,6 @@ class SalaryOfficialVVPTimekepingImport implements
         return ' Bảng nhập công'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         // dd($rows);
@@ -52,7 +45,7 @@ class SalaryOfficialVVPTimekepingImport implements
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
                     $employee = Employee::where('code', $row[1])->first();
-                    if ($employee != null  && $this->salaryManagerId != null) {
+                    if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = SalaryOfficialVVP::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
                         if ($salaryManager) {
                             $countDate = $dateEnd->diffInDays($dateStart) + 1;
@@ -93,7 +86,7 @@ class SalaryOfficialVVPTimekepingImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-TimeKeeping-VVP', $e->getMessage(), $e->getLine());
-            Log::error('errors time::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors time::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -101,8 +94,9 @@ class SalaryOfficialVVPTimekepingImport implements
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
-            '1' => ['required', 'in:' . implode(',', $listCode)],
+            '1' => ['required', 'in:'.implode(',', $listCode)],
             '4' => ['nullable', 'numeric'],
             '5' => ['nullable', 'numeric'],
             '6' => ['nullable', 'numeric'],
@@ -156,9 +150,8 @@ class SalaryOfficialVVPTimekepingImport implements
      * @return array
      */
 
-
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

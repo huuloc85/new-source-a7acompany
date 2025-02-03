@@ -9,7 +9,7 @@ class DailyQuantityPO extends Model
 {
     use HasFactory;
 
-    protected $table = "dailyquantities_po";
+    protected $table = 'dailyquantities_po';
 
     //fillable
     protected $fillable = [
@@ -17,7 +17,7 @@ class DailyQuantityPO extends Model
         'quantity',                   //Số lượng cần nhập
         'status',                     //Trạng thái nhập (*)
         'date',                       //Ngày nhập số lượng sử dụng cột timestamp để lấy thời gian nhạp số lượng
-        'employee_id'                 //Người nhập số lượng
+        'employee_id',                 //Người nhập số lượng
     ];
 
     //relationship employee

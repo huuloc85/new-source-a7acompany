@@ -53,13 +53,13 @@ class CelenderDetailHNHC extends Model
     ];
 
     //relationship celender
-    function celender()
+    public function celender()
     {
         return $this->belongsTo(Celender::class);
     }
 
     //relationship role
-    function employee()
+    public function employee()
     {
         return $this->belongsTo(Employee::class);
     }

@@ -16,13 +16,13 @@ class CheckManager
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth()->user()->role->role_name == 'admin' ||
-            Auth()->user()->role->role_name == 'manager'||
+            Auth()->user()->role->role_name == 'manager' ||
             Auth()->user()->role_id == 14 ||
-            Auth()->user()->role_id == 18)
-        {
+            Auth()->user()->role_id == 18) {
             return $next($request);
         }
-        toast('Bạn không có quyền truy cập!','error','top-right');
+        toast('Bạn không có quyền truy cập!', 'error', 'top-right');
+
         return redirect()->route('admin.home');
     }
 }

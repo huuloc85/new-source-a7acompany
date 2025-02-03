@@ -10,15 +10,15 @@ class SalaryParttime extends Model
     use HasFactory;
 
     //table
-    protected $table = "salary_parttimes";
+    protected $table = 'salary_parttimes';
 
     //paginate
     public const paginate = 10;
 
-    protected $fillable  = [
+    protected $fillable = [
         'salaries_manager_id',
         'employee_id',
-        
+
         //bang thanh toan luong
         'salary_total',         //tổng lương
         'insurance',            //trừ bảo hiểm

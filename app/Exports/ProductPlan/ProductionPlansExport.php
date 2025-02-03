@@ -2,7 +2,9 @@
 
 namespace App\Exports\ProductPlan;
 
+use App\Models\Product;
 use App\Models\ProductionPlan;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -11,15 +13,17 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\DefaultValueBinder;
 use Maatwebsite\Excel\Events\AfterSheet;
-use App\Models\Product;
-use Carbon\Carbon;
 
-class ProductionPlansExport extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithTitle, WithEvents
+class ProductionPlansExport extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithTitle
 {
     protected $month;
+
     protected $time;
+
     protected $daysInMonth;
+
     protected $daysInMonthYMD;
+
     const ACTUAL_PRODUCT = 1;
 
     public function __construct($month, $time, $daysInMonth, $daysInMonthYMD)
@@ -46,7 +50,7 @@ class ProductionPlansExport extends DefaultValueBinder implements FromView, Shou
             $data[] = [
                 'name' => $product->name,
                 'id' => $product->id,
-                'totalQuantityMonth' => $totalQuantityMonth
+                'totalQuantityMonth' => $totalQuantityMonth,
             ];
         }
 
@@ -90,7 +94,7 @@ class ProductionPlansExport extends DefaultValueBinder implements FromView, Shou
 
         foreach ($dateArray as $dateString) {
             $parts = explode('-', $dateString);
-            $formattedDate = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+            $formattedDate = $parts[2].'-'.$parts[1].'-'.$parts[0];
             $formattedDateArray[] = $formattedDate;
         }
 

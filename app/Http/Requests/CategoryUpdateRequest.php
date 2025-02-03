@@ -23,7 +23,7 @@ class CategoryUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', Rule::unique('categories_celender')->ignore($this->id)]
+            'name' => ['required', Rule::unique('categories_celender')->ignore($this->id)],
         ];
     }
 

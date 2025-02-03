@@ -5,7 +5,6 @@ namespace App\Exports\Product;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-
 class ExportMultiSheets implements WithMultipleSheets
 {
     protected $time;
@@ -29,8 +28,7 @@ class ExportMultiSheets implements WithMultipleSheets
         ];
     }
 
-
-    function generateDaysInMonth($monthYear)
+    public function generateDaysInMonth($monthYear)
     {
         // Chuyển đổi chuỗi tháng-năm thành đối tượng Carbon
         $startDate = Carbon::createFromFormat('m-Y', $monthYear)->startOfMonth();
@@ -49,13 +47,13 @@ class ExportMultiSheets implements WithMultipleSheets
         return $daysArray;
     }
 
-    function convertDateFormat($dateArray)
+    public function convertDateFormat($dateArray)
     {
         $formattedDateArray = [];
 
         foreach ($dateArray as $dateString) {
             $parts = explode('-', $dateString);
-            $formattedDate = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+            $formattedDate = $parts[2].'-'.$parts[1].'-'.$parts[0];
             $formattedDateArray[] = $formattedDate;
         }
 

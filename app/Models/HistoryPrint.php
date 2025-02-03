@@ -12,7 +12,7 @@ class HistoryPrint extends Model
     //paginate
     public const paginate = 10;
 
-    protected $table = "history_prints";
+    protected $table = 'history_prints';
 
     protected $fillable = [
         'product_id',
@@ -20,7 +20,7 @@ class HistoryPrint extends Model
         'date',
         'shift',
         'binCount',
-        'binStart'
+        'binStart',
     ];
 
     //relationship employees

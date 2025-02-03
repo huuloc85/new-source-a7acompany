@@ -7,7 +7,6 @@ use Carbon\Carbon;
 
 class LogActivity
 {
-
     public static function logViewActivity($user, $activityType, $description)
     {
         $date = Carbon::now()->format('Y-m-d');
@@ -38,7 +37,7 @@ class LogActivity
         // Mảng các role cần theo dõi
         $trackedRoles = [15, 16, 17];
         // Kiểm tra nếu role_id của người dùng không nằm trong mảng trackedRoles
-        if (!in_array($user->role_id, $trackedRoles)) {
+        if (! in_array($user->role_id, $trackedRoles)) {
             return;
         }
         $date = Carbon::now()->format('Y-m-d');

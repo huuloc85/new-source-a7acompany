@@ -4,9 +4,9 @@ namespace App\Http\Requests;
 
 use App\Models\CategoryCelender;
 use App\Models\Role;
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Closure;
 
 class EmployeeStoreRequest extends FormRequest
 {
@@ -26,19 +26,20 @@ class EmployeeStoreRequest extends FormRequest
     public function rules(): array
     {
         $roles_id = Role::where('role_name', '!=', 'admin')
-                        ->where('role_name', '!=', 'manager')
-                        ->where('role_name', '!=', 'accountant')->pluck('id')->toArray();
+            ->where('role_name', '!=', 'manager')
+            ->where('role_name', '!=', 'accountant')->pluck('id')->toArray();
         $categories_id = CategoryCelender::all()->pluck('id')->toArray();
+
         return [
-            'name' => ['required','min:5', 'max:100'],
+            'name' => ['required', 'min:5', 'max:100'],
             // 'email' => [Rule::unique('employees')],
             'phone' => ['required', 'numeric', Rule::unique('employees'),
-                function($attribute, $value, Closure $fail){
-                    $pattern='/^0[0-9]*$/';
-                    if(!preg_match($pattern,$value)){
-                        $fail("Số điện thoại phải là số và bắt đầu bằng 0!");
+                function ($attribute, $value, Closure $fail) {
+                    $pattern = '/^0[0-9]*$/';
+                    if (! preg_match($pattern, $value)) {
+                        $fail('Số điện thoại phải là số và bắt đầu bằng 0!');
                     }
-                }
+                },
             ],
             'code' => ['required', Rule::unique('employees')],
             'address' => ['required'],
@@ -51,7 +52,7 @@ class EmployeeStoreRequest extends FormRequest
             'marital_status' => ['required'],
             'date_joining' => ['required'],
             'role_id' => ['required', 'in:'.implode(',', $roles_id)],
-            'category_celender_id' => ['required', 'in:'.implode(',', $categories_id)]
+            'category_celender_id' => ['required', 'in:'.implode(',', $categories_id)],
         ];
     }
 
@@ -82,7 +83,7 @@ class EmployeeStoreRequest extends FormRequest
             'birthday.date' => 'Ngày sinh chưa đúng định dạng!',
             'birthday.before' => 'Ngày sinh không hợp lệ!',
             'birthday.after' => 'Ngày sinh không hợp lệ!',
-            
+
             'CCCD.required' => 'Số CCCD không được để trống!',
             'CCCD.unique' => 'Số CCCD đã được sử dụng!',
 
@@ -92,7 +93,7 @@ class EmployeeStoreRequest extends FormRequest
             'card_photo.mimes' => 'Hình ảnh không đúng định dạng!',
 
             'marital_status.required' => 'Tình trạng hôn nhân không được để trống!',
-            
+
             'date_joining.required' => 'Ngày vào công ty không được để trống!',
 
             'role_id.required' => 'Chức vụ không được để trống!',

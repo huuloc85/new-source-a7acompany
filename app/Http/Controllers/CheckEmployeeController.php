@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Status;
-use App\Models\Celender;
 use App\Models\CelenderDetailHNHC;
 use App\Models\CheckEmployee;
+use App\Models\DailyQuantity;
 use App\Models\Product;
+use App\Models\TotalDailyQuantity;
+use App\Models\TotalMonthQuantity;
 use App\Traits\CalenderTranslate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\DailyQuantity;
-use App\Models\Employee;
-use App\Models\TotalDailyQuantity;
-use App\Models\TotalMonthQuantity;
 
 class CheckEmployeeController extends Controller
 {
@@ -25,12 +23,12 @@ class CheckEmployeeController extends Controller
         $date = $request->input('filter_date', Carbon::today()->toDateString());
         $filterDate = Carbon::parse($date);
 
-        $checkEmployeeHistoryforAdmin = CheckEmployee::with(['employee', 'product'])
+        $checkEmployeeHistoryForAdmin = CheckEmployee::with(['employee', 'product'])
             ->whereDate('date', $filterDate)
             ->orderBy('date', 'desc')
             ->get();
 
-        $checkEmployeeHistoryforAdmin->each(function ($checkEmployee) {
+        $checkEmployeeHistoryForAdmin->each(function ($checkEmployee) {
             $checkEmployee->date = Carbon::parse($checkEmployee->date);
             $dailyQuantities = DailyQuantity::where('employee_id', $checkEmployee->employee_id)
                 ->where('product_id', $checkEmployee->product_id)
@@ -48,12 +46,11 @@ class CheckEmployeeController extends Controller
         $products = Product::all();
 
         return view('checkemployee.view-employee-todo', [
-            'checkEmployeeHistoryforAdmin' => $checkEmployeeHistoryforAdmin,
+            'checkEmployeeHistoryForAdmin' => $checkEmployeeHistoryForAdmin,
             'products' => $products,
             'filterDate' => $filterDate->toDateString(),
         ]);
     }
-
 
     //View Nhân Viên
     public function checkEmployeeTodo(Request $request)
@@ -64,13 +61,15 @@ class CheckEmployeeController extends Controller
             $calendar = CelenderDetailHNHC::where('employee_id', $userId)->latest()->first();
             $date = Carbon::now()->format('d');
             $date = $this->convertDate($date);
-            $column = 'day' . $date;
+            $column = 'day'.$date;
             $calendarDetail = $calendar->$column;
             $calendarDetail = $this->translateCalendar($calendarDetail);
             $status = Status::getStatusValue(auth()->user()->category_celender->name);
+
             return view('checkemployee.check-employee-todo', compact('products', 'calendarDetail', 'status'));
         } catch (\Exception $e) {
             toast('Hãy bổ sung lịch làm việc để cập nhật sản lượng!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -97,11 +96,12 @@ class CheckEmployeeController extends Controller
 
             if ($existingRecord) {
                 toast('Sản phẩm đã tồn tại cho ngày và ca hiện tại!', 'error', 'top-right');
+
                 return redirect()->back();
             }
 
             $status = Status::getStatusValue(auth()->user()->category_celender->name);
-            $checkEmployee = new CheckEmployee();
+            $checkEmployee = new CheckEmployee;
             $checkEmployee->product_id = $request->product_id;
             $checkEmployee->employee_id = $employeeId;
             $checkEmployee->shift = $shift;
@@ -110,9 +110,11 @@ class CheckEmployeeController extends Controller
             $checkEmployee->save();
 
             toast('Cập nhật hoạt động sản phẩm thành công!', 'success', 'top-right');
+
             return redirect()->back();
         } catch (\Exception $e) {
             toast('Cập nhật hoạt động sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -161,6 +163,7 @@ class CheckEmployeeController extends Controller
                 // Nếu không có sản lượng hoặc khác status, kiểm tra ngày có phải ngày hiện tại không
                 if ($checkEmployee->created_at->toDateString() != $currentDate) {
                     toast('Quá hạn, không thể thay đổi!', 'error', 'top-right');
+
                     return redirect()->back();
                 }
             }
@@ -171,9 +174,11 @@ class CheckEmployeeController extends Controller
             $checkEmployee->save();
 
             toast('Cập nhật thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.employee-history-check');
         } catch (\Exception $e) {
             toast('Cập nhật không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -189,9 +194,11 @@ class CheckEmployeeController extends Controller
             $checkEmployee->save();
 
             toast('Cập nhật thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.checkemployee.view-employee-todo');
         } catch (\Exception $e) {
             toast('Cập nhật không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -234,7 +241,6 @@ class CheckEmployeeController extends Controller
         ]);
     }
 
-
     // delete của nhân viên
     public function deleteHistory($id)
     {
@@ -242,9 +248,11 @@ class CheckEmployeeController extends Controller
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->delete();
             toast('Xóa lịch sử thành công', 'success', 'top-right');
+
             return redirect()->back();
         } catch (\Exception $e) {
             toast('Xóa lịch sử không thành công', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -257,9 +265,11 @@ class CheckEmployeeController extends Controller
             $checkEmployee->delete();
 
             toast('Xóa lịch sử thành công', 'success', 'top-right');
+
             return redirect()->back();
         } catch (\Exception $e) {
             toast('Xóa lịch sử không thành công', 'error', 'top-right');
+
             return redirect()->back();
         }
     }

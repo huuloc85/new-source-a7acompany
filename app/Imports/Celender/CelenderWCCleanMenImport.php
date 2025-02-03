@@ -5,25 +5,19 @@ namespace App\Imports\Celender;
 use App\Helpers\LogHelper;
 use App\Models\CelenderDetailWCCleanMen;
 use App\Models\Employee;
-
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class CelenderWCCleanMenImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    WithValidation,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithStartRow
+class CelenderWCCleanMenImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
 {
     public $celenderId;
+
     public function __construct($celenderId)
     {
         $this->celenderId = $celenderId;
@@ -34,9 +28,6 @@ class CelenderWCCleanMenImport implements
         return 'Trực WC Nam'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         try {
@@ -87,7 +78,7 @@ class CelenderWCCleanMenImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Celender-WC-Clean', $e->getMessage(), $e->getLine());
-            Log::error('errors cate::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors cate::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -95,8 +86,9 @@ class CelenderWCCleanMenImport implements
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
-            '1' => ['required', 'in:' . implode(',', $listCode)],
+            '1' => ['required', 'in:'.implode(',', $listCode)],
             '3' => ['nullable', 'string'],
             '4' => ['nullable', 'string'],
             '5' => ['nullable', 'string'],
@@ -173,16 +165,13 @@ class CelenderWCCleanMenImport implements
         ];
     }
 
-    /**
-     * @return int
-     */
     public function startRow(): int
     {
         return 7;
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {
