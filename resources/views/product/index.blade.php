@@ -1,4 +1,25 @@
 @extends('layouts.layout')
+@section('styles')
+    <style>
+        table {
+            overflow: auto !important;
+        }
+        thead > tr:first-child > :first-child,
+        tbody > tr > :first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            min-width: 5rem;
+        }
+
+        thead > tr:first-child > :nth-child(2),
+        tbody > tr > :nth-child(2) {
+            position: sticky;
+            left: 5rem;
+            z-index: 1;
+        }
+    </style>
+@endsection
 
 @php
     $tabProducts = [
@@ -152,13 +173,13 @@
                     @endforeach
                 </ul>
                 <div class="tab-content" id="myTabContent">
-                    @foreach ($tabProducts as $key => $tabProduct)
-                        @if ($key == 'product')
+                    @foreach ($tabProducts as $keyTab => $tabProduct)
+                        @if ($keyTab == 'product')
                             <div
                                 class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
-                                id="{{ $key }}"
+                                id="{{ $keyTab }}"
                                 role="tabpanel"
-                                aria-labelledby="{{ $key }}-tab"
+                                aria-labelledby="{{ $keyTab }}-tab"
                                 tabindex="0"
                             >
                                 <div class="table-responsive">
@@ -426,12 +447,12 @@
                             </div>
                         @endif
 
-                        @if ($key == 'check-100')
+                        @if ($keyTab == 'check-100')
                             <div
                                 class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
-                                id="{{ $key }}"
+                                id="{{ $keyTab }}"
                                 role="tabpanel"
-                                aria-labelledby="{{ $key }}-tab"
+                                aria-labelledby="{{ $keyTab }}-tab"
                                 tabindex="0"
                             >
                                 <div class="table-responsive">
@@ -440,7 +461,7 @@
                                             class="table-light text-uppercase text-center align-middle"
                                         >
                                             <tr>
-                                                <th rowspan="2">STT GG</th>
+                                                <th rowspan="2">STT</th>
                                                 <th rowspan="2">
                                                     Tên linh kiện
                                                 </th>
@@ -567,12 +588,12 @@
                             </div>
                         @endif
 
-                        @if ($key == 'import-200' || $key == 'import-300' || $key == 'export-200')
+                        @if ($keyTab == 'import-200' || $keyTab == 'import-300' || $keyTab == 'export-200')
                             <div
                                 class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
-                                id="{{ $key }}"
+                                id="{{ $keyTab }}"
                                 role="tabpanel"
-                                aria-labelledby="{{ $key }}-tab"
+                                aria-labelledby="{{ $keyTab }}-tab"
                                 tabindex="0"
                             >
                                 <div class="table-responsive">
@@ -583,7 +604,7 @@
                                             <tr>
                                                 <th>STT</th>
                                                 <th>Tên linh kiện</th>
-                                                @if ($page == 'check200')
+                                                @if ($keyTab == 'import-200')
                                                     <th>
                                                         Tồn đầu kỳ
                                                         <br />
@@ -615,7 +636,7 @@
                                                     <th>
                                                         {{ $loop->iteration }}
                                                     </th>
-                                                    <td>
+                                                    <td class="text-start">
                                                         <a
                                                             href="{{ route('admin.product.detail', $product->id) }}"
                                                         >
@@ -623,7 +644,7 @@
                                                         </a>
                                                     </td>
 
-                                                    @if ($page == 'check200')
+                                                    @if ($keyTab == 'import-200')
                                                         <td>
                                                             {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0) }}
                                                         </td>
