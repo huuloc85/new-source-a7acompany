@@ -174,7 +174,7 @@
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     @foreach ($tabProducts as $keyTab => $tabProduct)
-                        @if ($keyTab == 'product')
+                        @if ($page == 'product' && $keyTab == 'product')
                             <div
                                 class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
                                 id="{{ $keyTab }}"
@@ -447,7 +447,7 @@
                             </div>
                         @endif
 
-                        @if ($keyTab == 'check-100')
+                        @if ($page == 'produce' && $keyTab == 'check-100')
                             <div
                                 class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
                                 id="{{ $keyTab }}"
@@ -588,7 +588,10 @@
                             </div>
                         @endif
 
-                        @if ($keyTab == 'import-200' || $keyTab == 'import-300' || $keyTab == 'export-200')
+                        @if ($page == $tabProduct['page']
+                             && ($keyTab == 'import-200'
+                             || $keyTab == 'import-300'
+                             || $keyTab == 'export-200'))
                             <div
                                 class="tab-pane fade {{ $page == $tabProduct['page'] ? 'show active' : '' }}"
                                 id="{{ $keyTab }}"
@@ -781,7 +784,7 @@
     disable script
     -- remove letter "X" to enable script
 --}}
-@section('scriptsX')
+@section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var tooltipTriggerList = [].slice.call(
