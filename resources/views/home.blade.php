@@ -87,6 +87,12 @@
             'link' => route('admin.checkpo.index'),
             'data' => $today->format('m-Y'),
         ],
+        [
+            'title' => 'Danh Sách Tem Cần In',
+            'icon' => 'fas fa-print fa-2x',
+            'link' => route('admin.checkstamp'),
+            'data' => $today->format('d-m'),
+        ],
     ];
 
     $employeeWidgets = [
@@ -126,6 +132,7 @@
             'link' => route('admin.profile'),
         ],
     ];
+
     if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18) {
         // if (true) {
         array_unshift($employeeWidgets, [
@@ -134,14 +141,16 @@
             'link' => route('admin.celender.home'),
         ]);
     }
-    if (Auth()->user()->role_id == 4) {
+
+    if (Auth()->user()->role_id !== 4) {
         // if (true) {
         array_push($employeeWidgets, [
-            'title' => 'Quét mã vạch',
-            'icon' => 'fas fa-qrcode fa-2x',
-            'link' => route('admin.barcode.scan'),
+            'title' => 'Yêu Cầu In Tem',
+            'icon' => 'fas fa-print fa-2x',
+            'link' => route('admin.send-stamp'),
         ]);
     }
+
     array_push($employeeWidgets, [
         'title' => 'Đăng xuất',
         'icon' => 'fas fa-right-from-bracket fa-2x',
@@ -164,17 +173,12 @@
                 <div class="row">
                     @foreach ($managerWidgets as $key => $widget)
                         <div class="col-12 col-md-6 col-lg-4 col-xxl-3">
-                            <a
-                                class="card bg-body-tertiary border-transparent shadow text-decoration-none"
-                                href="{{ $widget['link'] }}"
-                                role="button"
-                            >
+                            <a class="card bg-body-tertiary border-transparent shadow text-decoration-none"
+                                href="{{ $widget['link'] }}" role="button">
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col overflow-hidden">
-                                            <div
-                                                class="text-xs fw-normal text-body-secondary mb-1 titleWidget"
-                                            >
+                                            <div class="text-xs fw-normal text-body-secondary mb-1 titleWidget">
                                                 {{ $widget['title'] }}
                                             </div>
                                             <div class="fs-4 fw-semibold">
@@ -182,12 +186,8 @@
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <div
-                                                class="avatar avatar-lg bg-body text-black"
-                                            >
-                                                <i
-                                                    class="{{ $widget['icon'] }}"
-                                                ></i>
+                                            <div class="avatar avatar-lg bg-body text-black">
+                                                <i class="{{ $widget['icon'] }}"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -211,34 +211,27 @@
                             </div>
                             <div class="card-body px-0 pb-2">
                                 <div class="table-responsive">
-                                    <table
-                                        class="table align-items-center mb-0 table-hover"
-                                    >
+                                    <table class="table align-items-center mb-0 table-hover">
                                         <thead>
                                             <tr>
                                                 <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                                >
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     STT
                                                 </th>
                                                 <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                                >
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                     Tiêu đề
                                                 </th>
                                                 <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                                >
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                     Tổng(VND)
                                                 </th>
                                                 <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                                >
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Ngày bắt đầu
                                                 </th>
                                                 <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                                >
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Ngày kết thúc
                                                 </th>
                                             </tr>
@@ -247,47 +240,30 @@
                                             @foreach ($salaryManagers as $key => $salaryManager)
                                                 <tr>
                                                     <td>
-                                                        <div
-                                                            class="d-flex px-3 py-1"
-                                                        >
+                                                        <div class="d-flex px-3 py-1">
                                                             {{ $loop->iteration }}
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <p
-                                                            class="text-xs font-weight-bold mb-0 px-3"
-                                                        >
+                                                        <p class="text-xs font-weight-bold mb-0 px-3">
                                                             <a
-                                                                href="{{ route('admin.salary.detail', $salaryManager->id) }}"
-                                                            >
+                                                                href="{{ route('admin.salary.detail', $salaryManager->id) }}">
                                                                 {{ $salaryManager->title }}
                                                             </a>
                                                         </p>
                                                     </td>
-                                                    <td
-                                                        class="align-middle text-sm"
-                                                    >
-                                                        <p
-                                                            class="text-xs font-weight-bold mb-0"
-                                                        >
+                                                    <td class="align-middle text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
                                                             {{ number_format($salaryManager->total, 2) }}
                                                         </p>
                                                     </td>
-                                                    <td
-                                                        class="align-middle text-center text-sm"
-                                                    >
-                                                        <p
-                                                            class="text-xs font-weight-bold mb-0"
-                                                        >
+                                                    <td class="align-middle text-center text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
                                                             {{ $salaryManager->formatTimeDMY($salaryManager->start_date) }}
                                                         </p>
                                                     </td>
-                                                    <td
-                                                        class="align-middle text-center text-sm"
-                                                    >
-                                                        <p
-                                                            class="text-xs font-weight-bold mb-0"
-                                                        >
+                                                    <td class="align-middle text-center text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
                                                             {{ $salaryManager->formatTimeDMY($salaryManager->end_date) }}
                                                         </p>
                                                     </td>
@@ -296,18 +272,12 @@
 
                                             @if ($totalSalary == 0)
                                                 <tr>
-                                                    <td
-                                                        colspan="4"
-                                                        class="text-center pt-4"
-                                                    >
+                                                    <td colspan="4" class="text-center pt-4">
                                                         Hiện tại chưa có bảng
                                                         lương nào.
                                                         <br />
                                                         Vui lòng
-                                                        <a
-                                                            class="href"
-                                                            href="{{ route('admin.salary.getimport') }}"
-                                                        >
+                                                        <a class="href" href="{{ route('admin.salary.getimport') }}">
                                                             Thêm bảng lương
                                                         </a>
                                                     </td>
@@ -326,24 +296,19 @@
                             </div>
                             <div class="card-body px-0">
                                 <div class="table-responsive">
-                                    <table
-                                        class="table align-items-center mb-0 table-hover"
-                                    >
+                                    <table class="table align-items-center mb-0 table-hover">
                                         <thead>
                                             <tr>
                                                 <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                                >
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     STT
                                                 </th>
                                                 <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                                >
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                     Tiêu đề
                                                 </th>
                                                 <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-                                                >
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Ngày bắt đầu
                                                 </th>
                                             </tr>
@@ -352,29 +317,19 @@
                                             @foreach ($celenders as $key => $celender)
                                                 <tr>
                                                     <td>
-                                                        <div
-                                                            class="d-flex px-3 py-1"
-                                                        >
+                                                        <div class="d-flex px-3 py-1">
                                                             {{ $loop->iteration }}
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <p
-                                                            class="text-xs font-weight-bold mb-0 px-3"
-                                                        >
-                                                            <a
-                                                                href="{{ route('admin.celender.detail', $celender->id) }}"
-                                                            >
+                                                        <p class="text-xs font-weight-bold mb-0 px-3">
+                                                            <a href="{{ route('admin.celender.detail', $celender->id) }}">
                                                                 {{ $celender->title }}
                                                             </a>
                                                         </p>
                                                     </td>
-                                                    <td
-                                                        class="align-middle text-center text-sm"
-                                                    >
-                                                        <p
-                                                            class="text-xs font-weight-bold mb-0"
-                                                        >
+                                                    <td class="align-middle text-center text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
                                                             {{ $celender->formatTimeDMY($celender->date) }}
                                                         </p>
                                                     </td>
@@ -383,17 +338,12 @@
 
                                             @if ($totalCelender == 0)
                                                 <tr>
-                                                    <td
-                                                        colspan="4"
-                                                        class="text-center pt-4"
-                                                    >
+                                                    <td colspan="4" class="text-center pt-4">
                                                         Chưa có lịch làm việc
                                                         nào.
                                                         <br />
                                                         Đi đến
-                                                        <a
-                                                            href="{{ route('admin.celender.home') }}"
-                                                        >
+                                                        <a href="{{ route('admin.celender.home') }}">
                                                             danh sách lịch làm
                                                             việc.
                                                         </a>
@@ -413,24 +363,17 @@
         <div class="row">
             @foreach ($employeeWidgets as $key => $widget)
                 <div class="col-12 col-md-6 col-lg-4 col-xxl-3">
-                    <a
-                        class="card bg-body-tertiary border-transparent shadow text-decoration-none"
-                        href="{{ $widget['link'] }}"
-                        role="button"
-                    >
+                    <a class="card bg-body-tertiary border-transparent shadow text-decoration-none"
+                        href="{{ $widget['link'] }}" role="button">
                         <div class="card-body">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <p
-                                        class="fw-semibold align-items-center text-capitalize"
-                                    >
+                                    <p class="fw-semibold align-items-center text-capitalize">
                                         {{ $widget['title'] }}
                                     </p>
                                 </div>
                                 <div class="col-auto">
-                                    <div
-                                        class="avatar avatar-lg bg-body text-black"
-                                    >
+                                    <div class="avatar avatar-lg bg-body text-black">
                                         <i class="{{ $widget['icon'] }}"></i>
                                     </div>
                                 </div>
@@ -445,14 +388,32 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#birthdayModal').modal('show');
         });
-        $(document).ready(function () {
+        $(document).ready(function() {
             // Kiểm tra nếu modal tồn tại, hiển thị nó
             if ($('#cleaningDutyModal').length) {
                 $('#cleaningDutyModal').modal('show');
             }
+        });
+    </script>
+    <!-- Thêm Pusher JavaScript CDN -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
+    <script>
+        // Khởi tạo Pusher
+        const pusher = new Pusher('335858e987aa90d26409', {
+            cluster: 'ap1'
+        });
+
+        // Subscribe vào channel
+        const channel = pusher.subscribe('send-stamp-channel');
+
+        // Lắng nghe sự kiện
+        channel.bind('SendStampEvent', function(data) {
+            console.log('Nhận được thông báo:', data.message);
+            toastr.info(data.message);
         });
     </script>
 @endsection

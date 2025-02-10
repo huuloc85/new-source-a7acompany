@@ -3,23 +3,17 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Import Bảng Lương</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Import Bảng Lương</h4>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <a
-                        href="{{ route('admin.salary.home') }}"
-                        type="button"
-                        class="btn btn-link"
-                    >
+                    <a href="{{ route('admin.salary.home') }}" type="button" class="btn btn-link">
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
-                    <form
-                        action="{{ route('admin.salary.import') }}"
-                        method="post"
-                        enctype="multipart/form-data"
-                    >
+                    <form action="{{ route('admin.salary.import') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="col-12 col-md-6">
@@ -27,15 +21,9 @@
                                     <label class="form-label" for="title">
                                         Tiêu đề
                                     </label>
-                                    <input
-                                        type="text"
-                                        value="{{ old('title') }}"
-                                        name="title"
-                                        id="title"
-                                        placeholder="Tiêu đề"
-                                        class="form-control @error('role_name') is-invalid @enderror"
-                                        required
-                                    />
+                                    <input type="text" value="{{ old('title') }}" name="title" id="title"
+                                        placeholder="Tiêu đề" class="form-control @error('role_name') is-invalid @enderror"
+                                        required />
                                     @error('title')
                                         <div class="text text-danger">
                                             {{ $message }}
@@ -47,14 +35,10 @@
                                     <label class="form-label" for="start_date">
                                         Ngày bắt đầu
                                     </label>
-                                    <input
-                                        type="date"
-                                        value="{{ old('start_date') }}"
-                                        name="start_date"
+                                    <input type="date" value="{{ old('start_date') }}" name="start_date"
                                         placeholder="dd/mm/yyyy"
                                         class="form-control start_date @error('start_date') is-invalid @enderror"
-                                        required
-                                    />
+                                        required />
                                     @error('start_date')
                                         <div class="text text-danger">
                                             {{ $message }}
@@ -65,14 +49,9 @@
                                     <label class="form-label" for="end_date">
                                         Ngày kết thúc
                                     </label>
-                                    <input
-                                        type="date"
-                                        value="{{ old('end_date') }}"
-                                        name="end_date"
+                                    <input type="date" value="{{ old('end_date') }}" name="end_date"
                                         placeholder="dd/mm/yyyy"
-                                        class="form-control end_date @error('end_date') is-invalid @enderror"
-                                        required
-                                    />
+                                        class="form-control end_date @error('end_date') is-invalid @enderror" required />
                                     @error('end_date')
                                         <div class="text text-danger">
                                             {{ $message }}
@@ -83,12 +62,8 @@
                                     <label class="form-label" for="file_vvp">
                                         Chọn file VVP
                                     </label>
-                                    <input
-                                        class="form-control @error('file_vvp') is-invalid @enderror"
-                                        type="file"
-                                        name="file_vvp"
-                                        required
-                                    />
+                                    <input class="form-control @error('file_vvp') is-invalid @enderror" type="file"
+                                        name="file_vvp" required />
                                     @error('file_vvp')
                                         <div class="text text-danger">
                                             {{ $message }}
@@ -100,12 +75,8 @@
                                     <label class="form-label" for="file_a7a">
                                         Chọn file A7A
                                     </label>
-                                    <input
-                                        class="form-control @error('file_a7a') is-invalid @enderror"
-                                        type="file"
-                                        name="file_a7a"
-                                        required
-                                    />
+                                    <input class="form-control @error('file_a7a') is-invalid @enderror" type="file"
+                                        name="file_a7a" required />
                                     @error('file_a7a')
                                         <div class="text text-danger">
                                             {{ $message }}

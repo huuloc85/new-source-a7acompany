@@ -170,6 +170,11 @@ class Employee extends Authenticatable
         return $this->hasMany(AttendanceRecord::class, 'employee_code', 'code');
     }
 
+    public function sendStamps()
+    {
+        return $this->hasMany(SendStamp::class, 'employee_id', 'id');
+    }
+
     //search by role
     public function scopeNameRole($query, $request)
     {
@@ -194,7 +199,7 @@ class Employee extends Authenticatable
     public function scopeName($query, $request)
     {
         if ($request->has('name')) {
-            return $query->where('name', 'like', '%'.$request->name.'%');
+            return $query->where('name', 'like', '%' . $request->name . '%');
         }
 
         return $query;
@@ -204,7 +209,7 @@ class Employee extends Authenticatable
     public function scopeAddress($query, $request)
     {
         if ($request->has('address')) {
-            return $query->where('address', 'like', '%'.$request->address.'%');
+            return $query->where('address', 'like', '%' . $request->address . '%');
         }
 
         return $query;
@@ -214,7 +219,7 @@ class Employee extends Authenticatable
     public function scopeHomeTown($query, $request)
     {
         if ($request->has('home_town')) {
-            return $query->where('home_town', 'like', '%'.$request->home_town.'%');
+            return $query->where('home_town', 'like', '%' . $request->home_town . '%');
         }
 
         return $query;
@@ -224,7 +229,7 @@ class Employee extends Authenticatable
     public function scopePhone($query, $request)
     {
         if ($request->has('phone')) {
-            return $query->where('phone', 'like', '%'.$request->phone.'%');
+            return $query->where('phone', 'like', '%' . $request->phone . '%');
         }
 
         return $query;
@@ -234,7 +239,7 @@ class Employee extends Authenticatable
     public function scopeCode($query, $request)
     {
         if ($request->has('code')) {
-            return $query->where('code', 'like', '%'.$request->code.'%');
+            return $query->where('code', 'like', '%' . $request->code . '%');
         }
 
         return $query;
@@ -244,7 +249,7 @@ class Employee extends Authenticatable
     public function scopeCCCD($query, $request)
     {
         if ($request->has('CCCD')) {
-            return $query->where('CCCD', 'like', '%'.$request->CCCD.'%');
+            return $query->where('CCCD', 'like', '%' . $request->CCCD . '%');
         }
 
         return $query;

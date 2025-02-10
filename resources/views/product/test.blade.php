@@ -4,8 +4,10 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Sản Phẩm</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Sản Phẩm</h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -36,10 +38,8 @@
                                         </td>
                                         <td>{{ $product->quanEntityBin }}</td>
                                         <td>
-                                            <a
-                                                href="{{ route('admin.product.editTest', $product->id) }}"
-                                                class="btn btn-primary"
-                                            >
+                                            <a href="{{ route('admin.product.editTest', $product->id) }}"
+                                                class="btn btn-primary">
                                                 <i class="fas fa-edit"></i>
                                                 Chỉnh sửa
                                             </a>

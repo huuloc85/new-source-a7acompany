@@ -8,14 +8,14 @@
     <div class="row">
         <div class="col-12 print-container">
             <div class="card no-print">
-                <div class="card-header">
-                    <h4>Tạo Tem Thùng</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">
+                            Tạo Tem Thùng</h4>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <form
-                        action="{{ route('admin.barcode.register') }}"
-                        method="post"
-                    >
+                    <form action="{{ route('admin.barcode.register') }}" method="post">
                         @method('POST')
                         @csrf
                         <div class="row">
@@ -25,15 +25,9 @@
                                     Ngày
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    type="date"
-                                    id="date"
-                                    class="form-control @error('date') is-invalid @enderror"
-                                    placeholder="Ngày"
-                                    name="date"
-                                    value="{{ $request->date ?? '' }}"
-                                    required
-                                />
+                                <input type="date" id="date"
+                                    class="form-control @error('date') is-invalid @enderror" placeholder="Ngày"
+                                    name="date" value="{{ $request->date ?? '' }}" required />
                                 @error('date')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -47,25 +41,15 @@
                                     Ca
                                     <span class="text-danger">*</span>
                                 </label>
-                                <select
-                                    id="shift"
-                                    class="form-control @error('shift') is-invalid @enderror"
-                                    name="shift"
-                                    required
-                                >
+                                <select id="shift" class="form-control @error('shift') is-invalid @enderror"
+                                    name="shift" required>
                                     <option class="text-center" value="">
                                         ----- Ca làm việc -----
                                     </option>
-                                    <option
-                                        <?= ($request->shift ?? "") == 1 ? "selected" : "" ?>
-                                        value="1"
-                                    >
+                                    <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value="1">
                                         Ca 1
                                     </option>
-                                    <option
-                                        <?= ($request->shift ?? "") == 2 ? "selected" : "" ?>
-                                        value="2"
-                                    >
+                                    <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value="2">
                                         Ca 2
                                     </option>
                                 </select>
@@ -82,16 +66,10 @@
                                     Số lượng thùng (tem)
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    min="1"
-                                    max="999"
-                                    id="binCount"
+                                <input min="1" max="999" id="binCount"
                                     class="form-control @error('binCount') is-invalid @enderror"
-                                    placeholder="Số lượng thùng"
-                                    name="binCount"
-                                    value="{{ $request->binCount ?? '' }}"
-                                    required
-                                />
+                                    placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}"
+                                    required />
                                 @error('binCount')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -115,15 +93,9 @@
                                     Thùng bắt đầu
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    min="0"
-                                    id="binStart"
-                                    class="form-control @error('binStart') is-invalid @enderror"
-                                    placeholder="Thùng bắt đầu"
-                                    name="binStart"
-                                    value="{{ $request->binStart ?? '' }}"
-                                    required
-                                />
+                                <input min="0" id="binStart"
+                                    class="form-control @error('binStart') is-invalid @enderror" placeholder="Thùng bắt đầu"
+                                    name="binStart" value="{{ $request->binStart ?? '' }}" required />
                                 @error('binStart')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -146,20 +118,15 @@
                                     Sản phẩm
                                     <span class="text-danger">*</span>
                                 </label>
-                                <select
-                                    onchange="selectProduct(event)"
-                                    class="form-control @error('product_code') is-invalid @enderror"
-                                    name="product_code"
-                                    required
-                                >
+                                <select onchange="selectProduct(event)"
+                                    class="form-control @error('product_code') is-invalid @enderror" name="product_code"
+                                    required>
                                     <option class="text-center" value="">
                                         ----- Chọn sản phẩm -----
                                     </option>
                                     @foreach ($products as $pro)
-                                        <option
-                                            {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
-                                            value="{{ $pro->code }}-{{ $pro->quanEntityBin }}"
-                                        >
+                                        <option {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
+                                            value="{{ $pro->code }}-{{ $pro->quanEntityBin }}">
                                             {{ $pro->name }}
                                         </option>
                                     @endforeach
@@ -177,16 +144,9 @@
                                     Code
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    type="text"
-                                    id="product_code"
-                                    class="form-control @error('code') is-invalid @enderror"
-                                    placeholder="Code"
-                                    name="code"
-                                    value="{{ $product->code ?? '' }}"
-                                    required
-                                    readonly
-                                />
+                                <input type="text" id="product_code"
+                                    class="form-control @error('code') is-invalid @enderror" placeholder="Code"
+                                    name="code" value="{{ $product->code ?? '' }}" required readonly />
                                 @error('code')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -200,45 +160,25 @@
                                     PCS
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    id="product_pcs"
-                                    class="form-control @error('pcs') is-invalid @enderror"
-                                    placeholder="PCS"
-                                    name="pcs"
-                                    value="{{ $product->quanEntityBin ?? '' }}"
-                                    required
-                                    readonly
-                                />
+                                <input type="number" min="1" id="product_pcs"
+                                    class="form-control @error('pcs') is-invalid @enderror" placeholder="PCS" name="pcs"
+                                    value="{{ $product->quanEntityBin ?? '' }}" required readonly />
                                 @error('pcs')
                                     <div class="text-danger">
                                         {{ $message }}
                                     </div>
                                 @enderror
                             </div>
-                            <input
-                                type="hidden"
-                                id="type"
-                                name="type"
-                                value="Tem Thùng"
-                            />
+                            <input type="hidden" id="type" name="type" value="Tem Thùng" />
                         </div>
                         <br />
 
                         <div>
                             <div class="col-12 no-print">
-                                <button
-                                    type="submit"
-                                    id="register-barcode"
-                                    class="btn btn-success"
-                                >
+                                <button type="submit" id="register-barcode" class="btn btn-success">
                                     Tạo tem
                                 </button>
-                                <a
-                                    class="btn btn-primary"
-                                    href="{{ route('admin.product.barcode') }}"
-                                >
+                                <a class="btn btn-primary" href="{{ route('admin.product.barcode') }}">
                                     Làm mới
                                 </a>
                             </div>
@@ -253,11 +193,7 @@
                     </div>
                     <div class="card-body">
                         <div class="no-print">
-                            <a
-                                class="btn btn-secondary"
-                                onclick="handlePrint(event)"
-                                href="#"
-                            >
+                            <a class="btn btn-secondary" onclick="handlePrint(event)" href="#">
                                 Print
                             </a>
                         </div>
@@ -268,32 +204,19 @@
                                         @foreach ($binArray as $key => $bin)
                                             <div class="container grid-item">
                                                 @if ($bin['bin'] != 'xxxx')
-                                                    <table
-                                                        class="table table-bordered"
-                                                    >
+                                                    <table class="table table-bordered">
                                                         <tr>
-                                                            <td
-                                                                colspan="1"
-                                                                class="align-content-center"
-                                                            >
-                                                                <img
-                                                                    src="{{ asset('assets/img/logos/VVP.png') }}"
-                                                                    alt=""
-                                                                    width="110"
-                                                                    title="VINH VINH PHAT ONE MEMBER CO.LTD"
-                                                                />
+                                                            <td colspan="1" class="align-content-center">
+                                                                <img src="{{ asset('assets/img/logos/VVP.png') }}"
+                                                                    alt="" width="110"
+                                                                    title="VINH VINH PHAT ONE MEMBER CO.LTD" />
                                                                 {{--
                                                                     <div class="logo-text qr-add">VINH VINH PHAT ONE MEMBER
                                                                     CO. LTD</div>
                                                                 --}}
                                                             </td>
-                                                            <td
-                                                                colspan="4"
-                                                                class="align-content-center"
-                                                            >
-                                                                <div
-                                                                    class="qrcode-img"
-                                                                >
+                                                            <td colspan="4" class="align-content-center">
+                                                                <div class="qrcode-img">
                                                                     VINH VINH
                                                                     PHAT ONE
                                                                     MEMBER CO.,
@@ -331,160 +254,102 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 Tên khách hàng
                                                                 <br />
                                                                 外メーカー名
                                                             </td>
-                                                            <td
-                                                                colspan="5"
-                                                                class="text-center"
-                                                            >
-                                                                <p
-                                                                    class="fw-bold mb-0"
-                                                                >
+                                                            <td colspan="5" class="text-center">
+                                                                <p class="fw-bold mb-0">
                                                                     FURUKAWA
                                                                     AUTOMOTIVE
                                                                     PARTS
                                                                     <br />
                                                                     (VIET
-                                                                    NAM)INC
+                                                                    NAM)
+                                                                    INC
                                                                 </p>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 Tên sản phẩm
                                                                 <br />
                                                                 品名
                                                             </td>
-                                                            <td
-                                                                class="text-center"
-                                                            >
-                                                                <p
-                                                                    class="fw-bold mb-0 fs-13"
-                                                                >
+                                                            <td class="text-center">
+                                                                <p class="fw-bold mb-0 fs-13">
                                                                     {{ $product->name }}
                                                                 </p>
                                                             </td>
-                                                            <td
-                                                                colspan="2"
-                                                                class="align-content-center"
-                                                            >
+                                                            <td colspan="2" class="align-content-center">
                                                                 CODE
                                                             </td>
-                                                            <td
-                                                                colspan="2"
-                                                                class="text-center"
-                                                            >
-                                                                <p
-                                                                    class="fw-bold mb-0 fs-13"
-                                                                >
+                                                            <td colspan="2" class="text-center">
+                                                                <p class="fw-bold mb-0 fs-13">
                                                                     {{ $product->code }}
                                                                 </p>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 Nguyên liệu
                                                                 <br />
                                                                 原材料
                                                             </td>
-                                                            <td
-                                                                class="text-center align-content-center"
-                                                            >
+                                                            <td class="text-center align-content-center">
                                                                 <p class="mb-0">
                                                                     {{ $product->material }}
                                                                 </p>
                                                             </td>
-                                                            <td
-                                                                colspan="2"
-                                                                class="text-center"
-                                                            >
+                                                            <td colspan="2" class="text-center">
                                                                 Màu sắc 色
                                                             </td>
-                                                            <td
-                                                                colspan="2"
-                                                                class="text-center align-content-center"
-                                                            >
+                                                            <td colspan="2" class="text-center align-content-center">
                                                                 <p class="mb-0">
                                                                     {{ $product->color }}
                                                                 </p>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 Số lượng
                                                                 <br />
                                                                 数量
                                                             </td>
-                                                            <td
-                                                                colspan="5"
-                                                                class="text-center align-content-center"
-                                                            >
-                                                                <p
-                                                                    class="fw-bold mb-0 fs-13"
-                                                                >
+                                                            <td colspan="5" class="text-center align-content-center">
+                                                                <p class="fw-bold mb-0 fs-13">
                                                                     {{ $product->quanEntityBin }}PCS
                                                                 </p>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 Lotno
                                                                 <br />
                                                                 ロット No
                                                             </td>
-                                                            <td
-                                                                colspan="4"
-                                                                class="text-center align-content-center"
-                                                            >
-                                                                <div
-                                                                    class="lot-container"
-                                                                >
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                            <td colspan="4" class="text-center align-content-center">
+                                                                <div class="lot-container">
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         {{ $lotNo['lot'] }}
                                                                     </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         -
                                                                     </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         {{ $lotNo['date'] }}
                                                                     </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         -
                                                                     </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         {{ $lotNo['shift'] }}
                                                                     </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         -
                                                                     </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    <p class="fw-bold mb-0 fs-13">
                                                                         {{ $bin['bin'] }}
                                                                     </p>
                                                                 </div>
@@ -504,25 +369,17 @@
                                                             --}}
                                                         </tr>
                                                         <tr>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 Kiểm tra
                                                                 <br />
                                                                 検査
                                                             </td>
-                                                            <td
-                                                                colspan="3"
-                                                                class="text-center align-content-center"
-                                                            >
+                                                            <td colspan="3" class="text-center align-content-center">
                                                                 Kiểm tra 200%
                                                                 <br />
                                                                 檢查(200%)
                                                             </td>
-                                                            <td
-                                                                colspan="3"
-                                                                class="text-center align-content-center"
-                                                            >
+                                                            <td colspan="3" class="text-center align-content-center">
                                                                 Kiểm tra (Xuất
                                                                 hàng)
                                                                 <br />
@@ -530,46 +387,27 @@
                                                             </td>
                                                         </tr>
                                                         <tr class="moc-style">
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 Mộc
                                                                 <br />
                                                                 合格印
                                                             </td>
-                                                            <td
-                                                                colspan="3"
-                                                            ></td>
-                                                            <td
-                                                                colspan="1"
-                                                                class="position-relative"
-                                                            >
-                                                                <div
-                                                                    class="square"
-                                                                ></div>
+                                                            <td colspan="3"></td>
+                                                            <td colspan="1" class="position-relative">
+                                                                <div class="square"></div>
                                                             </td>
                                                         </tr>
-                                                        <tr
-                                                            class="under-moc-style"
-                                                        >
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                        <tr class="under-moc-style">
+                                                            <td class="text-start">
                                                                 Người kiểm
                                                                 <br />
                                                                 検査
                                                             </td>
-                                                            <td
-                                                                colspan="3"
-                                                            ></td>
-                                                            <td
-                                                                colspan="2"
-                                                            ></td>
+                                                            <td colspan="3"></td>
+                                                            <td colspan="2"></td>
                                                         </tr>
                                                         <tr>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 (Thời gian)
                                                             </td>
                                                             <td colspan="5">
@@ -585,12 +423,8 @@
                             </div>
                         </div>
                         <div class="no-print">
-                            <a
-                                class="btn btn-secondary"
-                                data-url="{{ route('admin.barcode.save.print') }}"
-                                id="save-print"
-                                href="#"
-                            >
+                            <a class="btn btn-secondary" data-url="{{ route('admin.barcode.save.print') }}"
+                                id="save-print" href="#">
                                 Print
                             </a>
                         </div>
@@ -634,11 +468,11 @@
                         type: type,
                         _token: '{{ csrf_token() }}',
                     },
-                    success: function (response) {
+                    success: function(response) {
                         console.log(response.status);
                         if (callback) callback(); // Gọi callback sau khi lưu thành công
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         console.error(
                             'Đã xảy ra lỗi khi gửi lưu lịch sử print:',
                             error,
@@ -653,8 +487,8 @@
 
             if (lastPrintTime === null) {
                 lastPrintTime = currentTime;
-                savePrint(function () {
-                    setTimeout(function () {
+                savePrint(function() {
+                    setTimeout(function() {
                         window.print();
                         isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                     }, 100);
@@ -673,8 +507,8 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             lastPrintTime = currentTime;
-                            savePrint(function () {
-                                setTimeout(function () {
+                            savePrint(function() {
+                                setTimeout(function() {
                                     window.print();
                                     isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                                 }, 100);
@@ -683,8 +517,8 @@
                     });
                 } else {
                     lastPrintTime = currentTime;
-                    savePrint(function () {
-                        setTimeout(function () {
+                    savePrint(function() {
+                        setTimeout(function() {
                             window.print();
                             isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                         }, 100);
@@ -693,8 +527,8 @@
             }
         }
 
-        $(document).ready(function () {
-            $(document).keydown(function (event) {
+        $(document).ready(function() {
+            $(document).keydown(function(event) {
                 // Kích hoạt Ctrl + P để lưu lịch sử in
                 if (event.ctrlKey && event.key === 'p') {
                     event.preventDefault(); // Ngăn hành động mặc định
@@ -722,7 +556,7 @@
                 }
             });
 
-            $('#save-print').click(function (event) {
+            $('#save-print').click(function(event) {
                 event.preventDefault();
                 handlePrint(); // Gọi hàm in khi nhấn nút
             });

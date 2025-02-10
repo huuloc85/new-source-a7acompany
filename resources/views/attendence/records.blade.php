@@ -176,57 +176,42 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>
-                        Bảng Tính Công
-                        @if (request('start_date') && request('end_date'))
-                            từ
-                            {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }}
-                            đến
-                            {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
-                        @else
-                            Tháng
-                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
-                        @endif
-                    </h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">
+                            Bảng Tính Công
+                            @if (request('start_date') && request('end_date'))
+                                từ
+                                {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }}
+                                đến
+                                {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
+                            @else
+                                Tháng
+                                {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                            @endif
+                        </h4>
+                    </div>
                 </div>
 
                 <div class="card-body">
                     <div class="mb-3">
                         <!-- Nút Lọc Thông Tin và Lịch Sử Chấm Công -->
-                        <div
-                            class="d-flex flex-wrap align-items-center gap-2 mb-2"
-                        >
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                data-bs-toggle="modal"
-                                data-bs-target="#filterModal"
-                            >
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#filterModal">
                                 <i class="fas fa-filter"></i>
                                 Lọc Thông Tin
                             </button>
-                            <a
-                                href="{{ route('admin.attendence.index') }}"
-                                class="btn btn-success"
-                            >
+                            <a href="{{ route('admin.attendence.index') }}" class="btn btn-success">
                                 <i class="fas fa-history"></i>
                                 Lịch Sử Chấm Công
                             </a>
-                            <a
-                                href="#"
-                                id="attendance-search-button"
-                                class="btn btn-secondary"
-                            >
+                            <a href="#" id="attendance-search-button" class="btn btn-secondary">
                                 <i class="fas fa-search"></i>
                                 Tìm Chấm Công Thực Tế
                             </a>
-                            <button
-                                type="button"
-                                class="btn btn-info"
-                                data-bs-toggle="modal"
-                                data-bs-target="#todayEmployeesModal"
-                            >
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                data-bs-target="#todayEmployeesModal">
                                 <i class="fas fa-users"></i>
                                 Danh Sách Nhân Viên Làm Việc Hằng Ngày
                             </button>
@@ -234,82 +219,46 @@
                         <!-- Danh Sách Nhân Viên Làm Việc Hằng Ngày -->
 
                         <!-- Form Export -->
-                        <form
-                            id="export-form"
-                            class="d-flex flex-wrap align-items-center gap-2 mb-2"
-                        >
+                        <form id="export-form" class="d-flex flex-wrap align-items-center gap-2 mb-2">
                             <div class="row g-1 align-items-center">
                                 <div class="col-auto">
-                                    <label
-                                        for="start_date"
-                                        class="col-form-label"
-                                    >
+                                    <label for="start_date" class="col-form-label">
                                         Từ:
                                     </label>
                                 </div>
                                 <div class="col-auto">
-                                    <input
-                                        type="date"
-                                        id="start_date"
-                                        name="start_date"
-                                        class="form-control"
-                                        required
-                                    />
+                                    <input type="date" id="start_date" name="start_date" class="form-control" required />
                                 </div>
                             </div>
                             <div class="row g-1 align-items-center">
                                 <div class="col-auto">
-                                    <label
-                                        for="end_date"
-                                        class="col-form-label"
-                                    >
+                                    <label for="end_date" class="col-form-label">
                                         Đến:
                                     </label>
                                 </div>
                                 <div class="col-auto">
-                                    <input
-                                        type="date"
-                                        id="end_date"
-                                        name="end_date"
-                                        class="form-control"
-                                        required
-                                    />
+                                    <input type="date" id="end_date" name="end_date" class="form-control" required />
                                 </div>
                             </div>
-                            <button
-                                type="button"
-                                class="btn btn-warning"
-                                id="export-button"
-                            >
+                            <button type="button" class="btn btn-warning" id="export-button">
                                 <i class="fas fa-file-export"></i>
                                 Export
                             </button>
                         </form>
                         <!-- Ô Tìm Kiếm -->
-                        <input
-                            type="text"
-                            id="search"
-                            class="form-control"
-                            placeholder="Tìm kiếm nhân viên hoặc ngày chấm công"
-                            style="max-width: 25rem"
-                        />
+                        <input type="text" id="search" class="form-control"
+                            placeholder="Tìm kiếm nhân viên hoặc ngày chấm công" style="max-width: 25rem" />
                     </div>
                     <!-- Checkbox Lọc -->
                     <div class="form-check form-switch">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="filter_absent"
-                            name="filter_absent"
-                        />
+                        <input class="form-check-input" type="checkbox" id="filter_absent" name="filter_absent" />
                         <label class="form-check-label" for="filter_absent">
                             Chỉ hiển thị những người quên chấm công
                         </label>
                     </div>
                     <div class="table-responsive">
                         <!-- Loading Overlay -->
-                        <div
-                            id="loading-overlay"
+                        <div id="loading-overlay"
                             style="
                                 display: none;
                                 position: fixed;
@@ -322,8 +271,7 @@
                                 align-items: center;
                                 justify-content: center;
                                 flex-direction: column;
-                            "
-                        >
+                            ">
                             <div class="spinner-border" role="status"></div>
                             <p style="color: white; margin-top: 10px">
                                 Đang xuất dữ liệu...
@@ -335,10 +283,7 @@
                                 Hiện tại chưa có thông tin nào.
                             </p>
                         @else
-                            <table
-                                id="attendanceTable"
-                                class="table table-hover mb-4"
-                            >
+                            <table id="attendanceTable" class="table table-hover mb-4">
                                 <thead class="text-uppercase text-center">
                                     <tr>
                                         <th>STT</th>
@@ -370,20 +315,14 @@
                                                 {{ \Carbon\Carbon::parse($record->date)->format('d-m-Y') }}
                                             </td>
                                             <td>{{ $record->day_of_week }}</td>
-                                            <td
-                                                class="{{ $record->time_in ? '' : 'text-danger' }}"
-                                            >
+                                            <td class="{{ $record->time_in ? '' : 'text-danger' }}">
                                                 {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                             </td>
-                                            <td
-                                                class="{{ $record->time_out ? '' : 'text-danger' }}"
-                                            >
+                                            <td class="{{ $record->time_out ? '' : 'text-danger' }}">
                                                 {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                             </td>
                                             <td>{{ $record->shift }}</td>
-                                            <td
-                                                class="{{ $record->total_hours ? '' : 'text-danger' }}"
-                                            >
+                                            <td class="{{ $record->total_hours ? '' : 'text-danger' }}">
                                                 @if ($record->total_hours)
                                                     <strong>
                                                         {{ $record->total_hours }}
@@ -414,93 +353,51 @@
     </div>
 
     <!-- Modal tìm kiếm -->
-    <div
-        class="modal fade"
-        id="filterModal"
-        tabindex="-1"
-        aria-labelledby="filterModalLabel"
-        aria-hidden="true"
-    >
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <form
-                method="GET"
-                action="{{ route('admin.attendence.records') }}"
-                class="modal-content"
-            >
+            <form method="GET" action="{{ route('admin.attendence.records') }}" class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="filterModalLabel">
                         Tìm Kiếm Thông Tin
                     </h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label for="month" class="form-label">Tháng:</label>
-                            <input
-                                type="month"
-                                name="month"
-                                id="month"
-                                class="form-control"
-                                placeholder="Chọn tháng"
-                                value="{{ request('month', $currentMonth) }}"
-                            />
+                            <input type="month" name="month" id="month" class="form-control"
+                                placeholder="Chọn tháng" value="{{ request('month', $currentMonth) }}" />
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="employee_name" class="form-label">
                                 Tên Nhân Viên:
                             </label>
-                            <input
-                                type="text"
-                                id="employee_name"
-                                name="employee_name"
-                                class="form-control"
-                                value="{{ request('employee_name') }}"
-                            />
+                            <input type="text" id="employee_name" name="employee_name" class="form-control"
+                                value="{{ request('employee_name') }}" />
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="start_date" class="form-label">
                                 Từ ngày:
                             </label>
-                            <input
-                                type="date"
-                                id="start_date"
-                                name="start_date"
-                                class="form-control"
-                                value="{{ request('start_date') }}"
-                            />
+                            <input type="date" id="start_date" name="start_date" class="form-control"
+                                value="{{ request('start_date') }}" />
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="end_date" class="form-label">
                                 Đến ngày:
                             </label>
-                            <input
-                                type="date"
-                                id="end_date"
-                                name="end_date"
-                                class="form-control"
-                                value="{{ request('end_date') }}"
-                            />
+                            <input type="date" id="end_date" name="end_date" class="form-control"
+                                value="{{ request('end_date') }}" />
                         </div>
                         <div class="col-md-12 mb-3">
                             <label for="time_filter" class="form-label">
                                 Danh mục làm việc:
                             </label>
-                            <select
-                                id="time_filter"
-                                name="time_filter"
-                                class="form-select"
-                            >
+                            <select id="time_filter" name="time_filter" class="form-select">
                                 @foreach (config('a7a.list_category') as $key => $record)
-                                    <option
-                                        value="{{ $key }}"
-                                        {{ request('time_filter') === $key ? 'selected' : '' }}
-                                    >
+                                    <option value="{{ $key }}"
+                                        {{ request('time_filter') === $key ? 'selected' : '' }}>
                                         {{ $record }}
                                     </option>
                                 @endforeach
@@ -509,11 +406,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                    >
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Đóng
                     </button>
                     <button type="submit" class="btn btn-primary">
@@ -525,13 +418,8 @@
     </div>
 
     <!-- Modal tìm kiếm -->
-    <div
-        class="modal fade"
-        id="todayEmployeesModal"
-        tabindex="-1"
-        aria-labelledby="todayEmployeesModalLabel"
-        aria-hidden="true"
-    >
+    <div class="modal fade" id="todayEmployeesModal" tabindex="-1" aria-labelledby="todayEmployeesModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -544,29 +432,16 @@
                         @endif
                         ({{ $employeesTodayCount }} nhân viên)
                     </h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Form Lọc Ngày -->
                     <div class="form-group">
                         <label for="day">Chọn ngày:</label>
-                        <select
-                            name="day"
-                            id="day"
-                            class="form-control"
-                            required
-                        >
+                        <select name="day" id="day" class="form-control" required>
                             <option value="">Chọn ngày</option>
                             @for ($i = 1; $i <= 31; $i++)
-                                <option
-                                    value="{{ $i }}"
-                                    {{ $day == $i ? 'selected' : '' }}
-                                >
+                                <option value="{{ $i }}" {{ $day == $i ? 'selected' : '' }}>
                                     Ngày {{ $i }}
                                 </option>
                             @endfor
@@ -590,11 +465,7 @@
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                    >
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Đóng
                     </button>
                 </div>
@@ -607,7 +478,7 @@
     <script>
         document
             .getElementById('attendance-search-button')
-            .addEventListener('click', function (e) {
+            .addEventListener('click', function(e) {
                 e.preventDefault(); // Ngăn không cho tự động chuyển hướng
                 Swal.fire({
                     title: 'Bạn đã đổi qua mạng Vinh Vinh Phát chưa?',
@@ -629,7 +500,7 @@
             });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search');
             const filterCheckbox = document.getElementById('filter_absent');
             const attendanceTable = document.getElementById('attendanceTable');
@@ -678,7 +549,7 @@
         });
         document
             .getElementById('export-button')
-            .addEventListener('click', function () {
+            .addEventListener('click', function() {
                 // Hiển thị overlay loading
                 document.getElementById('loading-overlay').style.display =
                     'flex';
@@ -702,11 +573,11 @@
 
                 // Thực hiện yêu cầu AJAX
                 fetch(
-                    '{{ route('admin.attendance.export') }}?start_date=' +
+                        '{{ route('admin.attendance.export') }}?start_date=' +
                         startDateInput +
                         '&end_date=' +
                         endDateInput,
-                )
+                    )
                     .then((response) => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
