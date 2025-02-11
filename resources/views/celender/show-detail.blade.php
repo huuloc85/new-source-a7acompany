@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @section('styles')
     <style>
@@ -89,18 +89,30 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <a class="btn btn-link mb-3" href="{{ route('admin.celender.home') }}">
+                    <a
+                        class="btn btn-link mb-3"
+                        href="{{ route('admin.celender.home') }}"
+                    >
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
-                    <ul class="nav nav-tabs flex-nowrap text-nowrap overflow-x-auto overflow-y-hidden" id="myTab"
-                        role="tablist">
+                    <ul
+                        class="nav nav-tabs flex-nowrap text-nowrap overflow-x-auto overflow-y-hidden"
+                        id="myTab"
+                        role="tablist"
+                    >
                         @foreach ($tabWork as $key => $tab)
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link {{ $loop->first ? 'active' : '' }}" id="{{ $key }}-tab"
-                                    data-bs-toggle="tab" data-bs-target="#{{ $key }}" type="button" role="tab"
+                                <button
+                                    class="nav-link {{ $loop->first ? 'active' : '' }}"
+                                    id="{{ $key }}-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#{{ $key }}"
+                                    type="button"
+                                    role="tab"
                                     aria-controls="{{ $key }}"
-                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                                >
                                     {{ $tab['title'] }}
                                 </button>
                             </li>
@@ -120,11 +132,19 @@
                     </div>
                     <div class="tab-content" id="myTabContent">
                         @foreach ($tabWork as $key => $tab)
-                            <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $key }}"
-                                role="tabpanel" aria-labelledby="{{ $key }}-tab">
+                            <div
+                                class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                                id="{{ $key }}"
+                                role="tabpanel"
+                                aria-labelledby="{{ $key }}-tab"
+                            >
                                 <div class="table-responsive">
-                                    <table class="table table-hover table-bordered">
-                                        <thead class="table-light text-center uppercase align-middle">
+                                    <table
+                                        class="table table-hover table-bordered"
+                                    >
+                                        <thead
+                                            class="table-light text-center uppercase align-middle"
+                                        >
                                             <tr>
                                                 <th>Mã NV</th>
                                                 <th>Họ và tên</th>
@@ -151,7 +171,10 @@
                                             @if ($key == 'VVP' && isset($categories))
                                                 @foreach ($categories as $key => $category)
                                                     <tr>
-                                                        <td colspan="9999" class="fw-bold bg-info">
+                                                        <td
+                                                            colspan="9999"
+                                                            class="fw-bold bg-info"
+                                                        >
                                                             {{ $category->name }}
                                                         </td>
                                                     </tr>
@@ -162,17 +185,20 @@
                                                                     <td>
                                                                         {{ $celenderDetailHNHC->employee->code }}
                                                                     </td>
-                                                                    <td class="text-start">
+                                                                    <td
+                                                                        class="text-start"
+                                                                    >
                                                                         {{ $celenderDetailHNHC->employee->name }}
                                                                     </td>
                                                                     @foreach ($dates as $key => $date)
                                                                         @php
-                                                                            $fill = 'day' . $key + 1;
+                                                                            $fill = 'day'.$key + 1;
                                                                         @endphp
 
                                                                         <td>
                                                                             <span
-                                                                                class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}">
+                                                                                class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}"
+                                                                            >
                                                                                 {{ $celenderDetailHNHC->$fill ?? '' }}
                                                                             </span>
                                                                         </td>
@@ -196,13 +222,14 @@
                                                         </td>
                                                         @foreach ($dates as $key => $date)
                                                             @php
-                                                                $fill = 'day' . $key + 1;
+                                                                $fill = 'day'.$key + 1;
                                                             @endphp
 
                                                             <td>
                                                                 @if ($celenderDetailEatroom->$fill)
                                                                     <span
-                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}">
+                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}"
+                                                                    >
                                                                         VS
                                                                     </span>
                                                                 @endif
@@ -230,14 +257,15 @@
                                                         @foreach ($dates as $key => $date)
                                                             @if ($formatDate->dayOfWeek($date) == 'T7')
                                                                 @php
-                                                                    $fill = 'day' . $keyDate + 1;
+                                                                    $fill = 'day'.$keyDate + 1;
                                                                     $keyDate += 1;
                                                                 @endphp
 
                                                                 <td>
                                                                     @if ($celenderDetailWC->$fill)
                                                                         <span
-                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}">
+                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}"
+                                                                        >
                                                                             VS
                                                                         </span>
                                                                     @endif
@@ -260,13 +288,14 @@
                                                         </td>
                                                         @foreach ($dates as $key => $date)
                                                             @php
-                                                                $fill = 'day' . $key + 1;
+                                                                $fill = 'day'.$key + 1;
                                                             @endphp
 
                                                             <td>
                                                                 @if ($womenWC->$fill)
                                                                     <span
-                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}">
+                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}"
+                                                                    >
                                                                         VS
                                                                     </span>
                                                                 @endif
@@ -288,13 +317,14 @@
                                                         </td>
                                                         @foreach ($dates as $key => $date)
                                                             @php
-                                                                $fill = 'day' . $key + 1;
+                                                                $fill = 'day'.$key + 1;
                                                             @endphp
 
                                                             <td>
                                                                 @if ($menWC->$fill)
                                                                     <span
-                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}">
+                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}"
+                                                                    >
                                                                         VS
                                                                     </span>
                                                                 @endif
@@ -310,7 +340,10 @@
                         @endforeach
                     </div>
 
-                    <a class="btn btn-link mt-3" href="{{ route('admin.celender.home') }}">
+                    <a
+                        class="btn btn-link mt-3"
+                        href="{{ route('admin.celender.home') }}"
+                    >
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
@@ -322,9 +355,9 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const listClass = ['N', 'D', 'X', 'TC', 'LN'];
-            $('input').on('keyup', function() {
+            $('input').on('keyup', function () {
                 $(this).val($(this).val().toUpperCase());
                 for (let i = 0; i < listClass.length; i++) {
                     if ($(this).hasClass(listClass[i])) {

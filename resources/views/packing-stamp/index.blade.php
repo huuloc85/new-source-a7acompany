@@ -1,6 +1,9 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/add-packing-stamp.css') }}" />
+    <link
+        rel="stylesheet"
+        href="{{ asset('assets/css/add-packing-stamp.css') }}"
+    />
 @endsection
 
 @section('content')
@@ -13,7 +16,10 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.packing.register') }}" method="post">
+                    <form
+                        action="{{ route('admin.packing.register') }}"
+                        method="post"
+                    >
                         @method('POST')
                         @csrf
                         <div class="row">
@@ -23,9 +29,15 @@
                                     Ngày
                                     <span class="required text-danger">*</span>
                                 </label>
-                                <input type="date" id="date"
-                                    class="form-control @error('date') is-invalid @enderror" placeholder="Ngày"
-                                    name="date" value="{{ $request->date ?? '' }}" required />
+                                <input
+                                    type="date"
+                                    id="date"
+                                    class="form-control @error('date') is-invalid @enderror"
+                                    placeholder="Ngày"
+                                    name="date"
+                                    value="{{ $request->date ?? '' }}"
+                                    required
+                                />
                                 @error('date')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -39,15 +51,25 @@
                                     Ca
                                     <span class="required text-danger">*</span>
                                 </label>
-                                <select id="shift" class="form-control @error('shift') is-invalid @enderror"
-                                    name="shift" required>
+                                <select
+                                    id="shift"
+                                    class="form-control @error('shift') is-invalid @enderror"
+                                    name="shift"
+                                    required
+                                >
                                     <option class="text-center" value="">
                                         ----- Ca làm việc -----
                                     </option>
-                                    <option <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?> value="1">
+                                    <option
+                                        <?= ($request->shift ?? "") == 1 ? "selected" : "" ?>
+                                        value="1"
+                                    >
                                         Ca 1
                                     </option>
-                                    <option <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?> value="2">
+                                    <option
+                                        <?= ($request->shift ?? "") == 2 ? "selected" : "" ?>
+                                        value="2"
+                                    >
                                         Ca 2
                                     </option>
                                 </select>
@@ -64,10 +86,16 @@
                                     Số lượng thùng (tem)
                                     <span class="required text-danger">*</span>
                                 </label>
-                                <input min="1" max="999" id="binCount"
+                                <input
+                                    min="1"
+                                    max="999"
+                                    id="binCount"
                                     class="form-control @error('binCount') is-invalid @enderror"
-                                    placeholder="Số lượng thùng" name="binCount" value="{{ $request->binCount ?? '' }}"
-                                    required />
+                                    placeholder="Số lượng thùng"
+                                    name="binCount"
+                                    value="{{ $request->binCount ?? '' }}"
+                                    required
+                                />
                                 @error('binCount')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -91,9 +119,15 @@
                                     Thùng bắt đầu
                                     <span class="required text-danger">*</span>
                                 </label>
-                                <input min="0" id="binStart"
-                                    class="form-control @error('binStart') is-invalid @enderror" placeholder="Thùng bắt đầu"
-                                    name="binStart" value="{{ $request->binStart ?? '' }}" required />
+                                <input
+                                    min="0"
+                                    id="binStart"
+                                    class="form-control @error('binStart') is-invalid @enderror"
+                                    placeholder="Thùng bắt đầu"
+                                    name="binStart"
+                                    value="{{ $request->binStart ?? '' }}"
+                                    required
+                                />
                                 @error('binStart')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -116,15 +150,20 @@
                                     Sản phẩm
                                     <span class="required text-danger">*</span>
                                 </label>
-                                <select onchange="selectProduct(event)"
-                                    class="form-control @error('product_code') is-invalid @enderror" name="product_code"
-                                    required>
+                                <select
+                                    onchange="selectProduct(event)"
+                                    class="form-control @error('product_code') is-invalid @enderror"
+                                    name="product_code"
+                                    required
+                                >
                                     <option class="text-center" value="">
                                         ----- Chọn sản phẩm -----
                                     </option>
                                     @foreach ($products as $pro)
-                                        <option {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
-                                            value="{{ $pro->code }}-{{ $pro->quantity_per_package }}">
+                                        <option
+                                            {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
+                                            value="{{ $pro->code }}-{{ $pro->quantity_per_package }}"
+                                        >
                                             {{ $pro->name }}
                                         </option>
                                     @endforeach
@@ -142,9 +181,16 @@
                                     Code
                                     <span class="required text-danger">*</span>
                                 </label>
-                                <input type="text" id="product_code"
-                                    class="form-control @error('code') is-invalid @enderror" placeholder="Code"
-                                    name="code" value="{{ $product->code ?? '' }}" required readonly />
+                                <input
+                                    type="text"
+                                    id="product_code"
+                                    class="form-control @error('code') is-invalid @enderror"
+                                    placeholder="Code"
+                                    name="code"
+                                    value="{{ $product->code ?? '' }}"
+                                    required
+                                    readonly
+                                />
                                 @error('code')
                                     <div class="text-danger">
                                         {{ $message }}
@@ -158,24 +204,44 @@
                                     PCS
                                     <span class="required text-danger">*</span>
                                 </label>
-                                <input type="number" min="1" id="product_pcs"
-                                    class="form-control @error('pcs') is-invalid @enderror" placeholder="PCS" name="pcs"
-                                    value="{{ $product->quantity_per_package ?? '' }}" required readonly />
+                                <input
+                                    type="number"
+                                    min="1"
+                                    id="product_pcs"
+                                    class="form-control @error('pcs') is-invalid @enderror"
+                                    placeholder="PCS"
+                                    name="pcs"
+                                    value="{{ $product->quantity_per_package ?? '' }}"
+                                    required
+                                    readonly
+                                />
                                 @error('pcs')
                                     <div class="text-danger">
                                         {{ $message }}
                                     </div>
                                 @enderror
                             </div>
-                            <input type="hidden" id="type" name="type" value="Tem Bịch" />
+                            <input
+                                type="hidden"
+                                id="type"
+                                name="type"
+                                value="Tem Bịch"
+                            />
                         </div>
                         <br />
                         <div>
                             <div class="col-12">
-                                <button type="submit" id="register-barcode" class="btn btn-success">
+                                <button
+                                    type="submit"
+                                    id="register-barcode"
+                                    class="btn btn-success"
+                                >
                                     Tạo tem
                                 </button>
-                                <a class="btn btn-primary" href="{{ route('admin.product.packing') }}">
+                                <a
+                                    class="btn btn-primary"
+                                    href="{{ route('admin.product.packing') }}"
+                                >
                                     Làm mới
                                 </a>
                             </div>
@@ -190,7 +256,11 @@
                 <div class="card-body">
                     <div class="no-print">
                         @if (isset($binArray))
-                            <a class="btn btn-secondary" onclick="handlePrint(event)" href="#">
+                            <a
+                                class="btn btn-secondary"
+                                onclick="handlePrint(event)"
+                                href="#"
+                            >
                                 Print
                             </a>
                         @endif
@@ -201,29 +271,45 @@
                                 @if (isset($binArray))
                                     @foreach ($binArray as $key => $bin)
                                         <div class="container grid-item">
-                                            <table class="table table-bordered"
+                                            <table
+                                                class="table table-bordered"
                                                 style="
                                                     margin-top: 5px;
                                                     margin-bottom: 5px;
-                                                ">
+                                                "
+                                            >
                                                 <tr>
-                                                    <td class="text-start w-120 w-5">
+                                                    <td
+                                                        class="text-start w-120 w-5"
+                                                    >
                                                         Tên sản
                                                         <br />
                                                         phẩm
                                                         <br />
                                                         品名
                                                     </td>
-                                                    <td colspan="2" class="text-center jtf-center">
-                                                        <p class="fw-bold mb-0 fs-20 fs-13">
+                                                    <td
+                                                        colspan="2"
+                                                        class="text-center jtf-center"
+                                                    >
+                                                        <p
+                                                            class="fw-bold mb-0 fs-20 fs-13"
+                                                        >
                                                             {{ $product->name }}
                                                         </p>
                                                     </td>
-                                                    <td class="align-content-center w-120 w-5 code">
+                                                    <td
+                                                        class="align-content-center w-120 w-5 code"
+                                                    >
                                                         CODE
                                                     </td>
-                                                    <td colspan="2" class="text-center jtf-center">
-                                                        <p class="fw-bold mb-0 fs-13">
+                                                    <td
+                                                        colspan="2"
+                                                        class="text-center jtf-center"
+                                                    >
+                                                        <p
+                                                            class="fw-bold mb-0 fs-13"
+                                                        >
                                                             {{ $product->code }}
                                                         </p>
                                                     </td>
@@ -234,7 +320,10 @@
                                                         <br />
                                                         原材料
                                                     </td>
-                                                    <td colspan="2" class="text-center align-content-center">
+                                                    <td
+                                                        colspan="2"
+                                                        class="text-center align-content-center"
+                                                    >
                                                         <p class="mb-0 fs-13">
                                                             {{ $product->material }}
                                                         </p>
@@ -242,7 +331,10 @@
                                                     <td class="text-center">
                                                         Màu sắc 色
                                                     </td>
-                                                    <td colspan="2" class="text-center align-content-center">
+                                                    <td
+                                                        colspan="2"
+                                                        class="text-center align-content-center"
+                                                    >
                                                         <p class="mb-0 fs-13">
                                                             {{ $product->color }}
                                                         </p>
@@ -254,8 +346,13 @@
                                                         <br />
                                                         数量
                                                     </td>
-                                                    <td colspan="5" class="text-center align-content-center">
-                                                        <p class="fw-bold mb-0 fs-13">
+                                                    <td
+                                                        colspan="5"
+                                                        class="text-center align-content-center"
+                                                    >
+                                                        <p
+                                                            class="fw-bold mb-0 fs-13"
+                                                        >
                                                             {{ $product->quantity_per_package }}PCS
                                                         </p>
                                                     </td>
@@ -266,27 +363,46 @@
                                                         <br />
                                                         ロット No
                                                     </td>
-                                                    <td colspan="5" class="text-center align-content-center">
-                                                        <div class="lot-container">
-                                                            <p class="fw-bold mb-0 fs-13">
+                                                    <td
+                                                        colspan="5"
+                                                        class="text-center align-content-center"
+                                                    >
+                                                        <div
+                                                            class="lot-container"
+                                                        >
+                                                            <p
+                                                                class="fw-bold mb-0 fs-13"
+                                                            >
                                                                 {{ $lotNo['lot'] }}
                                                             </p>
-                                                            <p class="fw-bold mb-0 fs-13">
+                                                            <p
+                                                                class="fw-bold mb-0 fs-13"
+                                                            >
                                                                 -
                                                             </p>
-                                                            <p class="fw-bold mb-0 fs-13">
+                                                            <p
+                                                                class="fw-bold mb-0 fs-13"
+                                                            >
                                                                 {{ $lotNo['date'] }}
                                                             </p>
-                                                            <p class="fw-bold mb-0 fs-13">
+                                                            <p
+                                                                class="fw-bold mb-0 fs-13"
+                                                            >
                                                                 -
                                                             </p>
-                                                            <p class="fw-bold mb-0 fs-13">
+                                                            <p
+                                                                class="fw-bold mb-0 fs-13"
+                                                            >
                                                                 {{ $lotNo['shift'] }}
                                                             </p>
-                                                            <p class="fw-bold mb-0 fs-13">
+                                                            <p
+                                                                class="fw-bold mb-0 fs-13"
+                                                            >
                                                                 -
                                                             </p>
-                                                            <p class="fw-bold mb-0 fs-13">
+                                                            <p
+                                                                class="fw-bold mb-0 fs-13"
+                                                            >
                                                                 {{ $bin['bin'] }}
                                                             </p>
                                                         </div>
@@ -298,19 +414,27 @@
                                                         <br />
                                                         検査
                                                     </td>
-                                                    <td colspan="2" class="text-center align-content-center">
+                                                    <td
+                                                        colspan="2"
+                                                        class="text-center align-content-center"
+                                                    >
                                                         Kiểm tra 100%
                                                         <br />
                                                         檢查(100%)
                                                     </td>
-                                                    <td colspan="3" class="text-center align-content-center">
+                                                    <td
+                                                        colspan="3"
+                                                        class="text-center align-content-center"
+                                                    >
                                                         Kiểm tra 200%
                                                         <br />
                                                         檢查(200%)
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-start moc-style">
+                                                    <td
+                                                        class="text-start moc-style"
+                                                    >
                                                         Mộc
                                                         <br />
                                                         合格印
@@ -328,9 +452,11 @@
                                                     <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="3" class="text-center">
-                                                        (Thời gian)
-                                                        時間
+                                                    <td
+                                                        colspan="3"
+                                                        class="text-center"
+                                                    >
+                                                        (Thời gian) 時間
                                                     </td>
                                                     <td colspan="2">
                                                         {{ $lotNo['date_time'] }}
@@ -354,8 +480,12 @@
                     </div>
                     @if (isset($binArray))
                         <div class="no-print">
-                            <a class="btn btn-secondary" id="save-print"
-                                data-url="{{ route('admin.barcode.save.print') }}" href="#">
+                            <a
+                                class="btn btn-secondary"
+                                id="save-print"
+                                data-url="{{ route('admin.barcode.save.print') }}"
+                                href="#"
+                            >
                                 Print
                             </a>
                         </div>
@@ -399,11 +529,11 @@
                         type: type,
                         _token: '{{ csrf_token() }}',
                     },
-                    success: function(response) {
+                    success: function (response) {
                         console.log(response.status);
                         if (callback) callback(); // Gọi callback sau khi lưu thành công
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error(
                             'Đã xảy ra lỗi khi gửi lưu lịch sử print:',
                             error,
@@ -418,8 +548,8 @@
 
             if (lastPrintTime === null) {
                 lastPrintTime = currentTime;
-                savePrint(function() {
-                    setTimeout(function() {
+                savePrint(function () {
+                    setTimeout(function () {
                         window.print();
                         isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                     }, 100);
@@ -438,8 +568,8 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             lastPrintTime = currentTime;
-                            savePrint(function() {
-                                setTimeout(function() {
+                            savePrint(function () {
+                                setTimeout(function () {
                                     window.print();
                                     isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                                 }, 100);
@@ -448,8 +578,8 @@
                     });
                 } else {
                     lastPrintTime = currentTime;
-                    savePrint(function() {
-                        setTimeout(function() {
+                    savePrint(function () {
+                        setTimeout(function () {
                             window.print();
                             isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                         }, 100);
@@ -458,8 +588,8 @@
             }
         }
 
-        $(document).ready(function() {
-            $(document).keydown(function(event) {
+        $(document).ready(function () {
+            $(document).keydown(function (event) {
                 // Kích hoạt Ctrl + P để lưu lịch sử in
                 if (event.ctrlKey && event.key === 'p') {
                     event.preventDefault(); // Ngăn hành động mặc định
@@ -485,7 +615,7 @@
                 }
             });
 
-            $('#save-print').click(function(event) {
+            $('#save-print').click(function (event) {
                 event.preventDefault();
                 handlePrint();
             });

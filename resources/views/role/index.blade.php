@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @php
     $startValue = count($roles) > 0 ? $roles->firstItem() : 0;
     $toValue = count($roles) > 0 ? $roles->lastItem() : 0;
@@ -14,15 +14,26 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-                        <a href="{{ route('admin.role.add') }}" type="button" class="btn btn-success">
+                    <div
+                        class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2"
+                    >
+                        <a
+                            href="{{ route('admin.role.add') }}"
+                            type="button"
+                            class="btn btn-success"
+                        >
                             <i class="fas fa-plus"></i>
                             Thêm Chức Vụ
                         </a>
                         <form action="">
                             <div class="input-group">
-                                <input name="key" value="{{ request()->key }}" type="text" class="form-control"
-                                    placeholder="Nhận từ khóa..." />
+                                <input
+                                    name="key"
+                                    value="{{ request()->key }}"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Nhận từ khóa..."
+                                />
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -69,28 +80,49 @@
                                             {{ $role->formatTimeDMY($role->updated_at) }}
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ route('admin.role.edit', $role->id) }}" class="btn btn-primary">
+                                            <a
+                                                href="{{ route('admin.role.edit', $role->id) }}"
+                                                class="btn btn-primary"
+                                            >
                                                 Cập nhật
                                             </a>
                                             {{-- Button delete --}}
-                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal-{{ $role->id }}">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal-{{ $role->id }}"
+                                            >
                                                 Xóa
                                             </button>
                                         </td>
                                     </tr>
 
                                     {{-- Modal Delete --}}
-                                    <div class="modal fade" id="deleteModal-{{ $role->id }}" tabindex="-1"
-                                        aria-labelledby="deleteModalLabel-{{ $role->id }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
+                                    <div
+                                        class="modal fade"
+                                        id="deleteModal-{{ $role->id }}"
+                                        tabindex="-1"
+                                        aria-labelledby="deleteModalLabel-{{ $role->id }}"
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            class="modal-dialog modal-dialog-centered"
+                                        >
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="deleteModalLabel-{{ $role->id }}">
+                                                    <h1
+                                                        class="modal-title fs-5"
+                                                        id="deleteModalLabel-{{ $role->id }}"
+                                                    >
                                                         Xóa chức vụ
                                                     </h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close"
+                                                    ></button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <p>
@@ -104,16 +136,24 @@
                                                     </p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form action="{{ route('admin.role.delete', $role->id) }}"
-                                                        method="post">
+                                                    <form
+                                                        action="{{ route('admin.role.delete', $role->id) }}"
+                                                        method="post"
+                                                    >
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger">
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-danger"
+                                                        >
                                                             Xóa
                                                         </button>
 
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-secondary"
+                                                            data-bs-dismiss="modal"
+                                                        >
                                                             Hủy
                                                         </button>
                                                     </form>
@@ -128,7 +168,10 @@
                                         <td colspan="5" class="text-center">
                                             Hiện tại chưa có Chức vụ nào. Vui
                                             lòng
-                                            <a class="href" href="{{ route('admin.role.add') }}">
+                                            <a
+                                                class="href"
+                                                href="{{ route('admin.role.add') }}"
+                                            >
                                                 Thêm chức vụ
                                             </a>
                                         </td>

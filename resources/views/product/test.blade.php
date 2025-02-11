@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @section('content')
     <div class="row">
@@ -38,8 +38,10 @@
                                         </td>
                                         <td>{{ $product->quanEntityBin }}</td>
                                         <td>
-                                            <a href="{{ route('admin.product.editTest', $product->id) }}"
-                                                class="btn btn-primary">
+                                            <a
+                                                href="{{ route('admin.product.editTest', $product->id) }}"
+                                                class="btn btn-primary"
+                                            >
                                                 <i class="fas fa-edit"></i>
                                                 Chỉnh sửa
                                             </a>

@@ -1,28 +1,43 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Cập Nhật Sản Lượng MOQ Tồn Đầu Kỳ Tồn 200%</h4>
+                        <h4 class="card-title mb-0">
+                            Cập Nhật Sản Lượng MOQ Tồn Đầu Kỳ Tồn 200%
+                        </h4>
                     </div>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('admin.product.home') }}" class="btn btn-link mb-3">
+                    <a
+                        href="{{ route('admin.product.home') }}"
+                        class="btn btn-link mb-3"
+                    >
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
-                    <form action="{{ route('admin.product.handle-update-moq') }}" method="post">
+                    <form
+                        action="{{ route('admin.product.handle-update-moq') }}"
+                        method="post"
+                    >
                         @csrf
                         <div class="d-sm-flex align-items-center gap-3">
                             <div class="form-group">
                                 <label for="month" class="form-label">
                                     Chọn tháng cập nhật:
                                 </label>
-                                <select class="form-select" name="month" aria-label="Chọn tháng cập nhật">
+                                <select
+                                    class="form-select"
+                                    name="month"
+                                    aria-label="Chọn tháng cập nhật"
+                                >
                                     @foreach ($listMonth as $month)
-                                        <option value="{{ $month }}" {{ $month == $currentMonth ? 'selected' : '' }}>
+                                        <option
+                                            value="{{ $month }}"
+                                            {{ $month == $currentMonth ? 'selected' : '' }}
+                                        >
                                             {{ $month }}
                                         </option>
                                     @endforeach
@@ -32,8 +47,14 @@
                                 <label for="status" class="form-label">
                                     Loại Sản Lượng:
                                 </label>
-                                <select class="form-select" name="status" id="status" required
-                                    aria-label="Chọn loại sản lượng" onchange="showNearData()">
+                                <select
+                                    class="form-select"
+                                    name="status"
+                                    id="status"
+                                    required
+                                    aria-label="Chọn loại sản lượng"
+                                    onchange="showNearData()"
+                                >
                                     <option value="7">MOQ</option>
                                     <option value="4">Tồn đầu kỳ</option>
                                     <option value="5">Tồn đầu kỳ 200%</option>
@@ -54,13 +75,23 @@
                                 </div>
                             @else
                                 @foreach ($products as $product)
-                                    <div class="form-group col-6 col-sm-4 col-md-3">
-                                        <input type="hidden" name="productId[]" value="{{ $product->id }}" />
+                                    <div
+                                        class="form-group col-6 col-sm-4 col-md-3"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="productId[]"
+                                            value="{{ $product->id }}"
+                                        />
                                         <label class="form-label">
                                             {{ $product->name }} :
                                         </label>
-                                        <input type="number" min="0" class="form-control quantity-input"
-                                            name="quantity[]" />
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            class="form-control quantity-input"
+                                            name="quantity[]"
+                                        />
                                     </div>
                                 @endforeach
                             @endif
@@ -88,7 +119,7 @@
             var quantityInputs = document.querySelectorAll('.quantity-input');
 
             // Duyệt qua từng ô input để cập nhật giá trị dữ liệu gần nhất
-            quantityInputs.forEach(function(input) {
+            quantityInputs.forEach(function (input) {
                 var productId = input.parentElement.querySelector(
                     "[name='productId[]']",
                 ).value;
@@ -117,7 +148,7 @@
         }
 
         // Gọi hàm showNearData() sau khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             showNearData();
         });
     </script>

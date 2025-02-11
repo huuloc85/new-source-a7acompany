@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @php
     $lastItem = count($celenders) > 0 ? $celenders->lastItem() : 0;

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @section('content')
     <div class="row">
@@ -26,13 +26,22 @@
                         <span class="fw-bold">Bộ phận:</span>
                         {{ Auth()->user()->role->role_name ?? '' }}
                     </div>
-                    <form method="GET" action="{{ route('admin.attendence.index') }}">
+                    <form
+                        method="GET"
+                        action="{{ route('admin.attendence.index') }}"
+                    >
                         <div class="form-group">
                             <label class="form-label" for="month">
                                 Chọn tháng:
                             </label>
-                            <input type="month" id="month" name="month" value="{{ $currentMonth }}"
-                                class="form-control" onchange="this.form.submit()" />
+                            <input
+                                type="month"
+                                id="month"
+                                name="month"
+                                value="{{ $currentMonth }}"
+                                class="form-control"
+                                onchange="this.form.submit()"
+                            />
                         </div>
                     </form>
                     <div class="table-responsive">

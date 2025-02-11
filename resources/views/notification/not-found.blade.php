@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('content')
     <style>
         @media (max-width: 600px) {

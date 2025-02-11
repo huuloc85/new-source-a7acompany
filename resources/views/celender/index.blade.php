@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @php
     $isManager = Auth()->user()->role_id != 14 || Auth()->user()->role_id != 18;
     $startValue = count($celenders) > 0 ? $celenders->firstItem() : 0;

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -9,7 +9,10 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <a class="btn btn-primary" href="{{ route('admin.product.update-quantity') }}">
+                    <a
+                        class="btn btn-primary"
+                        href="{{ route('admin.product.update-quantity') }}"
+                    >
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
@@ -25,22 +28,39 @@
                                 {{ Auth()->user()->code ?? '' }}
                             </div>
                             <form action="" id="searchForm" class="my-3">
-                                <div class="d-flex flex-column flex-sm-row gap-3">
-                                    <select class="form-control" name="month" id="monthSelect">
+                                <div
+                                    class="d-flex flex-column flex-sm-row gap-3"
+                                >
+                                    <select
+                                        class="form-control"
+                                        name="month"
+                                        id="monthSelect"
+                                    >
                                         @foreach ($listMonth as $month)
-                                            <option {{ $month == $monthNearly ? 'selected' : '' }}
-                                                value="{{ $month }}">
+                                            <option
+                                                {{ $month == $monthNearly ? 'selected' : '' }}
+                                                value="{{ $month }}"
+                                            >
                                                 {{ $month }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <select class="form-control" name="product_id" id="productSelect">
-                                        <option {{ $product_id == '' ? 'selected' : '' }} value="">
+                                    <select
+                                        class="form-control"
+                                        name="product_id"
+                                        id="productSelect"
+                                    >
+                                        <option
+                                            {{ $product_id == '' ? 'selected' : '' }}
+                                            value=""
+                                        >
                                             Chọn sản phẩm
                                         </option>
                                         @foreach ($listProduct as $product)
-                                            <option {{ $product_id == $product->id ? 'selected' : '' }}
-                                                value="{{ $product->id }}">
+                                            <option
+                                                {{ $product_id == $product->id ? 'selected' : '' }}
+                                                value="{{ $product->id }}"
+                                            >
                                                 {{ $product->name }}
                                             </option>
                                         @endforeach
@@ -52,7 +72,9 @@
                                 <h6>Số lượng</h6>
                             </div>
                             @foreach ($datas as $data)
-                                <div class="d-flex justify-content-between pb-1">
+                                <div
+                                    class="d-flex justify-content-between pb-1"
+                                >
                                     <span>
                                         {{ $data->date }}
                                     </span>
@@ -79,12 +101,12 @@
     <script>
         document
             .getElementById('monthSelect')
-            .addEventListener('change', function() {
+            .addEventListener('change', function () {
                 document.getElementById('searchForm').submit();
             });
         document
             .getElementById('productSelect')
-            .addEventListener('change', function() {
+            .addEventListener('change', function () {
                 document.getElementById('searchForm').submit();
             });
     </script>

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/scan-barcode.css') }}" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
@@ -47,12 +47,19 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <div id="interactive" data-url="{{ route('admin.barcode.check') }}" class="viewport"></div>
+                                <div
+                                    id="interactive"
+                                    data-url="{{ route('admin.barcode.check') }}"
+                                    class="viewport"
+                                ></div>
                             </div>
                         </div>
                         <div class="row">
                             <div>
-                                <a class="btn btn-danger" href="{{ route('admin.home') }}">
+                                <a
+                                    class="btn btn-danger"
+                                    href="{{ route('admin.home') }}"
+                                >
                                     Trang chủ
                                 </a>
                             </div>
@@ -66,9 +73,10 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var startApi = true;
-            Quagga.init({
+            Quagga.init(
+                {
                     inputStream: {
                         name: 'Live',
                         type: 'LiveStream',
@@ -81,7 +89,7 @@
                         readers: ['code_128_reader'],
                     },
                 },
-                function(err) {
+                function (err) {
                     if (err) {
                         console.log(err);
                         return;
@@ -91,7 +99,7 @@
                 },
             );
 
-            Quagga.onDetected(function(result) {
+            Quagga.onDetected(function (result) {
                 if (
                     result &&
                     result.codeResult.code != '' &&
@@ -110,7 +118,7 @@
                                 barcode: code,
                                 _token: '{{ csrf_token() }}',
                             },
-                            success: function(response) {
+                            success: function (response) {
                                 console.log(response.status);
                                 var status = response.status;
                                 switch (status) {
@@ -134,7 +142,7 @@
                                         break;
                                 }
                             },
-                            error: function(xhr, status, error) {
+                            error: function (xhr, status, error) {
                                 console.error(
                                     'Đã xảy ra lỗi khi gửi barcode:',
                                     error,
@@ -143,7 +151,7 @@
                         });
 
                         startApi = false;
-                        setTimeout(function() {
+                        setTimeout(function () {
                             console.log('Wait for 5s!!!');
                             startApi = true;
                         }, 5000);

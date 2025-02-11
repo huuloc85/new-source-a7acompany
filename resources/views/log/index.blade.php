@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @php
     $startValue = count($logs) > 0 ? $logs->firstItem() : 0;
     $toValue = count($logs) > 0 ? $logs->lastItem() : 0;
@@ -17,16 +17,32 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAllModal">
+                    <div
+                        class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2"
+                    >
+                        <button
+                            type="button"
+                            class="btn btn-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteAllModal"
+                        >
                             <i class="fas fa-trash-alt"></i>
                             Xoá tất cả
                         </button>
                         <form action="">
-                            <input type="hidden" name="limit" value="{{ $currentLimit }}" />
+                            <input
+                                type="hidden"
+                                name="limit"
+                                value="{{ $currentLimit }}"
+                            />
                             <div class="input-group">
-                                <input name="key" value="{{ request()->key }}" type="text" class="form-control"
-                                    placeholder="Nhận từ khóa..." />
+                                <input
+                                    name="key"
+                                    value="{{ request()->key }}"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Nhận từ khóa..."
+                                />
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -47,15 +63,26 @@
                         </span>
                     </div>
                     <form action="">
-                        <input type="hidden" name="key" value="{{ request()->key }}" />
+                        <input
+                            type="hidden"
+                            name="key"
+                            value="{{ request()->key }}"
+                        />
                         <div class="row g-1 align-items-center mb-2">
                             <div class="col-auto">
                                 <label class="col-form-label">Số lượng:</label>
                             </div>
                             <div class="col-auto">
-                                <select name="limit" class="form-select" onchange="this.form.submit()">
+                                <select
+                                    name="limit"
+                                    class="form-select"
+                                    onchange="this.form.submit()"
+                                >
                                     @foreach ($limitList as $limit)
-                                        <option value="{{ $limit }}" {{ $currentLimit == $limit ? 'selected' : '' }}>
+                                        <option
+                                            value="{{ $limit }}"
+                                            {{ $currentLimit == $limit ? 'selected' : '' }}
+                                        >
                                             {{ $limit }}
                                         </option>
                                     @endforeach
@@ -65,7 +92,9 @@
                     </form>
                     <div class="table-responsive">
                         <table class="table table-hover">
-                            <thead class="table-light text-uppercase align-middle">
+                            <thead
+                                class="table-light text-uppercase align-middle"
+                            >
                                 <tr>
                                     <th class="text-center">STT</th>
                                     <th>Vị trí</th>
@@ -94,24 +123,42 @@
                                             {{ $log->created_at }}
                                         </td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal{{ $log->id }}">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal{{ $log->id }}"
+                                            >
                                                 <i class="fas fa-trash-alt"></i>
                                                 Xóa
                                             </button>
                                         </td>
                                     </tr>
                                     {{-- Modal delete --}}
-                                    <div class="modal fade" id="deleteModal{{ $log->id }}" tabindex="-1"
-                                        aria-labelledby="deleteModalLabel{{ $log->id }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
+                                    <div
+                                        class="modal fade"
+                                        id="deleteModal{{ $log->id }}"
+                                        tabindex="-1"
+                                        aria-labelledby="deleteModalLabel{{ $log->id }}"
+                                        aria-hidden="true"
+                                    >
+                                        <div
+                                            class="modal-dialog modal-dialog-centered"
+                                        >
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="deleteModalLabel{{ $log->id }}">
+                                                    <h5
+                                                        class="modal-title"
+                                                        id="deleteModalLabel{{ $log->id }}"
+                                                    >
                                                         Xác nhận
                                                     </h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Close"
+                                                    ></button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <p>
@@ -124,15 +171,23 @@
                                                     </p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal"
+                                                    >
                                                         Đóng
                                                     </button>
-                                                    <form action="{{ route('admin.log.delete', $log->id) }}"
-                                                        method="post">
+                                                    <form
+                                                        action="{{ route('admin.log.delete', $log->id) }}"
+                                                        method="post"
+                                                    >
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger">
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-danger"
+                                                        >
                                                             Xóa
                                                         </button>
                                                     </form>
@@ -153,14 +208,25 @@
     </div>
 
     {{-- Modal Delete all --}}
-    <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
+    <div
+        class="modal fade"
+        id="deleteAllModal"
+        tabindex="-1"
+        aria-labelledby="deleteAllModalLabel"
+        aria-hidden="true"
+    >
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteAllModalLabel">
                         Xác nhận
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
                 </div>
                 <div class="modal-body">
                     <p>
@@ -170,10 +236,17 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
                         Đóng
                     </button>
-                    <form action="{{ route('admin.log.delete.all') }}" method="post">
+                    <form
+                        action="{{ route('admin.log.delete.all') }}"
+                        method="post"
+                    >
                         @csrf
                         <button type="submit" class="btn btn-danger">
                             Xóa
