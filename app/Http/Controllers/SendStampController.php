@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendStampEvent;
 use App\Models\CelenderDetailHNHC;
 use App\Models\Employee;
 use App\Models\HistoryPrint;
-use Illuminate\Support\Facades\Log;
 use App\Models\Product;
 use App\Models\SendStamp;
-use App\Notifications\SendStampNotification;
 use App\Traits\CalenderTranslate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use App\Events\SendStampEvent;
 
 class SendStampController extends Controller
 {
@@ -28,7 +27,7 @@ class SendStampController extends Controller
         $calendar = CelenderDetailHNHC::where('employee_id', $userId)->latest()->first();
         $date = Carbon::now()->format('d');
         $date = $this->convertDate($date);
-        $column = 'day' . $date;
+        $column = 'day'.$date;
         $calendarDetail = $calendar ? $calendar->$column : null;
         $calendarDetail = $this->translateCalendar($calendarDetail ?? '');
         $products = Product::all();
@@ -43,7 +42,8 @@ class SendStampController extends Controller
     {
         DB::beginTransaction();
         try {
-            SendStamp::create([
+            // Tạo yêu cầu in tem mới
+            $sendStamp = SendStamp::create([
                 'product_id' => $request->product_id,
                 'employee_id' => Auth::id(),
                 'date' => Carbon::parse($request->date)->toDateString(),
@@ -54,14 +54,24 @@ class SendStampController extends Controller
                 'status' => $request->status,
             ]);
 
+            // Lấy các nhân viên có role_id là 15 và 8
+            $users = Employee::whereIn('role_id', [15, 8])->get();
+
+            // Phát sự kiện cho mỗi nhân viên
+            foreach ($users as $user) {
+                event(new SendStampEvent($sendStamp, $user));
+            }
+
+            Log::info('SendStampEvent has been broadcasted', ['data' => $sendStamp]);
+
             DB::commit();
             toast('Gửi yêu cầu in tem thành công!', 'success', 'top-right');
 
             return redirect()->route('admin.send-stamp');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Lỗi: ' . $e->getMessage() . ' - Dòng: ' . $e->getLine());
-            toast('Gửi yêu cầu in tem  không thành công!', 'error', 'top-right');
+            Log::error('Lỗi: '.$e->getMessage().' - Dòng: '.$e->getLine());
+            toast('Gửi yêu cầu in tem không thành công!', 'error', 'top-right');
 
             return redirect()->back();
         }
@@ -69,6 +79,12 @@ class SendStampController extends Controller
 
     public function checkStamp(Request $request)
     {
+        $highlightId = $request->query('highlight');
+        $highlightRecord = null;
+        if ($highlightId) {
+            $highlightRecord = SendStamp::find($highlightId);
+        }
+
         $query = SendStamp::query();
 
         $products = $query->pluck('product_id')->toArray(); // Giả sử SendStamp có trường product_id
@@ -80,13 +96,13 @@ class SendStampController extends Controller
         // Lọc theo sản phẩm và nhân viên nếu có
         if ($request->has('product_name')) {
             $query->whereHas('product', function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->product_name . '%');
+                $query->where('name', 'like', '%'.$request->product_name.'%');
             });
         }
 
         if ($request->has('employee_name')) {
             $query->whereHas('employee', function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->employee_name . '%');
+                $query->where('name', 'like', '%'.$request->employee_name.'%');
             });
         }
 
@@ -107,9 +123,8 @@ class SendStampController extends Controller
 
         $historyprint = $query->get();
 
-        return view('checkstamp.index', compact('historyprint', 'products', 'employees'));
+        return view('checkstamp.index', compact('historyprint', 'products', 'employees', 'highlightRecord'));
     }
-
 
     public function print($id)
     {
@@ -124,6 +139,7 @@ class SendStampController extends Controller
         if ($history->type === 'Tem Bịch') {
             return $this->tembich($id);
         }
+
         return view('checkstamp.index', compact('history'));
     }
 
@@ -135,7 +151,7 @@ class SendStampController extends Controller
         // Lấy product từ product_id của sendStamp
         $product = Product::find($sendStamp->product_id);
 
-        if (!$product) {
+        if (! $product) {
             return back()->with('error', 'Không tìm thấy sản phẩm.');
         }
 
@@ -143,7 +159,7 @@ class SendStampController extends Controller
 
         // Tạo QRCode - lấy code từ product
         $firstFiveChars = substr($product->code, 0, 5);
-        $qrCodeString = $firstFiveChars . '-' . $product->quanEntityBin;
+        $qrCodeString = $firstFiveChars.'-'.$product->quanEntityBin;
         $qrCode = QrCode::generate($qrCodeString);
         $binCount = $sendStamp->binCount;
         $binStart = $sendStamp->binStart;
@@ -152,9 +168,9 @@ class SendStampController extends Controller
         $binArray = [];
 
         // Kiểm tra nếu binStart không phải là chuỗi hoặc không có dấu phẩy
-        if (!is_string($binStart) || strpos($binStart, ',') === false) {
+        if (! is_string($binStart) || strpos($binStart, ',') === false) {
             for ($i = 0; $i < $binCount; $i++) {
-                $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $sendStamp->shift . sprintf('%03d', $binStart + $i);
+                $barcodeString = $product->id.'a'.str_replace('/', '', $date).$sendStamp->shift.sprintf('%03d', $binStart + $i);
                 $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
                 $data = [
                     'bin' => sprintf('%03d', $binStart + $i),
@@ -165,10 +181,12 @@ class SendStampController extends Controller
         } else {
             $binStartArray = explode(',', $binStart);
             foreach ($binStartArray as $index => $currentBinStart) {
-                if ($index >= $binCount) break;
+                if ($index >= $binCount) {
+                    break;
+                }
                 if (is_numeric($currentBinStart)) {
-                    $currentBinStart = (int)$currentBinStart;
-                    $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $sendStamp->shift . sprintf('%03d', $currentBinStart);
+                    $currentBinStart = (int) $currentBinStart;
+                    $barcodeString = $product->id.'a'.str_replace('/', '', $date).$sendStamp->shift.sprintf('%03d', $currentBinStart);
                     $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
 
                     $data = [
@@ -242,7 +260,7 @@ class SendStampController extends Controller
 
             return redirect()->route('admin.checkstamp')->with('success', 'Đã từ chối thành công!');
         } catch (\Exception $e) {
-            return redirect()->route('admin.checkstamp')->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+            return redirect()->route('admin.checkstamp')->with('error', 'Có lỗi xảy ra: '.$e->getMessage());
         }
     }
 
@@ -256,14 +274,14 @@ class SendStampController extends Controller
         $time = ($shift == 1) ? '07:30' : '19:30';
 
         // Kết hợp ngày và giờ
-        return Carbon::createFromFormat('Y-m-d H:i', $formattedDate . ' ' . $time)->format('d/m/Y H:i');
+        return Carbon::createFromFormat('Y-m-d H:i', $formattedDate.' '.$time)->format('d/m/Y H:i');
     }
 
-    //map key data
+    // map key data
     public function mapKeyData($binArray)
     {
-        $oddItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 !== 0);
-        $evenItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 === 0);
+        $oddItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 !== 0);
+        $evenItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 === 0);
 
         $rows = [];
 
@@ -286,7 +304,7 @@ class SendStampController extends Controller
     {
         $sendStamp = SendStamp::find($request->sendStampId);
 
-        if (!$sendStamp) {
+        if (! $sendStamp) {
             return response()->json(['error' => 'Không tìm thấy dữ liệu'], 404);
         }
 
@@ -296,7 +314,7 @@ class SendStampController extends Controller
             $listBin = explode(',', $sendStamp->binStart);
             if (count($listBin) > 1) {
                 foreach ($listBin as $bin) {
-                    $history = new HistoryPrint();
+                    $history = new HistoryPrint;
                     $history->product_id = $product->id;
                     $history->employee_id = Auth()->user()->id;
                     $history->type = $sendStamp->type;
@@ -308,7 +326,7 @@ class SendStampController extends Controller
                     $history->save();
                 }
             } else {
-                $history = new HistoryPrint();
+                $history = new HistoryPrint;
                 $history->product_id = $product->id;
                 $history->employee_id = Auth()->user()->id;
                 $history->type = $sendStamp->type;
@@ -322,6 +340,7 @@ class SendStampController extends Controller
         }
         $sendStamp->status = 'approve';
         $sendStamp->save();
+
         return response()->json(200);
     }
 

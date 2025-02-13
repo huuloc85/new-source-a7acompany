@@ -89,6 +89,7 @@
             href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
         />
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        @vite('resources/js/pusher.js')
 
         <!-- Styling css -->
         <style class="fslightbox-styles">
@@ -491,6 +492,7 @@
                 <div class="loader-body"></div>
             </div>
         </div>
+
         <!-- ======= Sidebar ======= -->
         @include('partials.sidebar')
         <main class="main-content">

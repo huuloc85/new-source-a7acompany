@@ -1,5 +1,69 @@
 @extends('layouts.layout')
+<style>
+    /* Animation keyframes for the highlight effect */
+    @keyframes highlightFade {
+        0% {
+            background-color: #fff7c4;
+            border-color: #ffd700;
+        }
 
+        100% {
+            background-color: transparent;
+            border-color: transparent;
+        }
+    }
+
+    /* Style for the highlighted row */
+    .highlight-row {
+        animation: highlightFade 1s ease-in-out;
+        position: relative;
+    }
+
+    /* Style for the highlighted columns */
+    .highlight-column {
+        background-color: #fff7c4;
+        border: 2px solid #ffd700;
+        transition:
+            background-color 0.5s ease,
+            border-color 0.5s ease;
+    }
+
+    /* Highlighted cells inside the row */
+    .highlight-row td,
+    .highlight-row th {
+        background-color: #fff7c4 !important;
+        border: 2px solid #ffd700 !important;
+    }
+
+    /* Ensuring the highlight row stays on top */
+    tr[data-id] {
+        position: relative;
+        z-index: 1;
+    }
+
+    tr[data-id].highlight-row {
+        z-index: 2;
+    }
+
+    /* Ensure highlight for all rows when column highlight is active */
+    .highlight-column {
+        background-color: #fff7c4 !important;
+        border-color: #ffd700 !important;
+    }
+
+    /* Optional: For making sure the row's color stays visible while animation */
+    tr[data-id].highlight-row {
+        background-color: #fff7c4;
+        border: 2px solid #ffd700;
+    }
+
+    /* Optional: Make sure when not hovering or clicked, it resets properly */
+    tr[data-id]:not(.highlight-row) td,
+    tr[data-id]:not(.highlight-row) th {
+        background-color: transparent;
+        border-color: transparent;
+    }
+</style>
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -10,44 +74,82 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="{{ route('admin.checkstamp') }}" class="row g-3 mb-3" id="filterForm">
+                    <form
+                        method="GET"
+                        action="{{ route('admin.checkstamp') }}"
+                        class="row g-3 mb-3"
+                        id="filterForm"
+                    >
                         <div class="row">
                             <div class="col-md-3">
-                                <select name="product_name" class="form-control" onchange="submitForm()">
+                                <select
+                                    name="product_name"
+                                    class="form-control"
+                                    onchange="submitForm()"
+                                >
                                     <option value="">Chọn Sản Phẩm</option>
                                     @foreach ($products as $product)
-                                        <option value="{{ $product->name }}"
-                                            {{ request('product_name') == $product->name ? 'selected' : '' }}>
+                                        <option
+                                            value="{{ $product->name }}"
+                                            {{ request('product_name') == $product->name ? 'selected' : '' }}
+                                        >
                                             {{ $product->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select name="employee_name" class="form-control" onchange="submitForm()">
+                                <select
+                                    name="employee_name"
+                                    class="form-control"
+                                    onchange="submitForm()"
+                                >
                                     <option value="">Chọn Nhân Viên</option>
                                     @foreach ($employees as $employee)
-                                        <option value="{{ $employee->name }}"
-                                            {{ request('employee_name') == $employee->name ? 'selected' : '' }}>
+                                        <option
+                                            value="{{ $employee->name }}"
+                                            {{ request('employee_name') == $employee->name ? 'selected' : '' }}
+                                        >
                                             {{ $employee->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <select name="status" class="form-control" onchange="submitForm()">
+                                <select
+                                    name="status"
+                                    class="form-control"
+                                    onchange="submitForm()"
+                                >
                                     <option value="">Trạng Thái</option>
-                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ In
+                                    <option
+                                        value="pending"
+                                        {{ request('status') == 'pending' ? 'selected' : '' }}
+                                    >
+                                        Chờ In
                                     </option>
-                                    <option value="approve" {{ request('status') == 'approve' ? 'selected' : '' }}>Đã In
+                                    <option
+                                        value="approve"
+                                        {{ request('status') == 'approve' ? 'selected' : '' }}
+                                    >
+                                        Đã In
                                     </option>
-                                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Từ Chối
+                                    <option
+                                        value="rejected"
+                                        {{ request('status') == 'rejected' ? 'selected' : '' }}
+                                    >
+                                        Từ Chối
                                     </option>
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <input type="date" name="date" class="form-control" value="{{ request('date') }}"
-                                    onchange="submitForm()">
+                                <input
+                                    type="date"
+                                    name="date"
+                                    class="form-control"
+                                    value="{{ request('date') }}"
+                                    onchange="submitForm()"
+                                />
                             </div>
                         </div>
                     </form>
@@ -77,17 +179,27 @@
                                 </thead>
                                 <tbody class="text-center align-middle">
                                     @foreach ($historyprint as $history)
-                                        <tr>
+                                        <tr data-id="{{ $history->id }}">
                                             <th>{{ $loop->iteration }}</th>
-                                            <td>{{ $history->product->name }}</td>
-                                            <td>{{ $history->employee->name }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($history->date)->format('d-m-Y') }}</td>
+                                            <td>
+                                                {{ $history->product->name }}
+                                            </td>
+                                            <td>
+                                                {{ $history->employee->name }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($history->date)->format('d-m-Y') }}
+                                            </td>
                                             <td>{{ $history->shift }}</td>
                                             <td>{{ $history->binCount }}</td>
                                             <td>{{ $history->binStart }}</td>
                                             <td>{{ $history->type }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($history->created_at)->format('d-m-Y') }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($history->created_at)->format('H:i:s') }}</td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($history->created_at)->format('d-m-Y') }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($history->created_at)->format('H:i:s') }}
+                                            </td>
                                             <td>
                                                 @php
                                                     $statusClasses = [
@@ -101,30 +213,52 @@
                                                         'rejected' => 'Từ Chối',
                                                     ];
                                                 @endphp
+
                                                 <span
-                                                    class="badge {{ $statusClasses[$history->status] ?? 'bg-secondary' }}">
+                                                    class="badge {{ $statusClasses[$history->status] ?? 'bg-secondary' }}"
+                                                >
                                                     {{ $statusText[$history->status] ?? $history->status }}
                                                 </span>
                                             </td>
                                             <td>
                                                 @if ($history->status == 'approve' || $history->status == 'rejected')
-                                                    <button class="btn btn-secondary" disabled>
-                                                        <i class="fas fa-print"></i> In
+                                                    <button
+                                                        class="btn btn-secondary"
+                                                        disabled
+                                                    >
+                                                        <i
+                                                            class="fas fa-print"
+                                                        ></i>
+                                                        In
                                                     </button>
                                                 @else
-                                                    <a href="{{ route('admin.send-stamp.print', $history->id) }}"
-                                                        class="btn btn-primary">
-                                                        <i class="fas fa-print"></i> In
+                                                    <a
+                                                        href="{{ route('admin.send-stamp.print', $history->id) }}"
+                                                        class="btn btn-primary"
+                                                    >
+                                                        <i
+                                                            class="fas fa-print"
+                                                        ></i>
+                                                        In
                                                     </a>
                                                 @endif
 
                                                 @if ($history->status == 'pending')
-                                                    <form action="{{ route('admin.stamp.reject.print', $history->id) }}"
-                                                        method="POST" style="display: inline;">
+                                                    <form
+                                                        action="{{ route('admin.stamp.reject.print', $history->id) }}"
+                                                        method="POST"
+                                                        style="display: inline"
+                                                    >
                                                         @csrf
-                                                        <button type="submit" class="btn btn-danger"
-                                                            onclick="return confirm('Bạn có chắc chắn muốn từ chối không?');">
-                                                            <i class="fas fa-ban"></i> Từ chối
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-danger"
+                                                            onclick="return confirm('Bạn có chắc chắn muốn từ chối không?');"
+                                                        >
+                                                            <i
+                                                                class="fas fa-ban"
+                                                            ></i>
+                                                            Từ chối
                                                         </button>
                                                     </form>
                                                 @endif
@@ -136,13 +270,6 @@
                         @endif
                     </div>
                 </div>
-
-                <script>
-                    function submitForm() {
-                        document.getElementById('filterForm').submit();
-                    }
-                </script>
-
             </div>
         </div>
     </div>
@@ -150,12 +277,12 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             const searchInput = document.getElementById('search');
             const table = document.querySelector('.table');
             const rows = table.querySelectorAll('tbody tr');
 
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 const searchTerm = searchInput.value.toLowerCase();
 
                 rows.forEach((row) => {
@@ -173,5 +300,10 @@
                 });
             });
         });
+    </script>
+    <script>
+        function submitForm() {
+            document.getElementById('filterForm').submit();
+        }
     </script>
 @endsection
