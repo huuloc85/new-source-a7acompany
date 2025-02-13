@@ -6,17 +6,19 @@ use Illuminate\View\Component;
 
 class HeaderBreadcrumb extends Component
 {
-    public $class , $role;
+    public $class;
+
+    public $role;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($class='' , $role='')
+    public function __construct($class = '', $role = '')
     {
-        $this -> class = $class;
-        $this -> role = $role;
+        $this->class = $class;
+        $this->role = $role;
         //
     }
 

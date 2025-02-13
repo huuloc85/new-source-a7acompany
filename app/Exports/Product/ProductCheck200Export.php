@@ -3,24 +3,28 @@
 namespace App\Exports\Product;
 
 use App\Models\Product;
-use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-class ProductCheck200Export extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithTitle, WithEvents
+class ProductCheck200Export extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithTitle
 {
     protected $time;
-    protected $delimiter;
-    protected $daysInMonth;
-    protected $daysInMonthYMD;
-    const IMPORT_200 = 2;
-    const CHECKED_INVENTORY_200 = 5;
 
+    protected $delimiter;
+
+    protected $daysInMonth;
+
+    protected $daysInMonthYMD;
+
+    const IMPORT_200 = 2;
+
+    const CHECKED_INVENTORY_200 = 5;
 
     public function __construct($time, $daysInMonth, $daysInMonthYMD)
     {
@@ -28,7 +32,6 @@ class ProductCheck200Export extends DefaultValueBinder implements FromView, Shou
         $this->daysInMonth = $daysInMonth;
         $this->daysInMonthYMD = $daysInMonthYMD;
     }
-
 
     public function view(): View
     {
@@ -55,10 +58,11 @@ class ProductCheck200Export extends DefaultValueBinder implements FromView, Shou
                 'name' => $product->name,
                 'totalQuantityInventory' => $totalQuantityInventory,
                 'totalQuantityMonth' => $totalQuantityMonth,
-                'totalQuantityPerDay' => $totalQuantityPerDay
+                'totalQuantityPerDay' => $totalQuantityPerDay,
             ];
         }
         $title = 'Danh sách hàng hóa';
+
         return view('export/product/check-200-export', compact('data', 'title', 'daysInMonth'));
     }
 
@@ -69,7 +73,7 @@ class ProductCheck200Export extends DefaultValueBinder implements FromView, Shou
 
     public function getQuantity($time, $status, $productId)
     {
-        return  Product::join('totalmonthquantities', 'products.id', '=', 'totalmonthquantities.product_id')
+        return Product::join('totalmonthquantities', 'products.id', '=', 'totalmonthquantities.product_id')
             ->where('totalmonthquantities.month', $time)
             ->where('totalmonthquantities.status', $status)
             ->where('products.id', $productId)

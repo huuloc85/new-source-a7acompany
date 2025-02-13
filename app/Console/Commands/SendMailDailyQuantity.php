@@ -2,15 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Support\Facades\Mail;
-use App\Models\Employee;
-use Carbon\Carbon;
+use App\Mail\SendMailDailyQuantity as SendMailDailyQuantityMailable;
 use App\Models\Celender;
 use App\Models\CelenderDetailHNHC;
 use App\Models\DailyQuantity;
-use Illuminate\Console\Command;
+use App\Models\Employee;
 use App\Traits\CalenderTranslate;
-use App\Mail\SendMailDailyQuantity as SendMailDailyQuantityMailable;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class SendMailDailyQuantity extends Command
 {
@@ -58,7 +58,7 @@ class SendMailDailyQuantity extends Command
         $translatedCalendarDetails = [];
         foreach ($calendarDetails as $calendarDetail) {
             $day = $selectedDate->day;
-            $column = 'day' . $day;
+            $column = 'day'.$day;
             if (isset($calendarDetail->$column)) {
                 $calendarDetailValue = $this->translateCalendar($calendarDetail->$column);
                 $translatedCalendarDetails[$calendarDetail->employee_id] = $calendarDetailValue;

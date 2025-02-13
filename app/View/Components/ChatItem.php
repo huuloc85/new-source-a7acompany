@@ -5,20 +5,27 @@ namespace App\View\Components;
 use Illuminate\View\Component;
 
 class ChatItem extends Component
-{  
-    
-    public $id, $img ,$msg, $name, $dateTime;
+{
+    public $id;
+
+    public $img;
+
+    public $msg;
+
+    public $name;
+
+    public $dateTime;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($id, $img , $msg='', $name, $dateTime='')
+    public function __construct($id, $img, $msg, $name, $dateTime = '')
     {
         $this->id = $id;
         $this->img = $img;
-        $this->msg= $msg;
+        $this->msg = $msg;
         $this->name = $name;
         $this->dateTime = $dateTime;
     }

@@ -6,25 +6,46 @@ use Illuminate\View\Component;
 
 class TrainersCard extends Component
 {
-    public $cardstyle, $id, $rating, $percent, $progresssmColor, $name, $role, $img, $color, $description, $value;
+    public $cardstyle;
+
+    public $id;
+
+    public $rating;
+
+    public $percent;
+
+    public $progresssmColor;
+
+    public $name;
+
+    public $role;
+
+    public $img;
+
+    public $color;
+
+    public $description;
+
+    public $value;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($cardstyle= '', $id= '', $rating= '', $percent= '', $progresssmColor= '' ,$name= '', $role= '', $img= '',$color= '', $description= '', $value= '')
+    public function __construct($cardstyle = '', $id = '', $rating = '', $percent = '', $progresssmColor = '', $name = '', $role = '', $img = '', $color = '', $description = '', $value = '')
     {
-        $this-> cardstyle=$cardstyle;
-        $this-> id=$id;
-        $this-> rating=$rating;
-        $this-> progresssmColor=$progresssmColor;
-        $this-> percent=$percent;
-        $this-> name=$name;
-        $this-> role=$role; 
-        $this-> img=$img;
-        $this-> color=$color;
-        $this-> description=$description;
-        $this-> value=$value;
+        $this->cardstyle = $cardstyle;
+        $this->id = $id;
+        $this->rating = $rating;
+        $this->progresssmColor = $progresssmColor;
+        $this->percent = $percent;
+        $this->name = $name;
+        $this->role = $role;
+        $this->img = $img;
+        $this->color = $color;
+        $this->description = $description;
+        $this->value = $value;
 
         //
     }

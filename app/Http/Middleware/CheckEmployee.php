@@ -16,13 +16,14 @@ class CheckEmployee
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role->role_name == 'admin' || 
+        if (Auth::user()->role->role_name == 'admin' ||
             Auth::user()->role->role_name == 'manager' ||
-            Auth::user()->role->role_name == 'accountant') 
-        {
-            toast('Bạn không có quyền truy cập!','error','top-right');
+            Auth::user()->role->role_name == 'accountant') {
+            toast('Bạn không có quyền truy cập!', 'error', 'top-right');
+
             return redirect()->route('admin.home');
         }
+
         return $next($request);
     }
 }

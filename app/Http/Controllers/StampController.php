@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Picqer\Barcode\BarcodeGeneratorPNG;
+use App\Models\HistoryPrint;
 use App\Models\Product;
 use App\Models\StorageProduct;
-use App\Models\HistoryPrint;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Picqer\Barcode\BarcodeGeneratorPNG;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class StampController extends Controller
 {
@@ -16,6 +16,7 @@ class StampController extends Controller
     public function index()
     {
         $products = Product::where('deleted_at', null)->get();
+
         return view('barcode.add', compact('products'));
     }
 
@@ -33,20 +34,20 @@ class StampController extends Controller
 
         $binCount = $request->binCount;
         $binStart = $request->binStart;
-        $generator = new BarcodeGeneratorPNG();
+        $generator = new BarcodeGeneratorPNG;
 
         $binArray = [];
 
         // Kiểm tra nếu binStart không phải là chuỗi hoặc không có dấu phẩy
-        if (!is_string($binStart) || strpos($binStart, ',') === false) {
+        if (! is_string($binStart) || strpos($binStart, ',') === false) {
             // Nếu không phải chuỗi hoặc không có dấu phẩy, thực hiện theo cách này
             for ($i = 0; $i < $binCount; $i++) {
                 // Tạo barcode
-                $barcodeString = $product->id . "a" . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $binStart + $i);
+                $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $binStart + $i);
                 $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
                 $data = [
                     'bin' => sprintf('%03d', $binStart + $i),
-                    'barcode' => $barcode
+                    'barcode' => $barcode,
                 ];
                 array_push($binArray, $data);
             }
@@ -58,14 +59,14 @@ class StampController extends Controller
                     break; // Dừng khi đã đủ số lượng binCount
                 }
                 if (is_numeric($currentBinStart)) {
-                    $currentBinStart = (int)$currentBinStart; // Chuyển đổi thành số nguyên
+                    $currentBinStart = (int) $currentBinStart; // Chuyển đổi thành số nguyên
                     // Tạo barcode cho từng giá trị binStart
-                    $barcodeString = $product->id . "a" . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $currentBinStart);
+                    $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $currentBinStart);
                     $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
 
                     $data = [
                         'bin' => sprintf('%03d', $currentBinStart),
-                        'barcode' => $barcode
+                        'barcode' => $barcode,
                     ];
 
                     array_push($binArray, $data);
@@ -79,12 +80,11 @@ class StampController extends Controller
             'lot' => 'A',
             'date' => str_replace('/', '', $date),
             'shift' => $request->shift,
-            'date_time' => $this->getDateTimeBasedOnShift($request->shift, $date)
+            'date_time' => $this->getDateTimeBasedOnShift($request->shift, $date),
         ];
 
         return view('barcode.add', compact('qrCode', 'barcode', 'products', 'lotNo', 'binArray', 'product', 'request'));
     }
-
 
     // format date time
     private function getDateTimeBasedOnShift($shift, $date)
@@ -118,6 +118,7 @@ class StampController extends Controller
         }
 
         $binArray = array_merge(...$rows);
+
         return $binArray;
     }
 
@@ -130,9 +131,9 @@ class StampController extends Controller
     //handle check barcode when scan success
     public function checkBarCode(Request $request)
     {
-        $data = explode("a", $request->barcode);
+        $data = explode('a', $request->barcode);
         $result = [
-            "status" => 500
+            'status' => 500,
         ];
 
         if ($data && count($data) > 1) {
@@ -141,13 +142,13 @@ class StampController extends Controller
             $date = substr($data[1], 0, 8);
             $shift = substr($data[1], 8, 1);
             $bin = substr($data[1], 9);
-            $lot = "A-" . $date . "-" . $shift . "-" . $bin;
+            $lot = 'A-' . $date . '-' . $shift . '-' . $bin;
             $result = [
                 'barcode' => $request->barcode,
                 'date' => $date,
                 'shift' => $shift,
                 'bin' => $bin,
-                'lot' => $lot
+                'lot' => $lot,
             ];
 
             $product = Product::findOrFail($productId);
@@ -156,17 +157,20 @@ class StampController extends Controller
                 //check xem mã đã quét chưa?
                 $checkLot = StorageProduct::where('lot', $lot)->first();
                 if ($checkLot == null) {
-                    $storageProduct = new StorageProduct();
+                    $storageProduct = new StorageProduct;
                     $storageProduct->product_id = $productId;
                     $storageProduct->lot = $lot;
                     $storageProduct->save();
                     $result['status'] = 200;
+
                     return response()->json($result, 200);
                 }
                 $result['status'] = 400;
+
                 return response()->json($result, 200);
             } else {
                 $result['status'] = 404;
+
                 return response()->json($result, 200);
             }
         }
@@ -179,15 +183,30 @@ class StampController extends Controller
     {
         $product = Product::where('code', $request->productCode)->first();
         if ($product != null) {
-            $history = new HistoryPrint();
-            $history->product_id = $product->id;
-            $history->employee_id = Auth()->user()->id;
-            $history->type = $request->type;
-            $history->date = $request->date;
-            $history->shift = $request->shift;
-            $history->binCount = $request->binCount;
-            $history->binStart = $request->binStart;
-            $history->save();
+            $listBin = explode(',', $request->binStart);
+            if (count($listBin) > 1) {
+                foreach ($listBin as $bin) {
+                    $history = new HistoryPrint;
+                    $history->product_id = $product->id;
+                    $history->employee_id = Auth()->user()->id;
+                    $history->type = $request->type;
+                    $history->date = $request->date;
+                    $history->shift = $request->shift;
+                    $history->binCount = 1;
+                    $history->binStart = $bin;
+                    $history->save();
+                }
+            } else {
+                $history = new HistoryPrint;
+                $history->product_id = $product->id;
+                $history->employee_id = Auth()->user()->id;
+                $history->type = $request->type;
+                $history->date = $request->date;
+                $history->shift = $request->shift;
+                $history->binCount = $request->binCount;
+                $history->binStart = $request->binStart;
+                $history->save();
+            }
         }
 
         return response()->json(200);
@@ -197,6 +216,7 @@ class StampController extends Controller
     public function packingStamp()
     {
         $products = Product::where('deleted_at', null)->get();
+
         return view('packing-stamp.index', compact('products'));
     }
 
@@ -235,7 +255,7 @@ class StampController extends Controller
             'lot' => 'A',
             'date' => str_replace('/', '', $date),
             'shift' => $request->shift,
-            'date_time' => $this->getDateTimeBasedOnShift($request->shift, $date)
+            'date_time' => $this->getDateTimeBasedOnShift($request->shift, $date),
         ];
 
         return view('packing-stamp.index', compact('products', 'lotNo', 'binArray', 'product', 'request'));

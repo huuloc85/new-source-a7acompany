@@ -6,7 +6,10 @@ use Illuminate\View\Component;
 
 class BreadCrumb extends Component
 {
-    public $title, $classname;
+    public $title;
+
+    public $classname;
+
     /**
      * Create a new component instance.
      *

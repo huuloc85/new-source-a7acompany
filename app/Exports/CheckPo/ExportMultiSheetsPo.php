@@ -8,9 +8,13 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class ExportMultiSheetsPo implements WithMultipleSheets
 {
     protected $time;
+
     protected $months;
+
     protected $delimiter;
+
     protected $daysInMonth;
+
     protected $daysInMonthYMD;
 
     public function __construct($time, $months)
@@ -32,9 +36,11 @@ class ExportMultiSheetsPo implements WithMultipleSheets
         }
         $sheets[] = new Daily($this->time, $daysInMonth, $daysInMonthYMD);
         $sheets[] = new Error($this->time, $daysInMonth, $daysInMonthYMD);
+
         return $sheets;
     }
-    function generateDaysInMonth($monthYear)
+
+    public function generateDaysInMonth($monthYear)
     {
         // Chuyển đổi chuỗi tháng-năm thành đối tượng Carbon
         $startDate = Carbon::createFromFormat('m-Y', $monthYear)->startOfMonth();
@@ -53,13 +59,13 @@ class ExportMultiSheetsPo implements WithMultipleSheets
         return $daysArray;
     }
 
-    function convertDateFormat($dateArray)
+    public function convertDateFormat($dateArray)
     {
         $formattedDateArray = [];
 
         foreach ($dateArray as $dateString) {
             $parts = explode('-', $dateString);
-            $formattedDate = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+            $formattedDate = $parts[2].'-'.$parts[1].'-'.$parts[0];
             $formattedDateArray[] = $formattedDate;
         }
 

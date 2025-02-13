@@ -18,8 +18,6 @@
         .sidebar .sidebar-toggle {
             right: -10px;
         }
-
-
     }
 
     .logo-text {
@@ -36,12 +34,12 @@
     <div class="sidebar-header d-flex align-items-center justify-content-center flex-column">
         <a href="{{ route('admin.home') }}" class="navbar-brand text-center d-flex flex-column align-items-center">
             <img src="{{ asset('assets/img/logos/VVP.png') }}" alt="" width="70%"
-                title="VINH VINH PHAT ONE MEMBER CO.LTD">
+                title="VINH VINH PHAT ONE MEMBER CO.LTD" />
             <div class="logo-text">VINH VINH PHAT ONE MEMBER CO. LTD</div>
         </a>
-        <div class="sidebar-toggle" data-toggle="sidebar" data-active="true" style="margin: 150px -7px 0 0;"
+        <div class="sidebar-toggle" data-toggle="sidebar" data-active="true" style="margin: 150px -7px 0 0"
             title="Toggle Sidebar">
-            <i class="icon" style="width: 30px; height: 30px;">
+            <i class="icon" style="width: 30px; height: 30px">
                 <svg width="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round"></path>
@@ -170,7 +168,9 @@
                                                     d="M0 0h16v16H0V0zm1 1v14h14V1H1zm2 2v10h2V3H3zm4 4v6h2V7H7zm4-2v8h2V5h-2z" />
                                             </svg>
                                         </i>
-                                        <span class="item-name">Kế Hoạch Sản Xuất</span>
+                                        <span class="item-name">
+                                            Kế Hoạch Sản Xuất
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
@@ -183,7 +183,9 @@
                                                     d="M8.473.018a.5.5 0 0 0-.446 0l-6.5 3.25A.5.5 0 0 0 1.5 4v8a.5.5 0 0 0 .277.447l6.5 3.25a.5.5 0 0 0 .446 0l6.5-3.25A.5.5 0 0 0 14.5 12V4a.5.5 0 0 0-.277-.447l-6.5-3.25zM7.5 1.223l5.036 2.518-2.5 1.25L5 2.473l2.5-1.25zm-1 0l-5.036 2.518 2.5 1.25L11 2.473l-2.5-1.25zm1 13.554V6.223L2 4v8l5.5 2.777zm1 0L14 12V4l-5.5 2.223v8.554z" />
                                             </svg>
                                         </i>
-                                        <span class="item-name">Kế Hoạch Nguyên Liệu</span>
+                                        <span class="item-name">
+                                            Kế Hoạch Nguyên Liệu
+                                        </span>
                                     </a>
                                 </li>
                             </ul>
@@ -198,8 +200,7 @@
                                         stroke-linecap="round" stroke-linejoin="round"
                                         class="feather feather-calendar">
                                         <rect x="3" y="4" width="18" height="18" rx="2"
-                                            ry="2">
-                                        </rect>
+                                            ry="2"></rect>
                                         <line x1="16" y1="2" x2="16" y2="6"></line>
                                         <line x1="8" y1="2" x2="8" y2="6"></line>
                                         <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -261,7 +262,21 @@
                                                 d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm2 9v1h4V9H6zm0 2v1h4v-1H6zm0-4v1h4V7H6zm0-2v1h4V5H6z" />
                                         </svg>
                                     </i>
-                                    <span class="item-name">Lịch Sử In Tem</span>
+                                    <span class="item-name">
+                                        Lịch Sử In Tem
+                                    </span>
+                                </a>
+
+                                <a class="dropdown-item" href="{{ route('admin.checkstamp') }}"
+                                    title="Yêu Cầu In Tem">
+                                    <i class="icon-svg me-2">
+                                        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 512 512">
+                                            <path
+                                                d="M464 128h-16V40c0-13.3-10.7-24-24-24H88c-13.3 0-24 10.7-24 24v88H48c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h16v104c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V352h16c26.5 0 48-21.5 48-48V176c0-26.5-21.5-48-48-48zM112 48h288v80H112V48zm288 400H112V320h288v128zm64-176c0 8.8-7.2 16-16 16h-16V256H80v32H64c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h400c8.8 0 16 7.2 16 16v96zm-80 64h-48v-32h-32v32h-48v-32h-32v32h-48v-32h-32v32h-48v-32H80v96h352v-96h-48v32z" />
+                                        </svg>
+                                    </i>
+                                    <span class="item-name">Yêu Cầu In Tem</span>
                                 </a>
                             </div>
                         </li>
@@ -290,7 +305,9 @@
                                                 d="M14 0a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12zm-1 1H2a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1zm1 4H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
                                         </svg>
                                     </i>
-                                    <span class="item-name">Bảng Lịch Sử Chấm Công</span>
+                                    <span class="item-name">
+                                        Bảng Lịch Sử Chấm Công
+                                    </span>
                                 </a>
                                 <a class="dropdown-item" href="{{ route('admin.attendence.records') }}">
                                     <i class="icon-svg me-2">
@@ -301,7 +318,9 @@
                                                 d="M3 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H3zm10 1a1 1 0 0 1 1 1v2H2V2a1 1 0 0 1 1-1h10zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5zm2 1v1h2V6H4zm3 0v1h2V6H7zm3 0v1h2V6h-2zM4 8v1h2V8H4zm3 0v1h2V8H7zm3 0v1h2V8h-2zM4 10v1h2v-1H4zm3 0v1h2v-1H7zm3 0v1h2v-1h-2z" />
                                         </svg>
                                     </i>
-                                    <span class="item-name">Bảng Tính Công</span>
+                                    <span class="item-name">
+                                        Bảng Tính Công
+                                    </span>
                                 </a>
                             </div>
                         </li>
@@ -334,13 +353,14 @@
                             </a>
                         </li>
                     @endif
+
                     @if (auth()->user()->role->role_name == 'manager' || auth()->user()->role->role_name == 'admin')
                         <li class="nav-item">
                             <a class="nav-link route('admin.celender.home')"
                                 href="{{ route('admin.celender.home') }}" title="Lịch Làm Việc">
-                                <i class="icon-svg"><svg width="20" height="20" id="Layer_1"
-                                        data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 122.88 118.34">
+                                <i class="icon-svg">
+                                    <svg width="20" height="20" id="Layer_1" data-name="Layer 1"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 118.34">
                                         <defs>
                                             <style>
                                                 .cls-1 {
@@ -351,32 +371,41 @@
                                         {{-- <title>work-schedule</title> --}}
                                         <path class="cls-1"
                                             d="M95.53,63.65A27.35,27.35,0,1,1,68.19,91,27.35,27.35,0,0,1,95.53,63.65ZM71.59,4.05c0-2.23,2.21-4,4.94-4s4.94,1.82,4.94,4.05V22.9c0,2.24-2.21,4.05-4.94,4.05s-4.94-1.81-4.94-4.05V4.05Zm-44.26,0c0-2.23,2.21-4,4.94-4s4.95,1.82,4.95,4.05V22.9C37.22,25.14,35,27,32.27,27s-4.94-1.81-4.94-4.05V4.05ZM63.91,111.92H10.24A10.28,10.28,0,0,1,0,101.68V20.54A10.29,10.29,0,0,1,10.24,10.3h9.44V22.9a11.24,11.24,0,0,0,4.26,8.75,13.25,13.25,0,0,0,16.67,0,11.24,11.24,0,0,0,4.26-8.75V10.3H63.94V22.9a11.23,11.23,0,0,0,4.25,8.75,13.26,13.26,0,0,0,16.68,0,11.26,11.26,0,0,0,4.25-8.75V10.3H99a10.28,10.28,0,0,1,10.24,10.24V55.63a38.34,38.34,0,0,0-4.37-1.4V39.94H4.37V99.5a8.08,8.08,0,0,0,8.05,8h49a40.11,40.11,0,0,0,2.5,4.37ZM19.68,56.24l3.46,3.25,7.09-7.21c.73-.75,1.2-1.35,2.11-.41l3,3c1,1,.91,1.52,0,2.42L24.82,67.58c-1.92,1.89-1.59,2-3.55.07l-6.56-6.53a.85.85,0,0,1,.08-1.33l3.43-3.55c.51-.54.93-.51,1.46,0ZM48,51.71H62.68a1.87,1.87,0,0,1,1.87,1.86V65.78a1.89,1.89,0,0,1-1.87,1.87H48a1.88,1.88,0,0,1-1.87-1.87V53.57A1.88,1.88,0,0,1,48,51.71Zm29.59,0H92.27a1.89,1.89,0,0,1,1.81,1.4,37.79,37.79,0,0,0-18.35,5.55V53.57a1.87,1.87,0,0,1,1.87-1.86ZM48,77.66H60A37.81,37.81,0,0,0,57.62,91c0,.87,0,1.74.09,2.6H48a1.88,1.88,0,0,1-1.87-1.87V79.53A1.88,1.88,0,0,1,48,77.66Zm-29.58,0H33.1A1.87,1.87,0,0,1,35,79.53v12.2A1.89,1.89,0,0,1,33.1,93.6H18.43a1.87,1.87,0,0,1-1.87-1.87V79.53a1.87,1.87,0,0,1,1.87-1.87Zm73.31-.43h3.34a1.12,1.12,0,0,1,1.12,1.12V91.23H108a1.12,1.12,0,0,1,1.12,1.11v3.35A1.12,1.12,0,0,1,108,96.8H90.63V78.35a1.12,1.12,0,0,1,1.11-1.12Zm3.79-7.37A21.14,21.14,0,1,1,74.4,91,21.13,21.13,0,0,1,95.53,69.86Z" />
-                                    </svg></i>
+                                    </svg>
+                                </i>
                                 <span class="item-name">Lịch làm việc</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link route('admin.category.home')"
                                 href="{{ route('admin.category.home') }}" title="Danh Mục Lịch Làm Việc">
-                                <i class="icon-svg"><svg width="20" height="20" version="1.1"
-                                        id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                        viewBox="0 0 99.39 122.88" style="enable-background:new 0 0 99.39 122.88"
+                                <i class="icon-svg">
+                                    <svg width="20" height="20" version="1.1" id="Layer_1"
+                                        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                        x="0px" y="0px" viewBox="0 0 99.39 122.88"
+                                        style="
+                                            enable-background: new 0 0 99.39
+                                                122.88;
+                                        "
                                         xml:space="preserve">
                                         <path
                                             d="M65.72,12.72c-0.31,0-0.58-0.04-0.85-0.13c-1.38,0-2.54-1.12-2.54-2.54v-5H37.7v5c0,1.29-1.03,2.41-2.28,2.5 c-0.27,0.09-0.58,0.13-0.89,0.13h-9.28v10.35h48.59V12.67h-8.21L65.72,12.72L65.72,12.72z M22.85,75.03c2.76,0,5,2.24,5,5 s-2.24,5-5,5s-5-2.24-5-5S20.09,75.03,22.85,75.03L22.85,75.03z M17.07,62.7c-0.69-1.03-0.42-2.43,0.62-3.12 c1.03-0.69,2.43-0.42,3.12,0.62l1.23,1.82l4.87-5.92c0.79-0.96,2.21-1.1,3.17-0.31c0.96,0.79,1.1,2.21,0.31,3.17l-6.74,8.2 c-0.15,0.19-0.33,0.36-0.54,0.51c-1.03,0.69-2.43,0.42-3.12-0.62L17.07,62.7L17.07,62.7z M17.07,45.38 c-0.69-1.03-0.42-2.43,0.62-3.12c1.03-0.69,2.43-0.42,3.12,0.62l1.23,1.82l4.87-5.93c0.79-0.96,2.21-1.1,3.17-0.31 c0.96,0.79,1.1,2.21,0.31,3.17l-6.74,8.2c-0.15,0.19-0.33,0.36-0.54,0.51c-1.03,0.69-2.43,0.42-3.12-0.62L17.07,45.38L17.07,45.38z M69.2,122.21c-0.45,0.4-1.07,0.67-1.7,0.67c-0.13,0-0.27,0-0.4-0.04H5.62c-1.52,0-2.94-0.62-3.97-1.65 C0.62,120.16,0,118.78,0,117.21l0-97.36c0-1.56,0.62-2.94,1.65-3.97c1.03-1.03,2.41-1.65,3.97-1.65h14.63v-2.77 c0-1.03,0.4-1.96,1.12-2.68c0.67-0.67,1.61-1.12,2.68-1.12h8.66V4.19c0-1.16,0.49-2.19,1.25-2.94C34.71,0.49,35.74,0,36.9,0h26.37 c1.16,0,2.19,0.49,2.94,1.25c0.76,0.76,1.25,1.78,1.25,2.94v3.48h7.81c1.03,0,1.96,0.45,2.68,1.12c0.67,0.67,1.12,1.65,1.12,2.68 v2.77h14.63c1.56,0,2.94,0.62,3.97,1.65c1.03,1.03,1.65,2.41,1.65,3.97v70.23c0.2,1.01-0.01,1.79-0.76,2.54l-29.05,29.4 c-0.09,0.09-0.13,0.13-0.22,0.18H69.2L69.2,122.21z M64.96,117.79c0-33.62-4.24-29.63,29.22-29.63V19.85c0-0.13-0.04-0.31-0.18-0.4 c-0.09-0.09-0.22-0.18-0.4-0.18l-14.63,0v5.09c0,1.03-0.4,1.96-1.12,2.68c-0.67,0.67-1.61,1.12-2.68,1.12H24 c-1.03,0-2.01-0.45-2.68-1.12c-0.09-0.09-0.13-0.18-0.22-0.27c-0.54-0.67-0.89-1.52-0.89-2.41v-5.09H5.58 c-0.13,0-0.31,0.04-0.4,0.18C5.09,19.54,5,19.72,5,19.85v97.36c0,0.18,0.04,0.31,0.18,0.4c0.09,0.09,0.22,0.18,0.4,0.18h59.34 H64.96L64.96,117.79z M41.23,81.8c-1.38,0-2.54-1.12-2.54-2.54c0-1.38,1.12-2.54,2.54-2.54h24.13c1.38,0,2.54,1.12,2.54,2.54 c0,1.38-1.12,2.54-2.54,2.54H41.23L41.23,81.8z M41.23,45.52c-1.38,0-2.54-1.12-2.54-2.54c0-1.38,1.12-2.54,2.54-2.54h37.16 c1.38,0,2.54,1.12,2.54,2.54c0,1.38-1.12,2.54-2.54,2.54L41.23,45.52L41.23,45.52z M41.23,63.66c-1.38,0-2.54-1.12-2.54-2.54 c0-1.38,1.12-2.54,2.54-2.54h37.16c1.38,0,2.54,1.12,2.54,2.54c0,1.38-1.12,2.54-2.54,2.54H41.23L41.23,63.66z" />
-                                    </svg></i>
-                                <span class="item-name">Danh mục lịch làm việc</span>
+                                    </svg>
+                                </i>
+                                <span class="item-name">
+                                    Danh mục lịch làm việc
+                                </span>
                             </a>
                         </li>
                     @endif
+
                     @if (auth()->user()->role->role_name == 'accountant' || auth()->user()->role->role_name == 'admin')
                         <li class="nav-item">
                             <a class="nav-link route('admin.salary.home')" href="{{ route('admin.salary.home') }}"
                                 title="Bảng Lương">
-                                <i class="icon-svg"><svg width="20" height="20" id="Layer_1"
-                                        data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 122.88 120.1">
+                                <i class="icon-svg">
+                                    <svg width="20" height="20" id="Layer_1" data-name="Layer 1"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 120.1">
                                         <defs>
                                             <style>
                                                 .cls-1 {
@@ -387,19 +416,22 @@
                                         {{-- <title>payday</title> --}}
                                         <path class="cls-1"
                                             d="M65.82,3.83C65.82,1.73,67.9,0,70.49,0s4.67,1.71,4.67,3.83V20.57c0,2.1-2.07,3.83-4.67,3.83s-4.67-1.71-4.67-3.83V3.83Zm57.06,53L81,120.1,48.52,99.26h-41A7.55,7.55,0,0,1,0,91.72V17.35A7.55,7.55,0,0,1,7.54,9.81h9.1a2.59,2.59,0,0,1,0,5.17H7.54a2.33,2.33,0,0,0-1.66.69,2.36,2.36,0,0,0-.69,1.66V36.61H68.3l-3.41,5.16H5.14V91.69a2.35,2.35,0,0,0,.69,1.66A2.41,2.41,0,0,0,7.49,94H46.41l3.42,0,24.44,15.52.3.21a5,5,0,0,0,6.86-1.58L82.77,106l.07,0L89.15,95.8l28.7-42.22,5,3.22ZM13.56,73.65h10.7a1.24,1.24,0,0,1,1.24,1.23v7.91A1.24,1.24,0,0,1,24.26,84H13.56a1.24,1.24,0,0,1-1.24-1.23V74.88a1.23,1.23,0,0,1,1.24-1.23Zm41-22.54H58.7L53.29,59.3V52.36a1.25,1.25,0,0,1,1.24-1.25ZM34,51.11h10.7A1.25,1.25,0,0,1,46,52.35v7.91a1.24,1.24,0,0,1-1.24,1.23H34a1.23,1.23,0,0,1-1.23-1.23V52.35A1.24,1.24,0,0,1,34,51.11Zm-20.48,0h10.7a1.25,1.25,0,0,1,1.24,1.24v7.91a1.24,1.24,0,0,1-1.24,1.23H13.56a1.24,1.24,0,0,1-1.24-1.23V52.35a1.25,1.25,0,0,1,1.24-1.24ZM34,73.65H43.8l-5.29,8a6.19,6.19,0,0,0-.9,2.38H34a1.23,1.23,0,0,1-1.23-1.23V74.88A1.22,1.22,0,0,1,34,73.65ZM23.9,3.83C23.9,1.73,26,0,28.57,0s4.67,1.71,4.67,3.83V20.57c0,2.1-2.08,3.83-4.67,3.83s-4.67-1.71-4.67-3.83V3.83ZM94,19.78V17.33a2.34,2.34,0,0,0-.68-1.66A2.41,2.41,0,0,0,91.69,15H83.17a2.59,2.59,0,1,1,0-5.17h8.52a7.55,7.55,0,0,1,7.54,7.54v5.76L94,19.78ZM40.7,15a2.59,2.59,0,0,1,0-5.18H58.05a2.59,2.59,0,0,1,0,5.18ZM119,43.09,77.1,106.38,43.71,85,85.57,21.68,119,43.09ZM88.44,60.37a9,9,0,1,1-12.32-3.3,9,9,0,0,1,12.32,3.3ZM107,50.57,78.93,92.33a5.88,5.88,0,0,0-8.1,1.78L57.62,85.66a5.87,5.87,0,0,0-1.78-8.1L83.92,35.78A5.86,5.86,0,0,0,92,34l13.21,8.45A5.88,5.88,0,0,0,107,50.57Z" />
-                                    </svg></i>
+                                    </svg>
+                                </i>
                                 <span class="item-name">Bảng lương</span>
                             </a>
                         </li>
                     @endif
                 @endif
+
                 @if (auth()->user()->role->role_name != 'admin' &&
                         auth()->user()->role->role_name != 'manager' &&
                         auth()->user()->role->role_name != 'accountant')
                     <li class="nav-item">
                         <a class="nav-link route('admin.home')" href="{{ route('admin.home') }}" title="Trang Chủ">
-                            <i class="icon-svg"><svg width="24px" height="24px" viewBox="0 0 24 24"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <i class="icon-svg">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <path d="M22 22L2 22" stroke="#1C274C" stroke-width="1.5"
                                         stroke-linecap="round" />
                                     <path
@@ -418,16 +450,17 @@
                                     <path
                                         d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
                                         stroke="#1C274C" stroke-width="1.5" />
-                                </svg></i>
+                                </svg>
+                            </i>
                             <span class="item-name">Trang Chủ</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link route('admin.employee-show.celender')"
                             href="{{ route('admin.employee-show.celender') }}" title="Lịch Làm Việc">
-                            <i class="icon-svg"><svg width="20" height="20" id="Layer_1"
-                                    data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 122.88 118.34">
+                            <i class="icon-svg">
+                                <svg width="20" height="20" id="Layer_1" data-name="Layer 1"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 118.34">
                                     <defs>
                                         <style>
                                             .cls-1 {
@@ -438,16 +471,17 @@
                                     {{-- <title>work-schedule</title> --}}
                                     <path class="cls-1"
                                         d="M95.53,63.65A27.35,27.35,0,1,1,68.19,91,27.35,27.35,0,0,1,95.53,63.65ZM71.59,4.05c0-2.23,2.21-4,4.94-4s4.94,1.82,4.94,4.05V22.9c0,2.24-2.21,4.05-4.94,4.05s-4.94-1.81-4.94-4.05V4.05Zm-44.26,0c0-2.23,2.21-4,4.94-4s4.95,1.82,4.95,4.05V22.9C37.22,25.14,35,27,32.27,27s-4.94-1.81-4.94-4.05V4.05ZM63.91,111.92H10.24A10.28,10.28,0,0,1,0,101.68V20.54A10.29,10.29,0,0,1,10.24,10.3h9.44V22.9a11.24,11.24,0,0,0,4.26,8.75,13.25,13.25,0,0,0,16.67,0,11.24,11.24,0,0,0,4.26-8.75V10.3H63.94V22.9a11.23,11.23,0,0,0,4.25,8.75,13.26,13.26,0,0,0,16.68,0,11.26,11.26,0,0,0,4.25-8.75V10.3H99a10.28,10.28,0,0,1,10.24,10.24V55.63a38.34,38.34,0,0,0-4.37-1.4V39.94H4.37V99.5a8.08,8.08,0,0,0,8.05,8h49a40.11,40.11,0,0,0,2.5,4.37ZM19.68,56.24l3.46,3.25,7.09-7.21c.73-.75,1.2-1.35,2.11-.41l3,3c1,1,.91,1.52,0,2.42L24.82,67.58c-1.92,1.89-1.59,2-3.55.07l-6.56-6.53a.85.85,0,0,1,.08-1.33l3.43-3.55c.51-.54.93-.51,1.46,0ZM48,51.71H62.68a1.87,1.87,0,0,1,1.87,1.86V65.78a1.89,1.89,0,0,1-1.87,1.87H48a1.88,1.88,0,0,1-1.87-1.87V53.57A1.88,1.88,0,0,1,48,51.71Zm29.59,0H92.27a1.89,1.89,0,0,1,1.81,1.4,37.79,37.79,0,0,0-18.35,5.55V53.57a1.87,1.87,0,0,1,1.87-1.86ZM48,77.66H60A37.81,37.81,0,0,0,57.62,91c0,.87,0,1.74.09,2.6H48a1.88,1.88,0,0,1-1.87-1.87V79.53A1.88,1.88,0,0,1,48,77.66Zm-29.58,0H33.1A1.87,1.87,0,0,1,35,79.53v12.2A1.89,1.89,0,0,1,33.1,93.6H18.43a1.87,1.87,0,0,1-1.87-1.87V79.53a1.87,1.87,0,0,1,1.87-1.87Zm73.31-.43h3.34a1.12,1.12,0,0,1,1.12,1.12V91.23H108a1.12,1.12,0,0,1,1.12,1.11v3.35A1.12,1.12,0,0,1,108,96.8H90.63V78.35a1.12,1.12,0,0,1,1.11-1.12Zm3.79-7.37A21.14,21.14,0,1,1,74.4,91,21.13,21.13,0,0,1,95.53,69.86Z" />
-                                </svg></i>
+                                </svg>
+                            </i>
                             <span class="item-name">Lịch làm việc</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link route('admin.employee-show.salary')"
                             href="{{ route('admin.employee-show.salary') }}" title="Bảng Lương">
-                            <i class="icon-svg"><svg width="20" height="20" id="Layer_1"
-                                    data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 122.88 120.1">
+                            <i class="icon-svg">
+                                <svg width="20" height="20" id="Layer_1" data-name="Layer 1"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 120.1">
                                     <defs>
                                         <style>
                                             .cls-1 {
@@ -458,7 +492,8 @@
                                     {{-- <title>payday</title> --}}
                                     <path class="cls-1"
                                         d="M65.82,3.83C65.82,1.73,67.9,0,70.49,0s4.67,1.71,4.67,3.83V20.57c0,2.1-2.07,3.83-4.67,3.83s-4.67-1.71-4.67-3.83V3.83Zm57.06,53L81,120.1,48.52,99.26h-41A7.55,7.55,0,0,1,0,91.72V17.35A7.55,7.55,0,0,1,7.54,9.81h9.1a2.59,2.59,0,0,1,0,5.17H7.54a2.33,2.33,0,0,0-1.66.69,2.36,2.36,0,0,0-.69,1.66V36.61H68.3l-3.41,5.16H5.14V91.69a2.35,2.35,0,0,0,.69,1.66A2.41,2.41,0,0,0,7.49,94H46.41l3.42,0,24.44,15.52.3.21a5,5,0,0,0,6.86-1.58L82.77,106l.07,0L89.15,95.8l28.7-42.22,5,3.22ZM13.56,73.65h10.7a1.24,1.24,0,0,1,1.24,1.23v7.91A1.24,1.24,0,0,1,24.26,84H13.56a1.24,1.24,0,0,1-1.24-1.23V74.88a1.23,1.23,0,0,1,1.24-1.23Zm41-22.54H58.7L53.29,59.3V52.36a1.25,1.25,0,0,1,1.24-1.25ZM34,51.11h10.7A1.25,1.25,0,0,1,46,52.35v7.91a1.24,1.24,0,0,1-1.24,1.23H34a1.23,1.23,0,0,1-1.23-1.23V52.35A1.24,1.24,0,0,1,34,51.11Zm-20.48,0h10.7a1.25,1.25,0,0,1,1.24,1.24v7.91a1.24,1.24,0,0,1-1.24,1.23H13.56a1.24,1.24,0,0,1-1.24-1.23V52.35a1.25,1.25,0,0,1,1.24-1.24ZM34,73.65H43.8l-5.29,8a6.19,6.19,0,0,0-.9,2.38H34a1.23,1.23,0,0,1-1.23-1.23V74.88A1.22,1.22,0,0,1,34,73.65ZM23.9,3.83C23.9,1.73,26,0,28.57,0s4.67,1.71,4.67,3.83V20.57c0,2.1-2.08,3.83-4.67,3.83s-4.67-1.71-4.67-3.83V3.83ZM94,19.78V17.33a2.34,2.34,0,0,0-.68-1.66A2.41,2.41,0,0,0,91.69,15H83.17a2.59,2.59,0,1,1,0-5.17h8.52a7.55,7.55,0,0,1,7.54,7.54v5.76L94,19.78ZM40.7,15a2.59,2.59,0,0,1,0-5.18H58.05a2.59,2.59,0,0,1,0,5.18ZM119,43.09,77.1,106.38,43.71,85,85.57,21.68,119,43.09ZM88.44,60.37a9,9,0,1,1-12.32-3.3,9,9,0,0,1,12.32,3.3ZM107,50.57,78.93,92.33a5.88,5.88,0,0,0-8.1,1.78L57.62,85.66a5.87,5.87,0,0,0-1.78-8.1L83.92,35.78A5.86,5.86,0,0,0,92,34l13.21,8.45A5.88,5.88,0,0,0,107,50.57Z" />
-                                </svg></i>
+                                </svg>
+                            </i>
                             <span class="item-name">Bảng Lương</span>
                         </a>
                     </li>
@@ -487,7 +522,9 @@
                                             d="M14 0a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12zm-1 1H2a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1zm1 4H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
                                     </svg>
                                 </i>
-                                <span class="item-name">Bảng Lịch Sử Chấm Công</span>
+                                <span class="item-name">
+                                    Bảng Lịch Sử Chấm Công
+                                </span>
                             </a>
                             <a class="dropdown-item"
                                 href="{{ route('admin.employee.attendence_caculate_records') }}">
@@ -517,7 +554,8 @@
                                 <span class="item-name">Tạo Tem</span>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{{ route('admin.product.barcode') }}">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.product.barcode') }}">
                                         <i class="icon-svg me-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
@@ -530,20 +568,27 @@
                                                 <path d="M12 9h2V8h-2z" />
                                             </svg>
                                         </i>
-                                        <span class="item-name">Tạo Tem Thùng</span>
-                                    </a></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.product.packing') }}">
+                                        <span class="item-name">
+                                            Tạo Tem Thùng
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.product.packing') }}">
                                         <i class="icon-svg me-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-briefcase" viewBox="0 0 16 16">
                                                 <path
                                                     d="M6.5 0a.5.5 0 0 0-.5.5V3H2a2 2 0 0 0-2 2v6.5A1.5 1.5 0 0 0 1.5 13h13a1.5 1.5 0 0 0 1.5-1.5V5a2 2 0 0 0-2-2h-4V.5a.5.5 0 0 0-.5-.5h-3zm1 .5v2.5h1V.5h-1zM1 5h14v6.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V5z" />
                                             </svg>
-
                                         </i>
-                                        <span class="item-name">Tạo Tem Bịch</span>
-                                    </a></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.product.barcode.history') }}">
+                                        <span class="item-name">
+                                            Tạo Tem Bịch
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.product.barcode.history') }}">
                                         <i class="icon-svg me-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
@@ -551,11 +596,28 @@
                                                     d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm2 9v1h4V9H6zm0 2v1h4v-1H6zm0-4v1h4V7H6zm0-2v1h4V5H6z" />
                                             </svg>
                                         </i>
-                                        <span class="item-name">Lịch Sử In Tem</span>
-                                    </a></li>
+                                        <span class="item-name">
+                                            Lịch Sử In Tem
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('admin.checkstamp') }}"
+                                        title="Yêu Cầu In Tem">
+                                        <i class="icon-svg me-2">
+                                            <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 512 512">
+                                                <path
+                                                    d="M464 128h-16V40c0-13.3-10.7-24-24-24H88c-13.3 0-24 10.7-24 24v88H48c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h16v104c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V352h16c26.5 0 48-21.5 48-48V176c0-26.5-21.5-48-48-48zM112 48h288v80H112V48zm288 400H112V320h288v128zm64-176c0 8.8-7.2 16-16 16h-16V256H80v32H64c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h400c8.8 0 16 7.2 16 16v96zm-80 64h-48v-32h-32v32h-48v-32h-32v32h-48v-32h-32v32h-48v-32H80v96h352v-96h-48v32z" />
+                                            </svg>
+                                        </i>
+                                        <span class="item-name">Yêu Cầu In Tem</span>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     @endif
+
                     @if (Auth()->user()->role->role_name !== 'QA-QC')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.employee.check-employee-todo') }}"
@@ -588,40 +650,100 @@
                             </a>
                         </li>
                     @endif
-                    {{-- @if (Auth()->user()->role_id == 4)
-                        <li class="nav-item">
-                            <a class="nav-link route('admin.barcode.scan')" href="{{ route('admin.barcode.scan') }}"
-                                title="Mã Vạch">
+                    {{-- <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.send-stamp') }}" title="Yêu Cầu In Tem">
+                            <i class="icon-svg">
+                                <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                        d="M464 128h-16V40c0-13.3-10.7-24-24-24H88c-13.3 0-24 10.7-24 24v88H48c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h16v104c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V352h16c26.5 0 48-21.5 48-48V176c0-26.5-21.5-48-48-48zM112 48h288v80H112V48zm288 400H112V320h288v128zm64-176c0 8.8-7.2 16-16 16h-16V256H80v32H64c-8.8 0-16-7.2-16-16V176c0-8.8 7.2-16 16-16h400c8.8 0 16 7.2 16 16v96zm-80 64h-48v-32h-32v32h-48v-32h-32v32h-48v-32h-32v32h-48v-32H80v96h352v-96h-48v32z" />
+                                </svg>
+                            </i>
+                            <span class="item-name">Yêu Cầu In Tem</span>
+                        </a>
+                    </li> --}}
+                    @if (Auth()->user()->role->role_name !== 'QA-QC')
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Mã Vạch">
                                 <i class="icon-svg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                        fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                                    <!-- Biểu tượng máy in hoặc con tem -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
                                         <path
-                                            d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z" />
-                                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z" />
-                                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z" />
+                                            d="M8 3.5a.5.5 0 0 1 .5.5v4l3.5 2.1a.5.5 0 0 1-.5.9l-4-2.4A.5.5 0 0 1 7 8V4a.5.5 0 0 1 .5-.5z" />
                                         <path
-                                            d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
-                                        <path d="M12 9h2V8h-2z" />
+                                            d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm0-1A7 7 0 1 1 8 1a7 7 0 0 1 0 14z" />
                                     </svg>
                                 </i>
-                                <span class="item-name">Mã Vạch</span>
+                                <span class="item-name">Tem Nhãn</span>
                             </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('admin.send-stamp') }}">
+                                    <i class="icon-svg me-2">
+                                        <!-- Biểu tượng hộp hoặc thùng -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
+                                            <path
+                                                d="M14 0a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12zm-1 1H2a1 1 0 0 0-1 1v1h14V2a1 1 0 0 0-1-1zm1 4H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z" />
+                                        </svg>
+                                    </i>
+                                    <span class="item-name">
+                                        Yêu Cầu In Tem
+                                    </span>
+                                </a>
+                                <a class="dropdown-item" href="{{ route('admin.checkstamp-employee') }}">
+                                    <i class="icon-svg me-2">
+                                        <!-- Biểu tượng túi hoặc bịch -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-calculator" viewBox="0 0 16 16">
+                                            <path
+                                                d="M3 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H3zm10 1a1 1 0 0 1 1 1v2H2V2a1 1 0 0 1 1-1h10zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5zm2 1v1h2V6H4zm3 0v1h2V6H7zm3 0v1h2V6h-2zM4 8v1h2V8H4zm3 0v1h2V8H7zm3 0v1h2V8h-2zM4 10v1h2v-1H4zm3 0v1h2v-1H7zm3 0v1h2v-1h-2z" />
+                                        </svg>
+                                    </i>
+                                    <span class="item-name">Trạng Thái In Tem</span>
+                                </a>
+                            </div>
                         </li>
-                    @endif --}}
+                    @endif
+                    {{--
+                        @if (Auth()->user()->role_id == 4)
+                        <li class="nav-item">
+                        <a class="nav-link route('admin.barcode.scan')" href="{{ route('admin.barcode.scan') }}"
+                        title="Mã Vạch">
+                        <i class="icon-svg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                        <path
+                        d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z" />
+                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z" />
+                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z" />
+                        <path
+                        d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z" />
+                        <path d="M12 9h2V8h-2z" />
+                        </svg>
+                        </i>
+                        <span class="item-name">Mã Vạch</span>
+                        </a>
+                        </li>
+                        @endif
+                    --}}
                     <li class="nav-item">
                         <a class="nav-link route('admin.profile')" href="{{ route('admin.profile') }}"
                             title="Thông Tin Tài Khoản">
-                            <i class="icon-svg"><svg width="24px" height="24px" viewBox="0 0 16 16"
+                            <i class="icon-svg">
+                                <svg width="24px" height="24px" viewBox="0 0 16 16"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <g color="#bebebe" fill="#2e3436">
                                         <path
                                             d="M6 0a3 3 0 100 6 3 3 0 000-6zM4.5 7A4.49 4.49 0 000 11.5v.5c0 1 1 1 1 1h6V8.875c0-.83.587-1.554 1.355-1.79A4.532 4.532 0 007.5 7zM9 9v4h1V9z"
-                                            style="marker:none" overflow="visible" />
+                                            style="marker: none" overflow="visible" />
                                         <path
                                             d="M8.875 8A.863.863 0 008 8.875v6.25c0 .492.383.875.875.875h6.25a.863.863 0 00.875-.875v-6.25A.863.863 0 0015.125 8zM11 9h2v1h-2zm0 2h2v4h-2z"
-                                            style="marker:none" overflow="visible" />
+                                            style="marker: none" overflow="visible" />
                                     </g>
-                                </svg></i>
+                                </svg>
+                            </i>
                             <span class="item-name">Thông Tin Tài Khoản</span>
                         </a>
                     </li>
@@ -629,7 +751,7 @@
             </ul>
         </div>
     </div>
-    <div class="sidebar-footer p-3 left-1 " style="position:absolute;bottom:0; width:100%;">
+    <div class="sidebar-footer p-3 left-1" style="position: absolute; bottom: 0; width: 100%">
         <div class="nav-item text-center">
             <a class="nav-link route('logout')" href="{{ route('logout') }}">
                 <svg width="20px" height="24px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"
@@ -637,7 +759,8 @@
                     <title>Logout</title>
                     <path
                         d="M868 732h-70.3c-4.8 0-9.3 2.1-12.3 5.8-7 8.5-14.5 16.7-22.4 24.5a353.84 353.84 0 0 1-112.7 75.9A352.8 352.8 0 0 1 512.4 866c-47.9 0-94.3-9.4-137.9-27.8a353.84 353.84 0 0 1-112.7-75.9 353.28 353.28 0 0 1-76-112.5C167.3 606.2 158 559.9 158 512s9.4-94.2 27.8-137.8c17.8-42.1 43.4-80 76-112.5s70.5-58.1 112.7-75.9c43.6-18.4 90-27.8 137.9-27.8 47.9 0 94.3 9.3 137.9 27.8 42.2 17.8 80.1 43.4 112.7 75.9 7.9 7.9 15.3 16.1 22.4 24.5 3 3.7 7.6 5.8 12.3 5.8H868c6.3 0 10.2-7 6.7-12.3C798 160.5 663.8 81.6 511.3 82 271.7 82.6 79.6 277.1 82 516.4 84.4 751.9 276.2 942 512.4 942c152.1 0 285.7-78.8 362.3-197.7 3.4-5.3-.4-12.3-6.7-12.3zm88.9-226.3L815 393.7c-5.3-4.2-13-.4-13 6.3v76H488c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h314v76c0 6.7 7.8 10.5 13 6.3l141.9-112a8 8 0 0 0 0-12.6z" />
-                </svg> <span class="nav-link-text ms-1">Đăng xuất</span>
+                </svg>
+                <span class="nav-link-text ms-1">Đăng xuất</span>
             </a>
         </div>
     </div>

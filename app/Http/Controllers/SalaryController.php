@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\LogHelper;
 use App\Helpers\LogActivity;
+use App\Helpers\LogHelper;
 use App\Http\Requests\ImportSalaryRequest;
 use App\Imports\A7A\SalaryOfficialA7AManagerImport;
 use App\Imports\parttime\SalaryParttimeManagerImport;
@@ -15,22 +15,23 @@ use App\Models\SalaryOfficialVVP;
 use App\Models\SalaryOfficialVVPTimekeeping;
 use App\Models\SalaryParttime;
 use App\Models\SalaryParttimeTimekeeping;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SalaryController extends Controller
 {
     public function index(Request $request)
     {
         $salaryManagers = SalaryManager::query();
-        if (!empty($request->key)) {
+        if (! empty($request->key)) {
             $salaryManagers->Name($request);
         }
         $total = count($salaryManagers->get());
         $salaryManagers = $salaryManagers->orderBy('id', 'DESC')->paginate(SalaryManager::paginate);
+
         return view('salary.index', compact('salaryManagers', 'total'));
     }
 
@@ -43,7 +44,7 @@ class SalaryController extends Controller
     {
         try {
             DB::beginTransaction();
-            $salaryManager = new SalaryManager();
+            $salaryManager = new SalaryManager;
             $salaryManager->title = $request->title;
             $salaryManager->start_date = $request->start_date;
             $salaryManager->end_date = $request->end_date;
@@ -79,12 +80,14 @@ class SalaryController extends Controller
             DB::commit();
             toast('Import bảng lương thành công!', 'success', 'top-right');
             LogActivity::logRoleSpecificLoginActivity(auth()->user(), 'Admin Thêm Bảng Lương', 'Admin đã thêm bảng lương');
+
             return redirect()->route('admin.salary.home');
         } catch (\Exception $e) {
             DB::rollBack();
             LogHelper::saveLog('Import', $e->getMessage(), $e->getLine());
-            Log::error('message:' . $e->getMessage());
+            Log::error('message:'.$e->getMessage());
             toast('Import bảng lương không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -114,6 +117,7 @@ class SalaryController extends Controller
         $salaryOfficialsVVP = SalaryOfficialVVP::where('salaries_manager_id', $id)->paginate(SalaryOfficialVVP::paginate);
         $salaryOfficialsA7A = SalaryOfficialA7A::where('salaries_manager_id', $id)->paginate(SalaryOfficialA7A::paginate);
         $salaryParttimes = SalaryParttime::where('salaries_manager_id', $id)->paginate(SalaryParttime::paginate);
+
         return view('salary.detail', compact('salaryOfficialsVVP', 'salaryOfficialsA7A', 'salaryParttimes'));
     }
 
@@ -139,11 +143,13 @@ class SalaryController extends Controller
             SalaryManager::find($id)->delete();
             toast('Xoá bảng lương thành công!', 'success', 'top-right');
             LogActivity::logRoleSpecificLoginActivity(auth()->user(), 'Admin Xoá Bảng Lương', 'Admin đã xoá bảng lương');
+
             return redirect()->route('admin.salary.home');
         } catch (\Exception $e) {
             LogHelper::saveLog('Import', $e->getMessage(), $e->getLine());
-            Log::error('message:' . $e->getMessage());
+            Log::error('message:'.$e->getMessage());
             toast('Xoá bảng lương không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.salary.home');
         }
     }

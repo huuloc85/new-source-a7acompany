@@ -13,7 +13,7 @@ class TotalDailyQuantity extends Model
     public const paginate = 10;
 
     //table
-    protected $table = "totaldailyquantities";
+    protected $table = 'totaldailyquantities';
 
     //fillable
     protected $fillable = [

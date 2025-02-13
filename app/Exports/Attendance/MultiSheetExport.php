@@ -7,9 +7,13 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class MultiSheetExport implements WithMultipleSheets
 {
     protected $sheetsData;
+
     protected $startDate;
+
     protected $endDate;
+
     protected $currentMonth;
+
     protected $listDate;
 
     public function __construct(array $sheetsData, $startDate, $endDate, $currentMonth, $listDate)

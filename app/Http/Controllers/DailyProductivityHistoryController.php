@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use App\Models\LoginHistory;
-use App\Models\DailyQuantity;
-use App\Models\Celender;
-use App\Models\CelenderDetailHNHC;
-use App\Models\Employee;
-use App\Models\CategoryCelender;
 use App\Models\CheckEmployee;
-use App\Models\TotalDailyQuantity;
+use App\Models\DailyQuantity;
+use App\Models\Employee;
 use App\Traits\CalenderTranslate;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DailyProductivityHistoryController extends Controller

@@ -3,22 +3,26 @@
 namespace App\Exports\Checkpo;
 
 use App\Models\Product;
-use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-class Daily extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithTitle, WithEvents
+class Daily extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithTitle
 {
     protected $time;
+
     protected $delimiter;
+
     protected $daysInMonth;
+
     protected $daysInMonthYMD;
-    const ACTUAL_PRODUCT  = 1;
+
+    const ACTUAL_PRODUCT = 1;
 
     public function __construct($time, $daysInMonth, $daysInMonthYMD)
     {
@@ -42,9 +46,10 @@ class Daily extends DefaultValueBinder implements FromView, ShouldAutoSize, With
             $data[] = [
                 'name' => $product->name,
                 'id' => $product->id,
-                'totalQuantityMonth' => $totalQuantityMonth
+                'totalQuantityMonth' => $totalQuantityMonth,
             ];
         }
+
         return view('export/checkpo/daily', compact('data', 'products', 'daysInMonth'));
     }
 

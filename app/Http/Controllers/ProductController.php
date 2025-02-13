@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\LogHelper;
 use App\Exports\Product\ExportMultiSheets;
 use App\Helpers\LogActivity;
-use Illuminate\Http\Request;
-use App\Models\Product;
-use App\Models\DailyQuantity;
-use App\Models\TotalDailyQuantity;
-use App\Models\TotalMonthQuantity;
-use App\Models\CelenderDetailHNHC;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use App\Models\CelenderDetailHNHC;
 use App\Models\CheckEmployee;
+use App\Models\DailyQuantity;
+use App\Models\Product;
+use App\Models\TotalDailyQuantity;
+use App\Models\TotalMonthQuantity;
+use App\Traits\CalenderTranslate;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Auth;
-use App\Traits\CalenderTranslate;
-
 
 class ProductController extends Controller
 {
@@ -29,7 +27,7 @@ class ProductController extends Controller
     //index
     public function index(Request $request)
     {
-        $page = "product";
+        $page = 'product';
         if ($request->page) {
             $page = $request->page;
         }
@@ -38,7 +36,7 @@ class ProductController extends Controller
         $listMonthExport = TotalMonthQuantity::where('status', 3)->distinct()->pluck('month');
         $orderBy = $request->orderBy;
         $filter = 'desc';
-        if (count($listMonth) != 0) {
+        if (count($listMonth) == 0) {
             $monthNearly = $listMonth[count($listMonth) - 1];
         }
         $products = Product::query();
@@ -48,27 +46,26 @@ class ProductController extends Controller
         // $monthDate = Carbon::createFromFormat('m-Y', $monthNearly)->startOfMonth();
         // $products = $products->whereYear('created_at', $monthDate->year)->whereMonth('created_at', $monthDate->month);
 
-        if (!empty($request->code)) {
+        if (! empty($request->code)) {
             $products->Code($request);
         }
 
-        if (!empty($request->name)) {
+        if (! empty($request->name)) {
             $products->Name($request);
         }
 
-        if (!empty($request->moldSize)) {
+        if (! empty($request->moldSize)) {
             $products->MoldSize($request);
         }
 
-        if (!empty($request->binCode)) {
+        if (! empty($request->binCode)) {
             $products->BinCode($request);
         }
 
         //mặc định data = asc
-        if (!$orderBy) {
+        if (! $orderBy) {
             $orderBy = 'asc';
         }
-
 
         $productIds = Product::pluck('id'); // Lấy tất cả product IDs
         $errorQuantities = TotalDailyQuantity::where('status', 6)
@@ -103,6 +100,7 @@ class ProductController extends Controller
         $product = new Product;
         $models = $product->models;
         $modelSizes = $product->modelSizes;
+
         return view('product.add', compact('models', 'modelSizes'));
     }
 
@@ -110,12 +108,14 @@ class ProductController extends Controller
     public function viewtest(Request $request)
     {
         $products = Product::all();
+
         return view('product.test', compact('products'));
     }
 
     public function editTest($id)
     {
         $product = Product::findOrFail($id);
+
         return view('product.edit-test', compact('product'));
     }
 
@@ -131,7 +131,7 @@ class ProductController extends Controller
             return redirect()->route('admin.product.test');
         } catch (\Exception $e) {
             // Ghi log lỗi
-            Log::error('Error updating product: ' . $e->getMessage());
+            Log::error('Error updating product: '.$e->getMessage());
 
             // Hiển thị thông báo toast lỗi
             toast('Đã xảy ra lỗi khi sửa sản phẩm!', 'error', 'top-right');
@@ -202,13 +202,16 @@ class ProductController extends Controller
             DB::commit();
             toast('Thêm sản phẩm mới thành công!', 'success', 'top-right');
             LogActivity::logRoleSpecificLoginActivity(auth()->user(), 'Admin Thêm Sản Phẩm', 'Admin đã thêm sản phẩm');
+
             return redirect()->route('admin.product.home');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
             toast('Thêm sản phẩm mới không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
+
         return view('product.index');
     }
 
@@ -219,6 +222,7 @@ class ProductController extends Controller
         $models = $product->models;
         $modelSizes = $product->modelSizes;
         $product = $product::find($id);
+
         return view('product.edit', compact('product', 'models', 'modelSizes'));
     }
 
@@ -250,6 +254,7 @@ class ProductController extends Controller
         DB::commit();
         toast('Cập nhật sản phẩm thành công!', 'success', 'top-right');
         LogActivity::logRoleSpecificLoginActivity(auth()->user(), 'Admin Sửa Sản Phẩm', 'Admin đã cập nhật sản phẩm');
+
         return redirect()->route('admin.product.home');
     }
 
@@ -260,9 +265,11 @@ class ProductController extends Controller
         try {
             $product->delete();
             toast('Sản phẩm đã được đưa vào thùng rác!', 'success', 'top-right');
+
             return redirect()->route('admin.product.home');
         } catch (\Exception $th) {
             toast('Đưa sản phẩm vào thùng rác không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.product.home');
         }
     }
@@ -272,19 +279,19 @@ class ProductController extends Controller
     {
         $products = Product::onlyTrashed();
 
-        if (!empty($request->code)) {
+        if (! empty($request->code)) {
             $products->Code($request);
         }
 
-        if (!empty($request->name)) {
+        if (! empty($request->name)) {
             $products->Name($request);
         }
 
-        if (!empty($request->moldSize)) {
+        if (! empty($request->moldSize)) {
             $products->MoldSize($request);
         }
 
-        if (!empty($request->binCode)) {
+        if (! empty($request->binCode)) {
             $products->BinCode($request);
         }
 
@@ -294,6 +301,7 @@ class ProductController extends Controller
         $product = new Product;
         $models = $product->models;
         $modelSizes = $product->modelSizes;
+
         return view('product.trash', compact('products', 'total', 'models', 'modelSizes'));
     }
 
@@ -303,9 +311,11 @@ class ProductController extends Controller
         try {
             Product::withTrashed()->where('id', $id)->restore();
             toast('Sản phẩm được khôi phục thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.product.getTrash');
         } catch (\Exception $th) {
             toast('Khôi phục Sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.product.getTrash');
         }
     }
@@ -320,7 +330,7 @@ class ProductController extends Controller
         if ($request->month != null) {
             $monthNearly = $request->month;
         }
-        $monthYearArray = explode("-", $monthNearly);
+        $monthYearArray = explode('-', $monthNearly);
         if (count($monthYearArray) > 1) {
             $month = $monthYearArray[0];
             $year = $monthYearArray[1];
@@ -338,6 +348,7 @@ class ProductController extends Controller
         $dailyQuanStatus2 = $dailyQuanStatus2->paginate(DailyQuantity::paginate);
         $dailyQuanStatus3 = $dailyQuanStatus3->paginate(DailyQuantity::paginate);
         $dailyQuanStatus6 = $dailyQuanStatus6->paginate(DailyQuantity::paginate);
+
         return view('product.detail', compact(
             'product',
             'dailyQuanStatus1',
@@ -360,6 +371,7 @@ class ProductController extends Controller
         // Kiểm tra nếu số lượng bằng 0
         if ($request->quantity == 0) {
             toast('Bạn không thể cập nhật sản lượng là 0!', 'error', 'top-right');
+
             return redirect()->back();
         }
 
@@ -369,8 +381,9 @@ class ProductController extends Controller
 
             // Tìm bản ghi DailyQuantity theo ID
             $daily = DailyQuantity::find($request->dailyId);
-            if (!$daily) {
+            if (! $daily) {
                 toast('Không tìm thấy bản ghi!', 'error', 'top-right');
+
                 return redirect()->back();
             }
 
@@ -406,8 +419,9 @@ class ProductController extends Controller
 
             return redirect()->back();
         } catch (\Exception $e) {
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -426,7 +440,7 @@ class ProductController extends Controller
             $calendar = CelenderDetailHNHC::where('employee_id', $userId)->latest()->first();
             $date = Carbon::now()->format('d');
             $date = $this->convertDate($date);
-            $column = 'day' . $date;
+            $column = 'day'.$date;
             $calendarDetail = $calendar->$column;
             $calendarDetail = $this->translateCalendar($calendarDetail);
 
@@ -448,12 +462,14 @@ class ProductController extends Controller
                 ->get()
                 ->filter(function ($item) use ($today, $yesterday) {
                     $itemDate = Carbon::parse($item->date)->toDateString();
+
                     return $itemDate == $today || ($itemDate == $yesterday && $item->shift == 'Ca 2');
                 });
 
             return view('product.update-quantity', compact('addQuantity', 'calendarDetail'));
         } catch (\Exception $e) {
             toast('Hãy bổ sung lịch làm việc để cập nhật sản lượng!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -466,10 +482,9 @@ class ProductController extends Controller
             $calendar = CelenderDetailHNHC::where('employee_id', $userId)->latest()->first();
             $date = Carbon::now()->format('d');
             $date = $this->convertDate($date);
-            $column = 'day' . $date;
+            $column = 'day'.$date;
             $calendarDetail = $calendar->$column;
             $calendarDetail = $this->translateCalendar($calendarDetail);
-
 
             $today = Carbon::now()->toDateString();
             $addQuantityError = CheckEmployee::where('employee_id', $userId)
@@ -481,9 +496,11 @@ class ProductController extends Controller
                 ->filter(function ($item) use ($today) {
                     return Carbon::parse($item->date)->toDateString() == $today;
                 });
+
             return view('product.update-error', compact('calendarDetail', 'addQuantityError'));
         } catch (\Exception $e) {
             toast('Hãy bổ sung lịch làm việc để cập nhật sản lượng!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -493,6 +510,7 @@ class ProductController extends Controller
     {
         if ($request->quantity == 0) {
             toast('Bạn không thể nhập sản lượng là 0!', 'error', 'top-right');
+
             return redirect()->back();
         }
 
@@ -504,8 +522,9 @@ class ProductController extends Controller
             ->orderBy('date', 'desc')
             ->first();
 
-        if (!$checkEmployee) {
+        if (! $checkEmployee) {
             toast('Nhân viên cần nhập sản phẩm cần kiểm hoặc sản xuất trước khi nhập sản lượng!', 'error', 'top-right');
+
             return redirect()->back();
         }
 
@@ -514,10 +533,11 @@ class ProductController extends Controller
         $today = Carbon::today();
 
         // Kiểm tra điều kiện dựa trên ca làm việc
-        if (($shift == 'Ca 1' && !$date->isSameDay($today)) ||
-            ($shift == 'Ca 2' && !($date->isSameDay($today) || $date->addDay()->isSameDay($today)))
+        if (($shift == 'Ca 1' && ! $date->isSameDay($today)) ||
+            ($shift == 'Ca 2' && ! ($date->isSameDay($today) || $date->addDay()->isSameDay($today)))
         ) {
             toast('Bạn chỉ có thể nhập sản lượng cho sản phẩm cùng ngày với ngày hiện tại hoặc ngày hôm sau nếu là Ca 2!', 'error', 'top-right');
+
             return redirect()->back();
         }
 
@@ -548,9 +568,9 @@ class ProductController extends Controller
                 if ($status == 1 && $hour < 9) {
                     //nếu là 100% và trước 7h sáng thì trừ đi 1 ngày
                     $subDate = Carbon::now()->subDay()->format('Y-m-d');
-                    $dailyQuan = new DailyQuantity();
+                    $dailyQuan = new DailyQuantity;
                     $dailyQuan->product_id = $request->product_id;
-                    $dailyQuan->employee_id =  Auth()->user()->id;
+                    $dailyQuan->employee_id = Auth()->user()->id;
                     $dailyQuan->quantity = $request->quantity;
                     $dailyQuan->status = $status;
                     $dailyQuan->date = $subDate;
@@ -563,7 +583,7 @@ class ProductController extends Controller
                         $totalDaily->totalQuan = $totalDaily->totalQuan + $request->quantity;
                         $totalDaily->save();
                     } else {
-                        $totalDaily = new TotalDailyQuantity();
+                        $totalDaily = new TotalDailyQuantity;
                         $totalDaily->product_id = $request->product_id;
                         $totalDaily->date = $subDate;
                         $totalDaily->status = $status;
@@ -573,7 +593,7 @@ class ProductController extends Controller
 
                     $dailyQuan->save();
                     $currentDateTime1 = Carbon::now()->format('d');
-                    if ($currentDateTime1 == "1" || $currentDateTime1 == "01") {
+                    if ($currentDateTime1 == '1' || $currentDateTime1 == '01') {
                         //nếu là này đầu tháng thì giảm đi 1 tháng để tính tổng tháng
                         $subMonth = Carbon::now()->subMonth()->format('m-Y');
 
@@ -586,7 +606,7 @@ class ProductController extends Controller
                             $totalMonth->totalQuan = $totalMonth->totalQuan + $request->quantity;
                             $totalMonth->save();
                         } else {
-                            $totalMonth = new TotalMonthQuantity();
+                            $totalMonth = new TotalMonthQuantity;
                             $totalMonth->product_id = $request->product_id;
                             $totalMonth->month = $subMonth;
                             $totalMonth->status = $status;
@@ -604,7 +624,7 @@ class ProductController extends Controller
                             $totalMonth->totalQuan = $totalMonth->totalQuan + $request->quantity;
                             $totalMonth->save();
                         } else {
-                            $totalMonth = new TotalMonthQuantity();
+                            $totalMonth = new TotalMonthQuantity;
                             $totalMonth->product_id = $request->product_id;
                             $totalMonth->month = $month;
                             $totalMonth->status = $status;
@@ -614,9 +634,9 @@ class ProductController extends Controller
                     }
                 } else {
                     //cập nhật daily
-                    $dailyQuan = new DailyQuantity();
+                    $dailyQuan = new DailyQuantity;
                     $dailyQuan->product_id = $request->product_id;
-                    $dailyQuan->employee_id =  Auth()->user()->id;
+                    $dailyQuan->employee_id = Auth()->user()->id;
                     $dailyQuan->quantity = $request->quantity;
                     $dailyQuan->status = $status;
                     $dailyQuan->date = $date;
@@ -630,7 +650,7 @@ class ProductController extends Controller
                         $totalDaily->totalQuan = $totalDaily->totalQuan + $request->quantity;
                         $totalDaily->save();
                     } else {
-                        $totalDaily = new TotalDailyQuantity();
+                        $totalDaily = new TotalDailyQuantity;
                         $totalDaily->product_id = $request->product_id;
                         $totalDaily->date = $date;
                         $totalDaily->status = $status;
@@ -646,7 +666,7 @@ class ProductController extends Controller
                         $totalMonth->totalQuan = $totalMonth->totalQuan + $request->quantity;
                         $totalMonth->save();
                     } else {
-                        $totalMonth = new TotalMonthQuantity();
+                        $totalMonth = new TotalMonthQuantity;
                         $totalMonth->product_id = $request->product_id;
                         $totalMonth->month = $month;
                         $totalMonth->status = $status;
@@ -658,15 +678,18 @@ class ProductController extends Controller
                 DB::commit();
             } else {
                 toast('Bạn không có quyền!', 'error', 'top-right');
+
                 return redirect()->back();
             }
             toast('Cập nhật số lượng thành công!', 'success', 'top-right');
             LogActivity::logViewActivity(auth()->user(), 'Nhập Sản Lượng', 'Nhân viên nhập sản lượng');
+
             return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -677,6 +700,7 @@ class ProductController extends Controller
         // Kiểm tra điều kiện đầu vào
         if ($request->quantity == 0) {
             toast('Số lượng sản phẩm lỗi không thể là 0!', 'error', 'top-right');
+
             return redirect()->back();
         }
 
@@ -688,7 +712,7 @@ class ProductController extends Controller
             $status = 6; // Định nghĩa status = 6 hàng lỗi
 
             //  Thêm DailyQuantity
-            $dailyQuan = new DailyQuantity();
+            $dailyQuan = new DailyQuantity;
             $dailyQuan->product_id = $request->product_id;
             $dailyQuan->employee_id = $employeeId;
             $dailyQuan->quantity = $request->quantity;
@@ -715,11 +739,13 @@ class ProductController extends Controller
             DB::commit();
             toast('Cập nhật thông tin lỗi sản phẩm thành công!', 'success', 'top-right');
             LogActivity::logViewActivity(auth()->user(), 'Nhập Sản Lượng Lỗi', 'Nhân viên nhập sản lượng lỗi');
+
             return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error updating product error info: ' . $e->getMessage());
+            Log::error('Error updating product error info: '.$e->getMessage());
             toast('Cập nhật thông tin lỗi sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -728,7 +754,8 @@ class ProductController extends Controller
     public function exportProduct(Request $request)
     {
         $time = $request->month;
-        return Excel::download(new ExportMultiSheets($time), 'コピーFAVV_REQ_-TON-KHO-THANG-' . $time . '.xlsx', \Maatwebsite\Excel\Excel::XLSX, [
+
+        return Excel::download(new ExportMultiSheets($time), 'コピーFAVV_REQ_-TON-KHO-THANG-'.$time.'.xlsx', \Maatwebsite\Excel\Excel::XLSX, [
             'Content-Type' => 'text/xlsx',
         ]);
     }
@@ -743,7 +770,7 @@ class ProductController extends Controller
             ->pluck('product_id');
         $listProduct = Product::whereIn('id', $productsId)->get();
         $monthNearly = Carbon::now()->format('m-Y');
-        $product_id = "";
+        $product_id = '';
         if ($request->month) {
             $monthNearly = $request->month;
         }
@@ -751,7 +778,7 @@ class ProductController extends Controller
             $product_id = $request->product_id;
         }
         [$month, $year] = explode('-', $monthNearly);
-        if ($product_id != "") {
+        if ($product_id != '') {
             $datas = DailyQuantity::where('employee_id', Auth()->user()->id)
                 ->where('product_id', $product_id)
                 ->whereIn('status', [1, 2])
@@ -786,7 +813,7 @@ class ProductController extends Controller
         $listProduct = Product::whereIn('id', $productsId)->get();
 
         $monthNearly = $request->month ?: Carbon::now()->format('m-Y');
-        $product_id = $request->product_id ?: "";
+        $product_id = $request->product_id ?: '';
         $datas = collect();
 
         if ($request->has('month') && $request->has('product_id')) {
@@ -819,6 +846,7 @@ class ProductController extends Controller
     public function updateQuantityAdmin($id)
     {
         $product = Product::find($id);
+
         return view('product.update-quantity-admin', compact('product'));
     }
 
@@ -830,9 +858,9 @@ class ProductController extends Controller
             $date = Carbon::now()->format('Y-m-d');
             $month = Carbon::now()->format('m-Y');
             //cập nhật daily
-            $dailyQuan = new DailyQuantity();
+            $dailyQuan = new DailyQuantity;
             $dailyQuan->product_id = $request->product_id;
-            $dailyQuan->employee_id =  Auth()->user()->id;
+            $dailyQuan->employee_id = Auth()->user()->id;
             $dailyQuan->quantity = $request->quantity;
             $dailyQuan->status = $request->status;
             $dailyQuan->date = $request->date;
@@ -846,10 +874,10 @@ class ProductController extends Controller
                 $totalDaily->totalQuan = $totalDaily->totalQuan + $request->quantity;
                 $totalDaily->save();
             } else {
-                $totalDaily = new TotalDailyQuantity();
+                $totalDaily = new TotalDailyQuantity;
                 $totalDaily->product_id = $request->product_id;
                 $totalDaily->date = $request->date;
-                $totalDaily->status = $request->status;;
+                $totalDaily->status = $request->status;
                 $totalDaily->totalQuan = $request->quantity;
                 $totalDaily->save();
             }
@@ -862,10 +890,10 @@ class ProductController extends Controller
                 $totalMonth->totalQuan = $totalMonth->totalQuan + $request->quantity;
                 $totalMonth->save();
             } else {
-                $totalMonth = new TotalMonthQuantity();
+                $totalMonth = new TotalMonthQuantity;
                 $totalMonth->product_id = $request->product_id;
                 $totalMonth->month = $month;
-                $totalMonth->status = $request->status;;
+                $totalMonth->status = $request->status;
                 $totalMonth->totalQuan = $request->quantity;
                 $totalMonth->save();
             }
@@ -873,11 +901,13 @@ class ProductController extends Controller
             DB::commit();
             toast('Cập nhật số lượng thành công!', 'success', 'top-right');
             LogActivity::logRoleSpecificLoginActivity(auth()->user(), 'Admin Thêm Sản Lượng ', 'Admin đã cập nhật số lượng tất cả loại hàng');
+
             return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -920,13 +950,16 @@ class ProductController extends Controller
                 } else {
                     toast('Sản phẩm đã quá thời gian cho phép xoá sản lượng!', 'error', 'top-right');
                 }
+
                 return redirect()->back();
             }
+
             return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
             toast('Xoá sản lượng không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -964,6 +997,7 @@ class ProductController extends Controller
 
         // Lấy danh sách tất cả sản phẩm
         $products = Product::select('id', 'name')->get();
+
         return view('product.update-moq', compact('listMonth', 'currentMonth', 'productNearData', 'products'));
     }
 
@@ -994,7 +1028,7 @@ class ProductController extends Controller
                         $totalMonth->totalQuan = $quantity;
                         $totalMonth->save();
                     } else {
-                        $totalMonth = new TotalMonthQuantity();
+                        $totalMonth = new TotalMonthQuantity;
                         $totalMonth->product_id = $productId;
                         $totalMonth->month = $month;
                         $totalMonth->status = $status;
@@ -1006,11 +1040,13 @@ class ProductController extends Controller
 
             DB::commit();
             toast('Cập nhật số lượng thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.product.home');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error: ' . $e->getMessage() . ' at Line ' . $e->getLine());
+            Log::error('Error: '.$e->getMessage().' at Line '.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -1021,6 +1057,7 @@ class ProductController extends Controller
         $listDate = $this->handleDayInMonth($monthNearly);
         $currentDate = Carbon::now()->format('d-m-Y');
         $products = Product::select('id', 'name')->get();
+
         return view('product.add-quantity-admin', compact('listDate', 'currentDate', 'products'));
     }
 
@@ -1038,12 +1075,14 @@ class ProductController extends Controller
             // Kiểm tra xem dữ liệu đã được cung cấp đầy đủ hay không
             if (empty($date) || empty($listProductId) || empty($listQuantity) || empty($status)) {
                 toast('Vui lòng nhập đầy đủ thông tin sản lượng.', 'error', ['position' => 'top-right']);
+
                 return redirect()->back();
             }
 
             // Kiểm tra xem có dữ liệu sản lượng được cung cấp hay không
             if (empty(array_filter($listQuantity)) || empty(array_filter($listProductId))) {
                 toast('Vui lòng nhập thông tin sản lượng cho ít nhất một sản phẩm.', 'error', ['position' => 'top-right']);
+
                 return redirect()->back();
             }
 
@@ -1061,10 +1100,10 @@ class ProductController extends Controller
                                 // Xác định thời gian tạo bản ghi theo ca làm việc
                                 if ($shift == 1) {
                                     // Nếu là ca 1 là 19:30 sáng cùng ngày
-                                    $created_at = $date . '19:30:00 ';
+                                    $created_at = $date.'19:30:00 ';
                                 } else {
                                     // Nếu là ca 2 tạo bản ghi là 7:30 sáng của ngày sau
-                                    $created_at = date('Y-m-d', strtotime($date . ' +1 day'))  . '07:30:00 ';;
+                                    $created_at = date('Y-m-d', strtotime($date.' +1 day')).'07:30:00 ';
                                 }
                             } else {
                                 // Nếu status khác 1 hoặc shift không có giá trị
@@ -1072,7 +1111,7 @@ class ProductController extends Controller
                                 $created_at = Carbon::now();
                             }
                             // Cập nhật sản lượng ngày
-                            $dailyQuan = new DailyQuantity();
+                            $dailyQuan = new DailyQuantity;
                             $dailyQuan->product_id = $product->id;
                             $dailyQuan->employee_id = Auth()->user()->id;
                             $dailyQuan->quantity = $listQuantity[$i];
@@ -1089,7 +1128,7 @@ class ProductController extends Controller
                                 $totalDaily->totalQuan += $listQuantity[$i];
                                 $totalDaily->save();
                             } else {
-                                $totalDaily = new TotalDailyQuantity();
+                                $totalDaily = new TotalDailyQuantity;
                                 $totalDaily->product_id = $product->id;
                                 $totalDaily->date = $date;
                                 $totalDaily->status = $status;
@@ -1106,7 +1145,7 @@ class ProductController extends Controller
                                 $totalMonth->totalQuan += $listQuantity[$i];
                                 $totalMonth->save();
                             } else {
-                                $totalMonth = new TotalMonthQuantity();
+                                $totalMonth = new TotalMonthQuantity;
                                 $totalMonth->product_id = $product->id;
                                 $totalMonth->month = $month;
                                 $totalMonth->status = $status;
@@ -1120,11 +1159,13 @@ class ProductController extends Controller
 
             DB::commit();
             toast('Cập nhật số lượng thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.product.home');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
             toast('Cập nhật số lượng sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }

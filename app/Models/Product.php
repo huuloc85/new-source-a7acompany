@@ -15,7 +15,7 @@ class Product extends Model
     public const paginate = 10;
 
     //table
-    protected $table = "products";
+    protected $table = 'products';
 
     //fillable
     protected $fillable = [
@@ -47,6 +47,7 @@ class Product extends Model
     ];
 
     public $models = ['1/6-300K5W', '1/6-300K6S', '1/6-450K5W', '1/6-450K6S', '1/8-300K5W', 'VVP 01', '1/12-150K5S', '1/16-150K5S', '1/24-150K5S', '1/12-300K5S'];
+
     public $modelSizes = ['350×350', '500×500', '550×550', '700×700', '800×700'];
 
     //relationship DailyQuantity
@@ -89,6 +90,11 @@ class Product extends Model
         return $this->hasMany(HistoryPrint::class, 'product_id', 'id');
     }
 
+    public function sendStamps()
+    {
+        return $this->hasMany(SendStamp::class, 'product_id', 'id');
+    }
+
     //relationship productionPlan
     public function productionPlans()
     {
@@ -106,6 +112,7 @@ class Product extends Model
         if ($request->has('name')) {
             return $query->where('name', 'like', '%' . $request->name . '%');
         }
+
         return $query;
     }
 
@@ -115,6 +122,7 @@ class Product extends Model
         if ($request->has('code')) {
             return $query->where('code', 'like', '%' . $request->code . '%');
         }
+
         return $query;
     }
 
@@ -124,6 +132,7 @@ class Product extends Model
         if ($request->has('moldSize')) {
             return $query->where('moldSize', 'like', '%' . $request->moldSize . '%');
         }
+
         return $query;
     }
 
@@ -133,6 +142,7 @@ class Product extends Model
         if ($request->has('binCode')) {
             return $query->where('binCode', 'like', '%' . $request->binCode . '%');
         }
+
         return $query;
     }
 }

@@ -5,27 +5,21 @@ namespace App\Imports\VVP;
 use App\Helpers\LogHelper;
 use App\Models\Employee;
 use App\Models\SalaryOfficialVVP;
-use Closure;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialVVPDetailImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithValidation,
-    WithStartRow
+class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
 {
     public $roleIgnore;
+
     public $salaryManagerId;
+
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -37,9 +31,6 @@ class SalaryOfficialVVPDetailImport implements
         return 'Bảng tính toán'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         // dd($rows);
@@ -145,7 +136,7 @@ class SalaryOfficialVVPDetailImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Detail-VVP', $e->getMessage(), $e->getLine());
-            Log::error('errors detail:: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors detail:: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -159,25 +150,23 @@ class SalaryOfficialVVPDetailImport implements
     {
         $rules = [];
         $listCode = Employee::all()->pluck('code')->toArray();
-        $rules['1'] = ['required', 'in:' . implode(',', $listCode)];
+        $rules['1'] = ['required', 'in:'.implode(',', $listCode)];
         for ($i = 4; $i <= 89; $i++) {
-            if (!in_array($i, $this->roleIgnore)) {
+            if (! in_array($i, $this->roleIgnore)) {
                 $rules[$i] = ['nullable', 'numeric'];
             } else {
                 $rules[$i] = ['nullable'];
             }
         }
+
         return $rules;
     }
 
-    /**
-     *
-     */
     public function customValidationMessages()
     {
         $messages = [];
-        $validations[1 . 'required'] = 'Mã nhân viên không được để trống!';
-        $validations[1 . 'in'] = 'Mã nhân viên không tồn tại!';
+        $validations[1 .'required'] = 'Mã nhân viên không được để trống!';
+        $validations[1 .'in'] = 'Mã nhân viên không tồn tại!';
         $role = [
             'Số công ngày (thử việc)',
             'Lương ca ngày (thử việc)',
@@ -264,19 +253,20 @@ class SalaryOfficialVVPDetailImport implements
             'trừ KPI Ghi Chú',
             'thực lãnh',
             'hình thức thanh toán',
-            'BHXH (21.5%) công ty đóng cho NLĐ'
+            'BHXH (21.5%) công ty đóng cho NLĐ',
         ];
 
         for ($i = 4; $i <= 89; $i++) {
-            if (!in_array($i, $this->roleIgnore)) {
-                $messages[$i . '.numeric'] = 'Trường ' . $role[$i - 4] . ' không đúng định dạng!';
+            if (! in_array($i, $this->roleIgnore)) {
+                $messages[$i.'.numeric'] = 'Trường '.$role[$i - 4].' không đúng định dạng!';
             }
         }
+
         return $messages;
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

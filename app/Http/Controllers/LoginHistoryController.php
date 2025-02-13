@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LoginHistory;
-use App\Models\Cele;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use App\Models\CelenderDetailHNHC;
 use App\Models\Celender;
+use App\Models\CelenderDetailHNHC;
 use App\Models\DailyQuantity;
+use App\Models\LoginHistory;
 use App\Traits\CalenderTranslate;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class LoginHistoryController extends Controller
 {
@@ -24,7 +23,7 @@ class LoginHistoryController extends Controller
 
         // Xử lý và tách tháng và năm từ request hoặc sử dụng giá trị hiện tại
         $selectedMonthYear = $request->input('month', $today->format('m-Y'));
-        list($month, $year) = explode('-', $selectedMonthYear);
+        [$month, $year] = explode('-', $selectedMonthYear);
 
         // Xử lý ngày được chọn từ request, mặc định là ngày hiện tại
         $selectedDate = $request->input('date', $today->format('Y-m-d'));
@@ -44,7 +43,7 @@ class LoginHistoryController extends Controller
 
         // Lọc theo loại hoạt động nếu được chọn
         $selectedActivityType = $request->input('activity_type');
-        if (!empty($selectedActivityType)) {
+        if (! empty($selectedActivityType)) {
             $loginHistoryQuery->where('activity_type', $selectedActivityType);
         }
 
@@ -82,7 +81,7 @@ class LoginHistoryController extends Controller
         foreach ($calendarDetails as $calendarDetail) {
             $date = Carbon::parse($selectedDate)->format('d');
             $date = $this->convertDate($date);
-            $column = 'day' . $date;
+            $column = 'day'.$date;
             $calendarDetailValue = $this->translateCalendar($calendarDetail->$column);
             $translatedCalendarDetails[$calendarDetail->employee_id] = $calendarDetailValue;
         }
@@ -97,7 +96,7 @@ class LoginHistoryController extends Controller
             'selectedMonthYear' => $selectedMonthYear,
             'translatedCalendarDetails' => $translatedCalendarDetails,
             'totalHistoryCurrentPage' => $totalHistoryCurrentPage,
-            'totalHistoryOverall' => $totalHistoryOverall
+            'totalHistoryOverall' => $totalHistoryOverall,
         ]);
     }
 
@@ -106,6 +105,7 @@ class LoginHistoryController extends Controller
         $date = $request->input('date');
         if ($date > now()->toDateString()) {
             toast('Không thể xóa lịch sử đăng nhập cho ngày này.', 'error', 'top-right');
+
             return redirect()->back();
         }
         try {
@@ -114,6 +114,7 @@ class LoginHistoryController extends Controller
         } catch (\Exception $e) {
             toast('Có lỗi xảy ra khi xóa lịch sử đăng nhập.', 'error', 'top-right');
         }
+
         return redirect()->back();
     }
 
@@ -138,6 +139,7 @@ class LoginHistoryController extends Controller
         $formatDate = function ($date) {
             return Carbon::parse($date)->format('d-m-Y');
         };
+
         return view('history.history-view-all-quantity', [
             'dailyQuantities' => $dailyQuantities,
             'translateStatus' => $translateStatus,

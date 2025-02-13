@@ -16,17 +16,14 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryParttimeTimekepingImport implements 
-ToArray, 
-HasReferencesToOtherSheets, 
-WithHeadingRow,
-WithValidation, 
-SkipsOnFailure, 
-SkipsEmptyRows
+class SalaryParttimeTimekepingImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithHeadingRow, WithValidation
 {
     public $salaryManagerId;
+
     public $startDate;
+
     public $endDate;
+
     public function __construct($salaryManagerId, $startDate, $endDate)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -39,9 +36,6 @@ SkipsEmptyRows
         return 'LƯƠNG NGÀY LÃNH TUẦN'; // Tên sheet
     }
 
-    /**
-    * @param array $rows
-    */
     public function array(array $rows)
     {
         try {
@@ -56,7 +50,7 @@ SkipsEmptyRows
                             $countDate = $dateEnd->diffInDays($dateStart) + 1;
                             $limit = $countDate * 3 + 10;
                             $date = $this->startDate;
-                            
+
                             //chấm công chi tiết
                             for ($i = 11; $i < $limit; $i += 3) {
                                 SalaryParttimeTimekeeping::create([
@@ -68,7 +62,7 @@ SkipsEmptyRows
                                 ]);
                                 $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
                             }
-            
+
                             //thông số chấm công tổng quát
                             $salaryManager->total_day = $row[4] ?? null;                     //tổng ngày
                             $salaryManager->total_night = $row[5] ?? null;                   //tổng đêm
@@ -77,7 +71,7 @@ SkipsEmptyRows
                             $salaryManager->worknight_money = $row[8] ?? null;               //số công đêm
                             $salaryManager->allowance_outwork = $row[9] ?? null;             //phụ cấp hết việc
                             $salaryManager->salary_total_2 = $row[10] ?? null;               //tổng lương 2
-                
+
                             $salaryManager->holidays_count = $row[104] ?? null;              //số ngày nghĩ lễ tết
                             $salaryManager->paid_holidays_count = $row[105] ?? null;         //số ngày phép năm
                             $salaryManager->outwork_day_count = $row[106] ?? null;           //số ngày hết việc
@@ -89,9 +83,9 @@ SkipsEmptyRows
                     }
                 }
             }
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             LogHelper::saveLog('Import-Timekeeping-Parttime', $e->getMessage(), $e->getLine());
-            Log::error('errors time-parttime::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors time-parttime::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -105,21 +99,22 @@ SkipsEmptyRows
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
-            '4' => ['nullable','numeric'],
-            '5' => ['nullable','numeric'],
-            '6' => ['nullable','numeric'],
-            '7' => ['nullable','numeric'],
-            '8' => ['nullable','numeric'],
-            '9' => ['nullable','numeric'],
-            '10' => ['nullable','numeric'],
-            '104' => ['nullable','numeric'],
-            '105' => ['nullable','numeric'],
-            '106' => ['nullable','numeric'],
-            '107' => ['nullable','numeric'],
-            '108' => ['nullable','numeric'],
-            '109' => ['nullable','numeric'],
+            '4' => ['nullable', 'numeric'],
+            '5' => ['nullable', 'numeric'],
+            '6' => ['nullable', 'numeric'],
+            '7' => ['nullable', 'numeric'],
+            '8' => ['nullable', 'numeric'],
+            '9' => ['nullable', 'numeric'],
+            '10' => ['nullable', 'numeric'],
+            '104' => ['nullable', 'numeric'],
+            '105' => ['nullable', 'numeric'],
+            '106' => ['nullable', 'numeric'],
+            '107' => ['nullable', 'numeric'],
+            '108' => ['nullable', 'numeric'],
+            '109' => ['nullable', 'numeric'],
         ];
     }
 
@@ -148,7 +143,7 @@ SkipsEmptyRows
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Employee extends Authenticatable
 {
@@ -14,10 +14,10 @@ class Employee extends Authenticatable
     use Notifiable;
 
     //paginate
-    public const paginate = 10000;
+    public const paginate = 50;
 
     //table
-    protected $table = "employees";
+    protected $table = 'employees';
 
     //fillable
     protected $fillable = [
@@ -37,7 +37,7 @@ class Employee extends Authenticatable
         'role_id',
         'category_celender_id',
         'password',
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -116,29 +116,29 @@ class Employee extends Authenticatable
     }
 
     //relationship celenderDetails
-    function celenderDetailsHNHC()
+    public function celenderDetailsHNHC()
     {
         return $this->hasMany(CelenderDetailHNHC::class, 'employee_id', 'id');
     }
 
     //relationship celenderDetails
-    function celenderDetailsEatroom()
+    public function celenderDetailsEatroom()
     {
         return $this->hasMany(CelenderDetailEatroom::class, 'employee_id', 'id');
     }
 
     //relationship celenderDetails
-    function celenderDetailsWC()
+    public function celenderDetailsWC()
     {
         return $this->hasMany(CelenderDetailWC::class, 'employee_id', 'id');
     }
 
-    function celenderDetailsWCCleanWomen()
+    public function celenderDetailsWCCleanWomen()
     {
         return $this->hasMany(CelenderDetailWCCleanMen::class, 'employee_id', 'id');
     }
 
-    function celenderDetailsWCCleanMen()
+    public function celenderDetailsWCCleanMen()
     {
         return $this->hasMany(CelenderDetailWCCleanMen::class, 'employee_id', 'id');
     }
@@ -170,6 +170,11 @@ class Employee extends Authenticatable
         return $this->hasMany(AttendanceRecord::class, 'employee_code', 'code');
     }
 
+    public function sendStamps()
+    {
+        return $this->hasMany(SendStamp::class, 'employee_id', 'id');
+    }
+
     //search by role
     public function scopeNameRole($query, $request)
     {
@@ -196,6 +201,7 @@ class Employee extends Authenticatable
         if ($request->has('name')) {
             return $query->where('name', 'like', '%' . $request->name . '%');
         }
+
         return $query;
     }
 
@@ -205,6 +211,7 @@ class Employee extends Authenticatable
         if ($request->has('address')) {
             return $query->where('address', 'like', '%' . $request->address . '%');
         }
+
         return $query;
     }
 
@@ -214,6 +221,7 @@ class Employee extends Authenticatable
         if ($request->has('home_town')) {
             return $query->where('home_town', 'like', '%' . $request->home_town . '%');
         }
+
         return $query;
     }
 
@@ -223,6 +231,7 @@ class Employee extends Authenticatable
         if ($request->has('phone')) {
             return $query->where('phone', 'like', '%' . $request->phone . '%');
         }
+
         return $query;
     }
 
@@ -232,6 +241,7 @@ class Employee extends Authenticatable
         if ($request->has('code')) {
             return $query->where('code', 'like', '%' . $request->code . '%');
         }
+
         return $query;
     }
 
@@ -241,6 +251,7 @@ class Employee extends Authenticatable
         if ($request->has('CCCD')) {
             return $query->where('CCCD', 'like', '%' . $request->CCCD . '%');
         }
+
         return $query;
     }
 
@@ -249,9 +260,11 @@ class Employee extends Authenticatable
     {
         if ($request->has('gender')) {
             $query->where('gender', $request->gender);
-        };
+        }
+
         return $query;
     }
+
     public function loginHistory()
     {
         return $this->hasMany(LoginHistory::class, 'employee_id', 'id', 'employee_code', 'employee_name');

@@ -3,10 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\MaterialProduct;
-use App\Models\Product;
-use App\Models\ProductionPlan;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class MaterialProductController extends Controller
 {
@@ -22,7 +18,7 @@ class MaterialProductController extends Controller
             ->map(function ($group, $material) {
                 return [
                     'material' => $material,
-                    'total_quantity' => $group->sum('quantity')
+                    'total_quantity' => $group->sum('quantity'),
                 ];
             })
             ->values();

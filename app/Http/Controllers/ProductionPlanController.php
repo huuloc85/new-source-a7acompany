@@ -9,7 +9,6 @@ use App\Models\Product;
 use App\Models\ProductionPlan;
 use App\Traits\CalenderTranslate;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class ProductionPlanController extends Controller
 {
     use CalenderTranslate;
+
     // Chức Năng Add vs Update (Hàm Chức Năng)
     private function setProductionPlanAttributes($productPlan, $request)
     {
@@ -90,7 +90,7 @@ class ProductionPlanController extends Controller
         // Cập nhật dữ liệu vào bảng MaterialProduct
         $materialProduct = MaterialProduct::firstOrNew([
             'product_id' => $productPlan->product_id,
-            'production_plans_id' => $productPlan->id
+            'production_plans_id' => $productPlan->id,
         ]);
 
         // Cập nhật giá trị cho materialProduct
@@ -106,14 +106,15 @@ class ProductionPlanController extends Controller
     {
         // $materials = ['WS641-B50', 'EP540N', 'ZS609-N', 'J783-N'];
         $packagingTypes = [
-            "20X20",
-            "25X25",
-            "25X35",
-            "35X50",
-            "LÓT LỚN",
-            "LÓT LỚNX2",
-            "LÓT NHỎ"
+            '20X20',
+            '25X25',
+            '25X35',
+            '35X50',
+            'LÓT LỚN',
+            'LÓT LỚNX2',
+            'LÓT NHỎ',
         ];
+
         // $materialcolor = ['Natural', 'Gray', 'Black'];
         return compact('packagingTypes');
     }
@@ -132,7 +133,7 @@ class ProductionPlanController extends Controller
             $dataExistsForCurrentMonth = ProductionPlan::where('month', $currentMonth)->exists();
 
             // Nếu chưa có dữ liệu cho tháng hiện tại, sao chép dữ liệu từ tháng trước
-            if (!$dataExistsForCurrentMonth) {
+            if (! $dataExistsForCurrentMonth) {
                 $lastMonth = $today->subMonth()->format('m-Y');
 
                 // Lấy dữ liệu kế hoạch sản xuất cho tháng trước
@@ -188,6 +189,7 @@ class ProductionPlanController extends Controller
         $products = Product::all();
         $materialsAndPackagingTypes = $this->getMaterialsAndPackagingTypes();
         $materialcolor = $this->getMaterialsAndPackagingTypes();
+
         return view('productplan.add-product-plan', array_merge(compact('products'), $materialsAndPackagingTypes));
     }
 
@@ -203,6 +205,7 @@ class ProductionPlanController extends Controller
 
             if ($existingPlan) {
                 toast('Sản phẩm đã có kế hoạch sản xuất trong tháng này!', 'error', 'top-right');
+
                 return redirect()->back();
             }
 
@@ -214,11 +217,13 @@ class ProductionPlanController extends Controller
 
             DB::commit();
             toast('Thêm kế hoạch sản phẩm mới thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.product-plan.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
+            Log::error('errors: '.$e->getMessage().' - getLine: '.$e->getLine());
             toast('Thêm kế hoạch sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -235,11 +240,13 @@ class ProductionPlanController extends Controller
 
             DB::commit();
             toast('Cập nhật kế hoạch sản phẩm thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.product-plan.index', ['id' => $productPlan->id]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
+            Log::error('errors: '.$e->getMessage().' - getLine: '.$e->getLine());
             toast('Cập nhật kế hoạch sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -254,11 +261,13 @@ class ProductionPlanController extends Controller
 
             DB::commit();
             toast('Xóa kế hoạch sản phẩm thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.product-plan.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
+            Log::error('errors: '.$e->getMessage().' - getLine: '.$e->getLine());
             toast('Xóa kế hoạch sản phẩm không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }
@@ -309,29 +318,29 @@ class ProductionPlanController extends Controller
                         MaterialProduct::updateOrCreate(
                             [
                                 'product_id' => $planData['product_id'],
-                                'production_plans_id' => $productionPlan->id
+                                'production_plans_id' => $productionPlan->id,
                             ],
                             ['quantity' => $totalQuantity]
                         );
                     } else {
                         // Log lỗi nếu thiếu dữ liệu cần thiết
-                        Log::error('Missing required data in planData: ' . json_encode($planData));
+                        Log::error('Missing required data in planData: '.json_encode($planData));
                     }
                 }
             }
 
             DB::commit(); // Commit transaction khi mọi thứ thành công
             toast('Cập nhật kế hoạch sản xuất thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.product-plan.index');
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction khi có lỗi xảy ra
-            Log::error('errors: ' . $e->getMessage() . ' - getLine: ' . $e->getLine());
+            Log::error('errors: '.$e->getMessage().' - getLine: '.$e->getLine());
             toast('Cập nhật kế hoạch sản xuất không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.product-plan.index');
         }
     }
-
-
 
     public function export(Request $request)
     {
@@ -340,6 +349,6 @@ class ProductionPlanController extends Controller
         $daysInMonth = $time->daysInMonth;
         $daysInMonthYMD = $time->format('Y-m-d');
 
-        return Excel::download(new ProductionPlansExport($month, $time, $daysInMonth, $daysInMonthYMD), 'Kế Hoạch Sản Xuất Tháng ' . $month . '.xlsx');
+        return Excel::download(new ProductionPlansExport($month, $time, $daysInMonth, $daysInMonthYMD), 'Kế Hoạch Sản Xuất Tháng '.$month.'.xlsx');
     }
 }

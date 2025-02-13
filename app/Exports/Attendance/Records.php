@@ -2,6 +2,7 @@
 
 namespace App\Exports\Attendance;
 
+use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
@@ -9,15 +10,19 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\DefaultValueBinder;
 use Maatwebsite\Excel\Events\AfterSheet;
-use Illuminate\Contracts\View\View;
 
-class Records extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithTitle, WithEvents
+class Records extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithTitle
 {
     protected $records;
+
     protected $title;
+
     protected $startDate;
+
     protected $endDate;
+
     protected $currentMonth;
+
     protected $listDate;
 
     public function __construct($records, $title, $startDate, $endDate, $currentMonth, $listDate)

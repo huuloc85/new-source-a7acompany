@@ -7,15 +7,16 @@ use Illuminate\View\Component;
 class RatingStar extends Component
 {
     public $fill;
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($fill=false)
+    public function __construct($fill = false)
     {
-        $this->fill=$fill;
-       
+        $this->fill = $fill;
+
         //
     }
 

@@ -22,14 +22,14 @@ return new class extends Migration
             $table->string('probationary_salary_basic_hours', 255)->nullable();              // Lương CB thử việc / 1 giờ
             $table->string('probationary_salary_basic_extra_hours', 255)->nullable();        // Lương CB thử việc tăng ca / 1 giờ
             $table->double('allowance_apprentice', 19, 2)->nullable();                       // phụ cấp học việc
-            $table->double('salary_basic', 19, 2)->nullable();                               // Lương CB chính thức/ 26 ngày 
-            $table->double('regular_salary_hour', 19, 2)->nullable();                        // Lương CB/ giờ 
+            $table->double('salary_basic', 19, 2)->nullable();                               // Lương CB chính thức/ 26 ngày
+            $table->double('regular_salary_hour', 19, 2)->nullable();                        // Lương CB/ giờ
             $table->double('salary_overtime', 19, 2)->nullable();                            // Lương tăng ca/giờ
-            $table->double('allowance_diligence', 19, 2)->nullable();                        // Chuyên cần 
-            $table->double('allowance_responsibility', 19, 2)->nullable();                   // Trách nhiệm 
-            $table->double('allowance_overtime', 19, 2)->nullable();                         // Phụ cấp tăng ca/ ngày 
-            $table->double('allowance_night', 19, 2)->nullable();                            // Phụ cấp đêm 
-            $table->double('allowance_rice', 19, 2)->nullable();                             // Phụ cấp cơm trưa 
+            $table->double('allowance_diligence', 19, 2)->nullable();                        // Chuyên cần
+            $table->double('allowance_responsibility', 19, 2)->nullable();                   // Trách nhiệm
+            $table->double('allowance_overtime', 19, 2)->nullable();                         // Phụ cấp tăng ca/ ngày
+            $table->double('allowance_night', 19, 2)->nullable();                            // Phụ cấp đêm
+            $table->double('allowance_rice', 19, 2)->nullable();                             // Phụ cấp cơm trưa
             $table->double('company_insurance', 19, 2)->nullable();                          // BHXH công ty đóng
             $table->double('insurance', 19, 2)->nullable();
 
@@ -47,7 +47,6 @@ return new class extends Migration
             $table->double('paid_holidays_count', 19, 2)->nullable();                  //số ngày phép năm
             $table->double('daysleave_allowed_timekeeping', 19, 2)->nullable();        //số ngày nghỉ có phép
             $table->double('daysleave_notallowed_timekeeping', 19, 2)->nullable();     //số ngày nghỉ không phép
-
 
             //chi tiết
             $table->integer('number_of_work_days_trial')->nullable();                       // Số công ngày (thử việc)
@@ -74,7 +73,7 @@ return new class extends Migration
             $table->double('overtime_hours_detail', 19, 2)->nullable();                        // Số giờ tăng ca
             $table->double('overtime_salary', 19, 2)->nullable();                              // Lương tăng ca
             $table->string('overtime_salary_notice', 255)->nullable();                         // Lương tăng ca Ghi Chú
-            $table->integer('number_of_work_days')->nullable();                                // Số công ngày 
+            $table->integer('number_of_work_days')->nullable();                                // Số công ngày
             $table->double('allowance_rice_detail', 19, 2)->nullable();                        // Phụ cấp cơm ca ngày
             $table->string('allowance_rice_detail_notice', 255)->nullable();                    // Phụ cấp cơm ca ngày Ghi Chú
             $table->integer('number_of_work_nights')->nullable();                               // Số công đêm
@@ -107,12 +106,12 @@ return new class extends Migration
             $table->string('sickness_notice', 255)->nullable();                                                // Ốm đau Ghi Chú
             $table->double('funeral', 19, 2)->nullable();                                                     // Ma chay
             $table->string('funeral_notice', 255)->nullable();                                                 // Ma chay Ghi Chú
-            $table->double('birthday_money', 19, 2)->nullable();                                               // Tiền sinh nhật 
+            $table->double('birthday_money', 19, 2)->nullable();                                               // Tiền sinh nhật
             $table->string('birthday_money_notice', 255)->nullable();                                            // Tiền sinh nhật Ghi Chú
-            $table->double('previous_period_debt', 19, 2)->nullable();                                           // Tiền lương tháng trước bị thiếu 
+            $table->double('previous_period_debt', 19, 2)->nullable();                                           // Tiền lương tháng trước bị thiếu
             $table->string('previous_period_debt_notice', 255)->nullable();                                       // Tiền lương tháng trước bị thiếu Ghi Chú
-            $table->double('total_income', 19, 2)->nullable();                                                    // Tổng thu nhập 
-            $table->double('insurance_detail', 19, 2)->nullable();                                                 // Khấu trừ BHXH 10.5% 
+            $table->double('total_income', 19, 2)->nullable();                                                    // Tổng thu nhập
+            $table->double('insurance_detail', 19, 2)->nullable();                                                 // Khấu trừ BHXH 10.5%
             $table->string('insurance_detail_notice', 255)->nullable();                                             // Khấu trừ BHXH 10.5% Ghi Chú
             $table->double('advance_money', 19, 2)->nullable();                                                      // Tạm ứng
             $table->string('advance_money_notice', 255)->nullable();                                                   // Tạm ứng Ghi Chú
@@ -133,7 +132,7 @@ return new class extends Migration
             $table->string('subtract_error_minor_notice', 255)->nullable();                                                                            // Trừ tiền số lỗi nhẹ Ghi Chú
             $table->double('kpi_subtraction', 19, 2)->nullable();                                                                                         // Trừ KPI
             $table->string('kpi_subtraction_notice', 255)->nullable();                                                                                      // Trừ KPI Ghi Chú
-            $table->double('actually_received', 19, 2)->nullable();                                                                                            // Thực lãnh 
+            $table->double('actually_received', 19, 2)->nullable();                                                                                            // Thực lãnh
             $table->string('forms_of_payment', 255)->nullable();                                                                                                 // Hình thức thanh toán
             $table->double('company_insurance_detail', 19, 2)->nullable();
 

@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class CelenderManagerImport implements WithMultipleSheets
 {
     public $celenderId;
+
     public function __construct($celenderId)
     {
         $this->celenderId = $celenderId;

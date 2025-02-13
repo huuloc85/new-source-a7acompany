@@ -11,20 +11,17 @@ use App\Models\Celender;
 use App\Models\CelenderDetailEatroom;
 use App\Models\CelenderDetailHNHC;
 use App\Models\CelenderDetailWC;
-use App\Models\CelenderDetailWCClean;
 use App\Models\CelenderDetailWCCleanMen;
 use App\Models\CelenderDetailWCCleanWomen;
 use App\Models\Employee;
-use App\Models\LoginHistory;
-use App\Models\Increase;
 use App\Models\Role;
 use App\Models\SalaryManager;
 use App\Models\SalaryOfficialA7A;
 use App\Models\SalaryOfficialVVP;
 use App\Models\SalaryParttime;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
 class EmployeeController extends Controller
 {
@@ -33,50 +30,51 @@ class EmployeeController extends Controller
     {
         $employees = Employee::query();
 
-        if (!empty($request->role_id)) {
+        if (! empty($request->role_id)) {
             $employees->NameRole($request);
         }
 
-        if (!empty($request->category_celender_id)) {
+        if (! empty($request->category_celender_id)) {
             $employees->NameCate($request);
         }
 
-        if (!empty($request->address)) {
+        if (! empty($request->address)) {
             $employees->Address($request);
         }
 
-        if (!empty($request->home_town)) {
+        if (! empty($request->home_town)) {
             $employees->HomeTown($request);
         }
 
-        if (!empty($request->phone)) {
+        if (! empty($request->phone)) {
             $employees->Phone($request);
         }
 
-        if (!empty($request->CCCD)) {
+        if (! empty($request->CCCD)) {
             $employees->CCCD($request);
         }
 
-        if (!empty($request->code)) {
+        if (! empty($request->code)) {
             $employees->Code($request);
         }
 
-        if (!empty($request->name)) {
+        if (! empty($request->name)) {
             $employees->Name($request);
         }
 
-        if (!empty($request->gender)) {
+        if (! empty($request->gender)) {
             $employees->Gender($request);
         }
-        if (!empty($request->company)) {
-            $employees->where('company', 'LIKE', '%' . $request->company . '%');
+        if (! empty($request->company)) {
+            $employees->where('company', 'LIKE', '%'.$request->company.'%');
         }
 
         $employees = $employees->where('role_id', '!=', 15)
             ->where('role_id', '!=', 17)
             ->where('deleted_at', null);
         $totalEmployee = $employees->get();
-        $employees = $employees->orderBy('id', 'DESC')->paginate(Employee::paginate);
+        $limit = $request->limit ?? Employee::paginate;
+        $employees = $employees->orderBy('id', 'DESC')->paginate($limit);
         $total = count($totalEmployee);
         $roles = Role::where('id', '!=', 15)
             ->where('id', '!=', 16)
@@ -97,13 +95,14 @@ class EmployeeController extends Controller
             ->where('id', '!=', 16)
             ->where('id', '!=', 17)->get();
         $categories = CategoryCelender::all();
+
         return view('employee.add', compact('roles', 'categories'));
     }
 
     //store new employee
     public function store(EmployeeStoreRequest $request)
     {
-        $employee = new Employee();
+        $employee = new Employee;
         $employee->name = trim($request->name);
         $employee->phone = trim($request->phone);
         $employee->code = trim($request->code);
@@ -126,7 +125,7 @@ class EmployeeController extends Controller
         if ($request->hasFile('photo')) {
             $fileExtension = $file->getClientOriginalName();
             $fileName = time(); // Tạo tên file dựa trên thời gian
-            $newFileName = $fileName . '.' . $fileExtension; // Tên file mới
+            $newFileName = $fileName.'.'.$fileExtension; // Tên file mới
             //Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('photo')->storeAs('public/employee', $newFileName);
             // Gán trường image của đối tượng task với tên mới
@@ -137,7 +136,7 @@ class EmployeeController extends Controller
         if ($request->hasFile('card_photo')) {
             $fileExtensionCard = $file_card->getClientOriginalName();
             $fileNameCard = time(); // Tạo tên file dựa trên thời gian
-            $newFileNameCard = $fileNameCard . '.' . $fileExtensionCard; // Tên file mới
+            $newFileNameCard = $fileNameCard.'.'.$fileExtensionCard; // Tên file mới
             //Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('card_photo')->storeAs('public/employee/card', $newFileNameCard);
             // Gán trường image của đối tượng task với tên mới
@@ -148,13 +147,15 @@ class EmployeeController extends Controller
             // dd($employee);
             $employee->save();
             toast('Thêm nhân sự mới thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.employee.home');
         } catch (\Exception $th) {
             toast('Thêm nhân sự mới không thành công!', 'error', 'top-right');
-            $image = 'public/employee/' . $employee->photo;
-            $imageCart = 'public/employee/card/' . $employee->card_photo;
+            $image = 'public/employee/'.$employee->photo;
+            $imageCart = 'public/employee/card/'.$employee->card_photo;
             Storage::delete($image);
             Storage::delete($imageCart);
+
             return redirect()->back();
         }
     }
@@ -167,6 +168,7 @@ class EmployeeController extends Controller
             ->where('id', '!=', 16)
             ->where('id', '!=', 17)->get();
         $categories = CategoryCelender::all();
+
         return view('employee.edit', compact('employee', 'roles', 'categories'));
     }
 
@@ -197,7 +199,7 @@ class EmployeeController extends Controller
         if ($request->hasFile('photo')) {
             $fileExtension = $file->getClientOriginalName();
             $fileName = time(); // Tạo tên file dựa trên thời gian
-            $newFileName = $fileName . '.' . $fileExtension; // Tên file mới
+            $newFileName = $fileName.'.'.$fileExtension; // Tên file mới
             //Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('photo')->storeAs('public/employee', $newFileName);
             // Gán trường image của đối tượng task với tên mới
@@ -208,7 +210,7 @@ class EmployeeController extends Controller
         if ($request->hasFile('card_photo')) {
             $fileExtensionCard = $file_card->getClientOriginalName();
             $fileNameCard = time(); // Tạo tên file dựa trên thời gian
-            $newFileNameCard = $fileNameCard . '.' . $fileExtensionCard; // Tên file mới
+            $newFileNameCard = $fileNameCard.'.'.$fileExtensionCard; // Tên file mới
             //Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('card_photo')->storeAs('public/employee/card', $newFileNameCard);
             // Gán trường image của đối tượng task với tên mới
@@ -219,25 +221,27 @@ class EmployeeController extends Controller
 
             $employee->save();
             if ($request->hasFile('photo')) {
-                $image = 'public/employee/' . $oldImg;
+                $image = 'public/employee/'.$oldImg;
                 Storage::delete($image);
             }
             if ($request->hasFile('card_photo')) {
-                $imageCard = 'public/employee/card/' . $oldImgCard;
+                $imageCard = 'public/employee/card/'.$oldImgCard;
                 Storage::delete($imageCard);
             }
             toast('Cập nhật nhân sự thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.employee.home');
         } catch (\Exception $th) {
             toast('Cập nhật nhân sự không thành công!', 'error', 'top-right');
             if ($request->hasFile('photo')) {
-                $image = 'public/employee/' . $newFileName;
+                $image = 'public/employee/'.$newFileName;
                 Storage::delete($image);
             }
             if ($request->hasFile('card_photo')) {
-                $imageCard = 'public/employee/card/' . $oldImgCard;
+                $imageCard = 'public/employee/card/'.$oldImgCard;
                 Storage::delete($imageCard);
             }
+
             return redirect()->back();
         }
     }
@@ -250,9 +254,11 @@ class EmployeeController extends Controller
             $employees->deleted_at = Carbon::now();
             $employees->save();
             toast('Nhân sự đã được đưa vào thùng rác!', 'success', 'top-right');
+
             return redirect()->route('admin.employee.home');
         } catch (\Exception $th) {
             toast('Đưa nhân sự vào thùng rác không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.employee.home');
         }
     }
@@ -262,39 +268,39 @@ class EmployeeController extends Controller
     {
         $employees = Employee::where('deleted_at', '!=', null);
 
-        if (!empty($request->role_id)) {
+        if (! empty($request->role_id)) {
             $employees->NameRole($request);
         }
 
-        if (!empty($request->category_celender_id)) {
+        if (! empty($request->category_celender_id)) {
             $employees->NameCate($request);
         }
 
-        if (!empty($request->address)) {
+        if (! empty($request->address)) {
             $employees->Address($request);
         }
 
-        if (!empty($request->home_town)) {
+        if (! empty($request->home_town)) {
             $employees->HomeTown($request);
         }
 
-        if (!empty($request->phone)) {
+        if (! empty($request->phone)) {
             $employees->Phone($request);
         }
 
-        if (!empty($request->CCCD)) {
+        if (! empty($request->CCCD)) {
             $employees->CCCD($request);
         }
 
-        if (!empty($request->code)) {
+        if (! empty($request->code)) {
             $employees->Code($request);
         }
 
-        if (!empty($request->name)) {
+        if (! empty($request->name)) {
             $employees->Name($request);
         }
 
-        if (!empty($request->gender)) {
+        if (! empty($request->gender)) {
             $employees->Gender($request);
         }
 
@@ -304,6 +310,7 @@ class EmployeeController extends Controller
             ->where('id', '!=', 16)
             ->where('id', '!=', 17)->get();
         $categories = CategoryCelender::all();
+
         return view('employee.trash', compact('employees', 'total', 'roles', 'categories'));
     }
 
@@ -315,18 +322,21 @@ class EmployeeController extends Controller
             $employee->deleted_at = null;
             $employee->save();
             toast('Nhân sự được khôi phục thành công thành công!', 'success', 'top-right');
+
             return redirect()->route('admin.employee.getTrash');
         } catch (\Exception $th) {
             toast('Khôi phục Nhân sự không thành công!', 'error', 'top-right');
+
             return redirect()->route('admin.employee.getTrash');
         }
     }
+
     //show celender
     public function celender(Request $request)
     {
         try {
             $celenders = Celender::query();
-            if (!empty($request->key)) {
+            if (! empty($request->key)) {
                 $celenders->Name($request->key);
             }
             $total = count($celenders->get());
@@ -340,7 +350,6 @@ class EmployeeController extends Controller
         }
     }
 
-
     //show celender detail
     public function celenderDetail($id)
     {
@@ -352,15 +361,16 @@ class EmployeeController extends Controller
         $celenderDetailWCCleanMen = CelenderDetailWCCleanMen::where('celender_id', $id)->where('employee_id', $employeeId)->first();
         $startDate = Celender::where('id', $id)->pluck('date')->first();
         $dates = [];
-        $month = date("m", strtotime($startDate));
+        $month = date('m', strtotime($startDate));
         $monthNext = $month;
         $date = $startDate;
         while ($monthNext == $month) {
             array_push($dates, $date);
             $date = date('Y/m/d', strtotime('+1 day', strtotime($date)));
-            $monthNext = date("m", strtotime($date));
+            $monthNext = date('m', strtotime($date));
         }
-        $formatDate = new Celender();
+        $formatDate = new Celender;
+
         return view('employee.celender-detail', compact(
             'celenderDetailHNHC',
             'celenderDetailEatroom',
@@ -378,14 +388,15 @@ class EmployeeController extends Controller
     {
         $user = auth()->user();
         $salaryManagers = SalaryManager::query();
-        if (!empty($request->key)) {
+        if (! empty($request->key)) {
             $salaryManagers->Name($request);
         }
-        $end_date = Carbon::now()->format('Y-m-d');
-        $salaryManagers = $salaryManagers->where('date_show', '<=', $end_date);
+        // $end_date = Carbon::now()->format('Y-m-d');
+        // $salaryManagers = $salaryManagers->where('date_show', '<=', $end_date);
         $total = count($salaryManagers->get());
         $salaryManagers = $salaryManagers->orderBy('id', 'DESC')->paginate(SalaryManager::paginate);
         LogActivity::logViewActivity(auth()->user(), 'Xem Bảng Lương', 'Nhân viên xem bảng lương');
+
         return view('employee.salary', compact('salaryManagers', 'total'));
     }
 
@@ -398,10 +409,12 @@ class EmployeeController extends Controller
             $salaryOfficialsVVP = SalaryOfficialVVP::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
             $salaryOfficialsA7A = SalaryOfficialA7A::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
             $salaryParttimes = SalaryParttime::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
+
             return view('employee.salary-detail', compact('salaryOfficialsVVP', 'salaryOfficialsA7A', 'salaryParttimes', 'salaryManager'));
         } catch (\Exception $e) {
             LogHelper::saveLog('Xem chi tiết bảng lương', $e->getMessage(), $e->getLine());
             toast('Xem chi tiết bảng lương không thành công!', 'error', 'top-right');
+
             return redirect()->back();
         }
     }

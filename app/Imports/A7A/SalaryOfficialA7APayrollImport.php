@@ -11,20 +11,14 @@ use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Validators\Failure;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialA7APayrollImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    WithHeadingRow,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithValidation,
-    WithStartRow
+class SalaryOfficialA7APayrollImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithHeadingRow, WithStartRow, WithValidation
 {
     public $salaryManagerId;
+
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -35,9 +29,6 @@ class SalaryOfficialA7APayrollImport implements
         return 'Bang Thanh Toan Luong'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         try {
@@ -62,15 +53,14 @@ class SalaryOfficialA7APayrollImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Payroll-A7A', $e->getMessage(), $e->getLine());
-            Log::error('errors payroll-a7a::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors payroll-a7a::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
     //validate
 
-
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {
@@ -84,11 +74,13 @@ class SalaryOfficialA7APayrollImport implements
         //5
         return 8;
     }
+
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
-            '1' => ['required', 'in:' . implode(',', $listCode)],
+            '1' => ['required', 'in:'.implode(',', $listCode)],
             '4' => ['nullable', 'numeric'],
             '5' => ['nullable', 'numeric'],
             '6' => ['nullable', 'numeric'],

@@ -30,17 +30,17 @@ class ImportSalaryRequest extends FormRequest
             'file_vvp' => ['required', 'mimes:xlsx, xls'],
             'file_a7a' => ['required', 'mimes:xlsx, xls'],
             'file_parttime' => ['mimes:xlsx, xls'],
-            'start_date_parttime' => [function($attribute, $value, Closure $fail){
+            'start_date_parttime' => [function ($attribute, $value, Closure $fail) {
                 if ($this->hasFile('file_parttime')) {
                     if ($value == null || $value == '') {
-                        $fail("Bạn phải chọn ngày bắt đầu cho file thời vụ!");
+                        $fail('Bạn phải chọn ngày bắt đầu cho file thời vụ!');
                     }
                 }
             }],
-            'end_date_parttime' => [function($attribute, $value, Closure $fail){
+            'end_date_parttime' => [function ($attribute, $value, Closure $fail) {
                 if ($this->hasFile('file_parttime')) {
                     if ($value == null || $value == '') {
-                        $fail("Bạn phải chọn kết thúc đầu cho file thời vụ!");
+                        $fail('Bạn phải chọn kết thúc đầu cho file thời vụ!');
                     }
                 }
             }],

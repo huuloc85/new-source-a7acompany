@@ -10,7 +10,7 @@ class SalaryParttimeTimekeeping extends Model
     use HasFactory;
 
     //table
-    protected $table = "timekeeping_parttimes";
+    protected $table = 'timekeeping_parttimes';
 
     //paginate
     public const paginate = 10;

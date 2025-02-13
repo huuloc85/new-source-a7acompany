@@ -5,21 +5,20 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryCelenderController;
 use App\Http\Controllers\CelenderController;
 use App\Http\Controllers\CheckEmployeeController;
+use App\Http\Controllers\CheckPoController;
 use App\Http\Controllers\DailyProductivityHistoryController;
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HistoryPrintController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\LoginHistoryController;
+use App\Http\Controllers\MaterialProductController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductionPlanController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CheckPoController;
+use App\Http\Controllers\SendStampController;
 use App\Http\Controllers\StampController;
-use App\Http\Controllers\ProductionPlanController;
-use App\Http\Controllers\BarCodeController;
-use App\Http\Controllers\HistoryPrintController;
-use App\Http\Controllers\MaterialProductController;
-use App\Models\LoginHistory;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +36,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'handleLogin'])->name('handleLogin');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/home', [DashBoardController::class, 'index'])->name('admin.home');
@@ -69,14 +67,25 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         //View của nhân viên Xem Chấm Công
         Route::get('/attendence', [AttendanceRecordController::class, 'employeeViewRecords'])->name('admin.employee.attendence');
         Route::get('/attendence-caculate', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('admin.employee.attendence_caculate_records');
+        //Route của Nhân viên gửi request In Tem
+        Route::get('/send-stamp/index', [SendStampController::class, 'index'])->name('admin.send-stamp');
+        Route::post('/send-stamp/index', [SendStampController::class, 'handleAdd'])->name('admin.handleAdd-send-stamp');
+        Route::get('/send-stamp/check-status', [SendStampController::class, 'checkStampEmployee'])->name('admin.checkstamp-employee');
     });
-
 
     //chức năng của Admin CheckEmployee
     Route::middleware(['authAdmin'])->prefix('/check-employee')->group(function () {
         Route::get('/admin-view-employee-todo', [CheckEmployeeController::class, 'index'])->name('admin.checkemployee.view-employee-todo');
         Route::delete('/admin-view-employee-todo/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
         Route::post('/admin-check-employee-todo/edit/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
+    });
+
+    //chức năng của In Tem Của Admin
+    Route::middleware(['authAdmin'])->prefix('/check-stamp')->group(function () {
+        Route::get('/index', [SendStampController::class, 'checkStamp'])->name('admin.checkstamp');
+        Route::get('/print/{id}', [SendStampController::class, 'print'])->name('admin.send-stamp.print');
+        Route::post('/save-print', [SendStampController::class, 'savePrint'])->name('admin.stamp.save.print');
+        Route::post('/reject-print/{id}', [SendStampController::class, 'rejectPrint'])->name('admin.stamp.reject.print');
     });
 
     // Kế hoạch sản xuất

@@ -10,7 +10,7 @@ class SalaryOfficialA7ATimekeeping extends Model
     use HasFactory;
 
     //table
-    protected $table = "timekeeping_officials_a7a";
+    protected $table = 'timekeeping_officials_a7a';
 
     protected $fillable = [
         'salary_official_a7a_id',

@@ -1,6 +1,12 @@
 <!-- resources/views/modal/birthday.blade.php -->
-<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
-    aria-hidden="true">
+<div
+    class="modal fade"
+    id="successModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="successModalLabel"
+    aria-hidden="true"
+>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <style>
@@ -12,7 +18,9 @@
                     /* Bo góc cho hình ảnh */
                     margin-top: 20px;
                     /* Tạo khoảng cách phía trên */
-                    animation: bounce 1.5s infinite, glow 1.5s infinite;
+                    animation:
+                        bounce 1.5s infinite,
+                        glow 1.5s infinite;
                     /* Hiệu ứng nhảy và phát sáng */
                 }
 
@@ -39,7 +47,6 @@
                     box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
                     animation: slideIn 0.7s forwards;
                 }
-
 
                 .modal-header {
                     border-bottom: 2px solid #000000;
@@ -105,7 +112,6 @@
 
                 /* Hiệu ứng nhảy */
                 @keyframes bounce {
-
                     0%,
                     20%,
                     50%,
@@ -154,24 +160,32 @@
                 }
             </style>
             <div class="modal-header">
-                <h5 class="modal-title" id="birthdayModalLabel">🎉 Chúc Mừng Sinh Nhật! 🎉</h5>
+                <h5 class="modal-title" id="birthdayModalLabel">
+                    🎉 Chúc Mừng Sinh Nhật! 🎉
+                </h5>
             </div>
             <div class="modal-body">
                 <h3>Công Ty Vinh Vinh Phát chúc mừng sinh nhật!</h3>
                 <p>Chúc bạn có một ngày sinh nhật thật vui vẻ và hạnh phúc!</p>
-                <img src="{{ asset('assets/img/birthdaycake.png') }}" alt="Birthday Cake" class="birthday-cake-img">
+                <img
+                    src="{{ asset('assets/img/birthdaycake.png') }}"
+                    alt="Birthday Cake"
+                    class="birthday-cake-img"
+                />
             </div>
         </div>
     </div>
 </div>
 <script>
     // Hiển thị modal khi trang load
-    document.addEventListener("DOMContentLoaded", function() {
-        var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    document.addEventListener('DOMContentLoaded', function () {
+        var successModal = new bootstrap.Modal(
+            document.getElementById('successModal'),
+        );
         successModal.show(); // Hiển thị modal
 
         // Tự động tắt modal sau 10 giây
-        setTimeout(function() {
+        setTimeout(function () {
             successModal.hide(); // Ẩn modal sau 10 giây
         }, 5000); // 10000 milliseconds = 10 seconds
     });

@@ -5,24 +5,19 @@ namespace App\Imports\Celender;
 use App\Helpers\LogHelper;
 use App\Models\CelenderDetailHNHC;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class CelenderHNHCImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    WithValidation,
-    SkipsOnFailure,
-    SkipsEmptyRows,
-    WithStartRow
+class CelenderHNHCImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
 {
     public $celenderId;
+
     public function __construct($celenderId)
     {
         $this->celenderId = $celenderId;
@@ -33,9 +28,6 @@ class CelenderHNHCImport implements
         return 'HÀNG NHẬT'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         try {
@@ -86,7 +78,7 @@ class CelenderHNHCImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Celender-HN', $e->getMessage(), $e->getLine());
-            Log::error('errors cate::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors cate::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -94,8 +86,9 @@ class CelenderHNHCImport implements
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
-            '1' => ['required', 'in:' . implode(',', $listCode)],
+            '1' => ['required', 'in:'.implode(',', $listCode)],
             '3' => ['nullable', 'string'],
             '4' => ['nullable', 'string'],
             '5' => ['nullable', 'string'],
@@ -172,16 +165,13 @@ class CelenderHNHCImport implements
         ];
     }
 
-    /**
-     * @return int
-     */
     public function startRow(): int
     {
         return 8;
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

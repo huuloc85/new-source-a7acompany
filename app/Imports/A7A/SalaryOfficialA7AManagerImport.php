@@ -7,8 +7,11 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class SalaryOfficialA7AManagerImport implements WithMultipleSheets
 {
     public $salaryManagerId;
+
     public $startDate;
+
     public $endDate;
+
     public function __construct($salaryManagerId, $startDate, $endDate)
     {
         $this->salaryManagerId = $salaryManagerId;

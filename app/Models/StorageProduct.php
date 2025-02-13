@@ -13,12 +13,12 @@ class StorageProduct extends Model
     public const paginate = 10;
 
     //table
-    protected $table = "storage_product";
+    protected $table = 'storage_product';
 
     //fillable
     protected $fillable = [
         'product_id',
-        'lot'
+        'lot',
     ];
 
     //relationship product

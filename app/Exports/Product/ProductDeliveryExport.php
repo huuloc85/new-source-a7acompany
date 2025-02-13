@@ -3,24 +3,28 @@
 namespace App\Exports\Product;
 
 use App\Models\Product;
-use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
-use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 
-class ProductDeliveryExport extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithTitle, WithEvents
+class ProductDeliveryExport extends DefaultValueBinder implements FromView, ShouldAutoSize, WithCustomValueBinder, WithEvents, WithTitle
 {
     protected $time;
+
     protected $delimiter;
+
     protected $daysInMonth;
+
     protected $daysInMonthYMD;
-    const EXPORT_200  = 3;
+
+    const EXPORT_200 = 3;
 
     public function __construct($time, $daysInMonth, $daysInMonthYMD)
     {
@@ -56,10 +60,11 @@ class ProductDeliveryExport extends DefaultValueBinder implements FromView, Shou
             $data[] = [
                 'name' => $product->name,
                 'totalQuantityMonth' => $totalQuantityMonth,
-                'totalQuantityPerDay' => $totalQuantityPerDay
+                'totalQuantityPerDay' => $totalQuantityPerDay,
             ];
         }
         $title = 'Danh sách hàng hóa';
+
         return view('export/product/delivery-export', compact('data', 'title', 'daysInMonth'));
     }
 
@@ -71,7 +76,7 @@ class ProductDeliveryExport extends DefaultValueBinder implements FromView, Shou
     public function bindValue(Cell $cell, $value)
     {
         if (is_numeric($value)) {
-            $cell->setValueExplicit($value,  DataType::TYPE_STRING);
+            $cell->setValueExplicit($value, DataType::TYPE_STRING);
 
             return true;
         }

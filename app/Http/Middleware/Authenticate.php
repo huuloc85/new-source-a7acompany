@@ -16,6 +16,7 @@ class Authenticate extends Middleware
         if (Auth::user()) {
             return route('login');
         }
+
         return null;
     }
 }

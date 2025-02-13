@@ -1,0 +1,20 @@
+# Ignore vendor directory
+vendor/
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore public assets
+public/
+
+# Ignore specific files
+.env
+*.min.js
+
+# Ignore compiled files
+storage/
+bootstrap/cache/
+
+# Ignore other custom directories
+dist/
+build/

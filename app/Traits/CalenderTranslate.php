@@ -7,18 +7,20 @@ trait CalenderTranslate
     public function convertDate($date)
     {
         for ($i = 1; $i < 10; $i++) {
-            $temp = '0' . $i;
+            $temp = '0'.$i;
             if ($date == $temp) {
                 $date = $i;
+
                 return $date;
             }
         }
+
         return $date;
     }
 
     public function translateCalendar($calendar)
     {
-        $result = "";
+        $result = '';
         switch ($calendar) {
             case 'N':
                 $result = 'Ca 1';
@@ -38,11 +40,13 @@ trait CalenderTranslate
             default:
                 $result = 'Không xác định';
         }
+
         return $result;
     }
+
     public function handleDayInMonth($monthNearly)
     {
-        $startDate = \DateTime::createFromFormat('d-m-Y', '01-' . $monthNearly);
+        $startDate = \DateTime::createFromFormat('d-m-Y', '01-'.$monthNearly);
         $countDate = $startDate->format('t');
         $listDate = [];
         for ($i = 1; $i <= $countDate; $i++) {
@@ -50,6 +54,7 @@ trait CalenderTranslate
             $listDate[] = $ngay;
             $startDate->modify('+1 day');
         }
+
         return $listDate;
     }
 }

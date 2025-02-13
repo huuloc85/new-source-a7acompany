@@ -37,7 +37,7 @@ class RefreshDatabase extends Command
      */
     public function handle()
     {
-        if(ENV('IS_DEMO')){
+        if (ENV('IS_DEMO')) {
 
             \Artisan::call('migrate:fresh --seed');
         }

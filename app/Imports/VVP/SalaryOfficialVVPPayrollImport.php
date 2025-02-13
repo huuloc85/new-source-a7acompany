@@ -10,20 +10,14 @@ use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
-use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class SalaryOfficialVVPPayrollImport implements
-    ToArray,
-    HasReferencesToOtherSheets,
-    SkipsEmptyRows,
-    SkipsOnFailure,
-    WithValidation,
-    WithStartRow
+class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
 {
     public $salaryManagerId;
+
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
@@ -34,9 +28,6 @@ class SalaryOfficialVVPPayrollImport implements
         return 'Bang Thanh Toan Luong'; // Đặt tên sheet ở đây
     }
 
-    /**
-     * @param array $rows
-     */
     public function array(array $rows)
     {
         // dd($rows);
@@ -62,7 +53,7 @@ class SalaryOfficialVVPPayrollImport implements
             }
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-VVP-Bảng lương', $e->getMessage(), $e->getLine());
-            Log::error('errors payroll::: ' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors payroll::: '.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 
@@ -70,8 +61,9 @@ class SalaryOfficialVVPPayrollImport implements
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('code')->toArray();
+
         return [
-            '1' => ['required', 'in:' . implode(',', $listCode)],
+            '1' => ['required', 'in:'.implode(',', $listCode)],
             '4' => ['nullable', 'numeric'],
             '5' => ['nullable', 'numeric'],
             '6' => ['nullable', 'numeric'],
@@ -107,7 +99,7 @@ class SalaryOfficialVVPPayrollImport implements
     }
 
     /**
-     * @param Failure[] $failures
+     * @param  Failure[]  $failures
      */
     public function onFailure(Failure ...$failures)
     {

@@ -7,10 +7,10 @@ use App\Models\Celender;
 use App\Models\CheckEmployee;
 use App\Models\Employee;
 use App\Models\LoginHistory;
-use App\Models\Role;
-use App\Models\SalaryManager;
 use App\Models\Product;
 use App\Models\ProductionPlan;
+use App\Models\Role;
+use App\Models\SalaryManager;
 use Carbon\Carbon;
 
 class DashBoardController extends Controller
@@ -45,6 +45,7 @@ class DashBoardController extends Controller
         $totalCheckEmployee = CheckEmployee::whereDate('date', Carbon::today())->count();
         $salaryManagers = SalaryManager::orderBy('id', 'DESC')->limit(SalaryManager::paginate)->get();
         $celenders = Celender::orderBy('id', 'DESC')->limit(Celender::paginate)->get();
+
         return view('home', compact('totalEmployee', 'totalRole', 'totalSalary', 'totalCelender', 'startOfMonth', 'endOfMonth', 'totalHistory', 'topUsers', 'salaryManagers', 'celenders', 'totalProduct', 'totalCheckEmployee', 'totalPlan', 'totalRecord', 'today'));
     }
 }

@@ -12,15 +12,16 @@ class HistoryPrint extends Model
     //paginate
     public const paginate = 10;
 
-    protected $table = "history_prints";
+    protected $table = 'history_prints';
 
     protected $fillable = [
         'product_id',
         'employee_id',
+        'send_stamp_id',
         'date',
         'shift',
         'binCount',
-        'binStart'
+        'binStart',
     ];
 
     //relationship employees
@@ -33,5 +34,10 @@ class HistoryPrint extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function sendStamp()
+    {
+        return $this->belongsTo(SendStamp::class);
     }
 }

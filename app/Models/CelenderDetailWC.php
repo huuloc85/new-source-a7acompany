@@ -9,12 +9,12 @@ class CelenderDetailWC extends Model
 {
     use HasFactory;
 
-        //paginate
-        public const paginate = 10;
+    //paginate
+    public const paginate = 10;
 
-        //table
-        protected $table = 'celender_detail_wc';
-    
+    //table
+    protected $table = 'celender_detail_wc';
+
     //fillable
     protected $fillable = [
         'employee_id',
@@ -27,12 +27,14 @@ class CelenderDetailWC extends Model
     ];
 
     //relationship celender
-    function celender(){
+    public function celender()
+    {
         return $this->belongsTo(Celender::class);
     }
 
     //relationship role
-    function employee(){
+    public function employee()
+    {
         return $this->belongsTo(Employee::class);
     }
 }

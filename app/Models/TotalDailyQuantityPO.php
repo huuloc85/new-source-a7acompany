@@ -9,7 +9,7 @@ class TotalDailyQuantityPO extends Model
 {
     use HasFactory;
 
-    protected $table = "totaldailyquantities_po";
+    protected $table = 'totaldailyquantities_po';
 
     //fillable
     protected $fillable = [

@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\TotalMonthQuantity;
-use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UpdateStockQuantity extends Command
 {
@@ -64,7 +64,7 @@ class UpdateStockQuantity extends Command
                         ->whereYear('created_at', $previousMonth->year)
                         ->value('totalQuan');
                     // dd($laseTotalChecked, $laseTotalChecked, $laseTotalExport);
-                    $newStockQuan200 = new TotalMonthQuantity();
+                    $newStockQuan200 = new TotalMonthQuantity;
                     $newStockQuan200->product_id = $productId;
                     $newStockQuan200->status = 5;
                     $newStockQuan200->month = $month;
@@ -95,7 +95,7 @@ class UpdateStockQuantity extends Command
                         ->value('totalQuan');
                     $stockEndQuan = ($oldStockQuan + $prorealityQuan) - $laseTotalExport; //tồn cuối kỳ gần nhất
 
-                    $newStockQuan = new TotalMonthQuantity();
+                    $newStockQuan = new TotalMonthQuantity;
                     $newStockQuan->product_id = $productId;
                     $newStockQuan->status = 4;
                     $newStockQuan->month = $month;
@@ -108,7 +108,7 @@ class UpdateStockQuantity extends Command
                     $stockMOQ = TotalMonthQuantity::where('product_id', $productId)->where('status', 7)->latest()->value('totalQuan');
 
                     //thực hiện tính lại tồn đầu kỳ
-                    $newStockMOQ = new TotalMonthQuantity();
+                    $newStockMOQ = new TotalMonthQuantity;
                     $newStockMOQ->product_id = $productId;
                     $newStockMOQ->status = 7;
                     $newStockMOQ->month = $month;
@@ -118,10 +118,10 @@ class UpdateStockQuantity extends Command
                 }
             }
             DB::commit();
-            Log::info("Đã cập nhật tồn đầu kỳ cho " . $count . " sản phẩm, tồn đầu kỳ 200% cho " . $count200 . " sản phẩm, MOQ cho " . $countMOQ . "sản phẩm.");
+            Log::info('Đã cập nhật tồn đầu kỳ cho '.$count.' sản phẩm, tồn đầu kỳ 200% cho '.$count200.' sản phẩm, MOQ cho '.$countMOQ.'sản phẩm.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors' . $e->getMessage() . ' getLine' . $e->getLine());
+            Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
         }
     }
 }

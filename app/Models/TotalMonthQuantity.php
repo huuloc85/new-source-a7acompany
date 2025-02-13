@@ -26,7 +26,7 @@ class TotalMonthQuantity extends Model
     ];
 
     //table
-    protected $table = "totalmonthquantities";
+    protected $table = 'totalmonthquantities';
 
     //fillable
     protected $fillable = [
