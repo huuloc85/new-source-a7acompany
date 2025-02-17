@@ -1,3 +1,161 @@
 .dropdown-menu {
     width: 233px;
 }
+.custom-navbar-toggler {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+}
+
+@media (max-width: 999px) {
+    .custom-navbar-toggler {
+        display: block;
+    }
+}
+
+@media (max-width: 567px) {
+    .row p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .row h2 {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+}
+
+/* Base navbar styles */
+.navbar-nav .nav-item {
+    position: relative;
+}
+
+/* Nút chuông thông báo */
+.bell-container {
+    background-color: #f8d146;
+    /* Màu vàng nhạt cho nút chuông */
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition:
+        background-color 0.3s,
+        transform 0.3s ease;
+}
+
+/* Hiệu ứng hover cho nút chuông */
+.bell-container:hover {
+    background-color: #f1c40f;
+    /* Màu vàng đậm hơn khi hover */
+    transform: scale(1.1);
+}
+
+/* Thông báo chưa đọc */
+#notificationCount {
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #e74c3c;
+    /* Đỏ cho badge */
+}
+
+/* Dropdown thông báo */
+.notification-dropdown {
+    padding: 0;
+    margin-top: 0.5rem !important;
+    width: 320px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border: none;
+    background-color: #fff;
+}
+
+/* Header của dropdown */
+.notification-header {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    border-radius: 8px 8px 0 0;
+}
+
+.notification-header h6 {
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Thân thông báo với thanh cuộn */
+.notification-body {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+/* Danh sách thông báo */
+#notificationList {
+    margin: 0;
+    padding: 0;
+}
+
+#notificationList .list-group-item {
+    padding: 12px 20px;
+    border-left: none;
+    border-right: none;
+    border-color: #eee;
+    transition: background-color 0.2s ease;
+}
+
+/* Hiệu ứng hover cho mỗi mục thông báo */
+#notificationList .list-group-item:hover {
+    background-color: #f1f1f1;
+}
+
+/* Tô đậm tên nhân viên trong thông báo */
+#notificationList .list-group-item strong {
+    color: #2c3e50;
+    margin-right: 5px;
+}
+
+/* Thanh cuộn tùy chỉnh cho danh sách thông báo */
+.notification-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.notification-body::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.notification-body::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Màu cho thông báo rỗng */
+.text-muted {
+    color: #6c757d !important;
+    font-size: 0.9rem;
+}
+
+/* Animation cho thông báo mới */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#notificationList .list-group-item {
+    animation: fadeIn 0.3s ease-out;
+}
