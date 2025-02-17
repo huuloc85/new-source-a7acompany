@@ -4,19 +4,33 @@
         table {
             overflow: auto !important;
         }
-        thead > tr:first-child > :first-child,
-        tbody > tr > :first-child {
+        thead > tr:first-child > .freeze:first-child,
+        tbody > tr > .freeze:first-child {
             position: sticky;
             left: 0;
             z-index: 2;
             min-width: 5rem;
         }
 
-        thead > tr:first-child > :nth-child(2),
-        tbody > tr > :nth-child(2) {
+        thead > tr:first-child > .freeze:nth-child(2),
+        tbody > tr > .freeze:nth-child(2) {
             position: sticky;
             left: 5rem;
-            z-index: 1;
+            z-index: 2;
+        }
+
+        thead > tr:first-child > .freeze:nth-child(3),
+        tbody > tr > .freeze:nth-child(3) {
+            position: sticky;
+            left: 14.7rem;
+            z-index: 2;
+        }
+
+        thead > tr:first-child > .freeze:nth-child(4),
+        tbody > tr > .freeze:nth-child(4) {
+            position: sticky;
+            left: 21.2rem;
+            z-index: 2;
         }
     </style>
 @endsection
@@ -280,37 +294,37 @@
                                                             ->TotalMonthQuantities()
                                                             ->where('month', $monthNearly)
                                                             ->where('status', 1)
-                                                            ->value('totalQuan') ?? 0; //tổng hàng sản xuất
+                                                            ->value('totalQuan') ?? 0; // tổng hàng sản xuất
                                                     $importedQuan =
                                                         $product
                                                             ->TotalMonthQuantities()
                                                             ->where('month', $monthNearly)
                                                             ->where('status', 2)
-                                                            ->value('totalQuan') ?? 0; //tổng hàng kiểm 200%
+                                                            ->value('totalQuan') ?? 0; // tổng hàng kiểm 200%
                                                     $exportedQuan =
                                                         $product
                                                             ->TotalMonthQuantities()
                                                             ->where('month', $monthNearly)
                                                             ->where('status', 3)
-                                                            ->value('totalQuan') ?? 0; //tổng số lượng đã xuất
+                                                            ->value('totalQuan') ?? 0; // tổng số lượng đã xuất
                                                     $stockQuan =
                                                         $product
                                                             ->TotalMonthQuantities()
                                                             ->where('month', $monthNearly)
                                                             ->where('status', 4)
-                                                            ->value('totalQuan') ?? 0; //tồn đầu kỳ
+                                                            ->value('totalQuan') ?? 0; // tồn đầu kỳ
                                                     $stockQuan200 =
                                                         $product
                                                             ->TotalMonthQuantities()
                                                             ->where('month', $monthNearly)
                                                             ->where('status', 5)
-                                                            ->value('totalQuan') ?? 0; //tồn đầu kỳ 200%
+                                                            ->value('totalQuan') ?? 0; // tồn đầu kỳ 200%
                                                     $errorQuantity =
                                                         $product
                                                             ->TotalMonthQuantities()
                                                             ->where('month', $monthNearly)
                                                             ->where('status', 6)
-                                                            ->value('totalQuan') ?? 0; //hàng lỗi
+                                                            ->value('totalQuan') ?? 0; // hàng lỗi
                                                     $stockQuanMOQ =
                                                         $product
                                                             ->TotalMonthQuantities()
@@ -318,15 +332,15 @@
                                                             ->where('status', 7)
                                                             ->value('totalQuan') ?? 0; // MOQ
 
-                                                    $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; //đã kiểm 200%
+                                                    $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; // đã kiểm 200%
                                                     $stockEndQuan =
-                                                        $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; //tồn cuối kỳ
+                                                        $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; // tồn cuối kỳ
                                                     $stockNoneCheck200 =
                                                         $stockQuan +
                                                         $prorealityQuan -
                                                         $exportedQuan -
                                                         $checked200 -
-                                                        $errorQuantity; //số lượng hàng chưa kiểm 200%
+                                                        $errorQuantity; // số lượng hàng chưa kiểm 200%
                                                     $quantityCaTon = $stockQuanMOQ / $product->quanEntityBin;
                                                     $planTime =
                                                         (((($stockQuanMOQ / $product->CAV) * $product->cycle) /
@@ -605,21 +619,25 @@
                                             class="table-light text-uppercase text-center align-middle"
                                         >
                                             <tr>
-                                                <th>STT</th>
-                                                <th>Tên linh kiện</th>
+                                                <th class="freeze">STT</th>
+                                                <th class="freeze">
+                                                    Tên linh kiện
+                                                </th>
                                                 @if ($keyTab == 'import-200')
-                                                    <th>
+                                                    <th class="freeze">
                                                         Tồn đầu kỳ
                                                         <br />
                                                         hàng 200%
                                                     </th>
-                                                    <th>
+                                                    <th class="freeze">
                                                         Phát sinh
                                                         <br />
                                                         kiểm hàng 200%
                                                     </th>
                                                 @else
-                                                    <th>Tổng cộng</th>
+                                                    <th class="freeze">
+                                                        Tổng cộng
+                                                    </th>
                                                 @endif
 
                                                 @foreach ($listDate as $key => $date)
@@ -636,10 +654,12 @@
                                         <tbody class="text-center align-middle">
                                             @foreach ($products as $product)
                                                 <tr>
-                                                    <th>
+                                                    <th class="freeze">
                                                         {{ $loop->iteration }}
                                                     </th>
-                                                    <td class="text-start">
+                                                    <td
+                                                        class="text-start freeze"
+                                                    >
                                                         <a
                                                             href="{{ route('admin.product.detail', $product->id) }}"
                                                         >
@@ -648,14 +668,14 @@
                                                     </td>
 
                                                     @if ($keyTab == 'import-200')
-                                                        <td>
+                                                        <td class="freeze">
                                                             {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0) }}
                                                         </td>
-                                                        <td>
+                                                        <td class="freeze">
                                                             {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
                                                         </td>
                                                     @else
-                                                        <td>
+                                                        <td class="freeze">
                                                             {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
                                                         </td>
                                                     @endif

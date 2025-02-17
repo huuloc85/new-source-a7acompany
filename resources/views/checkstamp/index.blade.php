@@ -1,5 +1,15 @@
 @extends('layouts.'.$layout)
 
+@section('styles')
+    <style>
+        tr[data-id]:not(.highlight-row) td,
+        tr[data-id]:not(.highlight-row) th {
+            background-color: transparent;
+            border-color: transparent;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -206,8 +216,6 @@
                         @endif
                     </div>
                 </div>
-
-
             </div>
         </div>
     </div>

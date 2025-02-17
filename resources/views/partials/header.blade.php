@@ -29,7 +29,7 @@
                             href="#"
                             id="navbarDropdown"
                             role="button"
-                            data-bs-toggle="dropdown"
+                            data-toggle="dropdown"
                             aria-expanded="false"
                         >
                             <div
@@ -72,7 +72,7 @@
                         href="#"
                         id="navbarDropdown"
                         role="button"
-                        data-bs-toggle="dropdown"
+                        data-toggle="dropdown"
                         aria-expanded="false"
                     >
                         <div class="d-flex align-items-center">

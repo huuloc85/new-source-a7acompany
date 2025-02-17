@@ -2,60 +2,22 @@
 
 @section('styles')
     <style>
-        .date-list {
-            margin-left: 0px !important;
-            padding: 0px !important;
+        table {
+            overflow: auto !important;
+        }
+        thead > tr:first-child > .freeze:first-child,
+        tbody > tr > .freeze:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            min-width: 5rem;
         }
 
-        .mw-input {
-            max-width: 22px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .mw-input-wc {
-            max-width: 70px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .N {
-            color: blue;
-            font-weight: bolder;
-        }
-
-        .D {
-            color: black;
-            font-weight: bolder;
-        }
-
-        .X {
-            color: red;
-            font-weight: bolder;
-        }
-
-        .TC {
-            color: red;
-            font-weight: bolder;
-        }
-
-        .LN {
-            color: red;
-            font-weight: bolder;
-        }
-
-        input {
-            font-weight: bolder;
-        }
-
-        /* .keywork {
-                            border: 1px solid black;
-                            width: 25px;
-                            text-align: center;
-                        } */
-
-        .bg-yellow {
-            background-color: yellow;
+        thead > tr:first-child > .freeze:nth-child(2),
+        tbody > tr > .freeze:nth-child(2) {
+            position: sticky;
+            left: 5.55rem;
+            z-index: 2;
         }
     </style>
 @endsection
@@ -146,8 +108,10 @@
                                             class="table-light text-center uppercase align-middle"
                                         >
                                             <tr>
-                                                <th>Mã NV</th>
-                                                <th>Họ và tên</th>
+                                                <th class="freeze">Mã NV</th>
+                                                <th class="freeze">
+                                                    Họ và tên
+                                                </th>
                                                 @foreach ($dates as $date)
                                                     @if ($key == 'part-time' && $formatDate->dayOfWeek($date) == 'T7')
                                                         <th>
@@ -182,11 +146,13 @@
                                                         @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
                                                             @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
                                                                 <tr>
-                                                                    <td>
+                                                                    <td
+                                                                        class="freeze"
+                                                                    >
                                                                         {{ $celenderDetailHNHC->employee->code }}
                                                                     </td>
                                                                     <td
-                                                                        class="text-start"
+                                                                        class="text-start freeze"
                                                                     >
                                                                         {{ $celenderDetailHNHC->employee->name }}
                                                                     </td>
@@ -214,10 +180,12 @@
                                             @if ($key == 'A7A' && isset($celenderDetailsEatroom))
                                                 @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
                                                     <tr>
-                                                        <td>
+                                                        <td class="freeze">
                                                             {{ $celenderDetailEatroom->employee->code }}
                                                         </td>
-                                                        <td class="text-start">
+                                                        <td
+                                                            class="text-start freeze"
+                                                        >
                                                             {{ $celenderDetailEatroom->employee->name }}
                                                         </td>
                                                         @foreach ($dates as $key => $date)
@@ -243,10 +211,12 @@
                                             @if ($key == 'part-time' && isset($celenderDetailsWC))
                                                 @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
                                                     <tr>
-                                                        <td>
+                                                        <td class="freeze">
                                                             {{ $celenderDetailWC->employee->code }}
                                                         </td>
-                                                        <td class="text-start">
+                                                        <td
+                                                            class="text-start freeze"
+                                                        >
                                                             {{ $celenderDetailWC->employee->name }}
                                                         </td>
 
@@ -280,10 +250,12 @@
                                             @if ($key == 'women' && isset($celenderDetailsWCCleanWomen))
                                                 @foreach ($celenderDetailsWCCleanWomen as $key => $womenWC)
                                                     <tr>
-                                                        <td>
+                                                        <td class="freeze">
                                                             {{ $womenWC->employee->code }}
                                                         </td>
-                                                        <td class="text-start">
+                                                        <td
+                                                            class="text-start freeze"
+                                                        >
                                                             {{ $womenWC->employee->name }}
                                                         </td>
                                                         @foreach ($dates as $key => $date)
@@ -309,10 +281,12 @@
                                             @if ($key == 'men' && isset($celenderDetailsWCCleanMen))
                                                 @foreach ($celenderDetailsWCCleanMen as $key => $menWC)
                                                     <tr>
-                                                        <td>
+                                                        <td class="freeze">
                                                             {{ $menWC->employee->code }}
                                                         </td>
-                                                        <td class="text-start">
+                                                        <td
+                                                            class="text-start freeze"
+                                                        >
                                                             {{ $menWC->employee->name }}
                                                         </td>
                                                         @foreach ($dates as $key => $date)
@@ -367,5 +341,7 @@
                 $(this).addClass($(this).val());
             });
         });
+
+        document.getElementByTagName('table');
     </script>
 @endsection
