@@ -107,6 +107,11 @@
                     'icon' => 'fas fa-history fa-lg',
                     'path' => 'admin.product.barcode.history',
                 ],
+                [
+                    'label' => 'Yêu Cầu In Tem',
+                    'icon' => 'fas fa-print fa-lg',
+                    'path' => 'admin.checkstamp',
+                ],
             ],
         ],
         [
@@ -205,6 +210,11 @@
                     'icon' => 'fas fa-history fa-lg',
                     'path' => 'admin.product.barcode.history',
                 ],
+                [
+                    'label' => 'Yêu Cầu In Tem',
+                    'icon' => 'fas fa-print fa-lg',
+                    'path' => 'admin.checkstamp',
+                ],
             ],
         ],
     ];
@@ -219,6 +229,22 @@
             'label' => 'Lịch Sử Hoạt Động',
             'icon' => 'fas fa-history fa-lg',
             'path' => 'admin.employee-history-check',
+        ],
+        [
+            'label' => 'Tem Nhãn',
+            'icon' => 'fas fa-envelopes-bulk fa-lg',
+            'children' => [
+                [
+                    'label' => 'Yêu Cầu In Tem',
+                    'icon' => 'fas fa-clipboard-list fa-lg',
+                    'path' => 'admin.send-stamp',
+                ],
+                [
+                    'label' => 'Trạng Thái In Tem',
+                    'icon' => 'fas fa-clipboard-check fa-lg',
+                    'path' => 'admin.checkstamp-employee',
+                ],
+            ],
         ],
     ];
 
@@ -235,7 +261,7 @@
 
     if (! $isHighRole) {
         array_push($navConfig, ...$navEmployee);
-        ! $isQA ? array_push($navConfig, ...$navQA, ...$navProfile) : array_push($navConfig, ...$navNotQA, ...$navProfile);
+        $isQA ? array_push($navConfig, ...$navQA, ...$navProfile) : array_push($navConfig, ...$navNotQA, ...$navProfile);
     }
 
     $isActive = function ($path) {
@@ -244,20 +270,49 @@
 @endphp
 
 <aside class="sidebar sidebar-default navs-rounded-all sidebar-base no-print">
-    <div class="sidebar-header d-flex align-items-center justify-content-center flex-column">
-        <a href="{{ route('admin.home') }}" class="navbar-brand text-center d-flex flex-column align-items-center">
-            <img src="{{ asset('assets/img/logos/VVP.png') }}" alt="" width="70%"
-                title="VINH VINH PHAT ONE MEMBER CO.LTD" />
+    <div
+        class="sidebar-header d-flex align-items-center justify-content-center flex-column"
+    >
+        <a
+            href="{{ route('admin.home') }}"
+            class="navbar-brand text-center d-flex flex-column align-items-center"
+        >
+            <img
+                src="{{ asset('assets/img/logos/VVP.png') }}"
+                alt=""
+                width="70%"
+                title="VINH VINH PHAT ONE MEMBER CO.LTD"
+            />
             <div class="logo-text">VINH VINH PHAT ONE MEMBER CO. LTD</div>
         </a>
-        <div class="sidebar-toggle" data-toggle="sidebar" data-active="true" style="margin: 150px -7px 0 0"
-            title="Toggle Sidebar">
+        <div
+            class="sidebar-toggle"
+            data-toggle="sidebar"
+            data-active="true"
+            style="margin: 150px -7px 0 0"
+            title="Toggle Sidebar"
+        >
             <i class="icon" style="width: 30px; height: 30px">
-                <svg width="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="currentColor" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round"></path>
+                <svg
+                    width="40"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M4.25 12.2744L19.25 12.2744"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    ></path>
+                    <path
+                        d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    ></path>
                 </svg>
             </i>
         </div>
