@@ -341,7 +341,172 @@
                 $(this).addClass($(this).val());
             });
         });
+        // Select all table elements
+        const tables = document.querySelectorAll('.table');
 
-        document.getElementByTagName('table');
+        // Define shift types
+        const SHIFT_TYPES = {
+            N: 'Ca ngày',
+            D: 'Ca đêm',
+            X: 'Nghỉ',
+            TC: 'Tăng cường đêm',
+            LN: 'Làm thêm ca ngày',
+            VS: 'Vệ sinh',
+        };
+
+        // Create filter container
+        function createFilterContainer() {
+            const filterContainer = document.createElement('div');
+            filterContainer.className =
+                'filter-container d-flex flex-wrap gap-3 mb-3';
+
+            // Employee name filter (input field)
+            const employeeFilter = document.createElement('div');
+            employeeFilter.className = 'form-group';
+            employeeFilter.innerHTML = `
+        <label for="employeeFilter" class="form-label">Tên Nhân Viên:</label>
+        <input type="text" id="employeeFilter" class="form-control form-control-sm" placeholder="Nhập tên nhân viên" />
+    `;
+
+            // Shift type filter
+            const shiftFilter = document.createElement('div');
+            shiftFilter.className = 'form-group';
+            shiftFilter.innerHTML = `
+        <label for="shiftFilter" class="form-label">Ca làm việc:</label>
+        <select id="shiftFilter" class="form-select form-select-sm">
+            <option value="">Tất cả</option>
+            ${Object.entries(SHIFT_TYPES)
+                .map(
+                    ([key, value]) =>
+                        `<option value="${key}">${value} (${key})</option>`,
+                )
+                .join('')}
+        </select>
+    `;
+
+            filterContainer.appendChild(employeeFilter);
+            filterContainer.appendChild(shiftFilter);
+
+            return filterContainer;
+        }
+
+        // Initialize filters
+        function initializeFilters() {
+            const tabContent = document.getElementById('myTabContent');
+            const filterContainer = createFilterContainer();
+            tabContent.insertBefore(filterContainer, tabContent.firstChild);
+
+            // Add event listeners
+            const filters = {
+                shift: document.getElementById('shiftFilter'),
+                employee: document.getElementById('employeeFilter'),
+            };
+
+            Object.values(filters).forEach((filter) => {
+                filter.addEventListener('input', () => applyFilters(filters));
+                filter.addEventListener('change', () => applyFilters(filters));
+            });
+        }
+
+        // Apply filters
+        function applyFilters(filters) {
+            const activeTab = document.querySelector('.tab-pane.active');
+            if (!activeTab) return;
+
+            const rows = activeTab.querySelectorAll('tbody tr');
+            rows.forEach((row) => {
+                if (row.cells.length < 2) {
+                    // Show category headers always
+                    row.style.display = '';
+                    return;
+                }
+
+                const shiftMatch = filters.shift.value
+                    ? Array.from(row.cells)
+                          .slice(2)
+                          .some(
+                              (cell) =>
+                                  cell.textContent.trim() ===
+                                  filters.shift.value,
+                          )
+                    : true;
+
+                const employeeMatch = filters.employee.value
+                    ? row.cells[1]?.textContent
+                          .trim()
+                          .toLowerCase()
+                          .includes(filters.employee.value.toLowerCase())
+                    : true;
+
+                row.style.display = shiftMatch && employeeMatch ? '' : 'none';
+            });
+
+            // Show category headers if any child rows are visible
+            const categories = activeTab.querySelectorAll('tr.fw-bold.bg-info');
+            categories.forEach((category) => {
+                let nextRow = category.nextElementSibling;
+                let hasVisibleChildren = false;
+
+                while (nextRow && !nextRow.classList.contains('fw-bold')) {
+                    if (nextRow.style.display !== 'none') {
+                        hasVisibleChildren = true;
+                        break;
+                    }
+                    nextRow = nextRow.nextElementSibling;
+                }
+
+                category.style.display = hasVisibleChildren ? '' : 'none';
+            });
+        }
+
+        // Add tab change handler
+        function handleTabChange() {
+            const tabButtons = document.querySelectorAll(
+                '[data-bs-toggle="tab"]',
+            );
+            tabButtons.forEach((button) => {
+                button.addEventListener('shown.bs.tab', () => {
+                    const filters = {
+                        shift: document.getElementById('shiftFilter'),
+                        employee: document.getElementById('employeeFilter'),
+                    };
+                    applyFilters(filters);
+                });
+            });
+        }
+
+        // Add clear filters button
+        function addClearFiltersButton() {
+            const filterContainer = document.querySelector('.filter-container');
+            const clearButton = document.createElement('div');
+            clearButton.className = 'form-group d-flex align-items-end';
+            clearButton.innerHTML = `
+        <button class="btn btn-outline-secondary btn-sm" id="clearFilters">
+            Xóa bộ lọc
+        </button>
+    `;
+
+            clearButton
+                .querySelector('#clearFilters')
+                .addEventListener('click', () => {
+                    document.getElementById('shiftFilter').value = '';
+                    document.getElementById('employeeFilter').value = '';
+
+                    const filters = {
+                        shift: document.getElementById('shiftFilter'),
+                        employee: document.getElementById('employeeFilter'),
+                    };
+                    applyFilters(filters);
+                });
+
+            filterContainer.appendChild(clearButton);
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFilters();
+            handleTabChange();
+            addClearFiltersButton();
+        });
     </script>
 @endsection
