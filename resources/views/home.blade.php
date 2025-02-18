@@ -1,4 +1,5 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
+
 @section('styles')
     <style>
         .titleWidget {

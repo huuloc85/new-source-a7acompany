@@ -1,6 +1,9 @@
 @extends('layouts.layout')
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/add-packing-stamp.css') }}" />
+    <link
+        rel="stylesheet"
+        href="{{ asset('assets/css/add-packing-stamp.css') }}"
+    />
 @endsection
 
 @section('content')
@@ -13,14 +16,18 @@
                     </div>
                 </div>
             </div>
-        </div><br>
+        </div>
+        <br />
         <div class="table-responsive">
             <div class="container-gird no-break">
                 <div class="grid-container">
                     @if (isset($binArray))
                         @foreach ($binArray as $key => $bin)
                             <div class="container grid-item">
-                                <table class="table table-bordered" style="margin-top: 5px; margin-bottom: 5px;">
+                                <table
+                                    class="table table-bordered"
+                                    style="margin-top: 5px; margin-bottom: 5px"
+                                >
                                     <tr>
                                         <td class="text-start w-120 w-5">
                                             Tên sản
@@ -29,15 +36,23 @@
                                             <br />
                                             品名
                                         </td>
-                                        <td colspan="2" class="text-center jtf-center">
+                                        <td
+                                            colspan="2"
+                                            class="text-center jtf-center"
+                                        >
                                             <p class="fw-bold mb-0 fs-20 fs-13">
                                                 {{ $product->name }}
                                             </p>
                                         </td>
-                                        <td class="align-content-center w-120 w-5 code">
+                                        <td
+                                            class="align-content-center w-120 w-5 code"
+                                        >
                                             CODE
                                         </td>
-                                        <td colspan="2" class="text-center jtf-center">
+                                        <td
+                                            colspan="2"
+                                            class="text-center jtf-center"
+                                        >
                                             <p class="fw-bold mb-0 fs-13">
                                                 {{ $product->code }}
                                             </p>
@@ -49,15 +64,19 @@
                                             <br />
                                             原材料
                                         </td>
-                                        <td colspan="2" class="text-center align-content-center">
+                                        <td
+                                            colspan="2"
+                                            class="text-center align-content-center"
+                                        >
                                             <p class="mb-0 fs-13">
                                                 {{ $product->material }}
                                             </p>
                                         </td>
-                                        <td class="text-center">
-                                            Màu sắc 色
-                                        </td>
-                                        <td colspan="2" class="text-center align-content-center">
+                                        <td class="text-center">Màu sắc 色</td>
+                                        <td
+                                            colspan="2"
+                                            class="text-center align-content-center"
+                                        >
                                             <p class="mb-0 fs-13">
                                                 {{ $product->color }}
                                             </p>
@@ -69,7 +88,10 @@
                                             <br />
                                             数量
                                         </td>
-                                        <td colspan="5" class="text-center align-content-center">
+                                        <td
+                                            colspan="5"
+                                            class="text-center align-content-center"
+                                        >
                                             <p class="fw-bold mb-0 fs-13">
                                                 {{ $product->quantity_per_package }}PCS
                                             </p>
@@ -81,7 +103,10 @@
                                             <br />
                                             ロット No
                                         </td>
-                                        <td colspan="5" class="text-center align-content-center">
+                                        <td
+                                            colspan="5"
+                                            class="text-center align-content-center"
+                                        >
                                             <div class="lot-container">
                                                 <p class="fw-bold mb-0 fs-13">
                                                     {{ $lotNo['lot'] }}
@@ -113,12 +138,18 @@
                                             <br />
                                             検査
                                         </td>
-                                        <td colspan="2" class="text-center align-content-center">
+                                        <td
+                                            colspan="2"
+                                            class="text-center align-content-center"
+                                        >
                                             Kiểm tra 100%
                                             <br />
                                             檢查(100%)
                                         </td>
-                                        <td colspan="3" class="text-center align-content-center">
+                                        <td
+                                            colspan="3"
+                                            class="text-center align-content-center"
+                                        >
                                             Kiểm tra 200%
                                             <br />
                                             檢查(200%)
@@ -144,8 +175,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-center">
-                                            (Thời gian)
-                                            時間
+                                            (Thời gian) 時間
                                         </td>
                                         <td colspan="2">
                                             {{ $lotNo['date_time'] }}
@@ -159,16 +189,19 @@
             </div>
         </div>
     </div>
-    <input type="hidden" id="sendStampId" value="{{ $sendStamp->id }}">
+    <input type="hidden" id="sendStampId" value="{{ $sendStamp->id }}" />
     @if (isset($binArray))
         <div class="no-print">
-            <a class="btn btn-secondary" id="save-print" data-url="{{ route('admin.stamp.save.print') }}" href="#">
+            <a
+                class="btn btn-secondary"
+                id="save-print"
+                data-url="{{ route('admin.stamp.save.print') }}"
+                href="#"
+            >
                 Print
             </a>
         </div>
     @endif
-    </div>
-    </div>
 @endsection
 
 @section('scripts')
@@ -187,12 +220,15 @@
                         sendStampId: sendStampId,
                         _token: '{{ csrf_token() }}',
                     },
-                    success: function(response) {
+                    success: function (response) {
                         console.log(response.status);
                         if (callback) callback(); // Gọi callback sau khi lưu thành công
                     },
-                    error: function(xhr, status, error) {
-                        console.error('Đã xảy ra lỗi khi gửi lưu lịch sử print:', error);
+                    error: function (xhr, status, error) {
+                        console.error(
+                            'Đã xảy ra lỗi khi gửi lưu lịch sử print:',
+                            error,
+                        );
                     },
                 });
             }
@@ -214,8 +250,8 @@
 
             if (lastPrintTime === null) {
                 lastPrintTime = currentTime;
-                savePrint(sendStampId, function() {
-                    setTimeout(function() {
+                savePrint(sendStampId, function () {
+                    setTimeout(function () {
                         window.print();
                         isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                     }, 100);
@@ -234,8 +270,8 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             lastPrintTime = currentTime;
-                            savePrint(sendStampId, function() {
-                                setTimeout(function() {
+                            savePrint(sendStampId, function () {
+                                setTimeout(function () {
                                     window.print();
                                     isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                                 }, 100);
@@ -244,8 +280,8 @@
                     });
                 } else {
                     lastPrintTime = currentTime;
-                    savePrint(sendStampId, function() {
-                        setTimeout(function() {
+                    savePrint(sendStampId, function () {
+                        setTimeout(function () {
                             window.print();
                             isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                         }, 100);
@@ -254,8 +290,8 @@
             }
         }
 
-        $(document).ready(function() {
-            $(document).keydown(function(event) {
+        $(document).ready(function () {
+            $(document).keydown(function (event) {
                 // Kích hoạt Ctrl + P để lưu lịch sử in
                 if (event.ctrlKey && event.key === 'p') {
                     event.preventDefault(); // Ngăn hành động mặc định
@@ -279,7 +315,7 @@
                 }
             });
 
-            $('#save-print').click(function(event) {
+            $('#save-print').click(function (event) {
                 event.preventDefault();
                 handlePrint(); // Gọi hàm in khi nhấn nút
             });

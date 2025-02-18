@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @php
     $workLegends = [
@@ -28,7 +28,10 @@
                 </div>
 
                 <div class="card-body">
-                    <a class="btn btn-link" href="{{ route('admin.employee-show.celender') }}">
+                    <a
+                        class="btn btn-link"
+                        href="{{ route('admin.employee-show.celender') }}"
+                    >
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
@@ -39,8 +42,12 @@
                                     <h6 class="fw-bold m-0">Chú thích</h6>
                                 </li>
                                 @foreach ($workLegends as $workLegend)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span class="badge {{ $workLegend['class'] }}">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center"
+                                    >
+                                        <span
+                                            class="badge {{ $workLegend['class'] }}"
+                                        >
                                             {{ $workLegend['id'] }}
                                         </span>
                                         <span class="fw-semibold">
@@ -61,27 +68,31 @@
                                 @if (isset($celenderDetailHNHC))
                                     @foreach ($dates as $key => $date)
                                         @php
-                                            $fill = 'day' . $key + 1;
+                                            $fill = 'day'.$key + 1;
                                             $isWeekend =
                                                 $formatDate->dayOfWeek($date) == 'T7' ||
                                                 $formatDate->dayOfWeek($date) == 'CN';
                                         @endphp
 
                                         <li
-                                            class="list-group-item d-flex justify-content-between align-items-center {{ $isWeekend ? 'text-bg-secondary' : '' }}">
+                                            class="list-group-item d-flex justify-content-between align-items-center {{ $isWeekend ? 'text-bg-secondary' : '' }}"
+                                        >
                                             <span>
                                                 {{ $formatDate->formatTimeDMY($date) }}
                                                 -
                                                 {{ $formatDate->dayOfWeek($date) }}
                                             </span>
                                             <span
-                                                class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}">
+                                                class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}"
+                                            >
                                                 {{ $celenderDetailHNHC->$fill ?? '' }}
                                             </span>
                                         </li>
                                     @endforeach
                                 @else
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center"
+                                    >
                                         Hiện tại chưa có phân công.
                                     </li>
                                 @endif
@@ -99,7 +110,7 @@
                                 @if (isset($celenderDetailEatroom))
                                     @foreach ($dates as $key => $date)
                                         @php
-                                            $fill = 'day' . $key + 1;
+                                            $fill = 'day'.$key + 1;
                                         @endphp
 
                                         @if ($celenderDetailEatroom->$fill != null)
@@ -107,13 +118,17 @@
                                                 $checkEatRoom = true;
                                             @endphp
 
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <li
+                                                class="list-group-item d-flex justify-content-between align-items-center"
+                                            >
                                                 <span>
                                                     {{ $formatDate->formatTimeDMY($date) }}
                                                     -
                                                     {{ $formatDate->dayOfWeek($date) }}
                                                 </span>
-                                                <span class="badge text-bg-warning">
+                                                <span
+                                                    class="badge text-bg-warning"
+                                                >
                                                     VS
                                                 </span>
                                             </li>
@@ -121,7 +136,7 @@
                                     @endforeach
                                 @endif
 
-                                @if (!$checkEatRoom)
+                                @if (! $checkEatRoom)
                                     <li class="list-group-item">
                                         Hiện tại chưa có phân công.
                                     </li>
@@ -137,7 +152,7 @@
                                     @foreach ($dates as $key => $date)
                                         @if ($formatDate->dayOfWeek($date) == 'T7')
                                             @php
-                                                $fill = 'day' . ($keyDate + 1);
+                                                $fill = 'day'.($keyDate + 1);
                                                 $keyDate += 1;
                                             @endphp
 
@@ -147,13 +162,16 @@
                                                 @endphp
 
                                                 <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    class="list-group-item d-flex justify-content-between align-items-center"
+                                                >
                                                     <span>
                                                         {{ $formatDate->formatTimeDMY($date) }}
                                                         -
                                                         {{ $formatDate->dayOfWeek($date) }}
                                                     </span>
-                                                    <span class="badge text-bg-warning">
+                                                    <span
+                                                        class="badge text-bg-warning"
+                                                    >
                                                         VS
                                                     </span>
                                                 </li>
@@ -162,7 +180,7 @@
                                     @endforeach
                                 @endif
 
-                                @if (!$checkWC)
+                                @if (! $checkWC)
                                     <li class="list-group-item">
                                         Hiện tại chưa có phân công.
                                     </li>
@@ -180,7 +198,7 @@
                                     @if (isset($celenderDetailWCCleanWomen))
                                         @foreach ($dates as $key => $date)
                                             @php
-                                                $fill = 'day' . ($key + 1);
+                                                $fill = 'day'.($key + 1);
                                             @endphp
 
                                             @if ($celenderDetailWCCleanWomen->$fill != null)
@@ -189,13 +207,16 @@
                                                 @endphp
 
                                                 <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    class="list-group-item d-flex justify-content-between align-items-center"
+                                                >
                                                     <span>
                                                         {{ $formatDate->formatTimeDMY($date) }}
                                                         -
                                                         {{ $formatDate->dayOfWeek($date) }}
                                                     </span>
-                                                    <span class="badge text-bg-warning">
+                                                    <span
+                                                        class="badge text-bg-warning"
+                                                    >
                                                         VS
                                                     </span>
                                                 </li>
@@ -203,7 +224,7 @@
                                         @endforeach
                                     @endif
 
-                                    @if (!$checkWCCleanWomen)
+                                    @if (! $checkWCCleanWomen)
                                         <li class="list-group-item">
                                             Hiện tại chưa có phân công.
                                         </li>
@@ -220,7 +241,7 @@
                                     @if (isset($celenderDetailWCCleanMen))
                                         @foreach ($dates as $key => $date)
                                             @php
-                                                $fill = 'day' . ($key + 1);
+                                                $fill = 'day'.($key + 1);
                                             @endphp
 
                                             @if ($celenderDetailWCCleanMen->$fill != null)
@@ -229,13 +250,16 @@
                                                 @endphp
 
                                                 <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                    class="list-group-item d-flex justify-content-between align-items-center"
+                                                >
                                                     <span>
                                                         {{ $formatDate->formatTimeDMY($date) }}
                                                         -
                                                         {{ $formatDate->dayOfWeek($date) }}
                                                     </span>
-                                                    <span class="badge text-bg-warning">
+                                                    <span
+                                                        class="badge text-bg-warning"
+                                                    >
                                                         VS
                                                     </span>
                                                 </li>
@@ -243,7 +267,7 @@
                                         @endforeach
                                     @endif
 
-                                    @if (!$checkWCCleanMen)
+                                    @if (! $checkWCCleanMen)
                                         <li class="list-group-item">
                                             Hiện tại chưa có phân công.
                                         </li>

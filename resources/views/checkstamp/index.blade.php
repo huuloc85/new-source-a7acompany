@@ -1,69 +1,15 @@
-@extends('layouts.layout')
-<style>
-    /* Animation keyframes for the highlight effect */
-    @keyframes highlightFade {
-        0% {
-            background-color: #fff7c4;
-            border-color: #ffd700;
-        }
+@extends('layouts.'.$layout)
 
-        100% {
+@section('styles')
+    <style>
+        tr[data-id]:not(.highlight-row) td,
+        tr[data-id]:not(.highlight-row) th {
             background-color: transparent;
             border-color: transparent;
         }
-    }
+    </style>
+@endsection
 
-    /* Style for the highlighted row */
-    .highlight-row {
-        animation: highlightFade 1s ease-in-out;
-        position: relative;
-    }
-
-    /* Style for the highlighted columns */
-    .highlight-column {
-        background-color: #fff7c4;
-        border: 2px solid #ffd700;
-        transition:
-            background-color 0.5s ease,
-            border-color 0.5s ease;
-    }
-
-    /* Highlighted cells inside the row */
-    .highlight-row td,
-    .highlight-row th {
-        background-color: #fff7c4 !important;
-        border: 2px solid #ffd700 !important;
-    }
-
-    /* Ensuring the highlight row stays on top */
-    tr[data-id] {
-        position: relative;
-        z-index: 1;
-    }
-
-    tr[data-id].highlight-row {
-        z-index: 2;
-    }
-
-    /* Ensure highlight for all rows when column highlight is active */
-    .highlight-column {
-        background-color: #fff7c4 !important;
-        border-color: #ffd700 !important;
-    }
-
-    /* Optional: For making sure the row's color stays visible while animation */
-    tr[data-id].highlight-row {
-        background-color: #fff7c4;
-        border: 2px solid #ffd700;
-    }
-
-    /* Optional: Make sure when not hovering or clicked, it resets properly */
-    tr[data-id]:not(.highlight-row) td,
-    tr[data-id]:not(.highlight-row) th {
-        background-color: transparent;
-        border-color: transparent;
-    }
-</style>
 @section('content')
     <div class="row">
         <div class="col-12">

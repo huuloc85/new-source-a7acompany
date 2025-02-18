@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 <style>
     @media (max-width: 768px) {
@@ -119,13 +119,22 @@
                             {{ Auth()->user()->role->role_name ?? '' }}
                         </div>
                     </div>
-                    <form method="GET" action="{{ route('admin.employee.attendence_caculate_records') }}">
+                    <form
+                        method="GET"
+                        action="{{ route('admin.employee.attendence_caculate_records') }}"
+                    >
                         <div class="form-group">
                             <label class="form-label" for="month">
                                 Chọn tháng:
                             </label>
-                            <input type="month" id="month" name="month" value="{{ $currentMonth }}"
-                                class="form-control" onchange="this.form.submit()" />
+                            <input
+                                type="month"
+                                id="month"
+                                name="month"
+                                value="{{ $currentMonth }}"
+                                class="form-control"
+                                onchange="this.form.submit()"
+                            />
                         </div>
                     </form>
                     <div class="table-responsive">
@@ -135,12 +144,23 @@
                             </p>
                         @else
                             <div class="form-check form-switch ps-5">
-                                <input class="form-check-input" type="checkbox" role="switch" id="filter_absent" />
-                                <label class="form-check-label" for="filter_absent">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    role="switch"
+                                    id="filter_absent"
+                                />
+                                <label
+                                    class="form-check-label"
+                                    for="filter_absent"
+                                >
                                     Hiển thị những ngày quên chấm công
                                 </label>
                             </div>
-                            <table id="attendanceTable" class="table table-hover table-bordered">
+                            <table
+                                id="attendanceTable"
+                                class="table table-hover table-bordered"
+                            >
                                 <thead>
                                     <tr class="text-center">
                                         <th class="text-uppercase">STT</th>
@@ -189,14 +209,22 @@
                                                 {{ $record->day_of_week }}
                                             </td>
 
-                                            <td data-label="Giờ Vào" class="{{ $record->time_in ? '' : 'text-danger' }}">
+                                            <td
+                                                data-label="Giờ Vào"
+                                                class="{{ $record->time_in ? '' : 'text-danger' }}"
+                                            >
                                                 {{ $record->time_in ? \Carbon\Carbon::parse($record->time_in)->format('H:i:s') : 'Chưa chấm công vào' }}
                                             </td>
-                                            <td data-label="Giờ Ra" class="{{ $record->time_out ? '' : 'text-danger' }}">
+                                            <td
+                                                data-label="Giờ Ra"
+                                                class="{{ $record->time_out ? '' : 'text-danger' }}"
+                                            >
                                                 {{ $record->time_out ? \Carbon\Carbon::parse($record->time_out)->format('H:i:s') : 'Chưa chấm công ra' }}
                                             </td>
-                                            <td data-label="Tổng Giờ Làm Việc (H)"
-                                                class="{{ $record->total_hours ? '' : 'text-danger' }}">
+                                            <td
+                                                data-label="Tổng Giờ Làm Việc (H)"
+                                                class="{{ $record->total_hours ? '' : 'text-danger' }}"
+                                            >
                                                 {{ $record->total_hours ? $record->total_hours : 'Chấm công không đủ' }}
                                             </td>
                                             <td data-label="Giờ Hành Chính (H)">
@@ -223,12 +251,12 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const filterCheckbox = document.getElementById('filter_absent');
             const attendanceTable = document.getElementById('attendanceTable');
             const rows = attendanceTable.querySelectorAll('tbody tr');
 
-            filterCheckbox.addEventListener('change', function() {
+            filterCheckbox.addEventListener('change', function () {
                 const showAbsentOnly = filterCheckbox.checked;
 
                 rows.forEach((row) => {

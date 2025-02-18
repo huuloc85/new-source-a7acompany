@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -9,21 +9,37 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('admin.product.detail', $product->id) }}" type="button" class="btn btn-link mb-3">
+                    <a
+                        href="{{ route('admin.product.detail', $product->id) }}"
+                        type="button"
+                        class="btn btn-link mb-3"
+                    >
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
-                    <form action="{{ route('admin.handle-update') }}" method="post">
+                    <form
+                        action="{{ route('admin.handle-update') }}"
+                        method="post"
+                    >
                         @csrf
-                        <input type="hidden" value="{{ $product->id }}" name="product_id" />
+                        <input
+                            type="hidden"
+                            value="{{ $product->id }}"
+                            name="product_id"
+                        />
                         <div class="row">
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">
                                         Mã liên kiện
                                     </label>
-                                    <input type="text" class="form-control" name="code" value="{{ $product->code }}"
-                                        disabled />
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="code"
+                                        value="{{ $product->code }}"
+                                        disabled
+                                    />
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -31,8 +47,13 @@
                                     <label class="form-label">
                                         Tên linh kiện
                                     </label>
-                                    <input type="text" class="form-control" name="code" value="{{ $product->name }}"
-                                        disabled />
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="code"
+                                        value="{{ $product->name }}"
+                                        disabled
+                                    />
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
@@ -41,9 +62,16 @@
                                         Ngày cập nhật
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input type="date" min="{{ date('Y-m-01') }}" max="{{ date('Y-m-t') }}"
-                                        class="form-control @error('name') is-invalid @enderror" placeholder="Ngày cập nhật"
-                                        name="date" value="{{ old('date') }}" required />
+                                    <input
+                                        type="date"
+                                        min="{{ date('Y-m-01') }}"
+                                        max="{{ date('Y-m-t') }}"
+                                        class="form-control @error('name') is-invalid @enderror"
+                                        placeholder="Ngày cập nhật"
+                                        name="date"
+                                        value="{{ old('date') }}"
+                                        required
+                                    />
                                     @error('date')
                                         <div class="text text-danger">
                                             {{ $message }}
@@ -57,9 +85,14 @@
                                         Số lượng
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input type="number" placeholder="Số lượng"
-                                        class="form-control @error('quantity') is-invalid @enderror" name="quantity"
-                                        value="{{ old('quantity') }}" required />
+                                    <input
+                                        type="number"
+                                        placeholder="Số lượng"
+                                        class="form-control @error('quantity') is-invalid @enderror"
+                                        name="quantity"
+                                        value="{{ old('quantity') }}"
+                                        required
+                                    />
                                     @error('quantity')
                                         <div class="text text-danger">
                                             {{ $message }}

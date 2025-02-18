@@ -79,11 +79,11 @@ class SendStampController extends Controller
 
     public function checkStamp(Request $request)
     {
-        $highlightId = $request->query('highlight');
-        $highlightRecord = null;
-        if ($highlightId) {
-            $highlightRecord = SendStamp::find($highlightId);
-        }
+        // $highlightId = $request->query('highlight');
+        // $highlightRecord = null;
+        // if ($highlightId) {
+        //     $highlightRecord = SendStamp::find($highlightId);
+        // }
 
         $query = SendStamp::query();
 
@@ -123,7 +123,7 @@ class SendStampController extends Controller
 
         $historyprint = $query->get();
 
-        return view('checkstamp.index', compact('historyprint', 'products', 'employees', 'highlightRecord'));
+        return view('checkstamp.index', compact('historyprint', 'products', 'employees'));
     }
 
     public function print($id)
@@ -356,7 +356,8 @@ class SendStampController extends Controller
         // Lấy danh sách tem đã in từ HistoryPrint
         $sendStamps = SendStamp::where('employee_id', $user->id)->pluck('id');
         $historyprint = HistoryPrint::whereIn('send_stamp_id', $sendStamps)->get();
+        $rejectedStamps = SendStamp::where('status', 'rejected')->get();
 
-        return view('checkstamp.status', compact('pendingStamps', 'historyprint'));
+        return view('checkstamp.status', compact('pendingStamps', 'historyprint', 'rejectedStamps'));
     }
 }

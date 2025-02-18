@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -9,11 +9,19 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('admin.product.home') }}" type="button" class="btn btn-link mb-3">
+                    <a
+                        href="{{ route('admin.product.home') }}"
+                        type="button"
+                        class="btn btn-link mb-3"
+                    >
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
-                    <form action="{{ route('admin.product.store') }}" method="post" enctype="multipart/form-data">
+                    <form
+                        action="{{ route('admin.product.store') }}"
+                        method="post"
+                        enctype="multipart/form-data"
+                    >
                         @csrf
                         <div class="row">
                             <div class="form-group col-12 col-sm-6 col-md-4">
@@ -21,8 +29,14 @@
                                     Mã liên kiện
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control @error('code') is-invalid @enderror"
-                                    placeholder="Mã liên kiện" name="code" value="{{ old('code') }}" required />
+                                <input
+                                    type="text"
+                                    class="form-control @error('code') is-invalid @enderror"
+                                    placeholder="Mã liên kiện"
+                                    name="code"
+                                    value="{{ old('code') }}"
+                                    required
+                                />
                                 @error('code')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -34,8 +48,14 @@
                                     Tên linh kiện
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                    placeholder="Tên linh kiện" name="name" value="{{ old('name') }}" required />
+                                <input
+                                    type="text"
+                                    class="form-control @error('name') is-invalid @enderror"
+                                    placeholder="Tên linh kiện"
+                                    name="name"
+                                    value="{{ old('name') }}"
+                                    required
+                                />
                                 @error('name')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -47,9 +67,14 @@
                                     Sản lượng(MOQ)
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="number" class="form-control @error('stockQuanMOQ') is-invalid @enderror"
-                                    placeholder="Sản lượng(MOQ)" name="stockQuanMOQ" value="{{ old('stockQuanMOQ') }}"
-                                    required />
+                                <input
+                                    type="number"
+                                    class="form-control @error('stockQuanMOQ') is-invalid @enderror"
+                                    placeholder="Sản lượng(MOQ)"
+                                    name="stockQuanMOQ"
+                                    value="{{ old('stockQuanMOQ') }}"
+                                    required
+                                />
                                 @error('stockQuanMOQ')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -70,9 +95,14 @@
                                     Số lượng tồn đầu kì
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="number" class="form-control @error('stockQuan') is-invalid @enderror"
-                                    placeholder="Số lượng tồn đầu kì" name="stockQuan" value="{{ old('stockQuan') }}"
-                                    required />
+                                <input
+                                    type="number"
+                                    class="form-control @error('stockQuan') is-invalid @enderror"
+                                    placeholder="Số lượng tồn đầu kì"
+                                    name="stockQuan"
+                                    value="{{ old('stockQuan') }}"
+                                    required
+                                />
                                 @error('stockQuan')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -84,14 +114,19 @@
                                     Kích thước khuôn
                                     <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-control @error('moldSize') is-invalid @enderror" name="moldSize"
-                                    required>
+                                <select
+                                    class="form-control @error('moldSize') is-invalid @enderror"
+                                    name="moldSize"
+                                    required
+                                >
                                     <option class="text-center" value="">
                                         ----- Chọn kích thước khuôn -----
                                     </option>
                                     @foreach ($modelSizes as $modelSize)
-                                        <option <?= old('moldSize') == $modelSize ? 'selected' : '' ?>
-                                            value="{{ $modelSize }}">
+                                        <option
+                                            <?= old("moldSize") == $modelSize ? "selected" : "" ?>
+                                            value="{{ $modelSize }}"
+                                        >
                                             {{ $modelSize }}
                                         </option>
                                     @endforeach
@@ -107,9 +142,14 @@
                                     Số CAV(cái/ shot)
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="number" placeholder="Số CAV(cái/ shot)"
-                                    class="form-control @error('CAV') is-invalid @enderror" name="CAV"
-                                    value="{{ old('CAV') }}" required />
+                                <input
+                                    type="number"
+                                    placeholder="Số CAV(cái/ shot)"
+                                    class="form-control @error('CAV') is-invalid @enderror"
+                                    name="CAV"
+                                    value="{{ old('CAV') }}"
+                                    required
+                                />
                                 @error('CAV')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -121,9 +161,15 @@
                                     Chu kì(s/shot)
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="number" step="0.1" placeholder="Chu kì(s/shot)"
-                                    class="form-control @error('cycle') is-invalid @enderror" name="cycle"
-                                    value="{{ old('cycle') }}" required />
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    placeholder="Chu kì(s/shot)"
+                                    class="form-control @error('cycle') is-invalid @enderror"
+                                    name="cycle"
+                                    value="{{ old('cycle') }}"
+                                    required
+                                />
                                 @error('cycle')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -135,9 +181,14 @@
                                     Số lượng tồn đầu hàng 200%
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="number" placeholder="Số lượng tồn đầu hàng 200%"
-                                    class="form-control @error('stockQuan200') is-invalid @enderror" name="stockQuan200"
-                                    value="{{ old('stockQuan200') }}" required />
+                                <input
+                                    type="number"
+                                    placeholder="Số lượng tồn đầu hàng 200%"
+                                    class="form-control @error('stockQuan200') is-invalid @enderror"
+                                    name="stockQuan200"
+                                    value="{{ old('stockQuan200') }}"
+                                    required
+                                />
                                 @error('stockQuan200')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -165,13 +216,19 @@
                                     Chọn mã thùng
                                     <span class="text-danger">*</span>
                                 </label>
-                                <select class="form-control @error('binCode') is-invalid @enderror" name="binCode" required>
+                                <select
+                                    class="form-control @error('binCode') is-invalid @enderror"
+                                    name="binCode"
+                                    required
+                                >
                                     <option class="text-center" value="">
                                         ----- Chọn mã thùng -----
                                     </option>
                                     @foreach ($models as $model)
-                                        <option <?= old('binCode') == $model ? 'selected' : '' ?>
-                                            value="{{ $model }}">
+                                        <option
+                                            <?= old("binCode") == $model ? "selected" : "" ?>
+                                            value="{{ $model }}"
+                                        >
                                             {{ $model }}
                                         </option>
                                     @endforeach
@@ -187,9 +244,14 @@
                                     Số lượng con/thùng
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="number" class="form-control @error('quanEntityBin') is-invalid @enderror"
-                                    placeholder="Số lượng con/thùng" name="quanEntityBin"
-                                    value="{{ old('quanEntityBin') }}" required />
+                                <input
+                                    type="number"
+                                    class="form-control @error('quanEntityBin') is-invalid @enderror"
+                                    placeholder="Số lượng con/thùng"
+                                    name="quanEntityBin"
+                                    value="{{ old('quanEntityBin') }}"
+                                    required
+                                />
                                 @error('quanEntityBin')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -201,22 +263,48 @@
                                     Chọn Công ty
                                     <span class="text-danger">*</span>
                                 </label>
-                                <div class="d-flex flex-wrap align-items-center gap-2">
-                                    <div class="form-check form-check-inline p-0 m-0">
-                                        <input type="checkbox" name="company[]" value="FAPV" id="company-1" required
-                                            {{ in_array('FAPV', old('company', [])) ? 'checked' : '' }} />
+                                <div
+                                    class="d-flex flex-wrap align-items-center gap-2"
+                                >
+                                    <div
+                                        class="form-check form-check-inline p-0 m-0"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            name="company[]"
+                                            value="FAPV"
+                                            id="company-1"
+                                            required
+                                            {{ in_array('FAPV', old('company', [])) ? 'checked' : '' }}
+                                        />
 
                                         <label for="company-1">FAPV出荷</label>
                                     </div>
-                                    <div class="form-check form-check-inline p-0 m-0">
-                                        <input type="checkbox" name="company[]" value="FASV" id="company-2" required
-                                            {{ in_array('FASV', old('company', [])) ? 'checked' : '' }} />
+                                    <div
+                                        class="form-check form-check-inline p-0 m-0"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            name="company[]"
+                                            value="FASV"
+                                            id="company-2"
+                                            required
+                                            {{ in_array('FASV', old('company', [])) ? 'checked' : '' }}
+                                        />
 
                                         <label for="company-2">FASV出荷</label>
                                     </div>
-                                    <div class="form-check form-check-inline p-0 m-0">
-                                        <input type="checkbox" name="company[]" value="FAVV" id="company-3" required
-                                            {{ in_array('FAVV', old('company', [])) ? 'checked' : '' }} />
+                                    <div
+                                        class="form-check form-check-inline p-0 m-0"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            name="company[]"
+                                            value="FAVV"
+                                            id="company-3"
+                                            required
+                                            {{ in_array('FAVV', old('company', [])) ? 'checked' : '' }}
+                                        />
 
                                         <label for="company-3">FAVV出荷</label>
                                     </div>
@@ -235,7 +323,7 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             function updateCompanyRequired() {
                 if ($("input[name='company[]']:checked").length > 0) {
                     $("input[name='company[]']").prop('required', false);

@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @php
     $startValue = count($categories) > 0 ? $categories->firstItem() : 0;
@@ -13,15 +13,26 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <a href="{{ route('admin.category.add') }}" type="button" class="btn btn-success mb-2">
+            <div
+                class="d-flex justify-content-between align-items-center flex-wrap"
+            >
+                <a
+                    href="{{ route('admin.category.add') }}"
+                    type="button"
+                    class="btn btn-success mb-2"
+                >
                     <i class="fas fa-plus"></i>
                     Thêm Danh Mục
                 </a>
                 <form action="" class="mb-2">
                     <div class="input-group input-group-outline">
-                        <input name="key" value="{{ request()->key }}" type="text" class="form-control"
-                            placeholder="Nhập từ khóa..." />
+                        <input
+                            name="key"
+                            value="{{ request()->key }}"
+                            type="text"
+                            class="form-control"
+                            placeholder="Nhập từ khóa..."
+                        />
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-search"></i>
                             <span hidden>Search</span>
@@ -69,25 +80,40 @@
                                     {{ $category->formatTimeDMY($category->updated_at) }}
                                 </td>
                                 <td scope="row">
-                                    <a href="{{ route('admin.category.edit', $category->id) }}" class="btn btn-primary">
+                                    <a
+                                        href="{{ route('admin.category.edit', $category->id) }}"
+                                        class="btn btn-primary"
+                                    >
                                         <i class="fas fa-edit"></i>
                                         Cập nhật
                                     </a>
                                     <!-- Button trigger modal delete -->
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                        data-bs-target="#modalDelete-{{ $category->id }}">
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalDelete-{{ $category->id }}"
+                                    >
                                         <i class="fas fa-trash-alt"></i>
                                         Xóa
                                     </button>
                                 </td>
                             </tr>
                             <!-- Modal delete -->
-                            <div class="modal fade" id="modalDelete-{{ $category->id }}" tabindex="-1"
-                                aria-labelledby="modalDeleteLabel-{{ $category->id }}" aria-hidden="true">
+                            <div
+                                class="modal fade"
+                                id="modalDelete-{{ $category->id }}"
+                                tabindex="-1"
+                                aria-labelledby="modalDeleteLabel-{{ $category->id }}"
+                                aria-hidden="true"
+                            >
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="modalDeleteLabel-{{ $category->id }}">
+                                            <h1
+                                                class="modal-title fs-5"
+                                                id="modalDeleteLabel-{{ $category->id }}"
+                                            >
                                                 Xóa Danh Mục
                                             </h1>
                                         </div>
@@ -103,15 +129,24 @@
                                             </p>
                                         </div>
                                         <div class="modal-footer">
-                                            <form action="{{ route('admin.category.delete', $category->id) }}"
-                                                method="post">
+                                            <form
+                                                action="{{ route('admin.category.delete', $category->id) }}"
+                                                method="post"
+                                            >
                                                 @method('DELETE')
                                                 @csrf
-                                                <button type="submit" class="btn btn-danger">
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger"
+                                                >
                                                     Xóa
                                                 </button>
                                             </form>
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <button
+                                                type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal"
+                                            >
                                                 Hủy
                                             </button>
                                         </div>
@@ -124,7 +159,9 @@
                             <tr>
                                 <td colspan="5" class="text-center">
                                     Hiện tại chưa có danh mục nào. Vui lòng
-                                    <a href="{{ route('admin.category.add') }}">
+                                    <a
+                                        href="{{ route('admin.category.add') }}"
+                                    >
                                         Thêm danh mục
                                     </a>
                                 </td>
