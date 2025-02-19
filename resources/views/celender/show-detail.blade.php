@@ -446,172 +446,115 @@
                 $(this).addClass($(this).val());
             });
         });
-        // Select all table elements
-        const tables = document.querySelectorAll('.table');
-
-        // Define shift types
-        const SHIFT_TYPES = {
-            N: 'Ca ngày',
-            D: 'Ca đêm',
-            X: 'Nghỉ',
-            TC: 'Tăng cường đêm',
-            LN: 'Làm thêm ca ngày',
-            VS: 'Vệ sinh',
-        };
-
-        // Create filter container
-        function createFilterContainer() {
-            const filterContainer = document.createElement('div');
-            filterContainer.className =
-                'filter-container d-flex flex-wrap gap-3 mb-3';
-
-            // Employee name filter (input field)
-            const employeeFilter = document.createElement('div');
-            employeeFilter.className = 'form-group';
-            employeeFilter.innerHTML = `
-        <label for="employeeFilter" class="form-label">Tên Nhân Viên:</label>
-        <input type="text" id="employeeFilter" class="form-control form-control-sm" placeholder="Nhập tên nhân viên" />
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create search input
+            const searchContainer = document.createElement('div');
+            searchContainer.className = 'mb-3';
+            searchContainer.innerHTML = `
+        <div class="input-group">
+            <span class="input-group-text">
+                <i class="fas fa-search"></i>
+            </span>
+            <input type="text" class="form-control" id="tableSearch"
+                   placeholder="Tìm kiếm theo mã nhân viên hoặc tên...">
+        </div>
     `;
 
-            // Shift type filter
-            const shiftFilter = document.createElement('div');
-            shiftFilter.className = 'form-group';
-            shiftFilter.innerHTML = `
-        <label for="shiftFilter" class="form-label">Ca làm việc:</label>
-        <select id="shiftFilter" class="form-select form-select-sm">
-            <option value="">Tất cả</option>
-            ${Object.entries(SHIFT_TYPES)
-                .map(
-                    ([key, value]) =>
-                        `<option value="${key}">${value} (${key})</option>`,
-                )
-                .join('')}
-        </select>
-    `;
+            // Insert search input at the correct location
+            const tabContent = document.querySelector('#myTabContent');
+            tabContent.parentNode.insertBefore(searchContainer, tabContent);
 
-            filterContainer.appendChild(employeeFilter);
-            filterContainer.appendChild(shiftFilter);
+            const searchInput = document.getElementById('tableSearch');
 
-            return filterContainer;
-        }
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase().trim();
 
-        // Initialize filters
-        function initializeFilters() {
-            const tabContent = document.getElementById('myTabContent');
-            const filterContainer = createFilterContainer();
-            tabContent.insertBefore(filterContainer, tabContent.firstChild);
+                // Loop through all active tab panes
+                document
+                    .querySelectorAll('.tab-pane.active')
+                    .forEach((tabPane) => {
+                        // Get both tables in the current tab
+                        const leftTable =
+                            tabPane.querySelector('.col-4 table tbody');
+                        const rightTable =
+                            tabPane.querySelector('.col-8 table tbody');
 
-            // Add event listeners
-            const filters = {
-                shift: document.getElementById('shiftFilter'),
-                employee: document.getElementById('employeeFilter'),
-            };
+                        if (!leftTable || !rightTable) return;
 
-            Object.values(filters).forEach((filter) => {
-                filter.addEventListener('input', () => applyFilters(filters));
-                filter.addEventListener('change', () => applyFilters(filters));
+                        // Get all rows from left table
+                        const leftRows = leftTable.querySelectorAll('tr');
+                        const rightRows = rightTable.querySelectorAll('tr');
+
+                        leftRows.forEach((leftRow, index) => {
+                            const rightRow = rightRows[index];
+                            if (!rightRow) return;
+
+                            // Check if it's a category header
+                            if (leftRow.querySelector('.bg-info')) {
+                                // Always show category headers initially
+                                leftRow.style.display = '';
+                                rightRow.style.display = '';
+                                return;
+                            }
+
+                            // Get searchable content
+                            const code =
+                                leftRow
+                                    .querySelector('td:first-child')
+                                    ?.textContent.trim()
+                                    .toLowerCase() || '';
+                            const name =
+                                leftRow
+                                    .querySelector('td:nth-child(2)')
+                                    ?.textContent.trim()
+                                    .toLowerCase() || '';
+
+                            // Check if row matches search
+                            const matches =
+                                code.includes(searchTerm) ||
+                                name.includes(searchTerm);
+
+                            // Show/hide both rows
+                            leftRow.style.display = matches ? '' : 'none';
+                            rightRow.style.display = matches ? '' : 'none';
+                        });
+
+                        // Handle category headers visibility
+                        const categories =
+                            leftTable.querySelectorAll('tr:has(.bg-info)');
+                        categories.forEach((categoryRow) => {
+                            const categoryIndex =
+                                Array.from(leftRows).indexOf(categoryRow);
+                            let hasVisibleRows = false;
+
+                            // Check next rows until next category
+                            let currentIndex = categoryIndex + 1;
+                            while (
+                                currentIndex < leftRows.length &&
+                                !leftRows[currentIndex].querySelector(
+                                    '.bg-info',
+                                )
+                            ) {
+                                if (
+                                    leftRows[currentIndex].style.display !==
+                                    'none'
+                                ) {
+                                    hasVisibleRows = true;
+                                    break;
+                                }
+                                currentIndex++;
+                            }
+
+                            // Show/hide category header based on visible rows
+                            categoryRow.style.display =
+                                hasVisibleRows || searchTerm === ''
+                                    ? ''
+                                    : 'none';
+                            rightRows[categoryIndex].style.display =
+                                categoryRow.style.display;
+                        });
+                    });
             });
-        }
-
-        // Apply filters
-        function applyFilters(filters) {
-            const activeTab = document.querySelector('.tab-pane.active');
-            if (!activeTab) return;
-
-            const rows = activeTab.querySelectorAll('tbody tr');
-            rows.forEach((row) => {
-                if (row.cells.length < 2) {
-                    // Show category headers always
-                    row.style.display = '';
-                    return;
-                }
-
-                const shiftMatch = filters.shift.value
-                    ? Array.from(row.cells)
-                          .slice(2)
-                          .some(
-                              (cell) =>
-                                  cell.textContent.trim() ===
-                                  filters.shift.value,
-                          )
-                    : true;
-
-                const employeeMatch = filters.employee.value
-                    ? row.cells[1]?.textContent
-                          .trim()
-                          .toLowerCase()
-                          .includes(filters.employee.value.toLowerCase())
-                    : true;
-
-                row.style.display = shiftMatch && employeeMatch ? '' : 'none';
-            });
-
-            // Show category headers if any child rows are visible
-            const categories = activeTab.querySelectorAll('tr.fw-bold.bg-info');
-            categories.forEach((category) => {
-                let nextRow = category.nextElementSibling;
-                let hasVisibleChildren = false;
-
-                while (nextRow && !nextRow.classList.contains('fw-bold')) {
-                    if (nextRow.style.display !== 'none') {
-                        hasVisibleChildren = true;
-                        break;
-                    }
-                    nextRow = nextRow.nextElementSibling;
-                }
-
-                category.style.display = hasVisibleChildren ? '' : 'none';
-            });
-        }
-
-        // Add tab change handler
-        function handleTabChange() {
-            const tabButtons = document.querySelectorAll(
-                '[data-bs-toggle="tab"]',
-            );
-            tabButtons.forEach((button) => {
-                button.addEventListener('shown.bs.tab', () => {
-                    const filters = {
-                        shift: document.getElementById('shiftFilter'),
-                        employee: document.getElementById('employeeFilter'),
-                    };
-                    applyFilters(filters);
-                });
-            });
-        }
-
-        // Add clear filters button
-        function addClearFiltersButton() {
-            const filterContainer = document.querySelector('.filter-container');
-            const clearButton = document.createElement('div');
-            clearButton.className = 'form-group d-flex align-items-end';
-            clearButton.innerHTML = `
-        <button class="btn btn-outline-secondary btn-sm" id="clearFilters">
-            Xóa bộ lọc
-        </button>
-    `;
-
-            clearButton
-                .querySelector('#clearFilters')
-                .addEventListener('click', () => {
-                    document.getElementById('shiftFilter').value = '';
-                    document.getElementById('employeeFilter').value = '';
-
-                    const filters = {
-                        shift: document.getElementById('shiftFilter'),
-                        employee: document.getElementById('employeeFilter'),
-                    };
-                    applyFilters(filters);
-                });
-
-            filterContainer.appendChild(clearButton);
-        }
-
-        // Initialize everything
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeFilters();
-            handleTabChange();
-            addClearFiltersButton();
         });
     </script>
 @endsection

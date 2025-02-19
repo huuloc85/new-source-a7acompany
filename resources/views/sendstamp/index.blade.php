@@ -29,14 +29,23 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex flex-column flex-sm-row gap-2 mb-3">
+                    <div
+                        class="d-flex flex-column flex-sm-row align-items-center gap-2 mb-3"
+                    >
                         <a
-                            class="btn btn-warning text-uppercase"
+                            class="btn btn-link"
+                            href="{{ route('admin.home') }}"
+                        >
+                            <i class="fas fa-arrow-left"></i>
+                            Quay lại
+                        </a>
+                        <a
+                            class="btn btn-warning d-flex align-items-center gap-2 text-uppercase fw-bold px-4"
                             href="{{ route('admin.checkstamp-employee') }}"
                             title="Kiểm Tra Tình Trạng Tem"
                         >
                             <i class="fas fa-history"></i>
-                            Kiểm Tra Tình Trạng Tem
+                            Kiểm Tra Yêu Cầu In Tem
                         </a>
                     </div>
 
@@ -147,12 +156,20 @@
                                         Nhập số lượng tem cần in.
                                     </small>
                                     <input
-                                        type="number"
                                         name="binCount"
                                         class="form-control"
                                         min="0"
                                         required
                                     />
+                                    <small class="text-danger d-block mt-1">
+                                        <strong>Lưu ý:</strong>
+                                        Trường hợp nếu cần in lại nhiều tem khác
+                                        nhau, nhập số lượng tem theo các số
+                                        lượng cần in. Ví dụ: Cần in 2 tem lẻ
+                                        khác số thứ tự thì nhập số lượng là
+                                        <strong>2</strong>
+                                        .
+                                    </small>
                                 </div>
 
                                 <div class="mb-3">
@@ -166,12 +183,22 @@
                                         Nhập số thứ tự bắt đầu của tem.
                                     </small>
                                     <input
-                                        type="number"
                                         name="binStart"
                                         class="form-control"
                                         min="0"
                                         required
                                     />
+                                    <small class="text-danger d-block mt-1">
+                                        <strong>Lưu ý:</strong>
+                                        Trường hợp nếu cần in lại nhiều tem khác
+                                        nhau, nhập cách mỗi số tem là một dấu
+                                        <strong>phẩy (,)</strong>
+                                        Ví dụ: Nếu cần in tem
+                                        <strong>2 và 5</strong>
+                                        thì nhập:
+                                        <strong>2,5</strong>
+                                        .
+                                    </small>
                                 </div>
 
                                 <div class="mb-3">
