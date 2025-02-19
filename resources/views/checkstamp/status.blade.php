@@ -4,13 +4,18 @@
     <style>
         @media (max-width: 768px) {
             .table-wrapper {
-                overflow-x: auto;
+                overflow-x: hidden;
+                /* Thay đổi từ auto thành hidden */
                 width: 100%;
+                padding: 0 10px;
+                /* Thêm padding để tránh nội dung sát viền */
             }
 
             table {
                 width: 100%;
                 border-collapse: collapse;
+                table-layout: fixed;
+                /* Thêm vào để kiểm soát chiều rộng */
             }
 
             thead {
@@ -24,29 +29,54 @@
                 border-radius: 8px;
                 overflow: hidden;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-                padding: 10px;
+                padding: 8px;
+                /* Giảm padding */
+                background: #fff;
             }
 
             td {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
-                padding: 10px;
+                align-items: flex-start;
+                /* Thay đổi từ center thành flex-start */
+                padding: 8px;
+                /* Giảm padding */
                 border-bottom: 1px solid #f0f0f0;
                 text-align: left;
-                flex-direction: row;
+                flex-wrap: wrap;
+                /* Thêm vào để cho phép wrap khi nội dung dài */
+                word-break: break-word;
+                /* Thêm vào để xử lý text dài */
             }
 
             td::before {
                 content: attr(data-label);
                 font-weight: 600;
                 color: #555;
-                margin-bottom: 0;
-                text-align: left;
+                margin-right: 10px;
+                /* Thêm margin right */
+                min-width: 120px;
+                /* Đặt chiều rộng tối thiểu cho label */
             }
 
             td:last-child {
                 border-bottom: none;
+            }
+
+            /* Thêm style cho các badge */
+            .badge {
+                margin-left: auto;
+                /* Đẩy badge về bên phải */
+            }
+
+            /* Điều chỉnh style cho các dòng tiêu đề phân loại */
+            tr[class^='table-'] td {
+                padding: 10px;
+                justify-content: flex-start;
+            }
+
+            tr[class^='table-'] td::before {
+                display: none;
             }
         }
     </style>
@@ -76,6 +106,40 @@
                             {{ Auth()->user()->role->role_name ?? '' }}
                         </div>
                     </div>
+                    <div>
+                        <a
+                            class="btn btn-link"
+                            href="{{ route('admin.home') }}"
+                        >
+                            <i class="fas fa-arrow-left"></i>
+                            Quay lại
+                        </a>
+                    </div>
+                    <form
+                        method="GET"
+                        action="{{ route('admin.checkstamp-employee') }}"
+                        id="filter-form"
+                        class="d-flex align-items-center gap-2 my-2"
+                    >
+                        <label for="date" class="form-label fw-bold mb-0">
+                            Chọn ngày:
+                        </label>
+                        <select
+                            id="date"
+                            name="date"
+                            class="form-select w-auto"
+                            onchange="document.getElementById('filter-form').submit();"
+                        >
+                            @foreach ($availableDates as $availableDate)
+                                <option
+                                    value="{{ $availableDate }}"
+                                    {{ $date == $availableDate ? 'selected' : '' }}
+                                >
+                                    {{ \Carbon\Carbon::parse($availableDate)->format('d-m') }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
                     <div class="table-responsive">
                         @if ($pendingStamps->isEmpty() && $historyprint->isEmpty())
                             <div class="text-center">
@@ -127,7 +191,7 @@
                                                     {{ $stamp->employee->name ?? 'N/A' }}
                                                 </td>
                                                 <td data-label="Ngày (Số Lot)">
-                                                    {{ \Carbon\Carbon::parse($stamp->created_at)->format('d-m-Y') }}
+                                                    {{ \Carbon\Carbon::parse($stamp->date)->format('d-m-Y') }}
                                                 </td>
                                                 <td data-label="Ca">
                                                     {{ $stamp->shift }}
@@ -253,7 +317,7 @@
                                                     {{ $rejected->employee->name ?? 'N/A' }}
                                                 </td>
                                                 <td data-label="Ngày (Số Lot)">
-                                                    {{ \Carbon\Carbon::parse($rejected->created_at)->format('d-m-Y') }}
+                                                    {{ \Carbon\Carbon::parse($rejected->date)->format('d-m-Y') }}
                                                 </td>
                                                 <td data-label="Ca">
                                                     {{ $rejected->shift }}

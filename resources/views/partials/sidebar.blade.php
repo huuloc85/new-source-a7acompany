@@ -103,7 +103,7 @@
                     'path' => 'admin.product.packing',
                 ],
                 [
-                    'label' => 'Lịch sử tạo tem',
+                    'label' => 'Lịch Sử In Tem',
                     'icon' => 'fas fa-history fa-lg',
                     'path' => 'admin.product.barcode.history',
                 ],
@@ -231,20 +231,20 @@
             'path' => 'admin.employee-history-check',
         ],
         [
-            'label' => 'Tem Nhãn',
+            'label' => 'Yêu Cầu In Tem',
             'icon' => 'fas fa-envelopes-bulk fa-lg',
-            'children' => [
-                [
-                    'label' => 'Yêu Cầu In Tem',
-                    'icon' => 'fas fa-clipboard-list fa-lg',
-                    'path' => 'admin.send-stamp',
-                ],
-                [
-                    'label' => 'Trạng Thái In Tem',
-                    'icon' => 'fas fa-clipboard-check fa-lg',
-                    'path' => 'admin.checkstamp-employee',
-                ],
-            ],
+            'path' => 'admin.send-stamp',
+            //     [
+            //         'label' => 'Yêu Cầu In Tem',
+            //         'icon' => 'fas fa-clipboard-list fa-lg',
+            //         'path' => 'admin.send-stamp',
+            //     ],
+            //     [
+            //         'label' => 'Trạng Thái In Tem',
+            //         'icon' => 'fas fa-clipboard-check fa-lg',
+            //         'path' => 'admin.checkstamp-employee',
+            //     ],
+            // ],
         ],
     ];
 
@@ -261,7 +261,9 @@
 
     if (! $isHighRole) {
         array_push($navConfig, ...$navEmployee);
-        $isQA ? array_push($navConfig, ...$navQA, ...$navProfile) : array_push($navConfig, ...$navNotQA, ...$navProfile);
+        $isQA
+            ? array_push($navConfig, ...$navQA, ...$navProfile)
+            : array_push($navConfig, ...$navNotQA, ...$navProfile);
     }
 
     $isActive = function ($path) {

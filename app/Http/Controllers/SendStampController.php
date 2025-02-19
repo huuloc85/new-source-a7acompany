@@ -347,17 +347,32 @@ class SendStampController extends Controller
     public function checkStampEmployee(Request $request)
     {
         $user = auth()->user();
+        $date = $request->input('date', now()->toDateString()); // Mặc định lấy ngày hiện tại
 
-        // Lấy danh sách tem chưa in
+        // Lấy danh sách ngày có trong bảng SendStamp (chỉ lấy ngày, không trùng lặp)
+        $availableDates = SendStamp::selectRaw('DATE(created_at) as date')
+            ->distinct()
+            ->orderBy('date', 'desc')
+            ->pluck('date');
+
+        // Lọc dữ liệu theo ngày
         $pendingStamps = SendStamp::where('employee_id', $user->id)
             ->where('status', 'pending')
+            ->whereDate('created_at', $date)
             ->get();
 
-        // Lấy danh sách tem đã in từ HistoryPrint
-        $sendStamps = SendStamp::where('employee_id', $user->id)->pluck('id');
-        $historyprint = HistoryPrint::whereIn('send_stamp_id', $sendStamps)->get();
-        $rejectedStamps = SendStamp::where('status', 'rejected')->get();
+        $sendStamps = SendStamp::where('employee_id', $user->id)
+            ->whereDate('created_at', $date)
+            ->pluck('id');
 
-        return view('checkstamp.status', compact('pendingStamps', 'historyprint', 'rejectedStamps'));
+        $historyprint = HistoryPrint::whereIn('send_stamp_id', $sendStamps)
+            ->whereDate('created_at', $date)
+            ->get();
+
+        $rejectedStamps = SendStamp::where('status', 'rejected')
+            ->whereDate('created_at', $date)
+            ->get();
+
+        return view('checkstamp.status', compact('pendingStamps', 'historyprint', 'rejectedStamps', 'date', 'availableDates'));
     }
 }

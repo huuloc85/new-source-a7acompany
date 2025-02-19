@@ -1,39 +1,4 @@
 @extends('layouts.'.$layout)
-@section('styles')
-    <style>
-        table {
-            overflow: auto !important;
-        }
-        thead > tr:first-child > .freeze:first-child,
-        tbody > tr > .freeze:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 2;
-            min-width: 5rem;
-        }
-
-        thead > tr:first-child > .freeze:nth-child(2),
-        tbody > tr > .freeze:nth-child(2) {
-            position: sticky;
-            left: 5rem;
-            z-index: 2;
-        }
-
-        thead > tr:first-child > .freeze:nth-child(3),
-        tbody > tr > .freeze:nth-child(3) {
-            position: sticky;
-            left: 14.7rem;
-            z-index: 2;
-        }
-
-        thead > tr:first-child > .freeze:nth-child(4),
-        tbody > tr > .freeze:nth-child(4) {
-            position: sticky;
-            left: 21.2rem;
-            z-index: 2;
-        }
-    </style>
-@endsection
 
 @php
     $tabProducts = [
@@ -196,267 +161,303 @@
                                 aria-labelledby="{{ $keyTab }}-tab"
                                 tabindex="0"
                             >
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead
-                                            class="table-light text-center align-middle text-uppercase"
-                                        >
-                                            <tr>
-                                                <th>STT</th>
-                                                <th>Tên linh kiện</th>
-                                                <th class="bg-body-secondary">
-                                                    SẢN LƯỢNG
-                                                    <br />
-                                                    (MOQ)
-                                                </th>
-                                                <th class="bg-body-secondary">
-                                                    THUNG CATON/THANG
-                                                    <br />
-                                                    (MOQ)
-                                                </th>
-                                                <th>
-                                                    Dự định
-                                                    <br />
-                                                    Thời gian hoạt động thiết bị
-                                                    <br />
-                                                    (ngày/tháng)
-                                                </th>
-                                                <th>
-                                                    Thực tế
-                                                    <br />
-                                                    Thời gian hoạt động thiết bị
-                                                    <br />
-                                                    (ngày/tháng)
-                                                </th>
-                                                <th class="bg-body-secondary">
-                                                    FAPV出荷
-                                                </th>
-                                                <th class="bg-body-secondary">
-                                                    FASV出荷
-                                                </th>
-                                                <th class="bg-body-secondary">
-                                                    FAVV出荷
-                                                </th>
-                                                <th>
-                                                    TỔNG SỐ LƯỢNG
-                                                    <br />
-                                                    TỒN ĐẦU KỲ
-                                                </th>
-                                                <th>
-                                                    TỔNG THỰC TẾ
-                                                    <br />
-                                                    SẢN XUẤT(cái/tháng)
-                                                </th>
-                                                <th>
-                                                    TỔNG SỐ LƯỢNG
-                                                    <br />
-                                                    ĐÃ XUẤT
-                                                </th>
-                                                <th>
-                                                    SỐ LƯỢNG
-                                                    <br />
-                                                    ĐÃ KIỂM 200%
-                                                </th>
-                                                <th>
-                                                    SỐ LƯỢNG
-                                                    <br />
-                                                    HÀNG CHƯA KIỂM 200%
-                                                </th>
-                                                <th>
-                                                    TỔNG SỐ LƯỢNG
-                                                    <br />
-                                                    TỒN CUỐI KỲ
-                                                </th>
-                                                <th>
-                                                    SỐ NGÀY
-                                                    <br />
-                                                    TỒN KHO
-                                                </th>
-                                                @foreach ($listMonthExport as $monthExport)
+                                <div class="d-flex">
+                                    <div class="col-4 table-responsive">
+                                        <table class="table table-hover">
+                                            <thead
+                                                class="table-light text-center align-middle text-uppercase"
+                                                style="height: 5.75rem"
+                                            >
+                                                <tr>
+                                                    <th>STT</th>
+                                                    <th>Tên linh kiện</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                @foreach ($products as $key => $product)
+                                                    <tr>
+                                                        <th>
+                                                            {{ $loop->iteration }}
+                                                        </th>
+                                                        <td class="text-start">
+                                                            <a
+                                                                href="{{ route('admin.product.detail', $product->id) }}"
+                                                            >
+                                                                {{ $product->name }}
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-8 table-responsive">
+                                        <table class="table table-hover">
+                                            <thead
+                                                class="table-light text-center align-middle text-uppercase"
+                                                style="height: 5.75rem"
+                                            >
+                                                <tr>
                                                     <th
                                                         class="bg-body-secondary"
                                                     >
+                                                        SẢN LƯỢNG
+                                                        <br />
+                                                        (MOQ)
+                                                    </th>
+                                                    <th
+                                                        class="bg-body-secondary"
+                                                    >
+                                                        THUNG CATON/THANG
+                                                        <br />
+                                                        (MOQ)
+                                                    </th>
+                                                    <th>
+                                                        Dự định
+                                                        <br />
+                                                        Thời gian hoạt động
+                                                        thiết bị
+                                                        <br />
+                                                        (ngày/tháng)
+                                                    </th>
+                                                    <th>
+                                                        Thực tế
+                                                        <br />
+                                                        Thời gian hoạt động
+                                                        thiết bị
+                                                        <br />
+                                                        (ngày/tháng)
+                                                    </th>
+                                                    <th
+                                                        class="bg-body-secondary"
+                                                    >
+                                                        FAPV出荷
+                                                    </th>
+                                                    <th
+                                                        class="bg-body-secondary"
+                                                    >
+                                                        FASV出荷
+                                                    </th>
+                                                    <th
+                                                        class="bg-body-secondary"
+                                                    >
+                                                        FAVV出荷
+                                                    </th>
+                                                    <th>
+                                                        TỔNG SỐ LƯỢNG
+                                                        <br />
+                                                        TỒN ĐẦU KỲ
+                                                    </th>
+                                                    <th>
+                                                        TỔNG THỰC TẾ
+                                                        <br />
+                                                        SẢN XUẤT(cái/tháng)
+                                                    </th>
+                                                    <th>
+                                                        TỔNG SỐ LƯỢNG
+                                                        <br />
+                                                        ĐÃ XUẤT
+                                                    </th>
+                                                    <th>
                                                         SỐ LƯỢNG
                                                         <br />
-                                                        ĐÃ XUẤT THÁNG
-                                                        {{ $monthExport }}
+                                                        ĐÃ KIỂM 200%
                                                     </th>
-                                                @endforeach
-
-                                                <th>THAO TÁC</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-center align-middle">
-                                            @foreach ($products as $key => $product)
-                                                @php
-                                                    $prorealityQuan =
-                                                        $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('month', $monthNearly)
-                                                            ->where('status', 1)
-                                                            ->value('totalQuan') ?? 0; // tổng hàng sản xuất
-                                                    $importedQuan =
-                                                        $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('month', $monthNearly)
-                                                            ->where('status', 2)
-                                                            ->value('totalQuan') ?? 0; // tổng hàng kiểm 200%
-                                                    $exportedQuan =
-                                                        $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('month', $monthNearly)
-                                                            ->where('status', 3)
-                                                            ->value('totalQuan') ?? 0; // tổng số lượng đã xuất
-                                                    $stockQuan =
-                                                        $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('month', $monthNearly)
-                                                            ->where('status', 4)
-                                                            ->value('totalQuan') ?? 0; // tồn đầu kỳ
-                                                    $stockQuan200 =
-                                                        $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('month', $monthNearly)
-                                                            ->where('status', 5)
-                                                            ->value('totalQuan') ?? 0; // tồn đầu kỳ 200%
-                                                    $errorQuantity =
-                                                        $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('month', $monthNearly)
-                                                            ->where('status', 6)
-                                                            ->value('totalQuan') ?? 0; // hàng lỗi
-                                                    $stockQuanMOQ =
-                                                        $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('month', $monthNearly)
-                                                            ->where('status', 7)
-                                                            ->value('totalQuan') ?? 0; // MOQ
-
-                                                    $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; // đã kiểm 200%
-                                                    $stockEndQuan =
-                                                        $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; // tồn cuối kỳ
-                                                    $stockNoneCheck200 =
-                                                        $stockQuan +
-                                                        $prorealityQuan -
-                                                        $exportedQuan -
-                                                        $checked200 -
-                                                        $errorQuantity; // số lượng hàng chưa kiểm 200%
-                                                    $quantityCaTon = $stockQuanMOQ / $product->quanEntityBin;
-                                                    $planTime =
-                                                        (((($stockQuanMOQ / $product->CAV) * $product->cycle) /
-                                                            3600 /
-                                                            24) *
-                                                            100) /
-                                                        90;
-                                                    $realTime =
-                                                        (((($exportedQuan / $product->CAV) * $product->cycle) /
-                                                            3600 /
-                                                            24) *
-                                                            100) /
-                                                        90;
-                                                @endphp
-
-                                                <tr>
                                                     <th>
-                                                        {{ $loop->iteration }}
+                                                        SỐ LƯỢNG
+                                                        <br />
+                                                        HÀNG CHƯA KIỂM 200%
                                                     </th>
-                                                    <td class="text-start">
-                                                        <a
-                                                            href="{{ route('admin.product.detail', $product->id) }}"
-                                                        >
-                                                            {{ $product->name }}
-                                                        </a>
-                                                    </td>
-                                                    <td
-                                                        class="bg-body-secondary"
-                                                    >
-                                                        {{ number_format($stockQuanMOQ) }}
-                                                    </td>
-                                                    <td
-                                                        class="bg-body-secondary"
-                                                    >
-                                                        {{ number_format($quantityCaTon) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($planTime, 1) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($realTime, 1) }}
-                                                    </td>
-                                                    <td
-                                                        class="bg-body-secondary"
-                                                    >
-                                                        {{ $product->FAPV == 1 ? 'O' : '' }}
-                                                    </td>
-                                                    <td
-                                                        class="bg-body-secondary"
-                                                    >
-                                                        {{ $product->FASV == 1 ? 'O' : '' }}
-                                                    </td>
-                                                    <td
-                                                        class="bg-body-secondary"
-                                                    >
-                                                        {{ $product->FAVV == 1 ? 'O' : '' }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($stockQuan) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($prorealityQuan) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($exportedQuan) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($checked200) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($stockNoneCheck200) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($stockEndQuan) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($stockQuanMOQ != 0 ? $stockEndQuan / ($stockQuanMOQ / 24) : 0, 1) }}
-                                                    </td>
+                                                    <th>
+                                                        TỔNG SỐ LƯỢNG
+                                                        <br />
+                                                        TỒN CUỐI KỲ
+                                                    </th>
+                                                    <th>
+                                                        SỐ NGÀY
+                                                        <br />
+                                                        TỒN KHO
+                                                    </th>
                                                     @foreach ($listMonthExport as $monthExport)
+                                                        <th
+                                                            class="bg-body-secondary"
+                                                        >
+                                                            SỐ LƯỢNG
+                                                            <br />
+                                                            ĐÃ XUẤT THÁNG
+                                                            {{ $monthExport }}
+                                                        </th>
+                                                    @endforeach
+
+                                                    <th>THAO TÁC</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                @foreach ($products as $key => $product)
+                                                    @php
+                                                        $prorealityQuan =
+                                                            $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('month', $monthNearly)
+                                                                ->where('status', 1)
+                                                                ->value('totalQuan') ?? 0; // tổng hàng sản xuất
+                                                        $importedQuan =
+                                                            $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('month', $monthNearly)
+                                                                ->where('status', 2)
+                                                                ->value('totalQuan') ?? 0; // tổng hàng kiểm 200%
+                                                        $exportedQuan =
+                                                            $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('month', $monthNearly)
+                                                                ->where('status', 3)
+                                                                ->value('totalQuan') ?? 0; // tổng số lượng đã xuất
+                                                        $stockQuan =
+                                                            $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('month', $monthNearly)
+                                                                ->where('status', 4)
+                                                                ->value('totalQuan') ?? 0; // tồn đầu kỳ
+                                                        $stockQuan200 =
+                                                            $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('month', $monthNearly)
+                                                                ->where('status', 5)
+                                                                ->value('totalQuan') ?? 0; // tồn đầu kỳ 200%
+                                                        $errorQuantity =
+                                                            $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('month', $monthNearly)
+                                                                ->where('status', 6)
+                                                                ->value('totalQuan') ?? 0; // hàng lỗi
+                                                        $stockQuanMOQ =
+                                                            $product
+                                                                ->TotalMonthQuantities()
+                                                                ->where('month', $monthNearly)
+                                                                ->where('status', 7)
+                                                                ->value('totalQuan') ?? 0; // MOQ
+
+                                                        $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; // đã kiểm 200%
+                                                        $stockEndQuan =
+                                                            $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; // tồn cuối kỳ
+                                                        $stockNoneCheck200 =
+                                                            $stockQuan +
+                                                            $prorealityQuan -
+                                                            $exportedQuan -
+                                                            $checked200 -
+                                                            $errorQuantity; // số lượng hàng chưa kiểm 200%
+                                                        $quantityCaTon = $stockQuanMOQ / $product->quanEntityBin;
+                                                        $planTime =
+                                                            (((($stockQuanMOQ / $product->CAV) * $product->cycle) /
+                                                                3600 /
+                                                                24) *
+                                                                100) /
+                                                            90;
+                                                        $realTime =
+                                                            (((($exportedQuan / $product->CAV) * $product->cycle) /
+                                                                3600 /
+                                                                24) *
+                                                                100) /
+                                                            90;
+                                                    @endphp
+
+                                                    <tr>
                                                         <td
                                                             class="bg-body-secondary"
                                                         >
-                                                            <?php
-                                                            $export = $product->TotalMonthQuantities()->where('month', $monthExport)->where('status', 3)->value('totalQuan') ?? 0;
-                                                            ?>
-
-                                                            {{ number_format($export) }}
+                                                            {{ number_format($stockQuanMOQ) }}
                                                         </td>
-                                                    @endforeach
+                                                        <td
+                                                            class="bg-body-secondary"
+                                                        >
+                                                            {{ number_format($quantityCaTon) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($planTime, 1) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($realTime, 1) }}
+                                                        </td>
+                                                        <td
+                                                            class="bg-body-secondary"
+                                                        >
+                                                            {{ $product->FAPV == 1 ? 'O' : '' }}
+                                                        </td>
+                                                        <td
+                                                            class="bg-body-secondary"
+                                                        >
+                                                            {{ $product->FASV == 1 ? 'O' : '' }}
+                                                        </td>
+                                                        <td
+                                                            class="bg-body-secondary"
+                                                        >
+                                                            {{ $product->FAVV == 1 ? 'O' : '' }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($stockQuan) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($prorealityQuan) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($exportedQuan) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($checked200) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($stockNoneCheck200) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($stockEndQuan) }}
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($stockQuanMOQ != 0 ? $stockEndQuan / ($stockQuanMOQ / 24) : 0, 1) }}
+                                                        </td>
+                                                        @foreach ($listMonthExport as $monthExport)
+                                                            <td
+                                                                class="bg-body-secondary"
+                                                            >
+                                                                <?php
+                                                                $export = $product->TotalMonthQuantities()->where('month', $monthExport)->where('status', 3)->value('totalQuan') ?? 0;
+                                                                ?>
 
-                                                    <td>
-                                                        <a
-                                                            href="{{ route('admin.product.edit', $product->id) }}"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            <i
-                                                                class="fas fa-edit"
-                                                            ></i>
-                                                            Cập nhật
-                                                        </a>
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-danger"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#deleteProduct{{ $product->id }}"
-                                                        >
-                                                            <i
-                                                                class="fas fa-trash-alt"
-                                                            ></i>
-                                                            Xóa
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                                                {{ number_format($export) }}
+                                                            </td>
+                                                        @endforeach
+
+                                                        <td>
+                                                            <a
+                                                                href="{{ route('admin.product.edit', $product->id) }}"
+                                                                class="btn btn-primary"
+                                                            >
+                                                                <i
+                                                                    class="fas fa-edit"
+                                                                ></i>
+                                                                Cập nhật
+                                                            </a>
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#deleteProduct{{ $product->id }}"
+                                                            >
+                                                                <i
+                                                                    class="fas fa-trash-alt"
+                                                                ></i>
+                                                                Xóa
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -469,135 +470,159 @@
                                 aria-labelledby="{{ $keyTab }}-tab"
                                 tabindex="0"
                             >
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead
-                                            class="table-light text-uppercase text-center align-middle"
-                                        >
-                                            <tr>
-                                                <th rowspan="2">STT</th>
-                                                <th rowspan="2">
-                                                    Tên linh kiện
-                                                </th>
-                                                <th rowspan="2">
-                                                    Tổng cộng
-                                                    <br />
-                                                </th>
-                                                @foreach ($listDate as $key => $date)
-                                                    <th
-                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                        colspan="2"
-                                                    >
-                                                        {{ $date }}
-                                                    </th>
-                                                @endforeach
-
-                                                <th rowspan="2">THAO TÁC</th>
-                                            </tr>
-                                            <tr>
-                                                @foreach ($listDate as $key => $date)
-                                                    <th
-                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    >
-                                                        Ca 1
-                                                    </th>
-                                                    <th
-                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    >
-                                                        Ca 2
-                                                    </th>
-                                                @endforeach
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-center align-middle">
-                                            @foreach ($products as $key => $product)
+                                <div class="d-flex">
+                                    <div class="col-4 table-responsive">
+                                        <table class="table table-hover">
+                                            <thead
+                                                class="table-light text-uppercase text-center align-middle"
+                                                style="height: 5.75rem"
+                                            >
                                                 <tr>
+                                                    <th>STT</th>
+                                                    <th>Tên linh kiện</th>
                                                     <th>
-                                                        {{ $loop->iteration }}
+                                                        Tổng cộng
+                                                        <br />
                                                     </th>
-                                                    <td class="text-start">
-                                                        <a
-                                                            href="{{ route('admin.product.detail', $product->id) }}"
-                                                        >
-                                                            {{ $product->name }}
-                                                        </a>
-                                                    </td>
-                                                    <td>
-                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 1)->value('totalQuan') ?? 0) }}
-                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                @foreach ($products as $key => $product)
+                                                    <tr>
+                                                        <th>
+                                                            {{ $loop->iteration }}
+                                                        </th>
+                                                        <td class="text-start">
+                                                            <a
+                                                                href="{{ route('admin.product.detail', $product->id) }}"
+                                                            >
+                                                                {{ $product->name }}
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 1)->value('totalQuan') ?? 0) }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-8 table-responsive">
+                                        <table class="table table-hover">
+                                            <thead
+                                                class="table-light text-uppercase text-center align-middle"
+                                                style="height: 5.75rem"
+                                            >
+                                                <tr>
                                                     @foreach ($listDate as $key => $date)
-                                                        @php
-                                                            // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
-                                                            $formattedDate = Carbon\Carbon::parse($date)->startOfDay();
-                                                            // Lấy tất cả các dailyQuantities cho ngày cụ thể
-                                                            $dailyQuantitiesOfTheDay = $product
-                                                                ->DailyQuantities()
-                                                                ->where('status', 1)
-                                                                ->whereDate('date', $formattedDate)
-                                                                ->get();
-
-                                                            $totalQuanDateCa1 = 0;
-                                                            $totalQuanDateCa2 = 0;
-
-                                                            // Xử lý số lượng cho mỗi ca
-                                                            foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
-                                                                $created_at = Carbon\Carbon::parse(
-                                                                    $dailyQuantity->created_at,
-                                                                );
-                                                                $nextDayEightAM = $formattedDate
-                                                                    ->copy()
-                                                                    ->addDay()
-                                                                    ->setHour(9);
-
-                                                                // Phân biệt ca dựa vào thời gian trong cột created_at
-                                                                if ($created_at->isSameDay($formattedDate)) {
-                                                                    // Ca 1 nếu created_at cùng ngày với date
-                                                                    $totalQuanDateCa1 += $dailyQuantity->quantity;
-                                                                } elseif ($created_at < $nextDayEightAM) {
-                                                                    // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date
-                                                                    $totalQuanDateCa2 += $dailyQuantity->quantity;
-                                                                }
-                                                            }
-                                                        @endphp
-
-                                                        <td
-                                                            class="{{ $key % 2 == 0 ? 'bg-body-secondary' : '' }}"
+                                                        <th
+                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                            colspan="2"
                                                         >
-                                                            {{ number_format($totalQuanDateCa1) }}
-                                                        </td>
-                                                        <td
-                                                            class="{{ $key % 2 == 0 ? 'bg-body-secondary' : '' }}"
-                                                        >
-                                                            {{ number_format($totalQuanDateCa2) }}
-                                                        </td>
+                                                            {{ $date }}
+                                                        </th>
                                                     @endforeach
 
-                                                    <td>
-                                                        <a
-                                                            href="{{ route('admin.product.edit', $product->id) }}"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            <i
-                                                                class="fas fa-edit"
-                                                            ></i>
-                                                            Cập nhật
-                                                        </a>
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-danger"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#deleteProduct{{ $product->id }}"
-                                                        >
-                                                            <i
-                                                                class="fas fa-trash-alt"
-                                                            ></i>
-                                                            Xóa
-                                                        </button>
-                                                    </td>
+                                                    <th rowspan="2">
+                                                        THAO TÁC
+                                                    </th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                                <tr>
+                                                    @foreach ($listDate as $key => $date)
+                                                        <th
+                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                        >
+                                                            Ca 1
+                                                        </th>
+                                                        <th
+                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                        >
+                                                            Ca 2
+                                                        </th>
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                @foreach ($products as $key => $product)
+                                                    <tr>
+                                                        @foreach ($listDate as $key => $date)
+                                                            @php
+                                                                // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
+                                                                $formattedDate = Carbon\Carbon::parse($date)->startOfDay();
+                                                                // Lấy tất cả các dailyQuantities cho ngày cụ thể
+                                                                $dailyQuantitiesOfTheDay = $product
+                                                                    ->DailyQuantities()
+                                                                    ->where('status', 1)
+                                                                    ->whereDate('date', $formattedDate)
+                                                                    ->get();
+
+                                                                $totalQuanDateCa1 = 0;
+                                                                $totalQuanDateCa2 = 0;
+
+                                                                // Xử lý số lượng cho mỗi ca
+                                                                foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
+                                                                    $created_at = Carbon\Carbon::parse(
+                                                                        $dailyQuantity->created_at,
+                                                                    );
+                                                                    $nextDayEightAM = $formattedDate
+                                                                        ->copy()
+                                                                        ->addDay()
+                                                                        ->setHour(9);
+
+                                                                    // Phân biệt ca dựa vào thời gian trong cột created_at
+                                                                    if ($created_at->isSameDay($formattedDate)) {
+                                                                        // Ca 1 nếu created_at cùng ngày với date
+                                                                        $totalQuanDateCa1 += $dailyQuantity->quantity;
+                                                                    } elseif ($created_at < $nextDayEightAM) {
+                                                                        // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date
+                                                                        $totalQuanDateCa2 += $dailyQuantity->quantity;
+                                                                    }
+                                                                }
+                                                            @endphp
+
+                                                            <td
+                                                                class="{{ $key % 2 == 0 ? 'bg-body-secondary' : '' }}"
+                                                            >
+                                                                {{ number_format($totalQuanDateCa1) }}
+                                                            </td>
+                                                            <td
+                                                                class="{{ $key % 2 == 0 ? 'bg-body-secondary' : '' }}"
+                                                            >
+                                                                {{ number_format($totalQuanDateCa2) }}
+                                                            </td>
+                                                        @endforeach
+
+                                                        <td>
+                                                            <a
+                                                                href="{{ route('admin.product.edit', $product->id) }}"
+                                                                class="btn btn-primary"
+                                                            >
+                                                                <i
+                                                                    class="fas fa-edit"
+                                                                ></i>
+                                                                Cập nhật
+                                                            </a>
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#deleteProduct{{ $product->id }}"
+                                                            >
+                                                                <i
+                                                                    class="fas fa-trash-alt"
+                                                                ></i>
+                                                                Xóa
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -613,118 +638,134 @@
                                 aria-labelledby="{{ $keyTab }}-tab"
                                 tabindex="0"
                             >
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead
-                                            class="table-light text-uppercase text-center align-middle"
-                                        >
-                                            <tr>
-                                                <th class="freeze">STT</th>
-                                                <th class="freeze">
-                                                    Tên linh kiện
-                                                </th>
-                                                @if ($keyTab == 'import-200')
-                                                    <th class="freeze">
-                                                        Tồn đầu kỳ
-                                                        <br />
-                                                        hàng 200%
-                                                    </th>
-                                                    <th class="freeze">
-                                                        Phát sinh
-                                                        <br />
-                                                        kiểm hàng 200%
-                                                    </th>
-                                                @else
-                                                    <th class="freeze">
-                                                        Tổng cộng
-                                                    </th>
-                                                @endif
-
-                                                @foreach ($listDate as $key => $date)
-                                                    <th
-                                                        class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                    >
-                                                        {{ $date }}
-                                                    </th>
-                                                @endforeach
-
-                                                <th>THAO TÁC</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-center align-middle">
-                                            @foreach ($products as $product)
+                                <div class="d-flex">
+                                    <div class="col-4 table-responsive">
+                                        <table class="table table-hover">
+                                            <thead
+                                                class="table-light text-uppercase text-center align-middle"
+                                                style="height: 4.5rem"
+                                            >
                                                 <tr>
-                                                    <th class="freeze">
-                                                        {{ $loop->iteration }}
-                                                    </th>
-                                                    <td
-                                                        class="text-start freeze"
-                                                    >
-                                                        <a
-                                                            href="{{ route('admin.product.detail', $product->id) }}"
-                                                        >
-                                                            {{ $product->name }}
-                                                        </a>
-                                                    </td>
-
+                                                    <th>STT</th>
+                                                    <th>Tên linh kiện</th>
                                                     @if ($keyTab == 'import-200')
-                                                        <td class="freeze">
-                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0) }}
-                                                        </td>
-                                                        <td class="freeze">
-                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
-                                                        </td>
+                                                        <th>
+                                                            Tồn đầu kỳ
+                                                            <br />
+                                                            hàng 200%
+                                                        </th>
+                                                        <th>
+                                                            Phát sinh
+                                                            <br />
+                                                            kiểm hàng 200%
+                                                        </th>
                                                     @else
-                                                        <td class="freeze">
-                                                            {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
-                                                        </td>
+                                                        <th>Tổng cộng</th>
                                                     @endif
-
-                                                    @foreach ($listDate as $key => $date)
-                                                        @php
-                                                            $timestam = strtotime($date);
-                                                            $day = date('Y-m-d', $timestam);
-                                                            $totalQuanDate =
-                                                                $product
-                                                                    ->TotalDailyQuantities()
-                                                                    ->where('status', $tabProduct['status'])
-                                                                    ->where('date', $day)
-                                                                    ->value('totalQuan') ?? '';
-                                                        @endphp
-
-                                                        <td
-                                                            class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
-                                                        >
-                                                            {{ number_format((float) $totalQuanDate) }}
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                @foreach ($products as $product)
+                                                    <tr>
+                                                        <th>
+                                                            {{ $loop->iteration }}
+                                                        </th>
+                                                        <td class="text-start">
+                                                            <a
+                                                                href="{{ route('admin.product.detail', $product->id) }}"
+                                                            >
+                                                                {{ $product->name }}
+                                                            </a>
                                                         </td>
+
+                                                        @if ($keyTab == 'import-200')
+                                                            <td>
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0) }}
+                                                            </td>
+                                                            <td>
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
+                                                            </td>
+                                                        @else
+                                                            <td>
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', $tabProduct['status'])->value('totalQuan') ?? 0) }}
+                                                            </td>
+                                                        @endif
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-8 table-responsive">
+                                        <table class="table table-hover">
+                                            <thead
+                                                class="table-light text-uppercase text-center align-middle"
+                                                style="height: 4.5rem"
+                                            >
+                                                <tr>
+                                                    @foreach ($listDate as $key => $date)
+                                                        <th
+                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                        >
+                                                            {{ $date }}
+                                                        </th>
                                                     @endforeach
 
-                                                    <td>
-                                                        <a
-                                                            href="{{ route('admin.product.edit', $product->id) }}"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            <i
-                                                                class="fas fa-edit"
-                                                            ></i>
-                                                            Cập nhật
-                                                        </a>
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-danger"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#deleteProduct{{ $product->id }}"
-                                                        >
-                                                            <i
-                                                                class="fas fa-trash-alt"
-                                                            ></i>
-                                                            Xóa
-                                                        </button>
-                                                    </td>
+                                                    <th>THAO TÁC</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                @foreach ($products as $product)
+                                                    <tr>
+                                                        @foreach ($listDate as $key => $date)
+                                                            @php
+                                                                $timestam = strtotime($date);
+                                                                $day = date('Y-m-d', $timestam);
+                                                                $totalQuanDate =
+                                                                    $product
+                                                                        ->TotalDailyQuantities()
+                                                                        ->where('status', $tabProduct['status'])
+                                                                        ->where('date', $day)
+                                                                        ->value('totalQuan') ?? '';
+                                                            @endphp
+
+                                                            <td
+                                                                class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                            >
+                                                                {{ number_format((float) $totalQuanDate) }}
+                                                            </td>
+                                                        @endforeach
+
+                                                        <td>
+                                                            <a
+                                                                href="{{ route('admin.product.edit', $product->id) }}"
+                                                                class="btn btn-primary"
+                                                            >
+                                                                <i
+                                                                    class="fas fa-edit"
+                                                                ></i>
+                                                                Cập nhật
+                                                            </a>
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#deleteProduct{{ $product->id }}"
+                                                            >
+                                                                <i
+                                                                    class="fas fa-trash-alt"
+                                                                ></i>
+                                                                Xóa
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         @endif

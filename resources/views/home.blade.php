@@ -126,11 +126,11 @@
             'icon' => 'fas fa-history fa-2x',
             'link' => route('admin.employee-history-check'),
         ],
-        [
-            'title' => 'Thông tin tài khoản',
-            'icon' => 'fas fa-id-card fa-2x',
-            'link' => route('admin.profile'),
-        ],
+        // [
+        //     'title' => 'Thông tin tài khoản',
+        //     'icon' => 'fas fa-id-card fa-2x',
+        //     'link' => route('admin.profile'),
+        // ],
     ];
 
     if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18) {

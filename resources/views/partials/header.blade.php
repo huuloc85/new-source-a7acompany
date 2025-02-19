@@ -27,9 +27,9 @@
                         <a
                             class="nav-link py-0 d-flex align-items-center"
                             href="#"
-                            id="navbarDropdown"
+                            id="notificationBell"
                             role="button"
-                            data-toggle="dropdown"
+                            data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
                             <div
@@ -47,8 +47,11 @@
                         <ul
                             class="dropdown-menu dropdown-menu-end notification-dropdown"
                             aria-labelledby="navbarDropdown"
+                            id="notificationDropdown"
                         >
-                            <li class="notification-header">
+                            <li
+                                class="notification-header px-3 py-2 border-bottom"
+                            >
                                 <h6 class="m-0">Thông Báo</h6>
                             </li>
                             <li class="notification-body">
@@ -63,6 +66,73 @@
                             </li>
                         </ul>
                     </li>
+
+                    <style>
+                        .notification-dropdown {
+                            width: 300px;
+                            max-height: 400px;
+                            overflow-y: auto;
+                            right: 0 !important;
+                            left: auto !important;
+                            border: none !important;
+                            box-shadow: none !important;
+                            display: none;
+                            /* Ẩn mặc định */
+                        }
+
+                        #notificationBell:focus,
+                        #notificationBell:active {
+                            outline: none !important;
+                            box-shadow: none !important;
+                            border: none !important;
+                        }
+                    </style>
+
+                    <script>
+                        document.addEventListener(
+                            'DOMContentLoaded',
+                            function () {
+                                const bell =
+                                    document.getElementById('notificationBell');
+                                const dropdown = document.getElementById(
+                                    'notificationDropdown',
+                                );
+
+                                function showDropdown() {
+                                    dropdown.style.display = 'block';
+                                }
+
+                                function hideDropdown() {
+                                    dropdown.style.display = 'none';
+                                }
+
+                                bell.addEventListener(
+                                    'mouseenter',
+                                    showDropdown,
+                                );
+                                dropdown.addEventListener(
+                                    'mouseenter',
+                                    showDropdown,
+                                );
+
+                                bell.addEventListener(
+                                    'mouseleave',
+                                    function () {
+                                        setTimeout(function () {
+                                            if (!dropdown.matches(':hover')) {
+                                                hideDropdown();
+                                            }
+                                        }, 200);
+                                    },
+                                );
+
+                                dropdown.addEventListener(
+                                    'mouseleave',
+                                    hideDropdown,
+                                );
+                            },
+                        );
+                    </script>
                 @endif
 
                 <li class="nav-item dropdown ms-2">
