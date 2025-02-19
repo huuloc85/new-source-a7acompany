@@ -71,13 +71,130 @@
                         @endforeach
                     </div>
                     <div class="tab-content" id="myTabContent">
+                        @php
+                            $VVP = $tabWork['VVP'] ?? null;
+                            unset($tabWork['VVP']);
+                        @endphp
+
+                        @if (isset($VVP) && isset($categories))
+                            <div
+                                class="tab-pane fade show active"
+                                id="VVP"
+                                role="tabpanel"
+                                aria-labelledby="VVP-tab"
+                            >
+                                @foreach ($categories as $key => $category)
+                                    <div
+                                        class="fw-bold bg-info p-2 text-center"
+                                    >
+                                        {{ $category->name }}
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div class="col-4 table-responsive">
+                                            <table
+                                                class="table table-hover table-bordered"
+                                            >
+                                                <thead
+                                                    class="table-light text-center uppercase align-middle"
+                                                    style="height: 4.5rem"
+                                                >
+                                                    <tr>
+                                                        <th>Mã NV</th>
+                                                        <th>Họ và tên</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody
+                                                    class="text-center align-middle"
+                                                >
+                                                    {{-- Hàng Nhật - Hàng Chợ --}}
+                                                    @if (isset($celenderDetailsHNHC))
+                                                        @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
+                                                            @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                                <tr
+                                                                    style="
+                                                                        height: 2.75rem;
+                                                                    "
+                                                                >
+                                                                    <td>
+                                                                        {{ $celenderDetailHNHC->employee->code }}
+                                                                    </td>
+                                                                    <td
+                                                                        class="text-start"
+                                                                    >
+                                                                        {{ $celenderDetailHNHC->employee->name }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-8 table-responsive">
+                                            <table
+                                                class="table table-hover table-bordered"
+                                            >
+                                                <thead
+                                                    class="table-light text-center uppercase align-middle"
+                                                    style="height: 4.5rem"
+                                                >
+                                                    <tr>
+                                                        @foreach ($dates as $date)
+                                                            <th>
+                                                                {{ $formatDate->formatTimeDate($date) }}
+                                                                <br />
+                                                                {{ $formatDate->dayOfWeek($date) }}
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody
+                                                    class="text-center align-middle"
+                                                >
+                                                    {{-- Hàng Nhật - Hàng Chợ --}}
+                                                    @if (isset($celenderDetailsHNHC))
+                                                        @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
+                                                            @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                                <tr
+                                                                    style="
+                                                                        height: 2.75rem;
+                                                                    "
+                                                                >
+                                                                    @foreach ($dates as $key => $date)
+                                                                        @php
+                                                                            $fill = 'day'.$key + 1;
+                                                                        @endphp
+
+                                                                        <td>
+                                                                            <span
+                                                                                class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}"
+                                                                            >
+                                                                                {{ $celenderDetailHNHC->$fill ?? '' }}
+                                                                            </span>
+                                                                        </td>
+                                                                    @endforeach
+                                                                </tr>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
                         @foreach ($tabWork as $key => $tab)
                             @php
                                 $tabCode = $key;
                             @endphp
 
                             <div
-                                class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                                class="tab-pane fade"
                                 id="{{ $tabCode }}"
                                 role="tabpanel"
                                 aria-labelledby="{{ $tabCode }}-tab"
@@ -446,114 +563,139 @@
                 $(this).addClass($(this).val());
             });
         });
-        document.addEventListener('DOMContentLoaded', function () {
-            // Create search input
-            const searchContainer = document.createElement('div');
-            searchContainer.className = 'mb-3';
-            searchContainer.innerHTML = `
-        <div class="input-group">
-            <span class="input-group-text">
-                <i class="fas fa-search"></i>
-            </span>
-            <input type="text" class="form-control" id="tableSearch"
-                   placeholder="Tìm kiếm theo mã nhân viên hoặc tên...">
+        $(document).ready(function () {
+            // Add search input after workLegends div
+            $('.d-flex.flex-wrap.gap-3.align-items-center.m-3').after(`
+        <div class="mb-3">
+            <input type="text"
+                   id="employeeSearch"
+                   class="form-control w-100 w-md-25"
+                   placeholder="Tìm kiếm nhân viên..."
+            >
         </div>
-    `;
+    `);
 
-            // Insert search input at the correct location
-            const tabContent = document.querySelector('#myTabContent');
-            tabContent.parentNode.insertBefore(searchContainer, tabContent);
+            // Handle the search functionality
+            $('#employeeSearch').on('input', function () {
+                const searchValue = $(this).val().toLowerCase().trim();
 
-            const searchInput = document.getElementById('tableSearch');
+                // Get the active tab's ID
+                const activeTabId = $('.tab-pane.active').attr('id');
 
-            searchInput.addEventListener('input', function () {
-                const searchTerm = this.value.toLowerCase().trim();
+                // Find both tables in the active tab
+                const $leftTable = $(`#${activeTabId} .col-4 table`);
+                const $rightTable = $(`#${activeTabId} .col-8 table`);
 
-                // Loop through all active tab panes
-                document
-                    .querySelectorAll('.tab-pane.active')
-                    .forEach((tabPane) => {
-                        // Get both tables in the current tab
-                        const leftTable =
-                            tabPane.querySelector('.col-4 table tbody');
-                        const rightTable =
-                            tabPane.querySelector('.col-8 table tbody');
+                // Process rows in pairs
+                const $leftRows = $leftTable.find('tbody tr');
+                const $rightRows = $rightTable.find('tbody tr');
 
-                        if (!leftTable || !rightTable) return;
+                $leftRows.each(function (index) {
+                    const $leftRow = $(this);
+                    const $rightRow = $rightRows.eq(index);
 
-                        // Get all rows from left table
-                        const leftRows = leftTable.querySelectorAll('tr');
-                        const rightRows = rightTable.querySelectorAll('tr');
+                    // Skip category header rows (rows with bg-info class)
+                    if ($leftRow.find('.bg-info').length > 0) {
+                        return;
+                    }
 
-                        leftRows.forEach((leftRow, index) => {
-                            const rightRow = rightRows[index];
-                            if (!rightRow) return;
+                    // Get employee code and name from the left table
+                    const code = $leftRow
+                        .find('td:first-child')
+                        .text()
+                        .toLowerCase()
+                        .trim();
+                    const name = $leftRow
+                        .find('td:nth-child(2)')
+                        .text()
+                        .toLowerCase()
+                        .trim();
 
-                            // Check if it's a category header
-                            if (leftRow.querySelector('.bg-info')) {
-                                // Always show category headers initially
-                                leftRow.style.display = '';
-                                rightRow.style.display = '';
-                                return;
+                    // Show/hide rows based on search match
+                    if (
+                        code.includes(searchValue) ||
+                        name.includes(searchValue)
+                    ) {
+                        $leftRow.show();
+                        $rightRow.show();
+
+                        // If this row matches, also show its category header if it exists
+                        let $currentLeftRow = $leftRow;
+                        let $currentRightRow = $rightRow;
+
+                        while ($currentLeftRow.prev().length > 0) {
+                            $currentLeftRow = $currentLeftRow.prev();
+                            $currentRightRow = $currentRightRow.prev();
+
+                            if ($currentLeftRow.find('.bg-info').length > 0) {
+                                $currentLeftRow.show();
+                                $currentRightRow.show();
+                                break;
                             }
+                        }
+                    } else {
+                        $leftRow.hide();
+                        $rightRow.hide();
+                    }
+                });
 
-                            // Get searchable content
-                            const code =
-                                leftRow
-                                    .querySelector('td:first-child')
-                                    ?.textContent.trim()
-                                    .toLowerCase() || '';
-                            const name =
-                                leftRow
-                                    .querySelector('td:nth-child(2)')
-                                    ?.textContent.trim()
-                                    .toLowerCase() || '';
+                // Hide category headers if no rows in that category are visible
+                $(`#${activeTabId} .col-4 .bg-info`)
+                    .closest('tr')
+                    .each(function (index) {
+                        const $leftHeader = $(this);
+                        const $rightHeader = $(
+                            `#${activeTabId} .col-8 .bg-info`,
+                        )
+                            .closest('tr')
+                            .eq(index);
 
-                            // Check if row matches search
-                            const matches =
-                                code.includes(searchTerm) ||
-                                name.includes(searchTerm);
+                        let hasVisibleRows = false;
+                        let $nextLeftRow = $leftHeader.next();
+                        let $nextRightRow = $rightHeader.next();
 
-                            // Show/hide both rows
-                            leftRow.style.display = matches ? '' : 'none';
-                            rightRow.style.display = matches ? '' : 'none';
-                        });
-
-                        // Handle category headers visibility
-                        const categories =
-                            leftTable.querySelectorAll('tr:has(.bg-info)');
-                        categories.forEach((categoryRow) => {
-                            const categoryIndex =
-                                Array.from(leftRows).indexOf(categoryRow);
-                            let hasVisibleRows = false;
-
-                            // Check next rows until next category
-                            let currentIndex = categoryIndex + 1;
-                            while (
-                                currentIndex < leftRows.length &&
-                                !leftRows[currentIndex].querySelector(
-                                    '.bg-info',
-                                )
-                            ) {
-                                if (
-                                    leftRows[currentIndex].style.display !==
-                                    'none'
-                                ) {
-                                    hasVisibleRows = true;
-                                    break;
-                                }
-                                currentIndex++;
+                        while (
+                            $nextLeftRow.length &&
+                            !$nextLeftRow.find('.bg-info').length
+                        ) {
+                            if ($nextLeftRow.is(':visible')) {
+                                hasVisibleRows = true;
+                                break;
                             }
+                            $nextLeftRow = $nextLeftRow.next();
+                            $nextRightRow = $nextRightRow.next();
+                        }
 
-                            // Show/hide category header based on visible rows
-                            categoryRow.style.display =
-                                hasVisibleRows || searchTerm === ''
-                                    ? ''
-                                    : 'none';
-                            rightRows[categoryIndex].style.display =
-                                categoryRow.style.display;
-                        });
+                        if (!hasVisibleRows) {
+                            $leftHeader.hide();
+                            $rightHeader.hide();
+                        }
                     });
+            });
+
+            // Clear search when changing tabs
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
+                const $searchInput = $('#employeeSearch');
+                if ($searchInput.val()) {
+                    $searchInput.val('').trigger('input');
+                }
+            });
+
+            // Keep the existing input class change functionality
+            const listClass = ['N', 'D', 'X', 'TC', 'LN'];
+            $('input').on('keyup', function () {
+                if (
+                    !$(this).attr('id') ||
+                    $(this).attr('id') !== 'employeeSearch'
+                ) {
+                    $(this).val($(this).val().toUpperCase());
+                    for (let i = 0; i < listClass.length; i++) {
+                        if ($(this).hasClass(listClass[i])) {
+                            $(this).removeClass(listClass[i]);
+                        }
+                    }
+                    $(this).addClass($(this).val());
+                }
             });
         });
     </script>
