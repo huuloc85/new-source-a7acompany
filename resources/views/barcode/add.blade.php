@@ -1,6 +1,5 @@
-@extends('layouts.'.$layout)
-
-@section('styles')
+@extends('layouts.layout')
+@section('content')
     <link rel="stylesheet" href="{{ asset('assets/css/add-barcode.css') }}" />
     <div class="row">
         <div class="col-12 print-container">
@@ -12,207 +11,242 @@
                         <h4 class="card-title mb-0">Tạo Tem Thùng</h4>
                     </div>
                 </div>
+                <div class="px-0 pb-2">
+                    <div class="table-responsive p-4">
+                        <form
+                            action="{{ route('admin.barcode.register') }}"
+                            method="post"
+                        >
+                            @method('POST')
+                            @csrf
+                            <div class="row no-print">
+                                <!-- Ngày -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        Ngày
+                                        <span class="required text-danger">
+                                            *
+                                        </span>
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="date"
+                                        class="form-control @error('date') is-invalid @enderror"
+                                        placeholder="Ngày"
+                                        name="date"
+                                        value="{{ $request->date ?? '' }}"
+                                        required
+                                    />
+                                    @error('date')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
 
-                <form
-                    action="{{ route('admin.barcode.register') }}"
-                    method="post"
-                >
-                    @method('POST')
-                    @csrf
-                    <div class="row no-print">
-                        <!-- Ngày -->
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">
-                                Ngày
-                                <span class="required text-danger">*</span>
-                            </label>
-                            <input
-                                type="date"
-                                id="date"
-                                class="form-control @error('date') is-invalid @enderror"
-                                placeholder="Ngày"
-                                name="date"
-                                value="{{ $request->date ?? '' }}"
-                                required
-                            />
-                            @error('date')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Ca -->
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">
-                                Ca
-                                <span class="required text-danger">*</span>
-                            </label>
-                            <select
-                                id="shift"
-                                class="form-control @error('shift') is-invalid @enderror"
-                                name="shift"
-                                required
-                            >
-                                <option style="text-align: center" value="">
-                                    ----- Ca làm việc -----
-                                </option>
-                                <option
-                                    <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?>
-                                    value="1"
-                                >
-                                    Ca 1
-                                </option>
-                                <option
-                                    <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?>
-                                    value="2"
-                                >
-                                    Ca 2
-                                </option>
-                            </select>
-                            @error('shift')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Số lượng thùng (tem) -->
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">
-                                Số lượng thùng (tem)
-                                <span class="required text-danger">*</span>
-                            </label>
-                            <input
-                                min="1"
-                                max="999"
-                                id="binCount"
-                                class="form-control @error('binCount') is-invalid @enderror"
-                                placeholder="Số lượng thùng"
-                                name="binCount"
-                                value="{{ $request->binCount ?? '' }}"
-                                required
-                            />
-                            @error('binCount')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-
-                            <small class="form-text text-muted">
-                                <strong>
-                                    Lưu ý: Trường hợp nếu cần in lại nhiều tem
-                                    với số thùng khác nhau thì nhập số lượng tem
-                                    theo các số lượng cần in, ví dụ: cần in 2
-                                    tem lẻ 1,2 thì nhập số lượng là 2
-                                </strong>
-                            </small>
-                        </div>
-
-                        <!-- Thùng bắt đầu -->
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">
-                                Thùng bắt đầu
-                                <span class="required text-danger">*</span>
-                            </label>
-                            <input
-                                min="0"
-                                id="binStart"
-                                class="form-control @error('binStart') is-invalid @enderror"
-                                placeholder="Thùng bắt đầu"
-                                name="binStart"
-                                value="{{ $request->binStart ?? '' }}"
-                                required
-                            />
-                            @error('binStart')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-
-                            <small class="form-text text-muted">
-                                <strong>
-                                    Lưu ý: Trường hợp nếu cần in lại nhiều tem
-                                    với số thùng khác nhau thì nhập cách mỗi số
-                                    thùng ví dụ thùng 1 và 2 thì nhập, ví dụ:
-                                    1,2
-                                </strong>
-                            </small>
-                        </div>
-
-                        <!-- Sản phẩm -->
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">
-                                Sản phẩm
-                                <span class="required text-danger">*</span>
-                            </label>
-                            <select
-                                onchange="selectProduct(event)"
-                                class="form-control @error('product_code') is-invalid @enderror"
-                                name="product_code"
-                                required
-                            >
-                                <option style="text-align: center" value="">
-                                    ----- Chọn sản phẩm -----
-                                </option>
-                                @foreach ($products as $pro)
-                                    <option
-                                        {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
-                                        value="{{ $pro->code }}-{{ $pro->quanEntityBin }}"
+                                <!-- Ca -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        Ca
+                                        <span class="required text-danger">
+                                            *
+                                        </span>
+                                    </label>
+                                    <select
+                                        id="shift"
+                                        class="form-control @error('shift') is-invalid @enderror"
+                                        name="shift"
+                                        required
                                     >
-                                        {{ $pro->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('product_code')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
+                                        <option
+                                            style="text-align: center"
+                                            value=""
+                                        >
+                                            ----- Ca làm việc -----
+                                        </option>
+                                        <option
+                                            <?= ($request->shift ?? "") == 1 ? "selected" : "" ?>
+                                            value="1"
+                                        >
+                                            Ca 1
+                                        </option>
+                                        <option
+                                            <?= ($request->shift ?? "") == 2 ? "selected" : "" ?>
+                                            value="2"
+                                        >
+                                            Ca 2
+                                        </option>
+                                    </select>
+                                    @error('shift')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
 
-                        <!-- Code -->
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">
-                                Code
-                                <span class="required text-danger">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                id="product_code"
-                                class="form-control @error('code') is-invalid @enderror"
-                                placeholder="Code"
-                                name="code"
-                                value="{{ $product->code ?? '' }}"
-                                required
-                                readonly
-                            />
-                            @error('code')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
+                                <!-- Số lượng thùng (tem) -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        Số lượng thùng (tem)
+                                        <span class="required text-danger">
+                                            *
+                                        </span>
+                                    </label>
+                                    <input
+                                        min="1"
+                                        max="999"
+                                        id="binCount"
+                                        class="form-control @error('binCount') is-invalid @enderror"
+                                        placeholder="Số lượng thùng"
+                                        name="binCount"
+                                        value="{{ $request->binCount ?? '' }}"
+                                        required
+                                    />
+                                    @error('binCount')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
 
-                        <!-- PCS -->
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">
-                                PCS
-                                <span class="required text-danger">*</span>
-                            </label>
-                            <input
-                                type="number"
-                                min="1"
-                                id="product_pcs"
-                                class="form-control @error('pcs') is-invalid @enderror"
-                                placeholder="PCS"
-                                name="pcs"
-                                value="{{ $product->quanEntityBin ?? '' }}"
-                                required
-                                readonly
-                            />
-                            @error('pcs')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <input
-                            type="hidden"
-                            id="type"
-                            name="type"
-                            value="Tem Thùng"
-                        />
-                    </div>
-                    <br />
-                    <div class="px-0 pb-2">
-                        <div class="table-responsive p-4">
+                                    <small class="form-text text-muted">
+                                        <strong>
+                                            Lưu ý: Trường hợp nếu cần in lại
+                                            nhiều tem với số thùng khác nhau thì
+                                            nhập số lượng tem theo các số lượng
+                                            cần in, ví dụ: cần in 2 tem lẻ 1,2
+                                            thì nhập số lượng là 2
+                                        </strong>
+                                    </small>
+                                </div>
+
+                                <!-- Thùng bắt đầu -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        Thùng bắt đầu
+                                        <span class="required text-danger">
+                                            *
+                                        </span>
+                                    </label>
+                                    <input
+                                        min="0"
+                                        id="binStart"
+                                        class="form-control @error('binStart') is-invalid @enderror"
+                                        placeholder="Thùng bắt đầu"
+                                        name="binStart"
+                                        value="{{ $request->binStart ?? '' }}"
+                                        required
+                                    />
+                                    @error('binStart')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+
+                                    <small class="form-text text-muted">
+                                        <strong>
+                                            Lưu ý: Trường hợp nếu cần in lại
+                                            nhiều tem với số thùng khác nhau thì
+                                            nhập cách mỗi số thùng ví dụ thùng 1
+                                            và 2 thì nhập, ví dụ: 1,2
+                                        </strong>
+                                    </small>
+                                </div>
+
+                                <!-- Sản phẩm -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        Sản phẩm
+                                        <span class="required text-danger">
+                                            *
+                                        </span>
+                                    </label>
+                                    <select
+                                        onchange="selectProduct(event)"
+                                        class="form-control @error('product_code') is-invalid @enderror"
+                                        name="product_code"
+                                        required
+                                    >
+                                        <option
+                                            style="text-align: center"
+                                            value=""
+                                        >
+                                            ----- Chọn sản phẩm -----
+                                        </option>
+                                        @foreach ($products as $pro)
+                                            <option
+                                                {{ ($product->code ?? '') == $pro->code ? 'selected' : '' }}
+                                                value="{{ $pro->code }}-{{ $pro->quanEntityBin }}"
+                                            >
+                                                {{ $pro->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('product_code')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+
+                                <!-- Code -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        Code
+                                        <span class="required text-danger">
+                                            *
+                                        </span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="product_code"
+                                        class="form-control @error('code') is-invalid @enderror"
+                                        placeholder="Code"
+                                        name="code"
+                                        value="{{ $product->code ?? '' }}"
+                                        required
+                                        readonly
+                                    />
+                                    @error('code')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+
+                                <!-- PCS -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        PCS
+                                        <span class="required text-danger">
+                                            *
+                                        </span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        id="product_pcs"
+                                        class="form-control @error('pcs') is-invalid @enderror"
+                                        placeholder="PCS"
+                                        name="pcs"
+                                        value="{{ $product->quanEntityBin ?? '' }}"
+                                        required
+                                        readonly
+                                    />
+                                    @error('pcs')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                                <input
+                                    type="hidden"
+                                    id="type"
+                                    name="type"
+                                    value="Tem Thùng"
+                                />
+                            </div>
+                            <br />
+
                             <div>
                                 <div class="col-12 no-print">
                                     <button
@@ -239,7 +273,7 @@
                                     @endif
                                 </div>
                                 <div class="container-gird">
-                                    <div class="grid-container">
+                                    <div class="grid-container my-3">
                                         @if (isset($barcode) && isset($qrCode))
                                             @foreach ($binArray as $key => $bin)
                                                 <div
@@ -592,9 +626,9 @@
                                     </div>
                                 @endif
                             </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
