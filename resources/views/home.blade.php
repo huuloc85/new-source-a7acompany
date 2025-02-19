@@ -141,14 +141,14 @@
             'link' => route('admin.celender.home'),
         ]);
     }
-    if (Auth()->user()->role_id !== 8) {
-        // if (true) {
+    if (Auth()->user()->role_id !== 8 && Auth()->user()->role_id !== 10) {
         array_push($employeeWidgets, [
             'title' => 'Yêu Cầu In Tem',
             'icon' => 'fas fa-print fa-2x',
             'link' => route('admin.send-stamp'),
         ]);
     }
+
     if (Auth()->user()->role_id == 8) {
         array_unshift($employeeWidgets, [
             'title' => 'Danh Sách Tem Cần In',

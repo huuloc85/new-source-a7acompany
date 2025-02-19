@@ -230,24 +230,30 @@
             'icon' => 'fas fa-history fa-lg',
             'path' => 'admin.employee-history-check',
         ],
-        [
+        // [
+        //     'label' => 'Yêu Cầu In Tem',
+        //     'icon' => 'fas fa-envelopes-bulk fa-lg',
+        //     'path' => 'admin.send-stamp',
+        //         [
+        //             'label' => 'Yêu Cầu In Tem',
+        //             'icon' => 'fas fa-clipboard-list fa-lg',
+        //             'path' => 'admin.send-stamp',
+        //         ],
+        //         [
+        //             'label' => 'Trạng Thái In Tem',
+        //             'icon' => 'fas fa-clipboard-check fa-lg',
+        //             'path' => 'admin.checkstamp-employee',
+        //         ],
+        //     ],
+        // ],
+    ];
+    if (Auth()->user()->role_id !== 10) {
+        $navNotQA[] = [
             'label' => 'Yêu Cầu In Tem',
             'icon' => 'fas fa-envelopes-bulk fa-lg',
             'path' => 'admin.send-stamp',
-            //     [
-            //         'label' => 'Yêu Cầu In Tem',
-            //         'icon' => 'fas fa-clipboard-list fa-lg',
-            //         'path' => 'admin.send-stamp',
-            //     ],
-            //     [
-            //         'label' => 'Trạng Thái In Tem',
-            //         'icon' => 'fas fa-clipboard-check fa-lg',
-            //         'path' => 'admin.checkstamp-employee',
-            //     ],
-            // ],
-        ],
-    ];
-
+        ];
+    }
     $navProfile = [
         [
             'label' => 'Thông Tin Tài Khoản',
