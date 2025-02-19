@@ -349,8 +349,9 @@ class SendStampController extends Controller
         $user = auth()->user();
         $date = $request->input('date', now()->toDateString()); // Mặc định lấy ngày hiện tại
 
-        // Lấy danh sách ngày có trong bảng SendStamp (chỉ lấy ngày, không trùng lặp)
-        $availableDates = SendStamp::selectRaw('DATE(created_at) as date')
+        // Chỉ lấy danh sách ngày mà nhân viên đăng nhập có dữ liệu
+        $availableDates = SendStamp::where('employee_id', $user->id) // Chỉ lấy của nhân viên hiện tại
+            ->selectRaw('DATE(created_at) as date')
             ->distinct()
             ->orderBy('date', 'desc')
             ->pluck('date');
@@ -369,7 +370,8 @@ class SendStampController extends Controller
             ->whereDate('created_at', $date)
             ->get();
 
-        $rejectedStamps = SendStamp::where('status', 'rejected')
+        $rejectedStamps = SendStamp::where('employee_id', $user->id) // Lọc theo nhân viên
+            ->where('status', 'rejected')
             ->whereDate('created_at', $date)
             ->get();
 
