@@ -15,8 +15,7 @@
                         <h4 class="card-title mb-0">In Tem Thùng</h4>
                     </div>
                 </div>
-                <br />
-                <div class="px-0 pb-2">
+                <div class="px-0 pb-2 my-3">
                     <div class="table-responsive p-4">
                         <div>
                             <div class="container-gird">
@@ -106,8 +105,8 @@
                                                                     AUTOMOTIVE
                                                                     PARTS
                                                                     <br />
-                                                                    (VIET
-                                                                    NAM)INC
+                                                                    (VIET NAM)
+                                                                    INC
                                                                 </p>
                                                             </td>
                                                         </tr>
