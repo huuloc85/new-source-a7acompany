@@ -89,6 +89,7 @@
             href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
         />
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        @vite('resources/js/pusher.js')
 
         <!-- Styling css -->
         <style class="fslightbox-styles">
@@ -491,6 +492,7 @@
                 <div class="loader-body"></div>
             </div>
         </div>
+
         <!-- ======= Sidebar ======= -->
         @include('partials.sidebar')
         <main class="main-content">
@@ -511,9 +513,147 @@
         <!--   Core JS Files   -->
         <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
         <script src="{{ asset('assets/js/libs.min.js') }}"></script>
+        <script src="{{ asset('assets/js/libs.min.js') }}"></script>
         <script src="{{ asset('assets/js/hope-ui.js') }}"></script>
         <script src="{{ asset('assets/js/modelview.js') }}"></script>
+        <script src="{{ asset('vendor/Leaflet/leaflet.js') }} "></script>
         <script src="{{ asset('assets/js/charts/dashboard.js') }}"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var navbarToggler = document.getElementById('navbarToggler');
+                var navbarNav = document.getElementById('navbarNav');
+
+                navbarToggler.addEventListener('click', function () {
+                    navbarNav.classList.toggle('show');
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const userId = {{ auth()->id() }};
+                const allRows = document.querySelectorAll('tr[data-id]');
+                const notificationSound = new Audio(
+                    '{{ asset('assets/music/notification.mp3') }}',
+                );
+                const notificationCount =
+                    document.getElementById('notificationCount');
+                const notificationList =
+                    document.getElementById('notificationList');
+                let notifications =
+                    JSON.parse(localStorage.getItem('notifications')) || [];
+
+                notificationSound.onerror = () =>
+                    console.error('Không thể tải tệp âm thanh!');
+
+                const clearAllBtn = document.createElement('button');
+                clearAllBtn.className = 'btn btn-danger btn-sm w-100 mb-2';
+                clearAllBtn.innerHTML =
+                    '<i class="fas fa-trash"></i> Xóa tất cả thông báo';
+                clearAllBtn.onclick = () => {
+                    if (confirm('Bạn có chắc muốn xóa tất cả thông báo?')) {
+                        notifications = [];
+                        localStorage.setItem(
+                            'notifications',
+                            JSON.stringify(notifications),
+                        );
+                        updateNotificationUI();
+                    }
+                };
+                notificationList.parentElement.insertBefore(
+                    clearAllBtn,
+                    notificationList,
+                );
+
+                const highlightRecord = (recordId) => {
+                    allRows.forEach((row) =>
+                        row.classList.remove('bg-secondary', 'bg-opacity-25'),
+                    );
+                    const targetRow = document.querySelector(
+                        `tr[data-id="${recordId}"]`,
+                    );
+                    if (targetRow) {
+                        targetRow.classList.add(
+                            'bg-secondary',
+                            'bg-opacity-25',
+                        );
+                        targetRow.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center',
+                        });
+                    } else {
+                        console.error('No row found with data-id:', recordId);
+                    }
+                };
+
+                const updateNotificationUI = () => {
+                    notificationList.innerHTML = '';
+                    notificationCount.textContent = notifications.length;
+                    if (notifications.length === 0) {
+                        notificationList.innerHTML = `<li class="text-muted text-center p-3">Không có thông báo</li>`;
+                    } else {
+                        notifications.forEach((notification, index) => {
+                            const newNotification =
+                                document.createElement('li');
+                            newNotification.classList.add(
+                                'list-group-item',
+                                'list-group-item-action',
+                                'cursor-pointer',
+                            );
+                            newNotification.innerHTML = notification.message;
+                            newNotification.addEventListener('click', () => {
+                                if (
+                                    !window.location.href.match(
+                                        '{{ route('admin.checkstamp') }}',
+                                    )
+                                ) {
+                                    notifications[index].selected = true;
+                                    localStorage.setItem(
+                                        'notifications',
+                                        JSON.stringify(notifications),
+                                    );
+                                    window.location.href =
+                                        '{{ route('admin.checkstamp') }}';
+                                } else {
+                                    highlightRecord(notification.recordId);
+                                }
+                            });
+                            if (notification.selected) {
+                                highlightRecord(notification.recordId);
+                                notifications[index].selected = false;
+                                localStorage.setItem(
+                                    'notifications',
+                                    JSON.stringify(notifications),
+                                );
+                            }
+                            notificationList.appendChild(newNotification);
+                        });
+                    }
+                };
+
+                updateNotificationUI();
+
+                window.Echo.channel('user.' + userId).listen(
+                    'SendStampEvent',
+                    (e) => {
+                        notificationSound
+                            .play()
+                            .catch((error) =>
+                                console.error('Lỗi khi phát âm thanh:', error),
+                            );
+                        notifications.unshift({
+                            message: e.message,
+                            recordId: e.recordId,
+                        });
+                        localStorage.setItem(
+                            'notifications',
+                            JSON.stringify(notifications),
+                        );
+                        updateNotificationUI();
+                    },
+                );
+            });
+        </script>
+
         @yield('scripts')
     </body>
 </html>

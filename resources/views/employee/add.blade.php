@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @section('styles')
     <style>
         .required {
@@ -8,15 +8,17 @@
 @endsection
 
 @php
-    $defaultImage = asset('img/default-avatar.jpg')
+    $defaultImage = asset('img/default-avatar.jpg');
 @endphp
 
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Thêm Nhân Sự</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Thêm Nhân Sự</h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <a
@@ -206,7 +208,9 @@
                                             <span class="required">*</span>
                                         </label>
                                     </div>
-                                    <div class="form-check form-check-inline p-1">
+                                    <div
+                                        class="form-check form-check-inline p-1"
+                                    >
                                         <input
                                             class="form-check-input"
                                             type="radio"
@@ -214,7 +218,7 @@
                                             value="Nam"
                                             id="gender1"
                                             checked
-                                            <?= old('gender') == 'Nam' ? 'checked' : '' ?>
+                                            <?= old("gender") == "Nam" ? "checked" : "" ?>
                                         />
                                         <label
                                             class="form-check-label"
@@ -223,14 +227,16 @@
                                             Nam
                                         </label>
                                     </div>
-                                    <div class="form-check form-check-inline p-1">
+                                    <div
+                                        class="form-check form-check-inline p-1"
+                                    >
                                         <input
                                             class="form-check-input"
                                             type="radio"
                                             name="gender"
                                             value="Nữ"
                                             id="gender2"
-                                            <?= old('gender') == 'Nữ' ? 'checked' : '' ?>
+                                            <?= old("gender") == "Nữ" ? "checked" : "" ?>
                                         />
                                         <label
                                             class="form-check-label"
@@ -239,14 +245,16 @@
                                             Nữ
                                         </label>
                                     </div>
-                                    <div class="form-check form-check-inline p-1">
+                                    <div
+                                        class="form-check form-check-inline p-1"
+                                    >
                                         <input
                                             class="form-check-input"
                                             type="radio"
                                             name="gender"
                                             value="Khác"
                                             id="gender3"
-                                            <?= old('gender') == 'Khác' ? 'checked' : '' ?>
+                                            <?= old("gender") == "Khác" ? "checked" : "" ?>
                                         />
                                         <label
                                             class="form-check-label"
@@ -372,15 +380,12 @@
                                         name="role_id"
                                         required
                                     >
-                                        <option
-                                            class="text-center"
-                                            value=""
-                                        >
+                                        <option class="text-center" value="">
                                             ----- Chọn chức vụ -----
                                         </option>
                                         @foreach ($roles as $role)
                                             <option
-                                                <?= old('role_id') == $role->id ? 'selected' : '' ?>
+                                                <?= old("role_id") == $role->id ? "selected" : "" ?>
                                                 value="{{ $role->id }}"
                                             >
                                                 {{ $role->role_name }}
@@ -405,15 +410,12 @@
                                         name="category_celender_id"
                                         required
                                     >
-                                        <option
-                                            class="text-center"
-                                            value=""
-                                        >
+                                        <option class="text-center" value="">
                                             ----- Chọn danh mục -----
                                         </option>
                                         @foreach ($categories as $category)
                                             <option
-                                                <?= old('category_celender_id') == $category->id ? 'selected' : '' ?>
+                                                <?= old("category_celender_id") == $category->id ? "selected" : "" ?>
                                                 value="{{ $category->id }}"
                                             >
                                                 {{ $category->name }}

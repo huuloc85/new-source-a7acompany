@@ -1,11 +1,13 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Danh Sách PO</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Danh Sách PO</h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
@@ -241,8 +243,7 @@
 
                                                         foreach ($weekArray as $date => $quantities) {
                                                             $quan100 += $quantities['quan100'][$product->id] ?? 0;
-                                                            $quanExport +=
-                                                                $quantities['quanExport'][$product->id] ?? 0;
+                                                            $quanExport += $quantities['quanExport'][$product->id] ?? 0;
                                                         }
 
                                                         $reamingOfWeek = $quan100 - $quanExport + $beginningOfWeek;
@@ -267,10 +268,7 @@
                                                             "$index.$product->id.totalReamingOfWeek",
                                                             $totalReamingOfWeek,
                                                         );
-                                                        session()->put(
-                                                            "$index.$product->id.quanExport",
-                                                            $quanExport,
-                                                        );
+                                                        session()->put("$index.$product->id.quanExport", $quanExport);
                                                         session()->put(
                                                             "$index.$product->id.beginningOfWeek",
                                                             $beginningOfWeek,
@@ -301,8 +299,7 @@
                                                         @foreach ($weekDays as $date)
                                                             @php
                                                                 $quanExport =
-                                                                    $weekArray[$date]['quanExport'][$product->id] ??
-                                                                    0;
+                                                                    $weekArray[$date]['quanExport'][$product->id] ?? 0;
                                                             @endphp
 
                                                             <td
@@ -347,9 +344,7 @@
                                                 <th rowspan="2">Tổng cộng</th>
                                                 @foreach ($listDate as $key => $date)
                                                     @php
-                                                        $formattedDate = \Carbon\Carbon::parse($date)->format(
-                                                            'd-m',
-                                                        ); // Định dạng ngày tháng
+                                                        $formattedDate = \Carbon\Carbon::parse($date)->format('d-m'); // Định dạng ngày tháng
                                                     @endphp
 
                                                     <th
@@ -394,9 +389,7 @@
                                                     @foreach ($listDate as $key => $date)
                                                         @php
                                                             // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
-                                                            $formattedDate = Carbon\Carbon::parse(
-                                                                $date,
-                                                            )->startOfDay();
+                                                            $formattedDate = Carbon\Carbon::parse($date)->startOfDay();
                                                             // Lấy tất cả các dailyQuantities cho ngày cụ thể
                                                             $dailyQuantitiesOfTheDay = $product
                                                                 ->DailyQuantities()
@@ -408,9 +401,7 @@
                                                             $totalQuanDateCa2 = 0;
 
                                                             // Xử lý số lượng cho mỗi ca
-                                                            foreach (
-                                                                $dailyQuantitiesOfTheDay as $dailyQuantity
-                                                            ) {
+                                                            foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
                                                                 $created_at = Carbon\Carbon::parse(
                                                                     $dailyQuantity->created_at,
                                                                 );
@@ -422,12 +413,10 @@
                                                                 // Phân biệt ca dựa vào thời gian trong cột created_at
                                                                 if ($created_at->isSameDay($formattedDate)) {
                                                                     // Ca 1 nếu created_at cùng ngày với date
-                                                                    $totalQuanDateCa1 +=
-                                                                        $dailyQuantity->quantity;
+                                                                    $totalQuanDateCa1 += $dailyQuantity->quantity;
                                                                 } elseif ($created_at < $nextDayEightAM) {
                                                                     // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date
-                                                                    $totalQuanDateCa2 +=
-                                                                        $dailyQuantity->quantity;
+                                                                    $totalQuanDateCa2 += $dailyQuantity->quantity;
                                                                 }
                                                             }
                                                         @endphp
@@ -477,9 +466,7 @@
                                                 @foreach ($listDate as $key => $date)
                                                     @php
                                                         // Sử dụng Carbon để định dạng ngày tháng theo 'd-m'
-                                                        $formattedDate = \Carbon\Carbon::parse($date)->format(
-                                                            'd-m',
-                                                        );
+                                                        $formattedDate = \Carbon\Carbon::parse($date)->format('d-m');
                                                     @endphp
 
                                                     <th
@@ -511,7 +498,12 @@
                                                         @php
                                                             $timestam = strtotime($date);
                                                             $day = date('Y-m-d', $timestam);
-                                                            $totalQuanDate = $product->TotalDailyQuantities()->where('status', 6)->where('date', $day)->value('totalQuan') ?? '';
+                                                            $totalQuanDate =
+                                                                $product
+                                                                    ->TotalDailyQuantities()
+                                                                    ->where('status', 6)
+                                                                    ->where('date', $day)
+                                                                    ->value('totalQuan') ?? '';
                                                         @endphp
 
                                                         <td

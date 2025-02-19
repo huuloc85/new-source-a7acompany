@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @php
     $startValue = count($categories) > 0 ? $categories->firstItem() : 0;
@@ -7,8 +7,10 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header">
-            <h4>Danh Sách Danh Mục</h4>
+        <div class="card-header p-1 position-relative mt-n1 mx-1">
+            <div class="border-radius-lg ps-2 pt-4 pb-3">
+                <h4 class="card-title mb-0">Danh Sách Danh Mục</h4>
+            </div>
         </div>
         <div class="card-body">
             <div

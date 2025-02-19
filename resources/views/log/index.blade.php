@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 @php
     $startValue = count($logs) > 0 ? $logs->firstItem() : 0;
     $toValue = count($logs) > 0 ? $logs->lastItem() : 0;
@@ -11,8 +11,10 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Danh Sách Log</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Danh Sách Log</h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div

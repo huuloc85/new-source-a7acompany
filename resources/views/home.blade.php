@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @section('styles')
     <style>
@@ -87,6 +87,12 @@
             'link' => route('admin.checkpo.index'),
             'data' => $today->format('m-Y'),
         ],
+        [
+            'title' => 'Danh Sách Tem Cần In',
+            'icon' => 'fas fa-print fa-2x',
+            'link' => route('admin.checkstamp'),
+            'data' => $today->format('d-m'),
+        ],
     ];
 
     $employeeWidgets = [
@@ -120,12 +126,13 @@
             'icon' => 'fas fa-history fa-2x',
             'link' => route('admin.employee-history-check'),
         ],
-        [
-            'title' => 'Thông tin tài khoản',
-            'icon' => 'fas fa-id-card fa-2x',
-            'link' => route('admin.profile'),
-        ],
+        // [
+        //     'title' => 'Thông tin tài khoản',
+        //     'icon' => 'fas fa-id-card fa-2x',
+        //     'link' => route('admin.profile'),
+        // ],
     ];
+
     if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18) {
         // if (true) {
         array_unshift($employeeWidgets, [
@@ -134,12 +141,20 @@
             'link' => route('admin.celender.home'),
         ]);
     }
-    if (Auth()->user()->role_id == 4) {
-        // if (true) {
+    if (Auth()->user()->role_id !== 8 && Auth()->user()->role_id !== 10) {
         array_push($employeeWidgets, [
-            'title' => 'Quét mã vạch',
-            'icon' => 'fas fa-qrcode fa-2x',
-            'link' => route('admin.barcode.scan'),
+            'title' => 'Yêu Cầu In Tem',
+            'icon' => 'fas fa-print fa-2x',
+            'link' => route('admin.send-stamp'),
+        ]);
+    }
+
+    if (Auth()->user()->role_id == 8) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Danh Sách Tem Cần In',
+            'icon' => 'fas fa-print fa-2x',
+            'link' => route('admin.checkstamp'),
+            'data' => $today->format('d-m'),
         ]);
     }
     array_push($employeeWidgets, [

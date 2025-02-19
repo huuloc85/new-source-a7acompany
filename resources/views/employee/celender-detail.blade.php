@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @php
     $workLegends = [
@@ -21,8 +21,10 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Lịch Làm Việc</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">Lịch Làm Việc</h4>
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -67,7 +69,9 @@
                                     @foreach ($dates as $key => $date)
                                         @php
                                             $fill = 'day'.$key + 1;
-                                            $isWeekend = $formatDate->dayOfWeek($date) == 'T7' || $formatDate->dayOfWeek($date) == 'CN';
+                                            $isWeekend =
+                                                $formatDate->dayOfWeek($date) == 'T7' ||
+                                                $formatDate->dayOfWeek($date) == 'CN';
                                         @endphp
 
                                         <li

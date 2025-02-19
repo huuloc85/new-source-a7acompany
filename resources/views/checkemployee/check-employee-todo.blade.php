@@ -1,11 +1,15 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Cập Nhật Loại Sản Phẩm Cần Kiểm Hàng Hoặc Sản Xuất</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">
+                            Cập Nhật Loại Sản Phẩm Cần Kiểm Hàng Hoặc Sản Xuất
+                        </h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-column flex-sm-row gap-2 mb-3">
@@ -35,25 +39,27 @@
                     <h5 class="text-center">Thông tin cập nhật</h5>
                     <div class="row">
                         <div class="col-12 col-md-6">
-                            <div>
-                                <span class="fw-bold">Tên nhân viên:</span>
-                                {{ Auth()->user()->name ?? '' }}
-                            </div>
-                            <div>
-                                <span class="fw-bold">Mã nhân viên:</span>
-                                {{ Auth()->user()->code ?? '' }}
-                            </div>
-                            <div>
-                                <span class="fw-bold">Bộ phận:</span>
-                                {{ Auth()->user()->role->role_name ?? '' }}
-                            </div>
-                            <div>
-                                <span class="fw-bold">Danh mục:</span>
-                                {{ Auth()->user()->category_celender->name ?? '' }}
-                            </div>
-                            <div>
-                                <span class="fw-bold">Ca làm việc:</span>
-                                {{ $calendarDetail ?? '' }}
+                            <div class="p-3 border rounded mb-3">
+                                <div>
+                                    <span class="fw-bold">Tên nhân viên:</span>
+                                    {{ Auth()->user()->name ?? '' }}
+                                </div>
+                                <div>
+                                    <span class="fw-bold">Mã nhân viên:</span>
+                                    {{ Auth()->user()->code ?? '' }}
+                                </div>
+                                <div>
+                                    <span class="fw-bold">Bộ phận:</span>
+                                    {{ Auth()->user()->role->role_name ?? '' }}
+                                </div>
+                                <div>
+                                    <span class="fw-bold">Danh mục:</span>
+                                    {{ Auth()->user()->category_celender->name ?? '' }}
+                                </div>
+                                <div>
+                                    <span class="fw-bold">Ca làm việc:</span>
+                                    {{ $calendarDetail ?? '' }}
+                                </div>
                             </div>
                             <form
                                 action="{{ route('admin.employee.handle.check-employee-todo') }}"

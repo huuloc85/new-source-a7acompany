@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @php
     $companyFAPV = in_array('FAPV', old('company', [])) ? 'checked' : ($product->FAPV ? 'checked' : '');

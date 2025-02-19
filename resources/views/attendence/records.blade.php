@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @section('content')
     {{--
@@ -176,19 +176,21 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>
-                        Bảng Tính Công
-                        @if (request('start_date') && request('end_date'))
-                            từ
-                            {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }}
-                            đến
-                            {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
-                        @else
-                            Tháng
-                            {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
-                        @endif
-                    </h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">
+                            Bảng Tính Công
+                            @if (request('start_date') && request('end_date'))
+                                từ
+                                {{ \Carbon\Carbon::parse(request('start_date'))->format('d-m-Y') }}
+                                đến
+                                {{ \Carbon\Carbon::parse(request('end_date'))->format('d-m-Y') }}
+                            @else
+                                Tháng
+                                {{ \Carbon\Carbon::parse($currentMonth)->format('m-Y') }}
+                            @endif
+                        </h4>
+                    </div>
                 </div>
 
                 <div class="card-body">

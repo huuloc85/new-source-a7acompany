@@ -17,6 +17,7 @@ class HistoryPrint extends Model
     protected $fillable = [
         'product_id',
         'employee_id',
+        'send_stamp_id',
         'date',
         'shift',
         'binCount',
@@ -33,5 +34,10 @@ class HistoryPrint extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function sendStamp()
+    {
+        return $this->belongsTo(SendStamp::class);
     }
 }

@@ -90,6 +90,11 @@ class Product extends Model
         return $this->hasMany(HistoryPrint::class, 'product_id', 'id');
     }
 
+    public function sendStamps()
+    {
+        return $this->hasMany(SendStamp::class, 'product_id', 'id');
+    }
+
     //relationship productionPlan
     public function productionPlans()
     {
@@ -105,7 +110,7 @@ class Product extends Model
     public function scopeName($query, $request)
     {
         if ($request->has('name')) {
-            return $query->where('name', 'like', '%'.$request->name.'%');
+            return $query->where('name', 'like', '%' . $request->name . '%');
         }
 
         return $query;
@@ -115,7 +120,7 @@ class Product extends Model
     public function scopeCode($query, $request)
     {
         if ($request->has('code')) {
-            return $query->where('code', 'like', '%'.$request->code.'%');
+            return $query->where('code', 'like', '%' . $request->code . '%');
         }
 
         return $query;
@@ -125,7 +130,7 @@ class Product extends Model
     public function scopeMoldSize($query, $request)
     {
         if ($request->has('moldSize')) {
-            return $query->where('moldSize', 'like', '%'.$request->moldSize.'%');
+            return $query->where('moldSize', 'like', '%' . $request->moldSize . '%');
         }
 
         return $query;
@@ -135,7 +140,7 @@ class Product extends Model
     public function scopeBinCode($query, $request)
     {
         if ($request->has('binCode')) {
-            return $query->where('binCode', 'like', '%'.$request->binCode.'%');
+            return $query->where('binCode', 'like', '%' . $request->binCode . '%');
         }
 
         return $query;

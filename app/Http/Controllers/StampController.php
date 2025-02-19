@@ -29,7 +29,7 @@ class StampController extends Controller
 
         // Tạo QRCode
         $firstFiveChars = substr($request->code, 0, 5);
-        $qrCodeString = $firstFiveChars.'-'.$request->pcs;
+        $qrCodeString = $firstFiveChars . '-' . $request->pcs;
         $qrCode = QrCode::generate($qrCodeString);
 
         $binCount = $request->binCount;
@@ -43,7 +43,7 @@ class StampController extends Controller
             // Nếu không phải chuỗi hoặc không có dấu phẩy, thực hiện theo cách này
             for ($i = 0; $i < $binCount; $i++) {
                 // Tạo barcode
-                $barcodeString = $product->id.'a'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $binStart + $i);
+                $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $binStart + $i);
                 $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
                 $data = [
                     'bin' => sprintf('%03d', $binStart + $i),
@@ -61,7 +61,7 @@ class StampController extends Controller
                 if (is_numeric($currentBinStart)) {
                     $currentBinStart = (int) $currentBinStart; // Chuyển đổi thành số nguyên
                     // Tạo barcode cho từng giá trị binStart
-                    $barcodeString = $product->id.'a'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $currentBinStart);
+                    $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $currentBinStart);
                     $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
 
                     $data = [
@@ -96,14 +96,14 @@ class StampController extends Controller
         $time = ($shift == 1) ? '07:30' : '19:30';
 
         // Kết hợp ngày và giờ
-        return Carbon::createFromFormat('Y-m-d H:i', $formattedDate.' '.$time)->format('d/m/Y H:i');
+        return Carbon::createFromFormat('Y-m-d H:i', $formattedDate . ' ' . $time)->format('d/m/Y H:i');
     }
 
     //map key data
     public function mapKeyData($binArray)
     {
-        $oddItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 !== 0);
-        $evenItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 === 0);
+        $oddItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 !== 0);
+        $evenItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 === 0);
 
         $rows = [];
 
@@ -142,7 +142,7 @@ class StampController extends Controller
             $date = substr($data[1], 0, 8);
             $shift = substr($data[1], 8, 1);
             $bin = substr($data[1], 9);
-            $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
+            $lot = 'A-' . $date . '-' . $shift . '-' . $bin;
             $result = [
                 'barcode' => $request->barcode,
                 'date' => $date,

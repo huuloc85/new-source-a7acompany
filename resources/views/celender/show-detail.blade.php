@@ -1,64 +1,4 @@
-@extends('layouts.layout')
-
-@section('styles')
-    <style>
-        .date-list {
-            margin-left: 0px !important;
-            padding: 0px !important;
-        }
-
-        .mw-input {
-            max-width: 22px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .mw-input-wc {
-            max-width: 70px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .N {
-            color: blue;
-            font-weight: bolder;
-        }
-
-        .D {
-            color: black;
-            font-weight: bolder;
-        }
-
-        .X {
-            color: red;
-            font-weight: bolder;
-        }
-
-        .TC {
-            color: red;
-            font-weight: bolder;
-        }
-
-        .LN {
-            color: red;
-            font-weight: bolder;
-        }
-
-        input {
-            font-weight: bolder;
-        }
-
-        /* .keywork {
-                    border: 1px solid black;
-                    width: 25px;
-                    text-align: center;
-                } */
-
-        .bg-yellow {
-            background-color: yellow;
-        }
-    </style>
-@endsection
+@extends('layouts.'.$layout)
 
 @php
     $tabWork = [
@@ -83,8 +23,10 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>{{ $calendarTitle }}</h4>
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
+                    <div class="border-radius-lg ps-2 pt-4 pb-3">
+                        <h4 class="card-title mb-0">{{ $calendarTitle }}</h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <a
@@ -129,57 +71,52 @@
                         @endforeach
                     </div>
                     <div class="tab-content" id="myTabContent">
-                        @foreach ($tabWork as $key => $tab)
-                            <div
-                                class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
-                                id="{{ $key }}"
-                                role="tabpanel"
-                                aria-labelledby="{{ $key }}-tab"
-                            >
-                                <div class="table-responsive">
-                                    <table
-                                        class="table table-hover table-bordered"
-                                    >
-                                        <thead
-                                            class="table-light text-center uppercase align-middle"
-                                        >
-                                            <tr>
-                                                <th>Mã NV</th>
-                                                <th>Họ và tên</th>
-                                                @foreach ($dates as $date)
-                                                    @if ($key == 'part-time' && $formatDate->dayOfWeek($date) == 'T7')
-                                                        <th>
-                                                            {{ $formatDate->formatTimeDate($date) }}
-                                                            <br />
-                                                            {{ $formatDate->dayOfWeek($date) }}
-                                                        </th>
-                                                    @elseif ($key != 'part-time')
-                                                        <th>
-                                                            {{ $formatDate->formatTimeDate($date) }}
-                                                            <br />
-                                                            {{ $formatDate->dayOfWeek($date) }}
-                                                        </th>
-                                                    @endif
-                                                @endforeach
-                                            </tr>
-                                        </thead>
+                        @php
+                            $VVP = $tabWork['VVP'] ?? null;
+                            unset($tabWork['VVP']);
+                        @endphp
 
-                                        <tbody class="text-center align-middle">
-                                            {{-- Hàng Nhật - Hàng Chợ --}}
-                                            @if ($key == 'VVP' && isset($categories))
-                                                @foreach ($categories as $key => $category)
+                        @if (isset($VVP) && isset($categories))
+                            <div
+                                class="tab-pane fade show active"
+                                id="VVP"
+                                role="tabpanel"
+                                aria-labelledby="VVP-tab"
+                            >
+                                @foreach ($categories as $key => $category)
+                                    <div
+                                        class="fw-bold bg-info p-2 text-center"
+                                    >
+                                        {{ $category->name }}
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div class="col-4 table-responsive">
+                                            <table
+                                                class="table table-hover table-bordered"
+                                            >
+                                                <thead
+                                                    class="table-light text-center uppercase align-middle"
+                                                    style="height: 4.5rem"
+                                                >
                                                     <tr>
-                                                        <td
-                                                            colspan="9999"
-                                                            class="fw-bold bg-info"
-                                                        >
-                                                            {{ $category->name }}
-                                                        </td>
+                                                        <th>Mã NV</th>
+                                                        <th>Họ và tên</th>
                                                     </tr>
+                                                </thead>
+
+                                                <tbody
+                                                    class="text-center align-middle"
+                                                >
+                                                    {{-- Hàng Nhật - Hàng Chợ --}}
                                                     @if (isset($celenderDetailsHNHC))
                                                         @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
                                                             @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
-                                                                <tr>
+                                                                <tr
+                                                                    style="
+                                                                        height: 2.75rem;
+                                                                    "
+                                                                >
                                                                     <td>
                                                                         {{ $celenderDetailHNHC->employee->code }}
                                                                     </td>
@@ -188,6 +125,44 @@
                                                                     >
                                                                         {{ $celenderDetailHNHC->employee->name }}
                                                                     </td>
+                                                                </tr>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-8 table-responsive">
+                                            <table
+                                                class="table table-hover table-bordered"
+                                            >
+                                                <thead
+                                                    class="table-light text-center uppercase align-middle"
+                                                    style="height: 4.5rem"
+                                                >
+                                                    <tr>
+                                                        @foreach ($dates as $date)
+                                                            <th>
+                                                                {{ $formatDate->formatTimeDate($date) }}
+                                                                <br />
+                                                                {{ $formatDate->dayOfWeek($date) }}
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody
+                                                    class="text-center align-middle"
+                                                >
+                                                    {{-- Hàng Nhật - Hàng Chợ --}}
+                                                    @if (isset($celenderDetailsHNHC))
+                                                        @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
+                                                            @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                                <tr
+                                                                    style="
+                                                                        height: 2.75rem;
+                                                                    "
+                                                                >
                                                                     @foreach ($dates as $key => $date)
                                                                         @php
                                                                             $fill = 'day'.$key + 1;
@@ -205,62 +180,255 @@
                                                             @endif
                                                         @endforeach
                                                     @endif
-                                                @endforeach
-                                            @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
 
-                                            {{-- Trực Phòng Ăn --}}
-                                            @if ($key == 'A7A' && isset($celenderDetailsEatroom))
-                                                @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
-                                                    <tr>
-                                                        <td>
-                                                            {{ $celenderDetailEatroom->employee->code }}
-                                                        </td>
-                                                        <td class="text-start">
-                                                            {{ $celenderDetailEatroom->employee->name }}
-                                                        </td>
-                                                        @foreach ($dates as $key => $date)
-                                                            @php
-                                                                $fill = 'day'.$key + 1;
-                                                            @endphp
+                        @foreach ($tabWork as $key => $tab)
+                            @php
+                                $tabCode = $key;
+                            @endphp
 
-                                                            <td>
-                                                                @if ($celenderDetailEatroom->$fill)
-                                                                    <span
-                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}"
-                                                                    >
-                                                                        VS
-                                                                    </span>
-                                                                @endif
+                            <div
+                                class="tab-pane fade"
+                                id="{{ $tabCode }}"
+                                role="tabpanel"
+                                aria-labelledby="{{ $tabCode }}-tab"
+                            >
+                                <div class="d-flex">
+                                    <div class="col-4 table-responsive">
+                                        <table
+                                            class="table table-hover table-bordered"
+                                        >
+                                            <thead
+                                                class="table-light text-center uppercase align-middle"
+                                                style="height: 4.5rem"
+                                            >
+                                                <tr>
+                                                    <th>Mã NV</th>
+                                                    <th>Họ và tên</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                {{-- Hàng Nhật - Hàng Chợ --}}
+                                                @if ($tabCode == 'VVP' && isset($categories))
+                                                    @foreach ($categories as $key => $category)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            <td
+                                                                colspan="9999"
+                                                                class="fw-bold bg-info"
+                                                            >
+                                                                <span
+                                                                    class="d-none"
+                                                                >
+                                                                    {{ $category->name }}
+                                                                </span>
                                                             </td>
-                                                        @endforeach
-                                                    </tr>
-                                                @endforeach
-                                            @endif
+                                                        </tr>
+                                                        @if (isset($celenderDetailsHNHC))
+                                                            @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
+                                                                @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                                    <tr
+                                                                        style="
+                                                                            height: 2.75rem;
+                                                                        "
+                                                                    >
+                                                                        <td>
+                                                                            {{ $celenderDetailHNHC->employee->code }}
+                                                                        </td>
+                                                                        <td
+                                                                            class="text-start"
+                                                                        >
+                                                                            {{ $celenderDetailHNHC->employee->name }}
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
+                                                            @endforeach
+                                                        @endif
+                                                    @endforeach
+                                                @endif
 
-                                            {{-- Đổ Rác WC --}}
-                                            @if ($key == 'part-time' && isset($celenderDetailsWC))
-                                                @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
-                                                    <tr>
-                                                        <td>
-                                                            {{ $celenderDetailWC->employee->code }}
-                                                        </td>
-                                                        <td class="text-start">
-                                                            {{ $celenderDetailWC->employee->name }}
-                                                        </td>
+                                                {{-- Trực Phòng Ăn --}}
+                                                @if ($tabCode == 'A7A' && isset($celenderDetailsEatroom))
+                                                    @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            <td>
+                                                                {{ $celenderDetailEatroom->employee->code }}
+                                                            </td>
+                                                            <td
+                                                                class="text-start"
+                                                            >
+                                                                {{ $celenderDetailEatroom->employee->name }}
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
 
-                                                        @php
-                                                            $keyDate = 0;
-                                                        @endphp
+                                                {{-- Đổ Rác WC --}}
+                                                @if ($tabCode == 'part-time' && isset($celenderDetailsWC))
+                                                    @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            <td>
+                                                                {{ $celenderDetailWC->employee->code }}
+                                                            </td>
+                                                            <td
+                                                                class="text-start"
+                                                            >
+                                                                {{ $celenderDetailWC->employee->name }}
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
 
-                                                        @foreach ($dates as $key => $date)
-                                                            @if ($formatDate->dayOfWeek($date) == 'T7')
+                                                {{-- Trực WC Nữ --}}
+                                                @if ($tabCode == 'women' && isset($celenderDetailsWCCleanWomen))
+                                                    @foreach ($celenderDetailsWCCleanWomen as $key => $womenWC)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            <td>
+                                                                {{ $womenWC->employee->code }}
+                                                            </td>
+                                                            <td
+                                                                class="text-start"
+                                                            >
+                                                                {{ $womenWC->employee->name }}
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+
+                                                {{-- Trực WC Nam --}}
+                                                @if ($tabCode == 'men' && isset($celenderDetailsWCCleanMen))
+                                                    @foreach ($celenderDetailsWCCleanMen as $key => $menWC)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            <td>
+                                                                {{ $menWC->employee->code }}
+                                                            </td>
+                                                            <td
+                                                                class="text-start"
+                                                            >
+                                                                {{ $menWC->employee->name }}
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-8 table-responsive">
+                                        <table
+                                            class="table table-hover table-bordered"
+                                        >
+                                            <thead
+                                                class="table-light text-center uppercase align-middle"
+                                                style="height: 4.5rem"
+                                            >
+                                                <tr>
+                                                    @foreach ($dates as $date)
+                                                        @if ($tabCode == 'part-time' && $formatDate->dayOfWeek($date) == 'T7')
+                                                            <th>
+                                                                {{ $formatDate->formatTimeDate($date) }}
+                                                                <br />
+                                                                {{ $formatDate->dayOfWeek($date) }}
+                                                            </th>
+                                                        @elseif ($tabCode != 'part-time')
+                                                            <th>
+                                                                {{ $formatDate->formatTimeDate($date) }}
+                                                                <br />
+                                                                {{ $formatDate->dayOfWeek($date) }}
+                                                            </th>
+                                                        @endif
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+
+                                            <tbody
+                                                class="text-center align-middle"
+                                            >
+                                                {{-- Hàng Nhật - Hàng Chợ --}}
+                                                @if ($tabCode == 'VVP' && isset($categories))
+                                                    @foreach ($categories as $key => $category)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            <td
+                                                                colspan="9999"
+                                                                class="fw-bold bg-info"
+                                                            >
+                                                                {{ $category->name }}
+                                                            </td>
+                                                        </tr>
+                                                        @if (isset($celenderDetailsHNHC))
+                                                            @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
+                                                                @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                                    <tr
+                                                                        style="
+                                                                            height: 2.75rem;
+                                                                        "
+                                                                    >
+                                                                        @foreach ($dates as $key => $date)
+                                                                            @php
+                                                                                $fill = 'day'.$key + 1;
+                                                                            @endphp
+
+                                                                            <td>
+                                                                                <span
+                                                                                    class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}"
+                                                                                >
+                                                                                    {{ $celenderDetailHNHC->$fill ?? '' }}
+                                                                                </span>
+                                                                            </td>
+                                                                        @endforeach
+                                                                    </tr>
+                                                                @endif
+                                                            @endforeach
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+
+                                                {{-- Trực Phòng Ăn --}}
+                                                @if ($tabCode == 'A7A' && isset($celenderDetailsEatroom))
+                                                    @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            @foreach ($dates as $key => $date)
                                                                 @php
-                                                                    $fill = 'day'.$keyDate + 1;
-                                                                    $keyDate += 1;
+                                                                    $fill = 'day'.$key + 1;
                                                                 @endphp
 
                                                                 <td>
-                                                                    @if ($celenderDetailWC->$fill)
+                                                                    @if ($celenderDetailEatroom->$fill)
                                                                         <span
                                                                             class="badge {{ $workLegends['VS']['class'] ?? '' }}"
                                                                         >
@@ -268,71 +436,101 @@
                                                                         </span>
                                                                     @endif
                                                                 </td>
-                                                            @endif
-                                                        @endforeach
-                                                    </tr>
-                                                @endforeach
-                                            @endif
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
 
-                                            {{-- Trực WC Nữ --}}
-                                            @if ($key == 'women' && isset($celenderDetailsWCCleanWomen))
-                                                @foreach ($celenderDetailsWCCleanWomen as $key => $womenWC)
-                                                    <tr>
-                                                        <td>
-                                                            {{ $womenWC->employee->code }}
-                                                        </td>
-                                                        <td class="text-start">
-                                                            {{ $womenWC->employee->name }}
-                                                        </td>
-                                                        @foreach ($dates as $key => $date)
+                                                {{-- Đổ Rác WC --}}
+                                                @if ($tabCode == 'part-time' && isset($celenderDetailsWC))
+                                                    @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
                                                             @php
-                                                                $fill = 'day'.$key + 1;
+                                                                $keyDate = 0;
                                                             @endphp
 
-                                                            <td>
-                                                                @if ($womenWC->$fill)
-                                                                    <span
-                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}"
-                                                                    >
-                                                                        VS
-                                                                    </span>
-                                                                @endif
-                                                            </td>
-                                                        @endforeach
-                                                    </tr>
-                                                @endforeach
-                                            @endif
+                                                            @foreach ($dates as $key => $date)
+                                                                @if ($formatDate->dayOfWeek($date) == 'T7')
+                                                                    @php
+                                                                        $fill = 'day'.$keyDate + 1;
+                                                                        $keyDate += 1;
+                                                                    @endphp
 
-                                            {{-- Trực WC Nam --}}
-                                            @if ($key == 'men' && isset($celenderDetailsWCCleanMen))
-                                                @foreach ($celenderDetailsWCCleanMen as $key => $menWC)
-                                                    <tr>
-                                                        <td>
-                                                            {{ $menWC->employee->code }}
-                                                        </td>
-                                                        <td class="text-start">
-                                                            {{ $menWC->employee->name }}
-                                                        </td>
-                                                        @foreach ($dates as $key => $date)
-                                                            @php
-                                                                $fill = 'day'.$key + 1;
-                                                            @endphp
-
-                                                            <td>
-                                                                @if ($menWC->$fill)
-                                                                    <span
-                                                                        class="badge {{ $workLegends['VS']['class'] ?? '' }}"
-                                                                    >
-                                                                        VS
-                                                                    </span>
+                                                                    <td>
+                                                                        @if ($celenderDetailWC->$fill)
+                                                                            <span
+                                                                                class="badge {{ $workLegends['VS']['class'] ?? '' }}"
+                                                                            >
+                                                                                VS
+                                                                            </span>
+                                                                        @endif
+                                                                    </td>
                                                                 @endif
-                                                            </td>
-                                                        @endforeach
-                                                    </tr>
-                                                @endforeach
-                                            @endif
-                                        </tbody>
-                                    </table>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+
+                                                {{-- Trực WC Nữ --}}
+                                                @if ($tabCode == 'women' && isset($celenderDetailsWCCleanWomen))
+                                                    @foreach ($celenderDetailsWCCleanWomen as $key => $womenWC)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            @foreach ($dates as $key => $date)
+                                                                @php
+                                                                    $fill = 'day'.$key + 1;
+                                                                @endphp
+
+                                                                <td>
+                                                                    @if ($womenWC->$fill)
+                                                                        <span
+                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}"
+                                                                        >
+                                                                            VS
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+
+                                                {{-- Trực WC Nam --}}
+                                                @if ($tabCode == 'men' && isset($celenderDetailsWCCleanMen))
+                                                    @foreach ($celenderDetailsWCCleanMen as $key => $menWC)
+                                                        <tr
+                                                            style="
+                                                                height: 2.75rem;
+                                                            "
+                                                        >
+                                                            @foreach ($dates as $key => $date)
+                                                                @php
+                                                                    $fill = 'day'.$key + 1;
+                                                                @endphp
+
+                                                                <td>
+                                                                    @if ($menWC->$fill)
+                                                                        <span
+                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}"
+                                                                        >
+                                                                            VS
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -363,6 +561,141 @@
                     }
                 }
                 $(this).addClass($(this).val());
+            });
+        });
+        $(document).ready(function () {
+            // Add search input after workLegends div
+            $('.d-flex.flex-wrap.gap-3.align-items-center.m-3').after(`
+        <div class="mb-3">
+            <input type="text"
+                   id="employeeSearch"
+                   class="form-control w-100 w-md-25"
+                   placeholder="Tìm kiếm nhân viên..."
+            >
+        </div>
+    `);
+
+            // Handle the search functionality
+            $('#employeeSearch').on('input', function () {
+                const searchValue = $(this).val().toLowerCase().trim();
+
+                // Get the active tab's ID
+                const activeTabId = $('.tab-pane.active').attr('id');
+
+                // Find both tables in the active tab
+                const $leftTable = $(`#${activeTabId} .col-4 table`);
+                const $rightTable = $(`#${activeTabId} .col-8 table`);
+
+                // Process rows in pairs
+                const $leftRows = $leftTable.find('tbody tr');
+                const $rightRows = $rightTable.find('tbody tr');
+
+                $leftRows.each(function (index) {
+                    const $leftRow = $(this);
+                    const $rightRow = $rightRows.eq(index);
+
+                    // Skip category header rows (rows with bg-info class)
+                    if ($leftRow.find('.bg-info').length > 0) {
+                        return;
+                    }
+
+                    // Get employee code and name from the left table
+                    const code = $leftRow
+                        .find('td:first-child')
+                        .text()
+                        .toLowerCase()
+                        .trim();
+                    const name = $leftRow
+                        .find('td:nth-child(2)')
+                        .text()
+                        .toLowerCase()
+                        .trim();
+
+                    // Show/hide rows based on search match
+                    if (
+                        code.includes(searchValue) ||
+                        name.includes(searchValue)
+                    ) {
+                        $leftRow.show();
+                        $rightRow.show();
+
+                        // If this row matches, also show its category header if it exists
+                        let $currentLeftRow = $leftRow;
+                        let $currentRightRow = $rightRow;
+
+                        while ($currentLeftRow.prev().length > 0) {
+                            $currentLeftRow = $currentLeftRow.prev();
+                            $currentRightRow = $currentRightRow.prev();
+
+                            if ($currentLeftRow.find('.bg-info').length > 0) {
+                                $currentLeftRow.show();
+                                $currentRightRow.show();
+                                break;
+                            }
+                        }
+                    } else {
+                        $leftRow.hide();
+                        $rightRow.hide();
+                    }
+                });
+
+                // Hide category headers if no rows in that category are visible
+                $(`#${activeTabId} .col-4 .bg-info`)
+                    .closest('tr')
+                    .each(function (index) {
+                        const $leftHeader = $(this);
+                        const $rightHeader = $(
+                            `#${activeTabId} .col-8 .bg-info`,
+                        )
+                            .closest('tr')
+                            .eq(index);
+
+                        let hasVisibleRows = false;
+                        let $nextLeftRow = $leftHeader.next();
+                        let $nextRightRow = $rightHeader.next();
+
+                        while (
+                            $nextLeftRow.length &&
+                            !$nextLeftRow.find('.bg-info').length
+                        ) {
+                            if ($nextLeftRow.is(':visible')) {
+                                hasVisibleRows = true;
+                                break;
+                            }
+                            $nextLeftRow = $nextLeftRow.next();
+                            $nextRightRow = $nextRightRow.next();
+                        }
+
+                        if (!hasVisibleRows) {
+                            $leftHeader.hide();
+                            $rightHeader.hide();
+                        }
+                    });
+            });
+
+            // Clear search when changing tabs
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
+                const $searchInput = $('#employeeSearch');
+                if ($searchInput.val()) {
+                    $searchInput.val('').trigger('input');
+                }
+            });
+
+            // Keep the existing input class change functionality
+            const listClass = ['N', 'D', 'X', 'TC', 'LN'];
+            $('input').on('keyup', function () {
+                if (
+                    !$(this).attr('id') ||
+                    $(this).attr('id') !== 'employeeSearch'
+                ) {
+                    $(this).val($(this).val().toUpperCase());
+                    for (let i = 0; i < listClass.length; i++) {
+                        if ($(this).hasClass(listClass[i])) {
+                            $(this).removeClass(listClass[i]);
+                        }
+                    }
+                    $(this).addClass($(this).val());
+                }
             });
         });
     </script>

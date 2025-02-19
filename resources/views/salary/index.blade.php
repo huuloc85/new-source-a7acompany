@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.'.$layout)
 
 @php
     $startValue = count($salaryManagers) > 0 ? $salaryManagers->firstItem() : 0;
