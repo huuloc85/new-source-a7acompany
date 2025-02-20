@@ -368,50 +368,109 @@
 @endsection
 
 @section('scripts')
-    <script>
-        var lastPrintTime = null; // Biến lưu thời gian lần in gần nhất
-        var isPrintShortcutActivated = false; // Biến theo dõi trạng thái nhấn Ctrl + P
+<script>
+    var lastPrintTime = null; // Biến lưu thời gian lần in gần nhất
+    var isPrintShortcutActivated = false; // Biến theo dõi trạng thái nhấn Ctrl + P
 
-        function savePrint(sendStampId, callback) {
-            var url = $('#save-print').data('url');
+    function savePrint(sendStampId, callback) {
+        var url = $('#save-print').data('url');
 
-            if (sendStampId) {
-                $.ajax({
-                    url: url,
-                    method: 'POST',
-                    data: {
-                        sendStampId: sendStampId,
-                        _token: '{{ csrf_token() }}',
-                    },
-                    success: function (response) {
-                        console.log(response.status);
-                        if (callback) callback(); // Gọi callback sau khi lưu thành công
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(
-                            'Đã xảy ra lỗi khi gửi lưu lịch sử print:',
-                            error,
+        if (sendStampId) {
+            console.log('Đang lưu lịch sử in...', sendStampId);
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    sendStampId: sendStampId,
+                    _token: '{{ csrf_token() }}',
+                },
+                success: function (response) {
+                    console.log('res', response);
+
+                    var notifications = localStorage.getItem('notifications');
+                    if (notifications) {
+                        notifications = JSON.parse(notifications);
+                        notifications = notifications.filter(function (item) {
+                            if (item.recordId == sendStampId) {
+                                document
+                                    .getElementById(
+                                        'notification-stamp-' + sendStampId,
+                                    )
+                                    .remove();
+                            }
+                            return item.recordId != sendStampId;
+                        });
+                        localStorage.setItem(
+                            'notifications',
+                            JSON.stringify(notifications),
                         );
-                    },
-                });
-            }
+                        if (notifications.length == 0) {
+                            document.getElementById(
+                                'notificationList',
+                            ).innerHTML =
+                                `<li class="text-muted text-center p-3">Không có thông báo</li>`;
+                        }
+                        document.getElementById('notificationCount').innerText =
+                            notifications.length;
+                    }
+                    console.log('Đã xóa thông báo in thành công!');
+                    if (callback) callback(); // Gọi callback sau khi lưu thành công
+                },
+                error: function (xhr, status, error) {
+                    console.error(
+                        'Đã xảy ra lỗi khi gửi lưu lịch sử print:',
+                        error,
+                    );
+                },
+            });
+        }
+    }
+
+    function handlePrint() {
+        var sendStampId = $('#sendStampId').val(); // Lấy sendStampId từ input ẩn hoặc DOM
+        var currentTime = new Date().getTime();
+
+        if (!sendStampId) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Không tìm thấy thông tin in. Vui lòng kiểm tra lại.',
+                icon: 'error',
+                confirmButtonText: 'Đóng',
+            });
+            return;
         }
 
-        function handlePrint() {
-            var sendStampId = $('#sendStampId').val(); // Lấy sendStampId từ input ẩn hoặc DOM
-            var currentTime = new Date().getTime();
+        if (lastPrintTime === null) {
+            lastPrintTime = currentTime;
+            savePrint(sendStampId, function () {
+                setTimeout(function () {
+                    window.print();
+                    isPrintShortcutActivated = false; // Reset trạng thái sau khi in
+                }, 100);
+            });
+        } else {
+            var timeDiff = (currentTime - lastPrintTime) / 1000 / 60;
 
-            if (!sendStampId) {
+            if (timeDiff <= 5) {
                 Swal.fire({
-                    title: 'Lỗi!',
-                    text: 'Không tìm thấy thông tin in. Vui lòng kiểm tra lại.',
-                    icon: 'error',
-                    confirmButtonText: 'Đóng',
+                    title: 'Cảnh báo!',
+                    text: 'Bạn đã in trước đó chưa đầy 5 phút. Bạn có chắc chắn muốn in thêm không?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Có',
+                    cancelButtonText: 'Không',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        lastPrintTime = currentTime;
+                        savePrint(sendStampId, function () {
+                            setTimeout(function () {
+                                window.print();
+                                isPrintShortcutActivated = false; // Reset trạng thái sau khi in
+                            }, 100);
+                        });
+                    }
                 });
-                return;
-            }
-
-            if (lastPrintTime === null) {
+            } else {
                 lastPrintTime = currentTime;
                 savePrint(sendStampId, function () {
                     setTimeout(function () {
@@ -419,69 +478,38 @@
                         isPrintShortcutActivated = false; // Reset trạng thái sau khi in
                     }, 100);
                 });
-            } else {
-                var timeDiff = (currentTime - lastPrintTime) / 1000 / 60;
-
-                if (timeDiff <= 5) {
-                    Swal.fire({
-                        title: 'Cảnh báo!',
-                        text: 'Bạn đã in trước đó chưa đầy 5 phút. Bạn có chắc chắn muốn in thêm không?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Có',
-                        cancelButtonText: 'Không',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            lastPrintTime = currentTime;
-                            savePrint(sendStampId, function () {
-                                setTimeout(function () {
-                                    window.print();
-                                    isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                                }, 100);
-                            });
-                        }
-                    });
-                } else {
-                    lastPrintTime = currentTime;
-                    savePrint(sendStampId, function () {
-                        setTimeout(function () {
-                            window.print();
-                            isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                        }, 100);
-                    });
-                }
             }
         }
+    }
 
-        $(document).ready(function () {
-            $(document).keydown(function (event) {
-                // Kích hoạt Ctrl + P để lưu lịch sử in
-                if (event.ctrlKey && event.key === 'p') {
-                    event.preventDefault(); // Ngăn hành động mặc định
-                    isPrintShortcutActivated = true; // Đánh dấu Ctrl + P đã được nhấn
-                    handlePrint(); // Gọi hàm in
+    $(document).ready(function () {
+        $(document).keydown(function (event) {
+            // Kích hoạt Ctrl + P để lưu lịch sử in
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault(); // Ngăn hành động mặc định
+                isPrintShortcutActivated = true; // Đánh dấu Ctrl + P đã được nhấn
+                handlePrint(); // Gọi hàm in
+            }
+
+            // Ngăn chặn Ctrl+Shift+P nếu Ctrl+P chưa được nhấn
+            if (event.ctrlKey && event.shiftKey && event.key === 'P') {
+                if (!isPrintShortcutActivated) {
+                    event.preventDefault();
+                    Swal.fire({
+                        title: 'Thông báo',
+                        text: 'Vui lòng nhấn Ctrl + P trước khi sử dụng Ctrl + Shift + P.',
+                        icon: 'info',
+                        confirmButtonText: 'Đồng ý',
+                    });
+                } else {
+                    console.log('Ctrl + Shift + P được nhấn!');
                 }
-
-                // Ngăn chặn Ctrl+Shift+P nếu Ctrl+P chưa được nhấn
-                if (event.ctrlKey && event.shiftKey && event.key === 'P') {
-                    if (!isPrintShortcutActivated) {
-                        event.preventDefault();
-                        Swal.fire({
-                            title: 'Thông báo',
-                            text: 'Vui lòng nhấn Ctrl + P trước khi sử dụng Ctrl + Shift + P.',
-                            icon: 'info',
-                            confirmButtonText: 'Đồng ý',
-                        });
-                    } else {
-                        console.log('Ctrl + Shift + P được nhấn!');
-                    }
-                }
-            });
-
-            $('#save-print').click(function (event) {
-                event.preventDefault();
-                handlePrint(); // Gọi hàm in khi nhấn nút
-            });
+            }
         });
-    </script>
-@endsection
+
+        $('#save-print').click(function (event) {
+            event.preventDefault();
+            handlePrint(); // Gọi hàm in khi nhấn nút
+        });
+    });
+</script>

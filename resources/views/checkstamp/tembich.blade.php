@@ -213,6 +213,7 @@
             var url = $('#save-print').data('url');
 
             if (sendStampId) {
+                console.log('Đang lưu lịch sử in...', sendStampId);
                 $.ajax({
                     url: url,
                     method: 'POST',
@@ -221,7 +222,40 @@
                         _token: '{{ csrf_token() }}',
                     },
                     success: function (response) {
-                        console.log(response.status);
+                        console.log('res', response);
+
+                        var notifications =
+                            localStorage.getItem('notifications');
+                        if (notifications) {
+                            notifications = JSON.parse(notifications);
+                            notifications = notifications.filter(
+                                function (item) {
+                                    if (item.recordId == sendStampId) {
+                                        document
+                                            .getElementById(
+                                                'notification-stamp-' +
+                                                    sendStampId,
+                                            )
+                                            .remove();
+                                    }
+                                    return item.recordId != sendStampId;
+                                },
+                            );
+                            localStorage.setItem(
+                                'notifications',
+                                JSON.stringify(notifications),
+                            );
+                            if (notifications.length == 0) {
+                                document.getElementById(
+                                    'notificationList',
+                                ).innerHTML =
+                                    `<li class="text-muted text-center p-3">Không có thông báo</li>`;
+                            }
+                            document.getElementById(
+                                'notificationCount',
+                            ).innerText = notifications.length;
+                        }
+                        console.log('Đã xóa thông báo in thành công!');
                         if (callback) callback(); // Gọi callback sau khi lưu thành công
                     },
                     error: function (xhr, status, error) {
