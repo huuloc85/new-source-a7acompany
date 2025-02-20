@@ -159,7 +159,6 @@
                                 id="{{ $keyTab }}"
                                 role="tabpanel"
                                 aria-labelledby="{{ $keyTab }}-tab"
-                                tabindex="0"
                             >
                                 <div class="d-flex">
                                     <div class="col-4 table-responsive">
@@ -170,7 +169,9 @@
                                             >
                                                 <tr>
                                                     <th>STT</th>
-                                                    <th>Tên linh kiện</th>
+                                                    <th class="text-start">
+                                                        Tên linh kiện
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody
@@ -468,7 +469,6 @@
                                 id="{{ $keyTab }}"
                                 role="tabpanel"
                                 aria-labelledby="{{ $keyTab }}-tab"
-                                tabindex="0"
                             >
                                 <div class="d-flex">
                                     <div class="col-4 table-responsive">
@@ -479,7 +479,9 @@
                                             >
                                                 <tr>
                                                     <th>STT</th>
-                                                    <th>Tên linh kiện</th>
+                                                    <th class="text-start">
+                                                        Tên linh kiện
+                                                    </th>
                                                     <th>
                                                         Tổng cộng
                                                         <br />
@@ -636,7 +638,6 @@
                                 id="{{ $keyTab }}"
                                 role="tabpanel"
                                 aria-labelledby="{{ $keyTab }}-tab"
-                                tabindex="0"
                             >
                                 <div class="d-flex">
                                     <div class="col-4 table-responsive">
@@ -647,7 +648,9 @@
                                             >
                                                 <tr>
                                                     <th>STT</th>
-                                                    <th>Tên linh kiện</th>
+                                                    <th class="text-start">
+                                                        Tên linh kiện
+                                                    </th>
                                                     @if ($keyTab == 'import-200')
                                                         <th>
                                                             Tồn đầu kỳ
@@ -839,171 +842,4 @@
             </div>
         </div>
     @endforeach
-@endsection
-
-{{--
-    disable script
-    -- remove letter "X" to enable script
---}}
-@section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var tooltipTriggerList = [].slice.call(
-                document.querySelectorAll('[data-bs-toggle="tooltip"]'),
-            );
-            var tooltipList = tooltipTriggerList.map(
-                function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl);
-                },
-            );
-        });
-        $(document).ready(function () {
-            var activeHome = false;
-            var activeProduce = false;
-            var activeCheck200 = false;
-            var activeError200 = false;
-            var activeExport = false;
-            var url = $('#myTab').data('url');
-            var page = @json($page);
-            checkLocalStorage();
-
-            function checkLocalStorage() {
-                let productTab = getLocalStorage('productTab');
-                if (productTab != page) {
-                    productTab = page;
-                    addLocalStorage(productTab);
-                }
-                if (productTab && productTab != null) {
-                    switch (productTab) {
-                        case 'product':
-                            activeHome = true;
-                            resetTab();
-                            handleActive('product-tab', 'product');
-                            break;
-                        case 'produce':
-                            activeProduce = true;
-                            resetTab();
-                            handleActive('check-100-tab', 'check-100');
-                            break;
-                        case 'check200':
-                            activeCheck200 = true;
-                            resetTab();
-                            handleActive('import-200-tab', 'import-200');
-                            break;
-                        case 'error200':
-                            activeError200 = true;
-                            resetTab();
-                            handleActive('import-300-tab', 'import-300');
-                            break;
-                        case 'export':
-                            activeExport = true;
-                            resetTab();
-                            handleActive('export-200-tab', 'export-200');
-                            break;
-                    }
-                }
-            }
-
-            $('#product-tab').click(function () {
-                $('#loader').show();
-                if (!activeHome) {
-                    eventClickTab(activeHome, 'product');
-                }
-            });
-            $('#check-100-tab').click(function () {
-                if (!activeProduce) {
-                    eventClickTab(activeProduce, 'produce');
-                }
-            });
-            $('#import-200-tab').click(function () {
-                if (!activeCheck200) {
-                    eventClickTab(activeCheck200, 'check200');
-                }
-            });
-            $('#import-300-tab').click(function () {
-                if (!activeError200) {
-                    eventClickTab(activeError200, 'error200');
-                }
-            });
-            $('#export-200-tab').click(function () {
-                if (!activeExport) {
-                    eventClickTab(activeExport, 'export');
-                }
-            });
-
-            function eventClickTab(tabName, key) {
-                resetClick();
-                tabName = true;
-                addLocalStorage(key);
-                $('#loader').removeClass('d-none');
-                window.location.href = url + '?page=' + key;
-            }
-
-            function resetClick() {
-                activeHome = false;
-                activeProduce = false;
-                activeCheck200 = false;
-                activeError200 = false;
-                activeExport = false;
-            }
-
-            function handleActive(attribute, attribute_tab) {
-                var el = document.getElementById(attribute);
-                if (el) {
-                    if (!el.classList.contains('active')) {
-                        el.classList.add('active');
-                    }
-                    if (!el.classList.contains('show')) {
-                        el.classList.add('show');
-                    }
-                }
-
-                var elTab = document.getElementById(attribute_tab);
-                if (elTab) {
-                    if (!elTab.classList.contains('active')) {
-                        elTab.classList.add('active');
-                    }
-                    if (!elTab.classList.contains('show')) {
-                        elTab.classList.add('show');
-                    }
-                }
-            }
-
-            function resetA7A() {
-                var listTab = document.getElementsByClassName('product-tab');
-                if (listTab && listTab.length > 0) {
-                    for (let i = 0; i < listTab.length; i++) {
-                        if (listTab[i].classList.contains('show')) {
-                            listTab[i].classList.remove('show');
-                        }
-                        if (listTab[i].classList.contains('active')) {
-                            listTab[i].classList.remove('active');
-                        }
-                    }
-                }
-            }
-
-            function addLocalStorage(key) {
-                localStorage.setItem('productTab', key);
-            }
-
-            function getLocalStorage(key) {
-                return localStorage.getItem(key);
-            }
-
-            function resetTab() {
-                var listTab = document.getElementsByClassName('product');
-                if (listTab && listTab.length > 0) {
-                    for (let i = 0; i < listTab.length; i++) {
-                        if (listTab[i].classList.contains('show')) {
-                            listTab[i].classList.remove('show');
-                        }
-                        if (listTab[i].classList.contains('active')) {
-                            listTab[i].classList.remove('active');
-                        }
-                    }
-                }
-            }
-        });
-    </script>
 @endsection
