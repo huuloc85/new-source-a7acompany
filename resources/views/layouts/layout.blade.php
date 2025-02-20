@@ -599,6 +599,8 @@
                                 'list-group-item-action',
                                 'cursor-pointer',
                             );
+                            newNotification.id =
+                                'notification-stamp-' + notification.recordId;
                             newNotification.innerHTML = notification.message;
                             newNotification.addEventListener('click', () => {
                                 if (
