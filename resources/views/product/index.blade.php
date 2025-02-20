@@ -177,7 +177,7 @@
                                                 class="text-center align-middle"
                                             >
                                                 @foreach ($products as $key => $product)
-                                                    <tr>
+                                                    <tr style="height: 3.5rem">
                                                         <th>
                                                             {{ $loop->iteration }}
                                                         </th>
@@ -366,7 +366,7 @@
                                                             90;
                                                     @endphp
 
-                                                    <tr>
+                                                    <tr style="height: 3.5rem">
                                                         <td
                                                             class="bg-body-secondary"
                                                         >
@@ -490,7 +490,7 @@
                                                 class="text-center align-middle"
                                             >
                                                 @foreach ($products as $key => $product)
-                                                    <tr>
+                                                    <tr style="height: 3.5rem">
                                                         <th>
                                                             {{ $loop->iteration }}
                                                         </th>
@@ -518,7 +518,7 @@
                                                 <tr>
                                                     @foreach ($listDate as $key => $date)
                                                         <th
-                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                            class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                             colspan="2"
                                                         >
                                                             {{ $date }}
@@ -532,12 +532,12 @@
                                                 <tr>
                                                     @foreach ($listDate as $key => $date)
                                                         <th
-                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                            class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                         >
                                                             Ca 1
                                                         </th>
                                                         <th
-                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                            class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                         >
                                                             Ca 2
                                                         </th>
@@ -548,7 +548,7 @@
                                                 class="text-center align-middle"
                                             >
                                                 @foreach ($products as $key => $product)
-                                                    <tr>
+                                                    <tr style="height: 3.5rem">
                                                         @foreach ($listDate as $key => $date)
                                                             @php
                                                                 // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
@@ -668,7 +668,7 @@
                                                 class="text-center align-middle"
                                             >
                                                 @foreach ($products as $product)
-                                                    <tr>
+                                                    <tr style="height: 3.5rem">
                                                         <th>
                                                             {{ $loop->iteration }}
                                                         </th>
@@ -706,7 +706,7 @@
                                                 <tr>
                                                     @foreach ($listDate as $key => $date)
                                                         <th
-                                                            class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                            class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                         >
                                                             {{ $date }}
                                                         </th>
@@ -719,7 +719,7 @@
                                                 class="text-center align-middle"
                                             >
                                                 @foreach ($products as $product)
-                                                    <tr>
+                                                    <tr style="height: 3.5rem">
                                                         @foreach ($listDate as $key => $date)
                                                             @php
                                                                 $timestam = strtotime($date);
@@ -733,7 +733,7 @@
                                                             @endphp
 
                                                             <td
-                                                                class="<?= $key % 2 == 0 ? 'bg-body-secondary' : '' ?>"
+                                                                class="<?= $key % 2 == 0 ? "bg-body-secondary" : "" ?>"
                                                             >
                                                                 {{ number_format((float) $totalQuanDate) }}
                                                             </td>
