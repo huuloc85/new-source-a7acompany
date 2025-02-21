@@ -637,6 +637,10 @@
                 window.Echo.channel('user.' + userId).listen(
                     'SendStampEvent',
                     (e) => {
+                        notifications =
+                            JSON.parse(localStorage.getItem('notifications')) ||
+                            [];
+
                         notificationSound
                             .play()
                             .catch((error) =>
