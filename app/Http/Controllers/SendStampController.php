@@ -55,7 +55,7 @@ class SendStampController extends Controller
             ]);
 
             // Lấy các nhân viên có role_id là 15 và 8
-            $users = Employee::whereIn('role_id', [15, 8])->get();
+            $users = Employee::whereIn('role_id', [15, 8])->whereNull('deleted_at')->get();
 
             // Phát sự kiện cho mỗi nhân viên
             foreach ($users as $user) {

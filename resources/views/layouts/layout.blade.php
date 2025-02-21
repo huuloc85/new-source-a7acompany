@@ -24,10 +24,12 @@
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"
         />
         <!-- Font Awesome Icons -->
-        <script
+        {{--
+            <script
             src="https://kit.fontawesome.com/42d5adcbca.js"
             crossorigin="anonymous"
-        ></script>
+            ></script>
+        --}}
         <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
         {{-- <script defer data-site="127.0.0.1" src="https://api.nepcha.com/js/nepcha-analytics.js"></script> --}}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>

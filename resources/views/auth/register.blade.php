@@ -33,10 +33,12 @@
             rel="stylesheet"
         />
         <!-- Font Awesome Icons -->
-        <script
+        {{--
+            <script
             src="https://kit.fontawesome.com/42d5adcbca.js"
             crossorigin="anonymous"
-        ></script>
+            ></script>
+        --}}
         <!-- Material Icons -->
         <link
             href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"

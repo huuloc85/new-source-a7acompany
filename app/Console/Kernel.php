@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('send-mail-daily-quantity:cron')->dailyAt(1, '08:00')->withoutOverlapping();
         $schedule->command('update-stock-quantity:cron')->monthlyOn(1, '08:00')->withoutOverlapping();
+        $schedule->command('sendstamp:delete-rejected')->everyFifteenSeconds()->withoutOverlapping();
     }
 
     /**
