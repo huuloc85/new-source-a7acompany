@@ -792,7 +792,9 @@
                                                     @foreach ($listDate as $key => $date)
                                                         @php
                                                             // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
-                                                            $formattedDate = Carbon\Carbon::parse($date)->startOfDay();
+                                                            $formattedDate = Carbon\Carbon::parse(
+                                                                $date,
+                                                            )->startOfDay();
                                                             // Lấy tất cả các dailyQuantities cho ngày cụ thể
                                                             $dailyQuantitiesOfTheDay = $product
                                                                 ->DailyQuantities()
