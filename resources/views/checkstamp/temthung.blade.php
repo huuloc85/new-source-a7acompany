@@ -105,8 +105,8 @@
                                                                     AUTOMOTIVE
                                                                     PARTS
                                                                     <br />
-                                                                    (VIET
-                                                                    NAM)INC
+                                                                    (VIET NAM)
+                                                                    INC
                                                                 </p>
                                                             </td>
                                                         </tr>
@@ -451,7 +451,7 @@
                     setTimeout(function () {
                         window.print();
                         isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                    }, 100);
+                    }, 1000);
                 });
             } else {
                 var timeDiff = (currentTime - lastPrintTime) / 1000 / 60;
@@ -471,7 +471,7 @@
                                 setTimeout(function () {
                                     window.print();
                                     isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                                }, 100);
+                                }, 1000);
                             });
                         }
                     });
@@ -481,7 +481,7 @@
                         setTimeout(function () {
                             window.print();
                             isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                        }, 100);
+                        }, 1000);
                     });
                 }
             }

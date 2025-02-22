@@ -16,7 +16,10 @@
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Bảng Yêu Cầu In Tem</h4>
+                        <h4 class="card-title mb-0">
+                            Bảng Yêu Cầu In Tem Ngày
+                            {{ \Carbon\Carbon::parse($date)->format('d-m') }}
+                        </h4>
                     </div>
                 </div>
                 <div class="card-body">
@@ -93,7 +96,7 @@
                                     type="date"
                                     name="date"
                                     class="form-control"
-                                    value="{{ request('date') }}"
+                                    value="{{ request('date', \Carbon\Carbon::today()->toDateString()) }}"
                                     onchange="submitForm()"
                                 />
                             </div>
