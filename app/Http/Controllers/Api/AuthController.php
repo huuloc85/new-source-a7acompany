@@ -97,6 +97,8 @@ class AuthController extends Controller
     // Admin cập nhật thông tin của người khác
     public function changeProfile(Request $request, $id)
     {
+        // $data = "Hello World";
+        // return response()->json($data, 200);
         $admin = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
 
         // Kiểm tra quyền admin
@@ -109,14 +111,6 @@ class AuthController extends Controller
         if (! $user) {
             return response()->json(['message' => 'Người dùng không tồn tại!'], 404);
         }
-
-        // Validate dữ liệu đầu vào
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:15',
-            'email' => 'required|email|unique:employees,email,'.$user->id, // Đúng bảng `employees`
-            'role' => 'required|string',
-        ]);
 
         // Cập nhật thông tin
         $user->update([
@@ -134,11 +128,6 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:15',
-        ]);
-
         $user->update([
             'name' => $request->name,
             'phone' => $request->phone,
@@ -147,7 +136,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Cập nhật thông tin cá nhân thành công!', 'user' => $user]);
     }
 
-    public function user(Request $request)
+    public function me(Request $request)
     {
         return response()->json($request->user());
     }
