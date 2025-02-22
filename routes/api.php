@@ -26,16 +26,15 @@ Route::post('/updateDataCC', [AttendanceRecordController::class, 'updateDataCC']
 Route::post('/login', [AuthController::class, 'login']);
 
 // Các route yêu cầu xác thực bằng Sanctum
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+
     // DashBoard
     Route::get('/dashboard', [DashboardController::class, 'index']);
     // Thông tin người dùng đăng nhập
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/profile', [AuthController::class, 'profile']);
-
     // Nhân viên cập nhật thông tin cá nhân
     Route::patch('/change-info', [AuthController::class, 'changeInfo']);
-
     // Admin cập nhật thông tin nhân viên khác
     Route::patch('/change-profile/{id}', [AuthController::class, 'changeProfile']);
     // Đăng xuất

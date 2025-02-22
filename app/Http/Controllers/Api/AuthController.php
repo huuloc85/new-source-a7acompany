@@ -21,28 +21,21 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // Kiểm tra nhân viên đã nghỉ việc
             if ($user->deleted_at !== null) {
                 return response()->json(['message' => 'Bạn đã nghỉ việc!'], 403);
             }
 
-            // Lấy thông tin nhân viên
             $employee = Employee::find($user->id);
-
-            // Kiểm tra sinh nhật hôm nay
             $today = now()->format('m-d');
             $birthdayEmployees = Employee::whereRaw("DATE_FORMAT(birthday, '%m-%d') = ?", [$today])
                 ->whereNull('deleted_at')
                 ->pluck('name');
-
             $isBirthday = $birthdayEmployees->isNotEmpty();
 
-            // Kiểm tra xem đã đăng nhập trong ngày chưa
             $loginHistoryExists = LoginHistory::where('employee_id', $employee->id)
                 ->whereDate('date', now()->toDateString())
                 ->exists();
 
-            // Kiểm tra lịch làm việc
             $upcomingDuties = [];
             $calendar = Celender::latest('id')->first();
             if ($calendar) {
@@ -72,15 +65,27 @@ class AuthController extends Controller
                 }
             }
 
-            // Tạo token
-            $token = $user->createToken('auth_token')->plainTextToken;
+            // Xóa các token cũ của user này (optional)
+            $user->tokens()->delete();
+
+            // Nhận giá trị expiresInMins từ request, mặc định 60 phút
+            $expiresInMins = $request->input('expiresInMins', 60);
+            $expiresAt = now()->addMinutes($expiresInMins);
+
+            // Tạo token với thời gian hết hạn
+            $tokenResult = $user->createToken('auth_token', ['*'], $expiresAt);
+
+            // Lưu expires_at vào token
+            $tokenResult->accessToken->expires_at = $expiresAt;
+            $tokenResult->accessToken->save();
 
             return response()->json([
-                'user' => $user,
-                'token' => $token,
+                'role_id' => $user->role_id,
+                'token' => $tokenResult->plainTextToken,
                 'is_birthday' => $isBirthday,
                 'birthday_employees' => $birthdayEmployees,
                 'cleaning_duties' => $upcomingDuties,
+                'expires_at' => $expiresAt->toDateTimeString(),
             ]);
         }
 
@@ -91,7 +96,7 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return response()->json(['message' => 'Đăng xuất thành công']);
+        return json(['message' => 'Đăng xuất thành công']);
     }
 
     // Admin cập nhật thông tin của người khác
