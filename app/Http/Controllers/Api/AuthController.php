@@ -96,7 +96,7 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return json(['message' => 'Đăng xuất thành công']);
+        return response()->json(['message' => 'Đăng xuất thành công']);
     }
 
     // Admin cập nhật thông tin của người khác
