@@ -28,7 +28,8 @@ class DeleteRejectedSendStamps extends Command
     public function handle()
     {
         $deletedRecords = SendStamp::where('status', 'rejected')
-            ->where('updated_at', '<', Carbon::now()->subMinutes(1))
+            // xoá sau 1 tiếng
+            ->where('updated_at', '<', Carbon::now()->subHour(1))
             ->delete();
 
         $this->info("Đã xoá {$deletedRecords} bản ghi bị rejected quá 1 tiếng.");

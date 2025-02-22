@@ -79,51 +79,47 @@ class SendStampController extends Controller
 
     public function checkStamp(Request $request)
     {
-        // $highlightId = $request->query('highlight');
-        // $highlightRecord = null;
-        // if ($highlightId) {
-        //     $highlightRecord = SendStamp::find($highlightId);
-        // }
-
         $query = SendStamp::query();
 
-        $products = $query->pluck('product_id')->toArray(); // Giả sử SendStamp có trường product_id
-        $products = Product::whereIn('id', $products)->get(); // Lấy sản phẩm có id trong mảng $products
+        // Nếu không có ngày được chọn, mặc định lấy ngày hiện tại
+        $date = $request->has('date') ? $request->date : Carbon::today()->toDateString();
+        $query->whereDate('created_at', $date);
 
-        // Lấy nhân viên theo SendStamp
-        $employees = $query->pluck('employee_id')->toArray(); // Giả sử SendStamp có trường employee_id
-        $employees = Employee::whereIn('id', $employees)->get(); // Lấy nhân viên có id trong mảng $employees
-        // Lọc theo sản phẩm và nhân viên nếu có
+        // Lấy danh sách sản phẩm từ dữ liệu đã lọc
+        $products = $query->pluck('product_id')->toArray();
+        $products = Product::whereIn('id', $products)->get();
+
+        // Lấy danh sách nhân viên từ dữ liệu đã lọc
+        $employees = $query->pluck('employee_id')->toArray();
+        $employees = Employee::whereIn('id', $employees)->get();
+
+        // Lọc theo sản phẩm
         if ($request->has('product_name')) {
             $query->whereHas('product', function ($query) use ($request) {
                 $query->where('name', 'like', '%'.$request->product_name.'%');
             });
         }
 
+        // Lọc theo nhân viên
         if ($request->has('employee_name')) {
             $query->whereHas('employee', function ($query) use ($request) {
                 $query->where('name', 'like', '%'.$request->employee_name.'%');
             });
         }
 
-        // Bộ lọc theo ca
+        // Lọc theo ca
         if ($request->has('shift') && $request->shift) {
             $query->where('shift', $request->shift);
         }
 
-        // Bộ lọc theo trạng thái
+        // Lọc theo trạng thái
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
         }
 
-        // Lọc theo ngày
-        if ($request->has('date') && $request->date) {
-            $query->whereDate('created_at', $request->date);
-        }
-
         $historyprint = $query->get();
 
-        return view('checkstamp.index', compact('historyprint', 'products', 'employees'));
+        return view('checkstamp.index', compact('historyprint', 'products', 'employees', 'date'));
     }
 
     public function print($id)
