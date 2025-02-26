@@ -28,43 +28,40 @@ Route::post('/updateDataCC', [AttendanceRecordController::class, 'updateDataCC']
 // Đăng nhập
 Route::post('/login', [AuthController::class, 'login']);
 
-// Login, DashBoard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
-Route::prefix('admin')->middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
-    // DashBoard
-    Route::get('/dashboard', [DashboardController::class, 'index']);
-    // Thông tin người dùng đăng nhập
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::get('/profile', [AuthController::class, 'profile']);
-    // Nhân viên cập nhật thông tin cá nhân
-    Route::patch('/change-info', [AuthController::class, 'changeInfo']);
-    // Admin cập nhật thông tin nhân viên khác
-    Route::patch('/change-profile/{id}', [AuthController::class, 'changeProfile']);
-    // Đăng xuất
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
+Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
+    Route::prefix('admin')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index']);
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::get('/profile', [AuthController::class, 'profile']);
+        Route::patch('/profile', [AuthController::class, 'changeInfo']);
+        Route::patch('/users/{id}/profile', [AuthController::class, 'changeProfile']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
 
-// Employees (Quản Lý Nhân Sự)
-Route::prefix('employee')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [EmployeeController::class, 'index']); // Danh sách nhân viên
-    Route::post('/store', [EmployeeController::class, 'store']); // Thêm mới nhân viên
-    Route::get('/{id}', [EmployeeController::class, 'show']); // Chi tiết nhân viên
-    Route::patch('/update/{id}', [EmployeeController::class, 'update']); // Cập nhật nhân viên
-    Route::delete('/delete/{id}', [EmployeeController::class, 'delete']); // Xóa nhân viên (thùng rác)
-    Route::get('/trash', [EmployeeController::class, 'getTrash']); // Danh sách nhân viên trong thùng rác
-    Route::post('/restore/{id}', [EmployeeController::class, 'restore']); // Khôi phục nhân viên
-});
+    // Employees (Quản Lý Nhân Sự)
+    Route::prefix('employees')->group(function () {
+        Route::get('/', [EmployeeController::class, 'index']);
+        Route::post('/', [EmployeeController::class, 'store']);
+        Route::get('/{id}', [EmployeeController::class, 'show']);
+        Route::patch('/{id}', [EmployeeController::class, 'update']);
+        Route::delete('/{id}', [EmployeeController::class, 'delete']);
+        Route::get('/trash', [EmployeeController::class, 'getTrash']);
+        Route::post('/{id}/restore', [EmployeeController::class, 'restore']);
+    });
 
-// Roles (Quản Lý Chức Vụ)
-Route::prefix('roles')->group(function () {
-    Route::get('/', [RoleController::class, 'index']); // Lấy danh sách vai trò
-    Route::post('/', [RoleController::class, 'store']); // Thêm vai trò mới
-    Route::patch('/{id}', [RoleController::class, 'update']); // Cập nhật vai trò
-    Route::delete('/{id}', [RoleController::class, 'delete']); // Xóa vai trò
-});
+    // Roles (Quản Lý Chức Vụ)
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [RoleController::class, 'index']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::patch('/{id}', [RoleController::class, 'update']);
+        Route::delete('/{id}', [RoleController::class, 'delete']);
+    });
 
-// Logs (Quản Lý Logs)
-Route::prefix('logs')->group(function () {
-    Route::get('/', [LogController::class, 'index']);
-    Route::delete('/delete/{id}', [LogController::class, 'delete']);
-    Route::post('/delete/all', [LogController::class, 'deleteAll']);
+    // Logs (Quản Lý Logs)
+    Route::prefix('logs')->group(function () {
+        Route::get('/', [LogController::class, 'index']);
+        Route::delete('/{id}', [LogController::class, 'delete']);
+        Route::post('/delete-all', [LogController::class, 'deleteAll']);
+    });
 });
