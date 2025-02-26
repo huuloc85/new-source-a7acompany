@@ -48,7 +48,7 @@ class EmployeeController extends Controller
         $employees = $employees->orderBy('id', 'DESC')->paginate($request->limit ?? 10);
 
         return response()->json([
-            'status' => 'success',
+            'status' => 'true',
             'data' => $employees,
         ], 200);
     }
@@ -96,7 +96,7 @@ class EmployeeController extends Controller
                 'employee' => $employee,
             ], 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Thêm nhân sự không thành công!'], 500);
+            return response()->json(['false' => 'Thêm nhân sự không thành công!'], 500);
         }
     }
 
@@ -147,7 +147,7 @@ class EmployeeController extends Controller
                 'employee' => $employee,
             ], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Cập nhật nhân sự thất bại!'], 500);
+            return response()->json(['false' => 'Cập nhật nhân sự thất bại!'], 500);
         }
     }
 
@@ -157,16 +157,16 @@ class EmployeeController extends Controller
         $employee = Employee::find($id);
 
         if (! $employee) {
-            return response()->json(['status' => 'error', 'message' => 'Nhân sự không tồn tại!'], 404);
+            return response()->json(['status' => 'false', 'message' => 'Nhân sự không tồn tại!'], 404);
         }
 
         try {
             $employee->deleted_at = Carbon::now();
             $employee->save();
 
-            return response()->json(['status' => 'success', 'message' => 'Nhân sự đã được đưa vào thùng rác!'], 200);
+            return response()->json(['status' => 'true', 'message' => 'Nhân sự đã được đưa vào thùng rác!'], 200);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Lỗi khi xóa nhân sự!'], 500);
+            return response()->json(['status' => 'false', 'message' => 'Lỗi khi xóa nhân sự!'], 500);
         }
     }
 
@@ -175,7 +175,7 @@ class EmployeeController extends Controller
     {
         $employees = Employee::whereNotNull('deleted_at')->orderBy('deleted_at', 'DESC')->paginate($request->limit ?? 10);
 
-        return response()->json(['status' => 'success', 'data' => $employees], 200);
+        return response()->json(['status' => 'true', 'data' => $employees], 200);
     }
 
     public function restore($id)
