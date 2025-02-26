@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\LogController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\AttendanceRecordController;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'check.token.expiration'])->
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
-// Employee (Quản Lý Nhân Sự)
+// Employees (Quản Lý Nhân Sự)
 Route::prefix('employee')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [EmployeeController::class, 'index']); // Danh sách nhân viên
     Route::post('/store', [EmployeeController::class, 'store']); // Thêm mới nhân viên
@@ -52,10 +53,18 @@ Route::prefix('employee')->middleware('auth:sanctum')->group(function () {
     Route::get('/trash', [EmployeeController::class, 'getTrash']); // Danh sách nhân viên trong thùng rác
     Route::post('/restore/{id}', [EmployeeController::class, 'restore']); // Khôi phục nhân viên
 });
-// Role (Quản Lý Chức Vụ)
+
+// Roles (Quản Lý Chức Vụ)
 Route::prefix('roles')->group(function () {
     Route::get('/', [RoleController::class, 'index']); // Lấy danh sách vai trò
     Route::post('/', [RoleController::class, 'store']); // Thêm vai trò mới
     Route::patch('/{id}', [RoleController::class, 'update']); // Cập nhật vai trò
     Route::delete('/{id}', [RoleController::class, 'delete']); // Xóa vai trò
+});
+
+// Logs (Quản Lý Logs)
+Route::prefix('logs')->group(function () {
+    Route::get('/', [LogController::class, 'index']);
+    Route::delete('/delete/{id}', [LogController::class, 'delete']);
+    Route::post('/delete/all', [LogController::class, 'deleteAll']);
 });
