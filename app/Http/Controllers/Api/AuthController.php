@@ -12,6 +12,8 @@ use App\Models\LoginHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+// Thêm dòng này
+
 class AuthController extends Controller
 {
     public function login(Request $request)
@@ -81,6 +83,9 @@ class AuthController extends Controller
 
             return response()->json([
                 'role_id' => $user->role_id,
+                'role_name' => $user->role->role_name,
+                'name' => $user->name,
+                'image' => $user->photo,
                 'token' => $tokenResult->plainTextToken,
                 'is_birthday' => $isBirthday,
                 'birthday_employees' => $birthdayEmployees,

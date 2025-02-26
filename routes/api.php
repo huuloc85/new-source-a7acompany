@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\AttendanceRecordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,9 +26,8 @@ Route::post('/updateDataCC', [AttendanceRecordController::class, 'updateDataCC']
 // Đăng nhập
 Route::post('/login', [AuthController::class, 'login']);
 
-// Các route yêu cầu xác thực bằng Sanctum
-Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
-
+// Login, DashBoard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
+Route::prefix('auth')->middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
     // DashBoard
     Route::get('/dashboard', [DashboardController::class, 'index']);
     // Thông tin người dùng đăng nhập
@@ -39,4 +39,15 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     Route::patch('/change-profile/{id}', [AuthController::class, 'changeProfile']);
     // Đăng xuất
     Route::post('/logout', [AuthController::class, 'logout']);
+});
+
+// Employee (Quản Lý Nhân Sự)
+Route::prefix('employee')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [EmployeeController::class, 'index']); // Danh sách nhân viên
+    Route::post('/store', [EmployeeController::class, 'store']); // Thêm mới nhân viên
+    Route::get('/{id}', [EmployeeController::class, 'show']); // Chi tiết nhân viên
+    Route::put('/update/{id}', [EmployeeController::class, 'update']); // Cập nhật nhân viên
+    Route::delete('/delete/{id}', [EmployeeController::class, 'delete']); // Xóa nhân viên (thùng rác)
+    Route::get('/trash', [EmployeeController::class, 'getTrash']); // Danh sách nhân viên trong thùng rác
+    Route::post('/restore/{id}', [EmployeeController::class, 'restore']); // Khôi phục nhân viên
 });
