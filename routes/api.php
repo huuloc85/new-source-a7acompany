@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CalendarController;
+use App\Http\Controllers\Api\CategoryCalendarController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\LogController;
@@ -63,5 +65,20 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/', [LogController::class, 'index']);
         Route::delete('/{id}', [LogController::class, 'delete']);
         Route::post('/delete-all', [LogController::class, 'deleteAll']);
+    });
+
+    Route::prefix('categories')->group(function () {
+        Route::get('/', [CategoryCalendarController::class, 'index']);   // Lấy danh sách danh mục
+        Route::post('/', [CategoryCalendarController::class, 'store']);  // Thêm mới danh mục
+        Route::get('/{id}', [CategoryCalendarController::class, 'show']);  // Lấy chi tiết danh mục
+        Route::patch('/{id}', [CategoryCalendarController::class, 'update']); // Cập nhật danh mục
+        Route::delete('/{id}', [CategoryCalendarController::class, 'delete']); // Xóa danh mục
+    });
+
+    Route::prefix('calendars')->group(function () {
+        Route::get('/', [CalendarController::class, 'index']); // Tạo lịch làm việc mới
+        Route::post('/', [CalendarController::class, 'create']); // Lấy chi tiết lịch làm việc
+        Route::get('/{id}', [CalendarController::class, 'show']);
+        Route::delete('/{id}', [CalendarController::class, 'delete']); // Xóa lịch làm việc
     });
 });
