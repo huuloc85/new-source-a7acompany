@@ -1828,17 +1828,66 @@
                                     <div class="row">
                                         <div class="col-5">
                                             <div class="text-start pt-1">
+                                                <h6 class="mb-0">Bằng chữ</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-center pt-1">
                                                 <h6 class="mb-0">
-                                                    Phần thông tin thêm: BHXH
-                                                    (21,5%) công ty đóng cho
-                                                    người lao động:
+                                                    {{ $salaryInWords }}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <div class="text-start pt-1">
+                                                <h6 class="mb-0">
+                                                    Công ty phải đóng BHXH 21,5%
+                                                    cho người lao động:
                                                 </h6>
                                             </div>
                                         </div>
                                         <div class="col-4">
-                                            <div class="text-center pt-3">
+                                            <div class="text-center pt-1">
                                                 <h6 class="mb-0">
                                                     {{ number_format($salaryOfficialsVVP->company_insurance_detail) ?? '' }}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <div class="text-start pt-1">
+                                                <h6 class="mb-0">
+                                                    Công ty phải đóng Kinh phí
+                                                    công đoàn 2% cho người lao
+                                                    động:
+                                                </h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-center pt-1">
+                                                <h6 class="mb-0">
+                                                    {{ number_format($salaryOfficialsVVP->number_of_violations) ?? '' }}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <div class="text-start pt-1">
+                                                <h6 class="mb-0 text-danger">
+                                                    Công ty phải tổng trả chi
+                                                    phí lương cho 01 người lao
+                                                    động / tháng:
+                                                </h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-center pt-1">
+                                                <h6 class="mb-0">
+                                                    {{ number_format($salaryOfficialsVVP->actually_received) ?? '' }}
                                                 </h6>
                                             </div>
                                         </div>
@@ -3657,382 +3706,363 @@
                                         </div>
                                     </div>
                                 </div>
-                            @elseif (isset($salaryParttimes))
-                                <div class="col-12 col-md-6">
+                                {{--
+                                    @elseif (isset($salaryParttimes))
+                                    <div class="col-12 col-md-6">
                                     <div>
-                                        <label
-                                            class="form-label fw-bold"
-                                            for=""
-                                        >
-                                            Tên nhân viên:
-                                            <label>
-                                                {{ Auth()->user()->name ?? '' }}
-                                            </label>
-                                        </label>
+                                    <label class="form-label fw-bold" for="">
+                                    Tên nhân viên:
+                                    <label>
+                                    {{ Auth()->user()->name ?? '' }}
+                                    </label>
+                                    </label>
                                     </div>
                                     <div>
-                                        <label
-                                            class="form-label fw-bold"
-                                            for=""
-                                        >
-                                            Mã nhân viên:
-                                            <label>
-                                                {{ Auth()->user()->code ?? '' }}
-                                            </label>
-                                        </label>
+                                    <label class="form-label fw-bold" for="">
+                                    Mã nhân viên:
+                                    <label>
+                                    {{ Auth()->user()->code ?? '' }}
+                                    </label>
+                                    </label>
                                     </div>
                                     <div>
-                                        <label
-                                            class="form-label fw-bold"
-                                            for=""
-                                        >
-                                            Bộ phận:
-                                            <label>
-                                                {{ Auth()->user()->role->role_name ?? '' }}
-                                            </label>
-                                        </label>
+                                    <label class="form-label fw-bold" for="">
+                                    Bộ phận:
+                                    <label>
+                                    {{ Auth()->user()->role->role_name ?? '' }}
+                                    </label>
+                                    </label>
                                     </div>
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Lương CB:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Lương CB:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Trách nhiệm:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Trách nhiệm:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <h6 class="mb-0">Diễn giải</h6>
-                                        </div>
-                                        <div class="text-center pt-1">
-                                            <h6 class="mb-0">Số giờ/Ngày</h6>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <h6 class="mb-0">Thành tiền</h6>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <h6 class="mb-0">Diễn giải</h6>
+                                    </div>
+                                    <div class="text-center pt-1">
+                                    <h6 class="mb-0">Số giờ/Ngày</h6>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <h6 class="mb-0">Thành tiền</h6>
+                                    </div>
                                     </div>
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label
-                                                class="form-label fw-bold"
-                                                for=""
-                                            >
-                                                Phát sinh:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->salary_total_2) ?? '' }}
-                                            </label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label fw-bold" for="">
+                                    Phát sinh:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->salary_total_2) ?? '' }}
+                                    </label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Chuyên cần:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Chuyên cần:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Trách nhiệm:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Trách nhiệm:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                PC học việc:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    PC học việc:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Số giờ chính:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Số giờ chính:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Số giờ TC:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Số giờ TC:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Số công đêm:
-                                            </label>
-                                        </div>
-                                        <div class="text-center pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->total_night) ?? '' }}
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->worknight_money) ?? '' }}
-                                            </label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Số công đêm:
+                                    </label>
+                                    </div>
+                                    <div class="text-center pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->total_night) ?? '' }}
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->worknight_money) ?? '' }}
+                                    </label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Số công ngày:
-                                            </label>
-                                        </div>
-                                        <div class="text-center pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->total_day) ?? '' }}
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->workday_money) ?? '' }}
-                                            </label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Số công ngày:
+                                    </label>
+                                    </div>
+                                    <div class="text-center pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->total_day) ?? '' }}
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->workday_money) ?? '' }}
+                                    </label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                PC tăng ca:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    PC tăng ca:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Ngày hết việc:
-                                            </label>
-                                        </div>
-                                        <div class="text-center pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->outwork_day_count) ?? '' }}
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->allowance_outwork) ?? '' }}
-                                            </label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Ngày hết việc:
+                                    </label>
+                                    </div>
+                                    <div class="text-center pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->outwork_day_count) ?? '' }}
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->allowance_outwork) ?? '' }}
+                                    </label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Ngày lễ tết:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Ngày lễ tết:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Ngày phép năm:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Ngày phép năm:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Gia công ngoài:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Gia công ngoài:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Giới thiệu:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Giới thiệu:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                PC khác:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    PC khác:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label
-                                                class="form-label fw-bold"
-                                                for=""
-                                            >
-                                                Các khoản trừ:
-                                            </label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label fw-bold" for="">
+                                    Các khoản trừ:
+                                    </label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Trừ BHXH(10.5%):
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Trừ BHXH(10.5%):
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Trừ tạm ứng:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Trừ tạm ứng:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                BH Cty đóng(21.5%):
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    BH Cty đóng(21.5%):
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Nghĩ có phép:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Nghĩ có phép:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Nghĩ không phép:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Nghĩ không phép:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Lỗi nặng:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Lỗi nặng:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Lỗi nhẹ:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Lỗi nhẹ:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label class="form-label" for="">
-                                                Trừ KPI:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label></label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label" for="">
+                                    Trừ KPI:
+                                    </label>
+                                    </div>
+                                    <div class="text-end pt-1">
+                                    <label></label>
+                                    </div>
                                     </div>
                                     <hr />
                                     <div class="d-flex justify-content-between">
-                                        <div class="text-start pt-1">
-                                            <label
-                                                class="form-label fw-bold"
-                                                for=""
-                                            >
-                                                Thực nhận:
-                                            </label>
-                                        </div>
-                                        <div class="text-end pt-1">
-                                            <label>
-                                                {{ number_format($salaryParttimes->salary_total_2) ?? '' }}
-                                            </label>
-                                        </div>
+                                    <div class="text-start pt-1">
+                                    <label class="form-label fw-bold" for="">
+                                    Thực nhận:
+                                    </label>
                                     </div>
-                                </div>
-                            @else
-                                <h5 class="text-center">
-                                    Hiện tại chưa có thông tin về bảng lương này
-                                </h5>
+                                    <div class="text-end pt-1">
+                                    <label>
+                                    {{ number_format($salaryParttimes->salary_total_2) ?? '' }}
+                                    </label>
+                                    </div>
+                                    </div>
+                                    </div>
+                                    @else
+                                --}}
                             @endif
                         </div>
                     </div>

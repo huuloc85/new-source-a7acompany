@@ -491,6 +491,13 @@ class ProductController extends Controller
             return redirect()->back();
         }
 
+        // Kiểm tra created_at có trong vòng 1 giờ so với hiện tại không
+        if ($checkEmployee->created_at->diffInMinutes(Carbon::now()) <= 60) {
+            toast('Nhân viên nhập sản phẩm hoạt động chưa quá 1 giờ. Cần báo cáo cho quản lý để tiếp tục hỗ trợ.', 'error', 'top-right');
+
+            return redirect()->back();
+        }
+
         $shift = $checkEmployee->shift;
         $date = Carbon::parse($checkEmployee->date);
         $today = Carbon::today();

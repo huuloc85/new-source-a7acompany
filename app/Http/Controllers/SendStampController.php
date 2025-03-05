@@ -42,27 +42,41 @@ class SendStampController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Tạo yêu cầu in tem mới
-            $sendStamp = SendStamp::create([
-                'product_id' => $request->product_id,
-                'employee_id' => Auth::id(),
-                'date' => Carbon::parse($request->date)->toDateString(),
-                'shift' => $request->shift,
-                'binCount' => $request->binCount,
-                'binStart' => $request->binStart,
-                'type' => $request->type,
-                'status' => $request->status,
-            ]);
+            $employeeId = Auth::id();
+            $dates = $request->date;
+            $productIds = $request->product_id;
+            $shifts = $request->shift;
+            $binCounts = $request->binCount;
+            $binStarts = $request->binStart;
+            $types = $request->type;
+            $status = $request->status;
 
-            // Lấy các nhân viên có role_id là 15 và 8
-            $users = Employee::whereIn('role_id', [15, 8])->whereNull('deleted_at')->get();
+            $sendStamps = [];
 
-            // Phát sự kiện cho mỗi nhân viên
-            foreach ($users as $user) {
-                event(new SendStampEvent($sendStamp, $user));
+            foreach ($productIds as $key => $productId) {
+                $sendStamps[] = SendStamp::create([
+                    'product_id' => $productId,
+                    'employee_id' => $employeeId,
+                    'date' => Carbon::parse($dates[$key])->toDateString(),
+                    'shift' => $shifts[$key],
+                    'binCount' => $binCounts[$key],
+                    'binStart' => $binStarts[$key],
+                    'type' => $types[$key],
+                    'status' => $status,
+                ]);
             }
 
-            Log::info('SendStampEvent has been broadcasted', ['data' => $sendStamp]);
+            // Lấy danh sách nhân viên có role_id là 15 hoặc 8
+            $users = Employee::whereIn('role_id', [15, 8])->whereNull('deleted_at')->get();
+
+            // Phát sự kiện cho từng yêu cầu in tem
+            foreach ($sendStamps as $sendStamp) {
+                foreach ($users as $user) {
+                    event(new SendStampEvent($sendStamp, $user));
+                }
+            }
+
+            Log::info('SendStampEvent has been broadcasted', ['data' => $sendStamps]);
 
             DB::commit();
             toast('Gửi yêu cầu in tem thành công!', 'success', 'top-right');
@@ -79,45 +93,134 @@ class SendStampController extends Controller
 
     public function checkStamp(Request $request)
     {
-        $query = SendStamp::query();
+        // Chuẩn bị ngày
+        $date = $request->date ?? Carbon::today()->toDateString();
 
-        // Nếu không có ngày được chọn, mặc định lấy ngày hiện tại
-        $date = $request->has('date') ? $request->date : Carbon::today()->toDateString();
-        $query->whereDate('created_at', $date);
+        // 1. Lấy dữ liệu từ SendStamp với status 'pending' hoặc 'rejected'
+        $pendingRejectedItems = SendStamp::with(['product', 'employee'])
+            ->where(function ($query) {
+                $query->where('status', 'pending')
+                    ->orWhere('status', 'rejected');
+            })
+            ->whereDate('created_at', $date);
 
-        // Lấy danh sách sản phẩm từ dữ liệu đã lọc
-        $products = $query->pluck('product_id')->toArray();
-        $products = Product::whereIn('id', $products)->get();
+        // 2. Lấy dữ liệu từ HistoryPrint với SendStamp status 'approve'
+        $approvedItems = HistoryPrint::with(['sendStamp.product', 'sendStamp.employee', 'employee'])
+            ->whereHas('sendStamp', function ($query) {
+                $query->where('status', 'approve');
+            })
+            ->whereDate('created_at', $date);
 
-        // Lấy danh sách nhân viên từ dữ liệu đã lọc
-        $employees = $query->pluck('employee_id')->toArray();
-        $employees = Employee::whereIn('id', $employees)->get();
+        // Áp dụng filter chung
+        if ($request->filled('product_name')) {
+            $pendingRejectedItems->whereHas('product', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->product_name.'%');
+            });
 
-        // Lọc theo sản phẩm
-        if ($request->has('product_name')) {
-            $query->whereHas('product', function ($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->product_name.'%');
+            $approvedItems->whereHas('sendStamp.product', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->product_name.'%');
             });
         }
 
-        // Lọc theo nhân viên
-        if ($request->has('employee_name')) {
-            $query->whereHas('employee', function ($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->employee_name.'%');
+        if ($request->filled('employee_name')) {
+            $pendingRejectedItems->whereHas('employee', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->employee_name.'%');
+            });
+
+            $approvedItems->whereHas('sendStamp.employee', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->employee_name.'%');
             });
         }
 
-        // Lọc theo ca
-        if ($request->has('shift') && $request->shift) {
-            $query->where('shift', $request->shift);
+        if ($request->filled('shift')) {
+            $pendingRejectedItems->where('shift', $request->shift);
+            $approvedItems->where('shift', $request->shift);
         }
 
-        // Lọc theo trạng thái
-        if ($request->has('status') && $request->status) {
-            $query->where('status', $request->status);
+        // Lọc theo status nếu được chỉ định
+        if ($request->filled('status')) {
+            if ($request->status == 'approve') {
+                $pendingRejectedItems->whereRaw('1 = 0'); // Không lấy kết quả
+            } else {
+                $pendingRejectedItems->where('status', $request->status);
+                $approvedItems->whereRaw('1 = 0'); // Không lấy kết quả
+            }
         }
 
-        $historyprint = $query->get();
+        // Lấy kết quả
+        $pendingRejected = $pendingRejectedItems->get();
+        $approved = $approvedItems->get();
+
+        // Chuyển đổi dữ liệu SendStamp thành định dạng dễ sử dụng
+        $pendingRejectedData = $pendingRejected->map(function ($item) {
+            return (object) [
+                'id' => $item->id,
+                'isFromSendStamp' => true,
+                'product_name' => $item->product->name ?? 'Không xác định',
+                'employee_name' => $item->employee->name ?? 'Không xác định',
+                'date' => $item->date ?? Carbon::now()->toDateString(),
+                'shift' => $item->shift ?? '',
+                'binCount' => $item->quantity ?? 0,
+                'binStart' => $item->start_number ?? 0,
+                'type' => $item->type ?? '',
+                'request_time' => $item->created_at,
+                'print_time' => null,
+                'printer_name' => null,
+                'status' => $item->status,
+                'original' => $item,
+            ];
+        });
+
+        // Chuyển đổi dữ liệu HistoryPrint thành định dạng dễ sử dụng
+        $approvedData = $approved->map(function ($item) {
+            return (object) [
+                'id' => $item->id,
+                'isFromSendStamp' => false,
+                'product_name' => $item->sendStamp->product->name ?? 'Không xác định',
+                'employee_name' => $item->sendStamp->employee->name ?? 'Không xác định',
+                'date' => $item->date ?? Carbon::now()->toDateString(),
+                'shift' => $item->shift ?? '',
+                'binCount' => $item->binCount ?? 0,
+                'binStart' => $item->binStart ?? 0,
+                'type' => $item->type ?? '',
+                'request_time' => $item->sendStamp->created_at ?? null,
+                'print_time' => $item->created_at,
+                'printer_name' => $item->employee->name ?? 'Không xác định',
+                'status' => $item->sendStamp->status ?? 'unknown',
+                'original' => $item,
+            ];
+        });
+
+        // Gộp dữ liệu
+        $historyprint = $pendingRejectedData->concat($approvedData);
+
+        // Lấy danh sách sản phẩm và nhân viên liên quan
+        $productIds = collect();
+        $employeeIds = collect();
+
+        foreach ($pendingRejected as $item) {
+            if ($item->product) {
+                $productIds->push($item->product->id);
+            }
+            if ($item->employee) {
+                $employeeIds->push($item->employee->id);
+            }
+        }
+
+        foreach ($approved as $item) {
+            if ($item->sendStamp && $item->sendStamp->product) {
+                $productIds->push($item->sendStamp->product->id);
+            }
+            if ($item->sendStamp && $item->sendStamp->employee) {
+                $employeeIds->push($item->sendStamp->employee->id);
+            }
+            if ($item->employee) {
+                $employeeIds->push($item->employee->id);
+            }
+        }
+
+        $products = Product::whereIn('id', $productIds->unique())->get();
+        $employees = Employee::whereIn('id', $employeeIds->unique())->get();
 
         return view('checkstamp.index', compact('historyprint', 'products', 'employees', 'date'));
     }

@@ -102,7 +102,6 @@
                             </div>
                         </div>
                     </form>
-
                     <div class="table-responsive">
                         @if ($historyprint->isEmpty())
                             <div class="text-center">
@@ -120,34 +119,34 @@
                                         <th>Số Lượng Tem</th>
                                         <th>Bắt Đầu Từ Tem Số</th>
                                         <th>Loại Tem</th>
-                                        <th>Ngày Gửi Yêu Cầu</th>
-                                        <th>Thời Gian Gửi Yêu Cầu</th>
+                                        <th>Thời Gian Yêu Cầu</th>
+                                        <th>Thời Gian In</th>
+                                        <th>Người In</th>
                                         <th>Trạng Thái</th>
                                         <th>Thao Tác</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center align-middle">
-                                    @foreach ($historyprint as $history)
-                                        <tr data-id="{{ $history->id }}">
+                                    @foreach ($historyprint as $item)
+                                        <tr data-id="{{ $item->id }}">
                                             <th>{{ $loop->iteration }}</th>
+                                            <td>{{ $item->product_name }}</td>
+                                            <td>{{ $item->employee_name }}</td>
                                             <td>
-                                                {{ $history->product->name }}
+                                                {{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}
+                                            </td>
+                                            <td>{{ $item->shift }}</td>
+                                            <td>{{ $item->binCount }}</td>
+                                            <td>{{ $item->binStart }}</td>
+                                            <td>{{ $item->type }}</td>
+                                            <td>
+                                                {{ $item->request_time ? \Carbon\Carbon::parse($item->request_time)->format('H:i:s') : 'N/A' }}
                                             </td>
                                             <td>
-                                                {{ $history->employee->name }}
+                                                {{ $item->print_time ? \Carbon\Carbon::parse($item->print_time)->format('H:i:s') : 'N/A' }}
                                             </td>
                                             <td>
-                                                {{ \Carbon\Carbon::parse($history->date)->format('d-m-Y') }}
-                                            </td>
-                                            <td>{{ $history->shift }}</td>
-                                            <td>{{ $history->binCount }}</td>
-                                            <td>{{ $history->binStart }}</td>
-                                            <td>{{ $history->type }}</td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($history->created_at)->format('d-m-Y') }}
-                                            </td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($history->created_at)->format('H:i:s') }}
+                                                {{ $item->printer_name ?? 'N/A' }}
                                             </td>
                                             <td>
                                                 @php
@@ -155,34 +154,29 @@
                                                         'pending' => 'bg-warning',
                                                         'approve' => 'bg-success',
                                                         'rejected' => 'bg-danger',
+                                                        'unknown' => 'bg-secondary',
                                                     ];
+
                                                     $statusText = [
                                                         'pending' => 'Chờ In',
                                                         'approve' => 'Đã In',
                                                         'rejected' => 'Từ Chối',
+                                                        'unknown' => 'Không xác định',
                                                     ];
+
+                                                    $status = $item->status ?? 'unknown';
                                                 @endphp
 
                                                 <span
-                                                    class="badge {{ $statusClasses[$history->status] ?? 'bg-secondary' }}"
+                                                    class="badge {{ $statusClasses[$status] }}"
                                                 >
-                                                    {{ $statusText[$history->status] ?? $history->status }}
+                                                    {{ $statusText[$status] }}
                                                 </span>
                                             </td>
                                             <td>
-                                                @if ($history->status == 'approve' || $history->status == 'rejected')
-                                                    <button
-                                                        class="btn btn-secondary"
-                                                        disabled
-                                                    >
-                                                        <i
-                                                            class="fas fa-print"
-                                                        ></i>
-                                                        In
-                                                    </button>
-                                                @else
+                                                @if ($item->status == 'pending')
                                                     <a
-                                                        href="{{ route('admin.send-stamp.print', $history->id) }}"
+                                                        href="{{ route('admin.send-stamp.print', $item->id) }}"
                                                         class="btn btn-primary"
                                                     >
                                                         <i
@@ -190,11 +184,9 @@
                                                         ></i>
                                                         In
                                                     </a>
-                                                @endif
 
-                                                @if ($history->status == 'pending')
                                                     <form
-                                                        action="{{ route('admin.stamp.reject.print', $history->id) }}"
+                                                        action="{{ route('admin.stamp.reject.print', $item->id) }}"
                                                         method="POST"
                                                         style="display: inline"
                                                     >
@@ -210,6 +202,16 @@
                                                             Từ chối
                                                         </button>
                                                     </form>
+                                                @else
+                                                    <button
+                                                        class="btn btn-secondary"
+                                                        disabled
+                                                    >
+                                                        <i
+                                                            class="fas fa-print"
+                                                        ></i>
+                                                        In
+                                                    </button>
                                                 @endif
                                             </td>
                                         </tr>

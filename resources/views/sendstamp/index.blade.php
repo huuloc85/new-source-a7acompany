@@ -78,156 +78,117 @@
                             >
                                 @csrf
                                 <h5 class="text-center fw-bold">Tạo Tem</h5>
-                                <div class="mb-3">
-                                    <label
-                                        for="product_id"
-                                        class="form-label fw-bold"
+                                <div id="product-entries">
+                                    <div
+                                        class="product-entry border p-3 rounded mb-3"
                                     >
-                                        Sản phẩm:
-                                    </label>
-                                    <small class="text-muted d-block mb-1">
-                                        Chọn sản phẩm mà bạn muốn tạo tem.
-                                    </small>
-                                    <select
-                                        name="product_id"
-                                        class="form-select"
-                                        required
-                                    >
-                                        @foreach ($products as $product)
-                                            <option value="{{ $product->id }}">
-                                                {{ $product->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                Sản phẩm:
+                                            </label>
+                                            <select
+                                                name="product_id[]"
+                                                class="form-select"
+                                                required
+                                            >
+                                                @foreach ($products as $product)
+                                                    <option
+                                                        value="{{ $product->id }}"
+                                                    >
+                                                        {{ $product->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                Ngày:
+                                            </label>
+                                            <input
+                                                type="date"
+                                                name="date[]"
+                                                class="form-control"
+                                                required
+                                            />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                Ca làm việc:
+                                            </label>
+                                            <select
+                                                name="shift[]"
+                                                class="form-select"
+                                                required
+                                            >
+                                                <option value="1">Ca 1</option>
+                                                <option value="2">Ca 2</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                Số lượng tem:
+                                            </label>
+                                            <input
+                                                name="binCount[]"
+                                                class="form-control"
+                                                type="number"
+                                                min="0"
+                                                required
+                                            />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                Bắt Đầu Từ Tem Số:
+                                            </label>
+                                            <input
+                                                name="binStart[]"
+                                                class="form-control"
+                                                required
+                                            />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                Loại Tem:
+                                            </label>
+                                            <select
+                                                name="type[]"
+                                                class="form-select"
+                                                required
+                                            >
+                                                <option value="Tem Thùng">
+                                                    Tem Thùng
+                                                </option>
+                                                <option value="Tem Bịch">
+                                                    Tem Bịch
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="btn btn-danger remove-entry"
+                                            disabled
+                                        >
+                                            Xóa
+                                        </button>
+                                    </div>
                                 </div>
-
+                                <button
+                                    type="button"
+                                    id="add-row"
+                                    class="btn btn-primary w-100 mb-3"
+                                >
+                                    Thêm Sản Phẩm
+                                </button>
                                 <input
                                     type="hidden"
                                     name="employee_id"
                                     value="{{ Auth::id() }}"
                                 />
-
-                                <div class="mb-3">
-                                    <label
-                                        for="date"
-                                        class="form-label fw-bold"
-                                    >
-                                        Ngày:
-                                    </label>
-                                    <small class="text-muted d-block mb-1">
-                                        Chọn ngày cần in tem.
-                                    </small>
-                                    <input
-                                        type="date"
-                                        name="date"
-                                        class="form-control"
-                                        required
-                                    />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label
-                                        for="shift"
-                                        class="form-label fw-bold"
-                                    >
-                                        Ca làm việc:
-                                    </label>
-                                    <small class="text-muted d-block mb-1">
-                                        Chọn ca làm việc khi sản xuất sản phẩm.
-                                    </small>
-                                    <select
-                                        name="shift"
-                                        class="form-select"
-                                        required
-                                    >
-                                        <option value="1">Ca 1</option>
-                                        <option value="2">Ca 2</option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label
-                                        for="binCount"
-                                        class="form-label fw-bold"
-                                    >
-                                        Số lượng tem:
-                                    </label>
-                                    <small class="text-muted d-block mb-1">
-                                        Nhập số lượng tem cần in.
-                                    </small>
-                                    <input
-                                        name="binCount"
-                                        class="form-control"
-                                        min="0"
-                                        required
-                                    />
-                                    <small class="text-danger d-block mt-1">
-                                        <strong>Lưu ý:</strong>
-                                        Trường hợp nếu cần in lại nhiều tem khác
-                                        nhau, nhập số lượng tem theo các số
-                                        lượng cần in. Ví dụ: Cần in 2 tem lẻ
-                                        khác số thứ tự thì nhập số lượng là
-                                        <strong>2</strong>
-                                        .
-                                    </small>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label
-                                        for="binStart"
-                                        class="form-label fw-bold"
-                                    >
-                                        Bắt Đầu Từ Tem Số:
-                                    </label>
-                                    <small class="text-muted d-block mb-1">
-                                        Nhập số thứ tự bắt đầu của tem.
-                                    </small>
-                                    <input
-                                        name="binStart"
-                                        class="form-control"
-                                        min="0"
-                                        required
-                                    />
-                                    <small class="text-danger d-block mt-1">
-                                        <strong>Lưu ý:</strong>
-                                        Trường hợp nếu cần in lại nhiều tem khác
-                                        nhau, nhập cách mỗi số tem là một dấu
-                                        <strong>phẩy (,)</strong>
-                                        Ví dụ: Nếu cần in tem
-                                        <strong>2 và 5</strong>
-                                        thì nhập:
-                                        <strong>2,5</strong>
-                                        .
-                                    </small>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label
-                                        for="type"
-                                        class="form-label fw-bold"
-                                    >
-                                        Loại Tem:
-                                    </label>
-                                    <select
-                                        name="type"
-                                        class="form-select"
-                                        required
-                                    >
-                                        <option value="Tem Thùng">
-                                            Tem Thùng
-                                        </option>
-                                        <option value="Tem Bịch">
-                                            Tem Bịch
-                                        </option>
-                                    </select>
-                                </div>
-
                                 <input
                                     type="hidden"
                                     name="status"
                                     value="pending"
                                 />
-
                                 <button
                                     type="submit"
                                     class="btn btn-success w-100 text-uppercase fw-bold"
@@ -236,6 +197,93 @@
                                     Gửi Yêu Cầu In Tem
                                 </button>
                             </form>
+
+                            <script>
+                                document.addEventListener(
+                                    'DOMContentLoaded',
+                                    function () {
+                                        let addButton =
+                                            document.getElementById('add-row');
+                                        let productEntries =
+                                            document.getElementById(
+                                                'product-entries',
+                                            );
+                                        let productSelectHTML =
+                                            document.querySelector(
+                                                '.product-entry select[name="product_id[]"]',
+                                            ).outerHTML;
+
+                                        function updateRemoveButtonState() {
+                                            let removeButtons =
+                                                document.querySelectorAll(
+                                                    '.remove-entry',
+                                                );
+                                            if (removeButtons.length === 1) {
+                                                removeButtons[0].disabled = true;
+                                            } else {
+                                                removeButtons.forEach(
+                                                    (button) =>
+                                                        (button.disabled = false),
+                                                );
+                                            }
+                                        }
+
+                                        updateRemoveButtonState();
+
+                                        addButton.addEventListener(
+                                            'click',
+                                            function () {
+                                                let entry = document
+                                                    .querySelector(
+                                                        '.product-entry',
+                                                    )
+                                                    .cloneNode(true);
+
+                                                // Xóa giá trị trong các input và select, nhưng giữ nguyên danh sách sản phẩm
+                                                entry
+                                                    .querySelectorAll('input')
+                                                    .forEach(
+                                                        (el) => (el.value = ''),
+                                                    );
+                                                entry.querySelector(
+                                                    'select[name="product_id[]"]',
+                                                ).outerHTML = productSelectHTML;
+
+                                                entry
+                                                    .querySelector(
+                                                        '.remove-entry',
+                                                    )
+                                                    .addEventListener(
+                                                        'click',
+                                                        function () {
+                                                            entry.remove();
+                                                            updateRemoveButtonState();
+                                                        },
+                                                    );
+
+                                                productEntries.appendChild(
+                                                    entry,
+                                                );
+                                                updateRemoveButtonState();
+                                            },
+                                        );
+
+                                        document
+                                            .querySelectorAll('.remove-entry')
+                                            .forEach((button) => {
+                                                button.addEventListener(
+                                                    'click',
+                                                    function () {
+                                                        this.closest(
+                                                            '.product-entry',
+                                                        ).remove();
+                                                        updateRemoveButtonState();
+                                                    },
+                                                );
+                                            });
+                                    },
+                                );
+                            </script>
                         </div>
                     </div>
                 </div>

@@ -133,12 +133,16 @@
         // ],
     ];
 
-    if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18) {
-        // if (true) {
+    if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18 || Auth()->user()->role_id == 19) {
         array_unshift($employeeWidgets, [
             'title' => 'Lịch làm việc nhân viên',
-            'icon' => 'fas fa-users fa-2x',
+            'icon' => 'fas fa-calendar-alt fa-2x',
             'link' => route('admin.celender.home'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Lịch Hoạt Động Trong Ngày',
+            'icon' => 'fas fa-chart-line fa-2x',
+            'link' => route('admin.checkemployee.view-employee-todo'),
         ]);
     }
     if (Auth()->user()->role_id !== 8 && Auth()->user()->role_id !== 10) {
