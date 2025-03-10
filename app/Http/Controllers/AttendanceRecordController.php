@@ -21,7 +21,7 @@ class AttendanceRecordController extends Controller
 
     private $listRecord;
 
-    //View Lịch Sử Chấm Công (Admin)
+    // View Lịch Sử Chấm Công (Admin)
     public function index(Request $request)
     {
         $employees = Employee::whereNotIn('role_id', [15, 1])
@@ -51,7 +51,7 @@ class AttendanceRecordController extends Controller
         return view('attendence.index', compact('records', 'currentMonth', 'categories', 'employees'));
     }
 
-    //Add Record (Admin)
+    // Add Record (Admin)
     public function handleAddRecords(Request $request)
     {
         DB::beginTransaction();
@@ -118,7 +118,7 @@ class AttendanceRecordController extends Controller
         }
     }
 
-    //Delete Record (Admin)
+    // Delete Record (Admin)
     public function destroy($employee_code, $datetime)
     {
         try {
@@ -144,7 +144,7 @@ class AttendanceRecordController extends Controller
         return redirect()->route('admin.attendence.index');
     }
 
-    //View Bảng Tính Công (Admin)
+    // View Bảng Tính Công (Admin)
     public function records(Request $request)
     {
 
@@ -202,7 +202,7 @@ class AttendanceRecordController extends Controller
         ]);
     }
 
-    //Query (Admin)
+    // Query (Admin)
     private function buildQuery(Request $request, $currentMonth, $timeFilter)
     {
         // Nếu có cả `start_date` và `end_date`, truy vấn sẽ chỉ sử dụng chúng
@@ -242,7 +242,7 @@ class AttendanceRecordController extends Controller
         return $query;
     }
 
-    //Query theo ca (Admin)
+    // Query theo ca (Admin)
     private function checkQuery($query, $timeFilter)
     {
         $records = $query->select(
@@ -261,7 +261,7 @@ class AttendanceRecordController extends Controller
             ->get();
     }
 
-    //Code chức năng tính công (Admin)
+    // Code chức năng tính công (Admin)
     private function processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key)
     {
         if ($timeFilter == null && $record->employee->category_celender_id != null) {
@@ -310,9 +310,9 @@ class AttendanceRecordController extends Controller
                     }
                 }
             } else {
-                ///lịch nghĩ nhưng đi làm
+                // /lịch nghĩ nhưng đi làm
                 if ($date->day == 1) {
-                    ///get new category_id
+                    // /get new category_id
                     $prevMonth = $date = $date->subDay();
                     $calendarId = Celender::whereMonth('date', Carbon::parse($prevMonth)->month)->pluck('id')->first();
                 }
@@ -344,7 +344,7 @@ class AttendanceRecordController extends Controller
         }
     }
 
-    //Tính Tổng BreakTime
+    // Tính Tổng BreakTime
     private function calculateBreakTime($record, $timeFilter, $timeIn, $timeOut)
     {
         // if ($record->employee_code == "16100400" && $record->date == "2024-11-06") {
@@ -399,7 +399,7 @@ class AttendanceRecordController extends Controller
     {
         $breakTime = 0;
         if (in_array($timeFilter, config('a7a.list_category_ca1')) || $record->shift == 'Ca 1') {
-            //ca 1
+            // ca 1
             foreach ($breakSchedule as $break) {
                 $breakStart = Carbon::parse($break['time']);
                 $breakEnd = $breakStart->copy()->addMinutes($break['duration']);
@@ -413,19 +413,19 @@ class AttendanceRecordController extends Controller
                 }
             }
         } elseif (in_array($timeFilter, config('a7a.list_category_ca2'))) {
-            //ca 2
+            // ca 2
             foreach ($breakSchedule as $key => $break) {
                 $breakStart = Carbon::parse($break['time']);
                 $breakEnd = $breakStart->copy()->addMinutes($break['duration']);
                 if ($timeIn->hour >= 18) {
-                    //đi làm từ chiều đến tối
+                    // đi làm từ chiều đến tối
                     if ($timeOut->hour >= 18 && $breakStart->hour >= 18) {
-                        //về trong ngày
+                        // về trong ngày
                         if ($timeIn < $breakStart && $timeOut > $breakEnd) {
                             $breakTime += $break['duration'];
                         }
                     } elseif ($timeOut->hour < 8) {
-                        //về ngày hôm sau
+                        // về ngày hôm sau
                         if ($breakStart->hour >= 18) {
                             if ($timeIn < $breakStart) {
                                 $breakTime += $break['duration'];
@@ -437,7 +437,7 @@ class AttendanceRecordController extends Controller
                         }
                     }
                 } else {
-                    //đi làm khi qua ngày hôm sau
+                    // đi làm khi qua ngày hôm sau
                     if ($breakStart->hour < 8) {
                         if ($timeIn < $breakStart && $timeOut > $breakEnd) {
                             $breakTime += $break['duration'];
@@ -459,7 +459,7 @@ class AttendanceRecordController extends Controller
         return $breakTime;
     }
 
-    //Code chức năng tính công ca 1 (Admin)
+    // Code chức năng tính công ca 1 (Admin)
     private function processRecordCa1($record, $timeFilter, $dayOfWeekMapping)
     {
         $workStartTime = config('a7a.ca1_work_start_time');
@@ -497,7 +497,7 @@ class AttendanceRecordController extends Controller
             $timeIn = Carbon::parse($record->time_in);
             $timeOut = Carbon::parse($record->time_out);
 
-            //Khoảng cách giữa time_out và time_out > 10p thì chạy bình thường
+            // Khoảng cách giữa time_out và time_out > 10p thì chạy bình thường
             if ($timeIn && $timeOut && $timeIn->diffInMinutes($timeOut) <= 10) {
                 $diffToStart = $timeIn->diffInSeconds(Carbon::parse($workStartTime));
                 $diffToEnd = $timeIn->diffInSeconds(Carbon::parse($workEndTime));
@@ -527,10 +527,10 @@ class AttendanceRecordController extends Controller
                 $record->overtime_hours = 0;
             }
         }
-        //gán giờ hành chính thấp nhất từ total_hours
+        // gán giờ hành chính thấp nhất từ total_hours
         $administrativeHours = min($record->total_hours, 8);
         $record->administrative_hours = $administrativeHours;
-        //check đi làm trễ nhưng vẫn tính tăng ca
+        // check đi làm trễ nhưng vẫn tính tăng ca
         // $timeIn = Carbon::parse($record->time_in); // Thời gian vào làm
         // if ($timeIn->gt($workStartTime)) {
         //     // Nếu vào trễ, tính lại giờ tăng ca
@@ -561,10 +561,10 @@ class AttendanceRecordController extends Controller
         // }
     }
 
-    //Code chức năng tính công ca 2 (Admin)
+    // Code chức năng tính công ca 2 (Admin)
     private function processRecordCa2($record, $timeFilter, $dayOfWeekMapping)
     {
-        //set time in
+        // set time in
         if ($record->record_count < 1) {
             $record->time_in = null;
         } else {
@@ -575,7 +575,7 @@ class AttendanceRecordController extends Controller
             $record->time_in = ! empty($timesBefore8AM) ? min($timesBefore8AM) : null;
         }
 
-        //set time out
+        // set time out
         $checkTimeOut = AttendanceRecord::where('employee_code', $record->employee_code)
             ->where('date', Carbon::parse($record->date)->addDay())
             ->where('time', '<', config('a7a.ca2_max_end_time'))
@@ -603,7 +603,7 @@ class AttendanceRecordController extends Controller
             $timeIn = Carbon::parse($record->time_in);
             $timeOut = Carbon::parse($record->time_out);
 
-            //Khoảng cách giữa time_out và time_out > 1 thì chạy bình thường
+            // Khoảng cách giữa time_out và time_out > 1 thì chạy bình thường
             if ($timeIn && $timeOut && $timeIn->diffInMinutes($timeOut) <= 10) {
                 $diffToStart = $timeIn->diffInSeconds(Carbon::parse($workStartTime));
                 $diffToEnd = $timeIn->diffInSeconds(Carbon::parse($workEndTime));
@@ -643,7 +643,7 @@ class AttendanceRecordController extends Controller
         }
     }
 
-    //Tính Tổng Giờ Làm Việc
+    // Tính Tổng Giờ Làm Việc
     private function calculateTotalHours($record, $workStartTime, $workEndTime, $breakTime, $shift2 = false)
     {
         if (! $record->time_in || ! $record->time_out) {
@@ -688,7 +688,7 @@ class AttendanceRecordController extends Controller
         return round($workingHours * 4) / 4;
     }
 
-    //Tính Giờ Tăng Ca
+    // Tính Giờ Tăng Ca
     private function calculateOvertime($record, $shift2 = false)
     {
         $totalHours = $record->total_hours;
@@ -739,7 +739,7 @@ class AttendanceRecordController extends Controller
         return 0;
     }
 
-    //View Lịch Sử Chấm Công (Nhân Viên)
+    // View Lịch Sử Chấm Công (Nhân Viên)
     public function employeeViewRecords(Request $request)
     {
         $employeeCode = auth()->user()->code;
@@ -759,7 +759,7 @@ class AttendanceRecordController extends Controller
         return view('attendence.employee_records', compact('records', 'currentMonth', 'categories'));
     }
 
-    //View Tính Toán Chấm Công (Nhân Viên)
+    // View Tính Toán Chấm Công (Nhân Viên)
     public function employeeViewCaculateRecords(Request $request)
     {
         $employeeCode = auth()->user()->code;
@@ -785,11 +785,12 @@ class AttendanceRecordController extends Controller
         ]);
     }
 
-    //Kéo Data Từ Mcc
+    // Kéo Data Từ Mcc
     public function updateDataCC(Request $request)
     {
         try {
             $data = $request->input('data');
+            Log::info('Số lượng bản ghi nhận được: '.count($data));
             if (! empty($data)) {
                 foreach ($data as $record) {
                     $check = DB::table('attendencerecord')
@@ -815,7 +816,7 @@ class AttendanceRecordController extends Controller
         }
     }
 
-    //Export
+    // Export
     public function export(Request $request)
     {
         ini_set('max_execution_time', 500);
@@ -908,8 +909,8 @@ class AttendanceRecordController extends Controller
 
             // Gán dữ liệu chấm công và tổng giờ làm việc cho nhân viên
             $employee->setDataAttribute($attendance);
-            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours); //tổng giờ làm việc
-            $employee->setEmployeeForPCAttribute($employeeforPC);  //phụ cấp
+            $employee->setEmployeeTotalHoursAttribute($employeeTotalHours); // tổng giờ làm việc
+            $employee->setEmployeeForPCAttribute($employeeforPC);  // phụ cấp
 
             // Phân loại nhân viên theo công ty
             if ($employee->company === 'A7A') {

@@ -492,7 +492,7 @@ class ProductController extends Controller
         }
 
         // Kiểm tra created_at có trong vòng 1 giờ so với hiện tại không
-        if ($checkEmployee->created_at->diffInMinutes(Carbon::now()) <= 60) {
+        if ($checkEmployee->created_at->diffInMinutes(Carbon::now()) <= 10) {
             toast('Nhân viên nhập sản phẩm hoạt động chưa quá 1 giờ. Cần báo cáo cho quản lý để tiếp tục hỗ trợ.', 'error', 'top-right');
 
             return redirect()->back();

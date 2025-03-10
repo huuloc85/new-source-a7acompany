@@ -141,7 +141,7 @@
                         </select>
                     </form>
                     <div class="table-responsive">
-                        @if ($pendingStamps->isEmpty() && $historyprint->isEmpty())
+                        @if ($pendingStamps->isEmpty() && $approveStamps->isEmpty() && $rejectedStamps->isEmpty())
                             <div class="text-center">
                                 Không có lịch sử in tem
                             </div>
@@ -173,7 +173,6 @@
 
                                     {{-- Tem Chưa IN --}}
                                     @if ($pendingStamps->isNotEmpty())
-                                        {{-- Kiểm tra nếu có dữ liệu --}}
                                         <tr class="table-primary">
                                             <td colspan="13">
                                                 <strong>Tem Chưa IN</strong>
@@ -184,46 +183,42 @@
                                                 <td data-label="STT">
                                                     {{ $stt++ }}
                                                 </td>
-                                                <td data-label="Tên Sản Phẩm">
+                                                <td data-label="Sản phẩm">
                                                     {{ $stamp->product->name ?? 'N/A' }}
                                                 </td>
-                                                <td data-label="Tên Nhân Viên">
+                                                <td data-label="Nhân viên">
                                                     {{ $stamp->employee->name ?? 'N/A' }}
                                                 </td>
-                                                <td data-label="Ngày (Số Lot)">
+                                                <td data-label="Ngày">
                                                     {{ \Carbon\Carbon::parse($stamp->date)->format('d-m-Y') }}
                                                 </td>
-                                                <td data-label="Ca">
+                                                <td data-label="Ca làm">
                                                     {{ $stamp->shift }}
                                                 </td>
-                                                <td data-label="Số Lượng">
+                                                <td data-label="Số lượng thùng">
                                                     {{ $stamp->binCount }}
                                                 </td>
-                                                <td
-                                                    data-label="Bắt Đầu Từ Tem Số"
-                                                >
+                                                <td data-label="Thùng bắt đầu">
                                                     {{ $stamp->binStart }}
                                                 </td>
-                                                <td data-label="Loại Tem">
+                                                <td data-label="Loại">
                                                     {{ $stamp->type }}
                                                 </td>
-                                                <td
-                                                    data-label="Ngày Gửi Yêu Cầu"
-                                                >
+                                                <td data-label="Ngày tạo">
                                                     {{ \Carbon\Carbon::parse($stamp->created_at)->format('d-m-Y') }}
                                                 </td>
-                                                <td
-                                                    data-label="Thời Gian Gửi Yêu Cầu"
-                                                >
+                                                <td data-label="Giờ tạo">
                                                     {{ \Carbon\Carbon::parse($stamp->created_at)->format('H:i:s') }}
                                                 </td>
-                                                <td data-label="Người In">
+                                                <td data-label="Người duyệt">
                                                     Chưa In
                                                 </td>
-                                                <td data-label="Thời Gian In">
+                                                <td
+                                                    data-label="Thời gian duyệt"
+                                                >
                                                     Chưa In
                                                 </td>
-                                                <td data-label="Trạng Thái">
+                                                <td data-label="Trạng thái">
                                                     <span
                                                         class="badge bg-warning"
                                                     >
@@ -235,58 +230,53 @@
                                     @endif
 
                                     {{-- Tem Đã IN --}}
-                                    @if ($historyprint->isNotEmpty())
-                                        {{-- Kiểm tra nếu có dữ liệu --}}
+                                    @if ($approveStamps->isNotEmpty())
                                         <tr class="table-success">
                                             <td colspan="13">
                                                 <strong>Tem Đã IN</strong>
                                             </td>
                                         </tr>
-                                        @foreach ($historyprint as $history)
+                                        @foreach ($approveStamps as $stamp)
                                             <tr>
                                                 <td data-label="STT">
                                                     {{ $stt++ }}
                                                 </td>
-                                                <td data-label="Tên Sản Phẩm">
-                                                    {{ $history->sendstamp->product->name ?? 'N/A' }}
+                                                <td data-label="Sản phẩm">
+                                                    {{ $stamp->product->name ?? 'N/A' }}
                                                 </td>
-                                                <td data-label="Tên Nhân Viên">
-                                                    {{ $history->sendstamp->employee->name ?? 'N/A' }}
+                                                <td data-label="Nhân viên">
+                                                    {{ $stamp->employee->name ?? 'N/A' }}
                                                 </td>
-                                                <td data-label="Ngày (Số Lot)">
-                                                    {{ \Carbon\Carbon::parse($history->date)->format('d-m-Y') }}
+                                                <td data-label="Ngày">
+                                                    {{ \Carbon\Carbon::parse($stamp->date)->format('d-m-Y') }}
                                                 </td>
-                                                <td data-label="Ca">
-                                                    {{ $history->shift }}
+                                                <td data-label="Ca làm">
+                                                    {{ $stamp->shift }}
                                                 </td>
-                                                <td data-label="Số Lượng">
-                                                    {{ $history->binCount }}
+                                                <td data-label="Số lượng thùng">
+                                                    {{ $stamp->binCount }}
+                                                </td>
+                                                <td data-label="Thùng bắt đầu">
+                                                    {{ $stamp->binStart }}
+                                                </td>
+                                                <td data-label="Loại">
+                                                    {{ $stamp->type }}
+                                                </td>
+                                                <td data-label="Ngày tạo">
+                                                    {{ \Carbon\Carbon::parse($stamp->created_at)->format('d-m-Y') }}
+                                                </td>
+                                                <td data-label="Giờ tạo">
+                                                    {{ \Carbon\Carbon::parse($stamp->created_at)->format('H:i:s') }}
+                                                </td>
+                                                <td data-label="Người duyệt">
+                                                    {{ $stamp->manager->name }}
                                                 </td>
                                                 <td
-                                                    data-label="Bắt Đầu Từ Tem Số"
+                                                    data-label="Thời gian duyệt"
                                                 >
-                                                    {{ $history->binStart }}
+                                                    {{ $stamp->manager_time }}
                                                 </td>
-                                                <td data-label="Loại Tem">
-                                                    {{ $history->type }}
-                                                </td>
-                                                <td
-                                                    data-label="Ngày Gửi Yêu Cầu"
-                                                >
-                                                    {{ \Carbon\Carbon::parse($history->sendstamp->created_at)->format('d-m-Y') }}
-                                                </td>
-                                                <td
-                                                    data-label="Thời Gian Gửi Yêu Cầu"
-                                                >
-                                                    {{ \Carbon\Carbon::parse($history->sendstamp->created_at)->format('H:i:s') }}
-                                                </td>
-                                                <td data-label="Người In">
-                                                    {{ $history->employee->name ?? 'N/A' }}
-                                                </td>
-                                                <td data-label="Thời Gian In">
-                                                    {{ \Carbon\Carbon::parse($history->created_at)->format('H:i:s') }}
-                                                </td>
-                                                <td data-label="Trạng Thái">
+                                                <td data-label="Trạng thái">
                                                     <span
                                                         class="badge bg-success"
                                                     >
@@ -297,59 +287,54 @@
                                         @endforeach
                                     @endif
 
-                                    {{-- Tem Từ Chối --}}
+                                    {{-- Tem Bị Từ Chối --}}
                                     @if ($rejectedStamps->isNotEmpty())
-                                        {{-- Kiểm tra nếu có dữ liệu --}}
                                         <tr class="table-danger">
                                             <td colspan="13">
                                                 <strong>Tem Bị Từ Chối</strong>
                                             </td>
                                         </tr>
-                                        @foreach ($rejectedStamps as $rejected)
+                                        @foreach ($rejectedStamps as $stamp)
                                             <tr>
                                                 <td data-label="STT">
                                                     {{ $stt++ }}
                                                 </td>
-                                                <td data-label="Tên Sản Phẩm">
-                                                    {{ $rejected->product->name ?? 'N/A' }}
+                                                <td data-label="Sản phẩm">
+                                                    {{ $stamp->product->name ?? 'N/A' }}
                                                 </td>
-                                                <td data-label="Tên Nhân Viên">
-                                                    {{ $rejected->employee->name ?? 'N/A' }}
+                                                <td data-label="Nhân viên">
+                                                    {{ $stamp->employee->name ?? 'N/A' }}
                                                 </td>
-                                                <td data-label="Ngày (Số Lot)">
-                                                    {{ \Carbon\Carbon::parse($rejected->date)->format('d-m-Y') }}
+                                                <td data-label="Ngày">
+                                                    {{ \Carbon\Carbon::parse($stamp->date)->format('d-m-Y') }}
                                                 </td>
-                                                <td data-label="Ca">
-                                                    {{ $rejected->shift }}
+                                                <td data-label="Ca làm">
+                                                    {{ $stamp->shift }}
                                                 </td>
-                                                <td data-label="Số Lượng">
-                                                    {{ $rejected->binCount }}
+                                                <td data-label="Số lượng thùng">
+                                                    {{ $stamp->binCount }}
+                                                </td>
+                                                <td data-label="Thùng bắt đầu">
+                                                    {{ $stamp->binStart }}
+                                                </td>
+                                                <td data-label="Loại">
+                                                    {{ $stamp->type }}
+                                                </td>
+                                                <td data-label="Ngày tạo">
+                                                    {{ \Carbon\Carbon::parse($stamp->created_at)->format('d-m-Y') }}
+                                                </td>
+                                                <td data-label="Giờ tạo">
+                                                    {{ \Carbon\Carbon::parse($stamp->created_at)->format('H:i:s') }}
+                                                </td>
+                                                <td data-label="Người từ chối">
+                                                    {{ $stamp->manager->name }}
                                                 </td>
                                                 <td
-                                                    data-label="Bắt Đầu Từ Tem Số"
+                                                    data-label="Thời gian từ chối"
                                                 >
-                                                    {{ $rejected->binStart }}
+                                                    {{ $stamp->manager_time }}
                                                 </td>
-                                                <td data-label="Loại Tem">
-                                                    {{ $rejected->type }}
-                                                </td>
-                                                <td
-                                                    data-label="Ngày Gửi Yêu Cầu"
-                                                >
-                                                    {{ \Carbon\Carbon::parse($rejected->created_at)->format('d-m-Y') }}
-                                                </td>
-                                                <td
-                                                    data-label="Thời Gian Gửi Yêu Cầu"
-                                                >
-                                                    {{ \Carbon\Carbon::parse($rejected->created_at)->format('H:i:s') }}
-                                                </td>
-                                                <td data-label="Người In">
-                                                    Chưa In
-                                                </td>
-                                                <td data-label="Thời Gian In">
-                                                    Chưa In
-                                                </td>
-                                                <td data-label="Trạng Thái">
+                                                <td data-label="Trạng thái">
                                                     <span
                                                         class="badge bg-danger"
                                                     >

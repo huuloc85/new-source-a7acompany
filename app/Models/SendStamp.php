@@ -18,6 +18,8 @@ class SendStamp extends Model
         'binStart',
         'type',
         'status',
+        'manager_id',
+        'manager_time',
     ];
 
     // Quan hệ với Employee
@@ -35,5 +37,10 @@ class SendStamp extends Model
     public function historyPrints()
     {
         return $this->hasOne(HistoryPrint::class);
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(Employee::class);
     }
 }
