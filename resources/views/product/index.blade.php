@@ -814,14 +814,15 @@
                                                                     ->copy()
                                                                     ->addDay()
                                                                     ->setHour(9);
-
+                                                                $currentDate = $formattedDate->copy()->setHour(19);
                                                                 // Phân biệt ca dựa vào thời gian trong cột created_at
-                                                                if ($created_at->isSameDay($formattedDate)) {
-                                                                    // Ca 1 nếu created_at cùng ngày với date
-                                                                    $totalQuanDateCa1 += $dailyQuantity->quantity;
-                                                                } elseif ($created_at < $nextDayEightAM) {
-                                                                    // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date
+                                                                if (
+                                                                    $created_at < $nextDayEightAM &&
+                                                                    $created_at > $currentDate
+                                                                ) {
                                                                     $totalQuanDateCa2 += $dailyQuantity->quantity;
+                                                                } else {
+                                                                    $totalQuanDateCa1 += $dailyQuantity->quantity;
                                                                 }
                                                             }
                                                         @endphp

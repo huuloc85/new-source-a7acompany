@@ -17,23 +17,40 @@ class CheckEmployeeController extends Controller
 {
     use CalenderTranslate;
 
-    //View Admin
+    // View Admin
     public function index(Request $request)
     {
+        $user = Auth()->user();
+        $roleId = $user->role_id;
+
+        // Xác định các status được phép xem theo role_id
+        if (in_array($roleId, [14, 18])) {
+            $allowedStatuses = [1]; // Chỉ xem "Hàng 100%"
+        } elseif ($roleId == 19) {
+            $allowedStatuses = [2, 6]; // Chỉ xem "Hàng 200%" và "Hàng lỗi"
+        } elseif ($roleId == 15) {
+            $allowedStatuses = [1, 2, 6]; // Xem tất cả
+        } else {
+            $allowedStatuses = []; // Không xem được dữ liệu
+        }
+
         $date = $request->input('filter_date', Carbon::today()->toDateString());
         $filterDate = Carbon::parse($date);
 
         $checkEmployeeHistoryForAdmin = CheckEmployee::with(['employee', 'product'])
             ->whereDate('date', $filterDate)
+            ->when(! empty($allowedStatuses), function ($query) use ($allowedStatuses) {
+                return $query->whereIn('status', $allowedStatuses);
+            })
             ->orderBy('date', 'desc')
             ->get();
 
-        $checkEmployeeHistoryForAdmin->each(function ($checkEmployee) {
+        $checkEmployeeHistoryForAdmin->each(function ($checkEmployee) use ($allowedStatuses) {
             $checkEmployee->date = Carbon::parse($checkEmployee->date);
             $dailyQuantities = DailyQuantity::where('employee_id', $checkEmployee->employee_id)
                 ->where('product_id', $checkEmployee->product_id)
                 ->whereDate('date', $checkEmployee->date->format('Y-m-d'))
-                ->whereIn('status', [1, 2])
+                ->whereIn('status', $allowedStatuses) // Lọc theo status được phép xem
                 ->get();
 
             $dailyQuantities->each(function ($dailyQuantity) {
@@ -52,7 +69,7 @@ class CheckEmployeeController extends Controller
         ]);
     }
 
-    //View Nhân Viên
+    // View Nhân Viên
     public function checkEmployeeTodo(Request $request)
     {
         try {
@@ -74,16 +91,25 @@ class CheckEmployeeController extends Controller
         }
     }
 
-    //Chức năng Nhân Viên
+    // Chức năng Nhân Viên
     public function handleCheckEmployeeTodo(Request $request)
     {
         try {
             $employeeId = auth()->user()->id;
+            $roleId = auth()->user()->role_id;
+            // dd($roleId);
+            if (in_array($roleId, [10, 14, 18])) {
+                $status = 1;
+            } elseif (in_array($roleId, [8, 9, 13, 19])) {
+                $status = 2;
+            } else {
+                $status = null;
+            }
             $shift = $request->input('shift');
             $date = Carbon::now();
 
-            // Nếu là ca 2 và giờ hiện tại từ 00:00 đến 08:30, trừ một ngày
-            if ($shift == 'Ca 2' && $date->hour >= 0 && $date->hour < 8 && $date->minute <= 30) {
+            // Nếu là ca 2 và giờ hiện tại từ trừ một ngày
+            if ($shift == 'Ca 2' && $date->hour < 8) {
                 $date->subDay();
             }
 
@@ -100,7 +126,6 @@ class CheckEmployeeController extends Controller
                 return redirect()->back();
             }
 
-            $status = Status::getStatusValue(auth()->user()->category_celender->name);
             $checkEmployee = new CheckEmployee;
             $checkEmployee->product_id = $request->product_id;
             $checkEmployee->employee_id = $employeeId;
@@ -183,7 +208,7 @@ class CheckEmployeeController extends Controller
         }
     }
 
-    //chức năng update của Admin
+    // chức năng update của Admin
     public function updateEmployeeforAdmin(Request $request, $id)
     {
         try {

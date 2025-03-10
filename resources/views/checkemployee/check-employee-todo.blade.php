@@ -93,16 +93,18 @@
                                         </div>
                                     @enderror
                                 </div>
-                                <input
-                                    type="hidden"
+                                {{-- <input type="hidden" name="shift" value="{{ $calendarDetail ?? '' }}" /> --}}
+                                <select
                                     name="shift"
-                                    value="{{ $calendarDetail ?? '' }}"
-                                />
-                                <input
-                                    type="hidden"
-                                    name="status"
-                                    value="{{ $status }}"
-                                />
+                                    class="form-control my-2"
+                                    required
+                                >
+                                    <option value="" disabled selected>
+                                        Ca Làm Việc
+                                    </option>
+                                    <option value="Ca 1">Ca 1</option>
+                                    <option value="Ca 2">Ca 2</option>
+                                </select>
                                 <button type="submit" class="btn btn-success">
                                     Cập Nhật
                                 </button>

@@ -104,11 +104,6 @@
                 ],
                 [
                     'label' => 'Lịch Sử In Tem',
-                    'icon' => 'fas fa-history fa-lg',
-                    'path' => 'admin.product.barcode.history',
-                ],
-                [
-                    'label' => 'Yêu Cầu In Tem',
                     'icon' => 'fas fa-print fa-lg',
                     'path' => 'admin.checkstamp',
                 ],
@@ -207,11 +202,6 @@
                 ],
                 [
                     'label' => 'Lịch Sử In Tem',
-                    'icon' => 'fas fa-history fa-lg',
-                    'path' => 'admin.product.barcode.history',
-                ],
-                [
-                    'label' => 'Yêu Cầu In Tem',
                     'icon' => 'fas fa-print fa-lg',
                     'path' => 'admin.checkstamp',
                 ],
