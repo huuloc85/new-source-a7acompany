@@ -18,10 +18,20 @@ class DailyProductivityHistoryController extends Controller
     {
         // Lấy ngày từ request hoặc sử dụng ngày hiện tại
         $date = $request->input('date', Carbon::today()->toDateString());
+        $roleId = auth()->user()->role_id ?? null;
 
-        // Lấy các product_id có trong bảng CheckEmployee cho ngày đã chọn và trạng thái [1, 2]
+        if (in_array($roleId, [14, 18])) {
+            $allowedStatuses = [1]; // Chỉ xem "Hàng 100%"
+        } elseif ($roleId == 19) {
+            $allowedStatuses = [2, 6]; // Chỉ xem "Hàng 200%" và "Hàng lỗi"
+        } elseif ($roleId == 15) {
+            $allowedStatuses = [1, 2, 6]; // Xem tất cả
+        } else {
+            $allowedStatuses = []; // Không xem được dữ liệu
+        }
+        // Lấy các product_id có trong bảng CheckEmployee cho ngày đã chọn và trạng thái $allowedStatuses
         $checkEmployeeProductIds = CheckEmployee::whereDate('date', $date)
-            ->whereIn('status', [1, 2])
+            ->whereIn('status', $allowedStatuses)
             ->pluck('product_id');
 
         // Lấy các bản ghi từ DailyQuantity có product_id trong danh sách trên và nạp các mối quan hệ 'employee' và 'product'
@@ -29,7 +39,7 @@ class DailyProductivityHistoryController extends Controller
             ->select('employee_id', 'product_id', 'date', 'status', DB::raw('SUM(quantity) as total_quantity'), DB::raw('MIN(created_at) as created_at'))
             ->whereDate('date', $date)
             ->whereIn('product_id', $checkEmployeeProductIds)
-            ->whereIn('status', [1, 2])
+            ->whereIn('status', $allowedStatuses)
             ->groupBy('employee_id', 'product_id', 'date', 'status')
             ->get();
 
@@ -37,7 +47,7 @@ class DailyProductivityHistoryController extends Controller
         $checkEmployees = CheckEmployee::with('employee', 'product')
             ->select('employee_id', 'product_id', 'date', 'shift', 'created_at')
             ->whereDate('date', $date)
-            ->whereIn('status', [1, 2])
+            ->whereIn('status', $allowedStatuses)
             ->get();
 
         // Map dữ liệu từ DailyQuantity và CheckEmployee

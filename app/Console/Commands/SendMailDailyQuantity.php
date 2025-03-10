@@ -72,7 +72,8 @@ class SendMailDailyQuantity extends Command
         });
 
         Mail::to('locww123vip@gmail.com')
-            ->cc(['ctyvinhvinhphat@gmail.com', 'ctyvinhvinhphat1@gmail.com', 'ctyvinhvinhphat1@gmail.com', 'ctyvinhvinhphat5@gmail.com', 'thanhtrieu7272@gmail.com'])
+            // ->cc(['ctyvinhvinhphat@gmail.com', 'ctyvinhvinhphat1@gmail.com', 'ctyvinhvinhphat1@gmail.com', 'ctyvinhvinhphat5@gmail.com', 'thanhtrieu7272@gmail.com'])
+            ->cc('anhhuyharryxit+test@gmail.com')
             ->send(new SendMailDailyQuantityMailable($selectedDate, $productivityLogsQuery, $translatedCalendarDetails, $employeesWithoutProductivity));
     }
 }

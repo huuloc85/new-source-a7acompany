@@ -1,6 +1,75 @@
 @extends('layouts.'.$layout)
 
 @section('content')
+    <style>
+        /* Responsive table styles */
+        @media (max-width: 767.98px) {
+            .table-responsive-card .table {
+                border: 0;
+            }
+
+            .table-responsive-card .table thead {
+                display: none;
+            }
+
+            .table-responsive-card .table tr {
+                margin-bottom: 15px;
+                display: block;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+                background-color: #fff;
+                height: auto;
+            }
+
+            .table-responsive-card .table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: right !important;
+                padding: 10px 12px;
+                border-bottom: 1px solid #eee;
+                font-size: 15px;
+            }
+
+            .table-responsive-card .table td:last-child {
+                border-bottom: 0;
+            }
+
+            .table-responsive-card .table td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                font-size: 1em;
+                color: #000000;
+                text-align: left;
+                flex: 1;
+                padding-right: 10px;
+            }
+
+            .table-responsive-card .table td span.value {
+                flex: 2;
+                text-align: right;
+            }
+        }
+
+        /* Fix for date input on mobile */
+        @media (max-width: 576px) {
+            .form-control {
+                font-size: 14px;
+            }
+
+            .btn-sm-on-small {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .badge.bg-success.value {
+                font-size: 10px;
+                padding: 3px 5px;
+            }
+        }
+    </style>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -15,7 +84,7 @@
                     <div class="d-flex flex-column flex-sm-row gap-2 mb-3">
                         <a
                             href="{{ route('admin.daily.productivity.history') }}"
-                            class="btn btn-primary"
+                            class="btn btn-primary btn-sm-on-small"
                         >
                             <i class="fas fa-history"></i>
                             Kiểm Tra Nhân Viên Nhập Sản Lượng
@@ -36,11 +105,11 @@
                             />
                         </form>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive table-responsive-card">
                         <table class="table table-hover">
                             <thead>
                                 <tr class="text-center">
-                                    <th class="text-uppercase">STT</th>
+                                    <th class="text-uppercase stt">STT</th>
                                     <th class="text-uppercase">
                                         Tên Nhân Viên
                                     </th>
@@ -54,8 +123,6 @@
                                     <th class="text-uppercase">
                                         Thời gian Kết Thúc
                                     </th>
-                                    <th class="text-uppercase">Nhân Viên</th>
-                                    {{-- <th class="text-uppercase">Trạng Thái</th> --}}
                                     <th class="text-uppercase">Thao Tác</th>
                                 </tr>
                             </thead>
@@ -70,30 +137,43 @@
 
                                 @foreach ($checkEmployeeHistoryForAdmin as $checkEmployee)
                                     <tr class="text-center align-middle">
-                                        <td class="fw-bold">
+                                        <td
+                                            class="fw-bold stt"
+                                            data-label="STT"
+                                        >
                                             {{ $loop->iteration }}
                                         </td>
-                                        <td>
-                                            {{ $checkEmployee->employee->name }}
+                                        <td data-label="Tên Nhân Viên">
+                                            <span class="value">
+                                                {{ $checkEmployee->employee->name }}
+                                            </span>
                                         </td>
-                                        <td>
-                                            {{ $checkEmployee->employee->code }}
+                                        <td data-label="Mã Nhân Viên">
+                                            <span class="value">
+                                                {{ $checkEmployee->employee->code }}
+                                            </span>
                                         </td>
-                                        <td>
-                                            {{ $checkEmployee->product->name }}
+                                        <td data-label="Tên Sản Phẩm">
+                                            <span class="value">
+                                                {{ $checkEmployee->product->name }}
+                                            </span>
                                         </td>
-                                        <td>
-                                            {{ $checkEmployee->shift }}
+                                        <td data-label="Ca Làm Việc">
+                                            <span class="value">
+                                                {{ $checkEmployee->shift }}
+                                            </span>
                                         </td>
-                                        <td>
-                                            {{ $checkEmployee->date->format('d-m-Y') }}
+                                        <td data-label="Ngày Nhập">
+                                            <span class="value">
+                                                {{ $checkEmployee->date->format('d-m-Y') }}
+                                            </span>
                                         </td>
-                                        <td>
+                                        <td data-label="Thời gian Bắt Đầu">
                                             <span class="badge bg-success">
                                                 {{ $checkEmployee->created_at->format('H:i:s') }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td data-label="Thời gian Kết Thúc">
                                             @if ($checkEmployee->dailyQuantities->isNotEmpty())
                                                 @foreach ($checkEmployee->dailyQuantities as $dailyQuantity)
                                                     <span
@@ -110,18 +190,9 @@
                                                 </span>
                                             @endif
                                         </td>
-                                        <td>
-                                            @if ($checkEmployee->status == 1)
-                                                100%
-                                            @elseif ($checkEmployee->status == 2)
-                                                200%
-                                            @else
-                                                    Không xác định
-                                            @endif
-                                        </td>
-                                        <td class="mb-0">
+                                        <td class="mb-0" data-label="Thao Tác">
                                             <button
-                                                class="btn btn-primary"
+                                                class="btn btn-primary me-2"
                                                 data-toggle="modal"
                                                 data-target="#editModal-{{ $checkEmployee->id }}"
                                             >
@@ -138,7 +209,6 @@
                                             </button>
                                         </td>
                                     </tr>
-
                                     {{-- Modal edit --}}
                                     <div
                                         class="modal fade"
@@ -267,6 +337,13 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button
+                                                            type="button"
+                                                            class="btn btn-secondary"
+                                                            data-dismiss="modal"
+                                                        >
+                                                            Hủy
+                                                        </button>
+                                                        <button
                                                             type="submit"
                                                             class="btn btn-primary"
                                                         >
@@ -306,14 +383,17 @@
                                                 <div class="modal-body">
                                                     <p>
                                                         Bạn có chắc chắn muốn
-                                                        xóa bản ghi
-                                                        <strong>
-                                                            {{ '#'.$loop->iteration }}
-                                                        </strong>
-                                                        không?
+                                                        xóa bản ghi không?
                                                     </p>
                                                 </div>
                                                 <div class="modal-footer">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-secondary"
+                                                        data-dismiss="modal"
+                                                    >
+                                                        Hủy
+                                                    </button>
                                                     <form
                                                         action="{{ route('admin.checkemployee.delete', ['id' => $checkEmployee->id]) }}"
                                                         method="POST"
@@ -327,13 +407,6 @@
                                                             Xóa
                                                         </button>
                                                     </form>
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-secondary"
-                                                        data-dismiss="modal"
-                                                    >
-                                                        Hủy
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

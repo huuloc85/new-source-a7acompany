@@ -24,7 +24,7 @@ class ProductController extends Controller
 {
     use CalenderTranslate;
 
-    //index
+    // index
     public function index(Request $request)
     {
         $page = 'product';
@@ -62,7 +62,7 @@ class ProductController extends Controller
             $products->BinCode($request);
         }
 
-        //mặc định data = asc
+        // mặc định data = asc
         if (! $orderBy) {
             $orderBy = 'asc';
         }
@@ -94,7 +94,7 @@ class ProductController extends Controller
         return view('product.index', compact('products', 'total', 'models', 'modelSizes', 'listMonth', 'monthNearly', 'listMonthExport', 'listDate', 'filter', 'errorQuantities', 'page'));
     }
 
-    //add
+    // add
     public function add(Request $request)
     {
         $product = new Product;
@@ -104,44 +104,7 @@ class ProductController extends Controller
         return view('product.add', compact('models', 'modelSizes'));
     }
 
-    //Test Product View
-    public function viewtest(Request $request)
-    {
-        $products = Product::all();
-
-        return view('product.test', compact('products'));
-    }
-
-    public function editTest($id)
-    {
-        $product = Product::findOrFail($id);
-
-        return view('product.edit-test', compact('product'));
-    }
-
-    public function updateTest(Request $request, $id)
-    {
-        try {
-            $product = Product::findOrFail($id);
-            $product->update($request->all());
-            // dd($product);
-            // Hiển thị thông báo toast thành công
-            toast('Sửa sản phẩm mới thành công!', 'success', 'top-right');
-
-            return redirect()->route('admin.product.test');
-        } catch (\Exception $e) {
-            // Ghi log lỗi
-            Log::error('Error updating product: '.$e->getMessage());
-
-            // Hiển thị thông báo toast lỗi
-            toast('Đã xảy ra lỗi khi sửa sản phẩm!', 'error', 'top-right');
-
-            return redirect()->route('admin.product.test')->withInput();
-        }
-    }
-    // Kêt thúc Test
-
-    //store
+    // store
     public function store(ProductStoreRequest $request)
     {
         DB::beginTransaction();
@@ -173,7 +136,7 @@ class ProductController extends Controller
             // dd($product);
             $product->save();
 
-            //save tồn đầu kỳ tháng hiện tại
+            // save tồn đầu kỳ tháng hiện tại
             $month = Carbon::now()->format('m-Y');
             $stockQuan = new TotalMonthQuantity;
             $stockQuan->product_id = $product->id;
@@ -182,7 +145,7 @@ class ProductController extends Controller
             $stockQuan->totalQuan = $request->stockQuan ?? 0;
             $stockQuan->save();
 
-            //save tồn đầu kì 200% tháng hiện tại
+            // save tồn đầu kì 200% tháng hiện tại
             $stockQuan200 = new TotalMonthQuantity;
             $stockQuan200->product_id = $product->id;
             $stockQuan200->month = $month;
@@ -190,7 +153,7 @@ class ProductController extends Controller
             $stockQuan200->totalQuan = $request->stockQuan200 ?? 0;
             $stockQuan200->save();
 
-            //save MOQ tháng hiện tiện
+            // save MOQ tháng hiện tiện
             $stockQuanMOQ = new TotalMonthQuantity;
             $stockQuanMOQ->product_id = $product->id;
             $stockQuanMOQ->month = $month;
@@ -215,7 +178,7 @@ class ProductController extends Controller
         return view('product.index');
     }
 
-    //edit
+    // edit
     public function edit($id)
     {
         $product = new Product;
@@ -226,7 +189,7 @@ class ProductController extends Controller
         return view('product.edit', compact('product', 'models', 'modelSizes'));
     }
 
-    //update
+    // update
     public function update($id, ProductUpdateRequest $request)
     {
         DB::beginTransaction();
@@ -258,7 +221,7 @@ class ProductController extends Controller
         return redirect()->route('admin.product.home');
     }
 
-    //delete
+    // delete
     public function delete($id)
     {
         $product = Product::findOrFail($id);
@@ -274,7 +237,7 @@ class ProductController extends Controller
         }
     }
 
-    //trash
+    // trash
     public function getTrash(Request $request)
     {
         $products = Product::onlyTrashed();
@@ -305,7 +268,7 @@ class ProductController extends Controller
         return view('product.trash', compact('products', 'total', 'models', 'modelSizes'));
     }
 
-    //restore
+    // restore
     public function restore($id)
     {
         try {
@@ -320,7 +283,7 @@ class ProductController extends Controller
         }
     }
 
-    //history
+    // history
     public function detail($id, Request $request)
     {
         $month = Carbon::now()->format('m');
@@ -365,7 +328,7 @@ class ProductController extends Controller
         ));
     }
 
-    //update detail
+    // update detail
     public function updateDetail(Request $request)
     {
         // Kiểm tra nếu số lượng bằng 0
@@ -426,13 +389,13 @@ class ProductController extends Controller
         }
     }
 
-    //export
+    // export
     public function export(Request $request)
     {
         return view('product.index');
     }
 
-    //updateQuantity for employee
+    // updateQuantity for employee
     public function updateQuantity(Request $request)
     {
         try {
@@ -505,7 +468,7 @@ class ProductController extends Controller
         }
     }
 
-    //updateQuantity for employee
+    // updateQuantity for employee
     public function handleUpdateQuantity(Request $request)
     {
         if ($request->quantity == 0) {
@@ -524,6 +487,13 @@ class ProductController extends Controller
 
         if (! $checkEmployee) {
             toast('Nhân viên cần nhập sản phẩm cần kiểm hoặc sản xuất trước khi nhập sản lượng!', 'error', 'top-right');
+
+            return redirect()->back();
+        }
+
+        // Kiểm tra created_at có trong vòng 1 giờ so với hiện tại không
+        if ($checkEmployee->created_at->diffInMinutes(Carbon::now()) <= 10) {
+            toast('Nhân viên nhập sản phẩm hoạt động chưa quá 1 giờ. Cần báo cáo cho quản lý để tiếp tục hỗ trợ.', 'error', 'top-right');
 
             return redirect()->back();
         }
@@ -566,7 +536,7 @@ class ProductController extends Controller
                 // $hour = 14;
                 // cắt phần tính tồn -> cronjob;
                 if ($status == 1 && $hour < 9) {
-                    //nếu là 100% và trước 7h sáng thì trừ đi 1 ngày
+                    // nếu là 100% và trước 7h sáng thì trừ đi 1 ngày
                     $subDate = Carbon::now()->subDay()->format('Y-m-d');
                     $dailyQuan = new DailyQuantity;
                     $dailyQuan->product_id = $request->product_id;
@@ -575,7 +545,7 @@ class ProductController extends Controller
                     $dailyQuan->status = $status;
                     $dailyQuan->date = $subDate;
 
-                    //cập nhật dailytotal với subDate
+                    // cập nhật dailytotal với subDate
                     $totalDaily = TotalDailyQuantity::where('product_id', $request->product_id)
                         ->where('date', $subDate)
                         ->where('status', $status)->first();
@@ -594,10 +564,10 @@ class ProductController extends Controller
                     $dailyQuan->save();
                     $currentDateTime1 = Carbon::now()->format('d');
                     if ($currentDateTime1 == '1' || $currentDateTime1 == '01') {
-                        //nếu là này đầu tháng thì giảm đi 1 tháng để tính tổng tháng
+                        // nếu là này đầu tháng thì giảm đi 1 tháng để tính tổng tháng
                         $subMonth = Carbon::now()->subMonth()->format('m-Y');
 
-                        //cập nhật monthtotal
+                        // cập nhật monthtotal
                         $totalMonth = TotalMonthQuantity::where('product_id', $request->product_id)
                             ->where('month', $subMonth)
                             ->where('status', $status)->first();
@@ -614,8 +584,8 @@ class ProductController extends Controller
                             $totalMonth->save();
                         }
                     } else {
-                        //nếu k phải ngày đầu tháng thì cập nhật tổng tháng như bình thường
-                        //cập nhật monthtotal
+                        // nếu k phải ngày đầu tháng thì cập nhật tổng tháng như bình thường
+                        // cập nhật monthtotal
                         $totalMonth = TotalMonthQuantity::where('product_id', $request->product_id)
                             ->where('month', $month)
                             ->where('status', $status)->first();
@@ -633,7 +603,7 @@ class ProductController extends Controller
                         }
                     }
                 } else {
-                    //cập nhật daily
+                    // cập nhật daily
                     $dailyQuan = new DailyQuantity;
                     $dailyQuan->product_id = $request->product_id;
                     $dailyQuan->employee_id = Auth()->user()->id;
@@ -642,7 +612,7 @@ class ProductController extends Controller
                     $dailyQuan->date = $date;
                     $dailyQuan->save();
 
-                    //cập nhật dailytotal
+                    // cập nhật dailytotal
                     $totalDaily = TotalDailyQuantity::where('product_id', $request->product_id)
                         ->where('date', $date)
                         ->where('status', $status)->first();
@@ -658,7 +628,7 @@ class ProductController extends Controller
                         $totalDaily->save();
                     }
 
-                    //cập nhật monthtotal
+                    // cập nhật monthtotal
                     $totalMonth = TotalMonthQuantity::where('product_id', $request->product_id)
                         ->where('month', $month)
                         ->where('status', $status)->first();
@@ -694,7 +664,7 @@ class ProductController extends Controller
         }
     }
 
-    //handle update error
+    // handle update error
     public function handleUpdateError(Request $request)
     {
         // Kiểm tra điều kiện đầu vào
@@ -750,7 +720,7 @@ class ProductController extends Controller
         }
     }
 
-    //export product
+    // export product
     public function exportProduct(Request $request)
     {
         $time = $request->month;
@@ -760,7 +730,7 @@ class ProductController extends Controller
         ]);
     }
 
-    //history update quantity
+    // history update quantity
     public function historyUpdate(Request $request)
     {
         $listMonth = TotalMonthQuantity::distinct()->pluck('month');
@@ -802,7 +772,7 @@ class ProductController extends Controller
         return view('product.history-update', compact('listMonth', 'monthNearly', 'datas', 'listProduct', 'product_id'));
     }
 
-    //history update error
+    // history update error
     public function historyUpdateError(Request $request)
     {
         $listMonth = TotalMonthQuantity::distinct()->pluck('month');
@@ -842,7 +812,7 @@ class ProductController extends Controller
         return view('product.history-update-error', compact('listMonth', 'monthNearly', 'datas', 'listProduct', 'product_id'));
     }
 
-    //view cập nhật sản lượng admin
+    // view cập nhật sản lượng admin
     public function updateQuantityAdmin($id)
     {
         $product = Product::find($id);
@@ -850,14 +820,14 @@ class ProductController extends Controller
         return view('product.update-quantity-admin', compact('product'));
     }
 
-    //cập nhật sản lượng view product/update-quantity
+    // cập nhật sản lượng view product/update-quantity
     public function handleUpdate(Request $request)
     {
         DB::beginTransaction();
         try {
             $date = Carbon::now()->format('Y-m-d');
             $month = Carbon::now()->format('m-Y');
-            //cập nhật daily
+            // cập nhật daily
             $dailyQuan = new DailyQuantity;
             $dailyQuan->product_id = $request->product_id;
             $dailyQuan->employee_id = Auth()->user()->id;
@@ -866,7 +836,7 @@ class ProductController extends Controller
             $dailyQuan->date = $request->date;
             $dailyQuan->save();
 
-            //cập nhật dailytotal
+            // cập nhật dailytotal
             $totalDaily = TotalDailyQuantity::where('product_id', $request->product_id)
                 ->where('date', $request->date)
                 ->where('status', $request->status)->first();
@@ -882,7 +852,7 @@ class ProductController extends Controller
                 $totalDaily->save();
             }
 
-            //cập nhật monthtotal
+            // cập nhật monthtotal
             $totalMonth = TotalMonthQuantity::where('product_id', $request->product_id)
                 ->where('month', $month)
                 ->where('status', $request->status)->first();
@@ -912,7 +882,7 @@ class ProductController extends Controller
         }
     }
 
-    //xoá sản lượng
+    // xoá sản lượng
     public function handleDeleteUpdateQUantity($id)
     {
         DB::beginTransaction();
@@ -925,7 +895,7 @@ class ProductController extends Controller
                 $monthDaily = date('m', $carbonDate);
 
                 if ($monthDaily == $month) {
-                    //update quantity total day
+                    // update quantity total day
                     $totalDaily = TotalDailyQuantity::where('product_id', $daily->product_id)
                         ->where('date', $daily->date)
                         ->where('status', $daily->status)->first();
@@ -934,7 +904,7 @@ class ProductController extends Controller
                         $totalDaily->save();
                     }
 
-                    //update quantity total month
+                    // update quantity total month
                     $totalMonth = TotalMonthQuantity::where('product_id', $daily->product_id)
                         ->where('month', $monthYear)
                         ->where('status', $daily->status)->first();
@@ -964,7 +934,7 @@ class ProductController extends Controller
         }
     }
 
-    //view thay đổi MOQ
+    // view thay đổi MOQ
     public function updateMOQ()
     {
         // Lấy tháng hiện tại
@@ -1001,7 +971,7 @@ class ProductController extends Controller
         return view('product.update-moq', compact('listMonth', 'currentMonth', 'productNearData', 'products'));
     }
 
-    //handle thay đổi moq
+    // handle thay đổi moq
     public function handleUpdateMOQ(Request $request)
     {
         DB::beginTransaction();
