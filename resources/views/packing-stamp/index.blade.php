@@ -1,15 +1,20 @@
 @extends('layouts.layout')
-@section('content')
+@section('styles')
     <link
         rel="stylesheet"
         href="{{ asset('assets/css/add-packing-stamp.css') }}"
     />
+@endsection
+
+@php
+    $groups = isset($binArray) ? array_chunk($binArray, 8) : [];
+@endphp
+
+@section('content')
     <div class="row">
-        <div class="col-12 print-container">
-            <div class="card my-4">
-                <div
-                    class="card-header p-1 position-relative mt-n1 mx-1 no-print"
-                >
+        <div class="col-12">
+            <div class="card my-4 no-print">
+                <div class="card-header p-1 position-relative mt-n1 mx-1">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
                         <h4 class="card-title mb-0">Tạo Tem Bịch</h4>
                     </div>
@@ -22,7 +27,7 @@
                         >
                             @method('POST')
                             @csrf
-                            <div class="row no-print">
+                            <div class="row">
                                 <!-- Ngày -->
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">
@@ -68,13 +73,13 @@
                                             ----- Ca làm việc -----
                                         </option>
                                         <option
-                                            <?= ($request->shift ?? "") == 1 ? "selected" : "" ?>
+                                            <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?>
                                             value="1"
                                         >
                                             Ca 1
                                         </option>
                                         <option
-                                            <?= ($request->shift ?? "") == 2 ? "selected" : "" ?>
+                                            <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?>
                                             value="2"
                                         >
                                             Ca 2
@@ -250,7 +255,7 @@
                             </div>
                             <br />
                             <div>
-                                <div class="col-12 no-print">
+                                <div class="col-12">
                                     <button
                                         type="submit"
                                         id="register-barcode"
@@ -267,61 +272,68 @@
                                     @if (isset($binArray))
                                         <a
                                             class="btn btn-secondary"
-                                            onclick="handlePrint(event)"
+                                            id="save-print"
+                                            data-url="{{ route('admin.barcode.save.print') }}"
                                             href="#"
                                         >
                                             Print
                                         </a>
                                     @endif
                                 </div>
-                                <div class="container-gird no-break">
-                                    <div class="grid-container">
-                                        @if (isset($binArray))
-                                            @foreach ($binArray as $key => $bin)
-                                                <div
-                                                    class="container grid-item"
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            @if (isset($binArray))
+                <div>
+                    <h1 class="no-print">Print Preview</h1>
+                    <div class="print-wrapper">
+                        @foreach ($groups as $group)
+                            <div class="print-page">
+                                <div class="page-container">
+                                    <div class="row">
+                                        @foreach ($group as $item)
+                                            <div class="col-6">
+                                                <table
+                                                    class="table table-bordered"
                                                 >
-                                                    <table
-                                                        class="table table-bordered"
-                                                        style="
-                                                            margin-top: 5px;
-                                                            margin-bottom: 5px;
-                                                        "
+                                                    <tbody
+                                                        class="text-center align-content-center"
+                                                        style="font-size: 11px"
                                                     >
                                                         <tr>
                                                             <td
-                                                                class="text-start w-120 w-5"
+                                                                class="text-start"
                                                             >
-                                                                Tên sản
-                                                                <br />
-                                                                phẩm
+                                                                Tên sản phẩm
                                                                 <br />
                                                                 品名
                                                             </td>
                                                             <td
-                                                                colspan="2"
-                                                                class="text-center jtf-center"
+                                                                class="fw-bold fs-6"
+                                                                style="
+                                                                    width: 9.25rem;
+                                                                "
                                                             >
-                                                                <p
-                                                                    class="fw-bold mb-0 fs-20 fs-13"
-                                                                >
-                                                                    {{ $product->name }}
-                                                                </p>
+                                                                {{ $product->name }}
                                                             </td>
                                                             <td
-                                                                class="align-content-center w-120 w-5 code"
+                                                                class=""
+                                                                style="
+                                                                    width: 4.625rem;
+                                                                "
                                                             >
                                                                 CODE
                                                             </td>
                                                             <td
-                                                                colspan="2"
-                                                                class="text-center jtf-center"
+                                                                class="fw-bold fs-6"
+                                                                style="
+                                                                    width: 4.625rem;
+                                                                "
                                                             >
-                                                                <p
-                                                                    class="fw-bold mb-0 fs-13"
-                                                                >
-                                                                    {{ $product->code }}
-                                                                </p>
+                                                                {{ $product->code }}
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -332,30 +344,14 @@
                                                                 <br />
                                                                 原材料
                                                             </td>
-                                                            <td
-                                                                colspan="2"
-                                                                class="text-center align-content-center"
-                                                            >
-                                                                <p
-                                                                    class="mb-0 fs-13"
-                                                                >
-                                                                    {{ $product->material }}
-                                                                </p>
+                                                            <td class="fs-6">
+                                                                {{ $product->material }}
                                                             </td>
-                                                            <td
-                                                                class="text-center"
-                                                            >
+                                                            <td class="">
                                                                 Màu sắc 色
                                                             </td>
-                                                            <td
-                                                                colspan="2"
-                                                                class="text-center align-content-center"
-                                                            >
-                                                                <p
-                                                                    class="mb-0 fs-13"
-                                                                >
-                                                                    {{ $product->color }}
-                                                                </p>
+                                                            <td class="fs-6">
+                                                                {{ $product->color }}
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -367,14 +363,11 @@
                                                                 数量
                                                             </td>
                                                             <td
-                                                                colspan="5"
-                                                                class="text-center align-content-center"
+                                                                colspan="3"
+                                                                class="fw-bold fs-6"
                                                             >
-                                                                <p
-                                                                    class="fw-bold mb-0 fs-13"
-                                                                >
-                                                                    {{ $product->quantity_per_package }}PCS
-                                                                </p>
+                                                                {{ $product->quantity_per_package }}
+                                                                PCS
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -386,47 +379,32 @@
                                                                 ロット No
                                                             </td>
                                                             <td
-                                                                colspan="5"
-                                                                class="text-center align-content-center"
+                                                                colspan="3"
+                                                                class="fw-bold fs-6"
                                                             >
                                                                 <div
-                                                                    class="lot-container"
+                                                                    class=""
+                                                                    style="
+                                                                        display: flex;
+                                                                        justify-content: space-between;
+                                                                        align-items: center;
+                                                                    "
                                                                 >
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    <span>
                                                                         {{ $lotNo['lot'] }}
-                                                                    </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
-                                                                        -
-                                                                    </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    </span>
+                                                                    -
+                                                                    <span>
                                                                         {{ $lotNo['date'] }}
-                                                                    </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
-                                                                        -
-                                                                    </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
+                                                                    </span>
+                                                                    -
+                                                                    <span>
                                                                         {{ $lotNo['shift'] }}
-                                                                    </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
-                                                                        -
-                                                                    </p>
-                                                                    <p
-                                                                        class="fw-bold mb-0 fs-13"
-                                                                    >
-                                                                        {{ $bin['bin'] }}
-                                                                    </p>
+                                                                    </span>
+                                                                    -
+                                                                    <span>
+                                                                        {{ $item['bin'] }}
+                                                                    </span>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -438,17 +416,14 @@
                                                                 <br />
                                                                 検査
                                                             </td>
-                                                            <td
-                                                                colspan="2"
-                                                                class="text-center align-content-center"
-                                                            >
+                                                            <td class="">
                                                                 Kiểm tra 100%
                                                                 <br />
                                                                 檢查(100%)
                                                             </td>
                                                             <td
-                                                                colspan="3"
-                                                                class="text-center align-content-center"
+                                                                colspan="2"
+                                                                class=""
                                                             >
                                                                 Kiểm tra 200%
                                                                 <br />
@@ -457,17 +432,15 @@
                                                         </tr>
                                                         <tr>
                                                             <td
-                                                                class="text-start moc-style"
+                                                                class="text-start"
                                                             >
                                                                 Mộc
                                                                 <br />
                                                                 合格印
                                                             </td>
+                                                            <td></td>
                                                             <td
                                                                 colspan="2"
-                                                            ></td>
-                                                            <td
-                                                                colspan="3"
                                                             ></td>
                                                         </tr>
                                                         <tr>
@@ -478,16 +451,14 @@
                                                                 <br />
                                                                 検査
                                                             </td>
+                                                            <td></td>
                                                             <td
                                                                 colspan="2"
-                                                            ></td>
-                                                            <td
-                                                                colspan="3"
                                                             ></td>
                                                         </tr>
                                                         <tr>
                                                             <td
-                                                                colspan="3"
+                                                                colspan="2"
                                                                 class="text-center"
                                                             >
                                                                 (Thời gian) 時間
@@ -496,38 +467,17 @@
                                                                 {{ $lotNo['date_time'] }}
                                                             </td>
                                                         </tr>
-                                                    </table>
-                                                </div>
-                                            @endforeach
-                                        @endif
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
-                                {{--
-                                    @if (isset($binArray))
-                                    <div class="no-print">
-                                    <a class="btn btn-secondary" id="save-print"
-                                    data-url="{{ route('admin.barcode.save.print') }}" onclick="savePrint(event)"
-                                    href="javascript:window.print()">Print</a>
-                                    </div>
-                                    @endif
-                                --}}
-                                @if (isset($binArray))
-                                    <div class="no-print">
-                                        <a
-                                            class="btn btn-secondary"
-                                            id="save-print"
-                                            data-url="{{ route('admin.barcode.save.print') }}"
-                                            href="#"
-                                        >
-                                            Print
-                                        </a>
-                                    </div>
-                                @endif
                             </div>
-                        </form>
+                        @endforeach
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
     <script>
