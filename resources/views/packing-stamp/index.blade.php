@@ -300,7 +300,7 @@
                                                             </td>
                                                             <td
                                                                 colspan="2"
-                                                                class="text-center jtf-center"
+                                                                class="align-content-center"
                                                             >
                                                                 <p
                                                                     class="fw-bold mb-0 fs-20 fs-13"

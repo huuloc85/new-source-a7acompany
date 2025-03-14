@@ -791,10 +791,8 @@
                                                 <tr>
                                                     @foreach ($listDate as $key => $date)
                                                         @php
-                                                            // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
-                                                            $formattedDate = Carbon\Carbon::parse(
-                                                                $date,
-                                                            )->startOfDay();
+                                                            $formattedDate = \Carbon\Carbon::parse($date)->startOfDay();
+
                                                             // Lấy tất cả các dailyQuantities cho ngày cụ thể
                                                             $dailyQuantitiesOfTheDay = $product
                                                                 ->DailyQuantities()
@@ -805,24 +803,38 @@
                                                             $totalQuanDateCa1 = 0;
                                                             $totalQuanDateCa2 = 0;
 
-                                                            // Xử lý số lượng cho mỗi ca
                                                             foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
-                                                                $created_at = Carbon\Carbon::parse(
+                                                                $created_at = \Carbon\Carbon::parse(
                                                                     $dailyQuantity->created_at,
                                                                 );
-                                                                $nextDayEightAM = $formattedDate
+
+                                                                // Xác định mốc thời gian của từng ca
+                                                                $startCa1 = $formattedDate
+                                                                    ->copy()
+                                                                    ->setHour(7)
+                                                                    ->setMinute(30); // 07:30
+                                                                $endCa1 = $formattedDate
+                                                                    ->copy()
+                                                                    ->setHour(21)
+                                                                    ->setMinute(30); // 21:00
+
+                                                                $startCa2 = $formattedDate
+                                                                    ->copy()
+                                                                    ->setHour(21)
+                                                                    ->setMinute(30); // 20:30
+                                                                $endCa2 = $formattedDate
                                                                     ->copy()
                                                                     ->addDay()
-                                                                    ->setHour(9);
-                                                                $currentDate = $formattedDate->copy()->setHour(19);
-                                                                // Phân biệt ca dựa vào thời gian trong cột created_at
-                                                                if (
-                                                                    $created_at < $nextDayEightAM &&
-                                                                    $created_at > $currentDate
-                                                                ) {
-                                                                    $totalQuanDateCa2 += $dailyQuantity->quantity;
-                                                                } else {
+                                                                    ->setHour(9)
+                                                                    ->setMinute(00); // 09:00 (ngày hôm sau)
+
+                                                                // Xác định ca của bản ghi
+                                                                if ($created_at->between($startCa1, $endCa1)) {
+                                                                    // Nếu thời gian thuộc khoảng 07:30 - 21:00 => Ca 1
                                                                     $totalQuanDateCa1 += $dailyQuantity->quantity;
+                                                                } elseif ($created_at->between($startCa2, $endCa2)) {
+                                                                    // Nếu thời gian thuộc khoảng 20:30 - 09:00 hôm sau => Ca 2
+                                                                    $totalQuanDateCa2 += $dailyQuantity->quantity;
                                                                 }
                                                             }
                                                         @endphp
