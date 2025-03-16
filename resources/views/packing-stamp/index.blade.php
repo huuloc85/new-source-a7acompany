@@ -68,13 +68,13 @@
                                             ----- Ca làm việc -----
                                         </option>
                                         <option
-                                            <?= ($request->shift ?? "") == 1 ? "selected" : "" ?>
+                                            <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?>
                                             value="1"
                                         >
                                             Ca 1
                                         </option>
                                         <option
-                                            <?= ($request->shift ?? "") == 2 ? "selected" : "" ?>
+                                            <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?>
                                             value="2"
                                         >
                                             Ca 2
@@ -300,10 +300,10 @@
                                                             </td>
                                                             <td
                                                                 colspan="2"
-                                                                class="align-content-center"
+                                                                class="align-content-center same-width"
                                                             >
                                                                 <p
-                                                                    class="fw-bold mb-0 fs-20 fs-13"
+                                                                    class="fw-bold mb-0 fs-20 fs-13 pro-name"
                                                                 >
                                                                     {{ $product->name }}
                                                                 </p>
@@ -448,7 +448,7 @@
                                                             </td>
                                                             <td
                                                                 colspan="3"
-                                                                class="text-center align-content-center"
+                                                                class="text-center align-content-center same-width"
                                                             >
                                                                 Kiểm tra 200%
                                                                 <br />
