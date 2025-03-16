@@ -137,6 +137,14 @@ $otherNote = '........';
 
 ?>
 
+@section('styles')
+    <style>
+        th {
+            white-space: normal;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -154,408 +162,549 @@ $otherNote = '........';
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
-                    <p class="mb-3">
-                        <strong class="text-danger fw-bold">Lưu ý</strong>
-                        : Tải bảng lương để xem rõ hơn
-                    </p>
-                    <button
-                        class="btn btn-success mb-3"
-                        onclick="downloadCanvas()"
-                    >
-                        Tải bảng lương
-                    </button>
-                    <div class="text-center overflow-x-auto">
-                        <canvas
-                            class="bg-white border"
-                            id="salaryCanvas"
-                        ></canvas>
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="text-center">
+                                <h3>Thông tin bảng lương</h3>
+                                <h6>
+                                    Từ {{ $start_date }} đến {{ $end_date }}
+                                </h6>
+                            </div>
+                            <div class="mb-3">
+                                <div>
+                                    <strong class="fw-bold">
+                                        Tên nhân viên:
+                                    </strong>
+                                    {{ $name }}
+                                </div>
+                                <div>
+                                    <strong class="fw-bold">
+                                        Mã nhân viên:
+                                    </strong>
+                                    {{ $code }}
+                                </div>
+                                <div>
+                                    <strong class="fw-bold">Bộ phận:</strong>
+                                    {{ $role }}
+                                </div>
+                                <div>
+                                    <strong class="fw-bold">
+                                        Ngày nhận lương:
+                                    </strong>
+                                    {{ $date_show }}
+                                </div>
+                            </div>
+                            <div class="mb-3 text-wrap">
+                                <div class="fw-bold">Các khoảng lương</div>
+                                <div>
+                                    <div class="row bg-light">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Diễn giải
+                                        </div>
+                                        <div class="col-3 fw-bold border py-2">
+                                            Số giờ / Ngày
+                                        </div>
+                                        <div class="col-3 fw-bold border py-2">
+                                            Thành tiền
+                                        </div>
+                                        <div class="col-3 fw-bold border py-2">
+                                            Ghi chú
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Lương ca ngày (thử việc)
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $number_of_work_days_trial }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $day_shift_salary_trial }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $day_shift_salary_trial_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Lương ca đêm (thử việc)
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $number_of_work_nights_trial }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $night_shift_salary_trial }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $night_shift_salary_trial_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Lương tăng ca (thử việc)
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $overtime_hours_trial }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $overtime_salary_trial }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $overtime_salary_trial_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Phụ cấp học việc
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $number_of_work }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_apprentice_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_apprentice_detail_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Số giờ chính
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $core_hours }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $official_salary }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $official_salary_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Chuyên cần
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_diligence_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_diligence_detail_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Trách Nhiệm
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_responsibility_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_responsibility_detail_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Số giờ tăng ca
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $overtime_hours_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $overtime_salary }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $overtime_salary_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Phụ cấp cơm ca ngày
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $number_of_work_days }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_rice_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_rice_detail_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Phụ cấp cơm ca đêm
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $number_of_work_nights }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_shift_night }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_shift_night_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Phụ cấp tăng ca
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $overtime_day_count_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_overtime_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_overtime_detail_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tiền lễ tết
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $holidays_count_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $holidays_money }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $holidays_money_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tiền phép năm
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $paid_holidays_count_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $paid_holidays_money }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $paid_holidays_money_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Lương đi công tác GCN
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $business_travel_hours }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $gcn_business_travel_salary }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $gcn_business_travel_salary_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Phụ cấp xăng đi GCN
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $number_of_business_trips }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_gcn_business_fuel }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_gcn_business_fuel_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tiền giới thiệu người
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $money_referral_people }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $money_referral_people_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Phụ cấp khác
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_different }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $allowance_different_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tiền thưởng đạt chuyên cần
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $bonuses_for_attendance }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $bonuses_for_attendance_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tiền sinh nhật
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $birthday_money }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $birthday_money_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tiền lương tháng trước bị thiếu
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $previous_period_debt }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $previous_period_debt_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row bg-light">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tổng thu nhập
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div
+                                            class="col-3 fw-bold border py-2 text-sm"
+                                        >
+                                            {{ $salary_total }}
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="fw-bold">Các khoảng trừ</div>
+                                <div>
+                                    <div class="row bg-light">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Diễn giải
+                                        </div>
+                                        <div class="col-3 fw-bold border py-2">
+                                            Số giờ / Ngày
+                                        </div>
+                                        <div class="col-3 fw-bold border py-2">
+                                            Thành tiền
+                                        </div>
+                                        <div class="col-3 fw-bold border py-2">
+                                            Ghi chú
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Khấu trừ BHXH (10.5%)
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $insurance_detail }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $insurance_detail_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tạm ứng
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $advance_money }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $advance_money_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Phí công đoàn 1%
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $number_of_violations }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_of_violations }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_of_violations_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Nghỉ có phép
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $days_leave_allowed }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_days_leave_allowed }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_days_leave_allowed_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Nghỉ không phép
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $days_leave_not_allowed }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_days_leave_not_allowed }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_days_leave_not_allowed_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Lỗi nặng
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $error_serious }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_error_serious }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_error_serious_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Lỗi nhẹ
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $error_minor }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_error_minor }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $subtract_error_minor_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Trừ KPI
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $kpi_subtraction }}
+                                        </div>
+                                        <div class="col-3 border text-sm py-2">
+                                            {{ $kpi_subtraction_notice }}
+                                        </div>
+                                    </div>
+                                    <div class="row bg-light">
+                                        <div class="col-3 fw-bold border py-2">
+                                            Tổng trừ
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                        <div
+                                            class="col-3 fw-bold border py-2 text-sm"
+                                        >
+                                            {{ number_format($total) }}
+                                        </div>
+                                        <div
+                                            class="col-3 border text-sm py-2"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                                <div>
+                                    <strong class="fw-bold">
+                                        Thực nhận tiền lương:
+                                    </strong>
+                                    {{ $actually_received }}
+                                </div>
+                                <div>
+                                    <strong class="fw-bold">Bằng chữ:</strong>
+                                    {{ $salaryInWords }}
+                                </div>
+                                <div>
+                                    <strong class="fw-bold">
+                                        Phương thức:
+                                    </strong>
+                                    {{ $forms_of_payment }}
+                                </div>
+                                <br />
+                                <div>
+                                    <strong class="fw-bold">
+                                        Công ty phải đóng BHXH 21,5% cho người
+                                        lao động:
+                                    </strong>
+                                    {{ $company_insurance_detail }}
+                                </div>
+                                <div>
+                                    <strong class="fw-bold">
+                                        Công ty phải đóng Kinh phí công đoàn 2%
+                                        cho người lao động:
+                                    </strong>
+                                    {{ $number_of_violations }}
+                                </div>
+                                <div>
+                                    <strong class="fw-bold text-danger">
+                                        Công ty phải tổng trả chi phí lương cho
+                                        01 người lao động / tháng:
+                                    </strong>
+                                    {{ $actually_received }}
+                                </div>
+                                <br />
+                                <div>
+                                    <strong class="fw-bold">Ghi chú:</strong>
+                                    {{ $otherNote }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
-
-@section('scripts')
-    <script>
-        const incomeData = [
-            ['Diễn giải', 'Số giờ / Ngày', 'Thành tiền', 'Ghi chú'],
-            [
-                'Lương ca ngày (thử việc)',
-                '{{ $number_of_work_days_trial }}',
-                '{{ $day_shift_salary_trial }}',
-                '{{ $day_shift_salary_trial_notice }}',
-            ],
-            [
-                'Lương ca đêm (thử việc):',
-                '{{ $number_of_work_nights_trial }}',
-                '{{ $night_shift_salary_trial }}',
-                '{{ $night_shift_salary_trial_notice }}',
-            ],
-            [
-                'Lương tăng ca (thử việc):',
-                '{{ $overtime_hours_trial }}',
-                '{{ $overtime_salary_trial }}',
-                '{{ $overtime_salary_trial_notice }}',
-            ],
-            [
-                'Phụ cấp học việc',
-                '{{ $number_of_work }}',
-                '{{ $allowance_apprentice_detail }}',
-                '{{ $allowance_apprentice_detail_notice }}',
-            ],
-            [
-                'Số giờ chính',
-                '{{ $core_hours }}',
-                '{{ $official_salary }}',
-                '{{ $official_salary_notice }}',
-            ],
-            [
-                'Chuyên cần',
-                '',
-                '{{ $allowance_diligence_detail }}',
-                '{{ $allowance_diligence_detail_notice }}',
-            ],
-            [
-                'Trách Nhiệm',
-                '',
-                '{{ $allowance_responsibility_detail }}',
-                '{{ $allowance_responsibility_detail_notice }}',
-            ],
-            [
-                'Số giờ tăng ca',
-                '{{ $overtime_hours_detail }}',
-                '{{ $overtime_salary }}',
-                '{{ $overtime_salary_notice }}',
-            ],
-            [
-                'Phụ cấp cơm ca ngày',
-                '{{ $number_of_work_days }}',
-                '{{ $allowance_rice_detail }}',
-                '{{ $allowance_rice_detail_notice }}',
-            ],
-            [
-                'Phụ cấp cơm ca đêm:',
-                '{{ $number_of_work_nights }}',
-                '{{ $allowance_shift_night }}',
-                '{{ $allowance_shift_night_notice }}',
-            ],
-            [
-                'Phụ cấp tăng ca',
-                '{{ $overtime_day_count_detail }}',
-                '{{ $allowance_overtime_detail }}',
-                '{{ $allowance_overtime_detail_notice }}',
-            ],
-            [
-                'Tiền lễ tết',
-                '{{ $holidays_count_detail }}',
-                '{{ $holidays_money }}',
-                '{{ $holidays_money_notice }}',
-            ],
-            [
-                'Tiền phép năm',
-                '{{ $paid_holidays_count_detail }}',
-                '{{ $paid_holidays_money }}',
-                '{{ $paid_holidays_money_notice }}',
-            ],
-            [
-                'Lương đi công tác GCN',
-                '{{ $business_travel_hours }}',
-                '{{ $gcn_business_travel_salary }}',
-                '{{ $gcn_business_travel_salary_notice }}',
-            ],
-            [
-                'Phụ cấp xăng đi GCN',
-                '{{ $number_of_business_trips }}',
-                '{{ $allowance_gcn_business_fuel }}',
-                '{{ $allowance_gcn_business_fuel_notice }}',
-            ],
-            [
-                'Tiền giới thiệu người',
-                '',
-                '{{ $money_referral_people }}',
-                '{{ $money_referral_people_notice }}',
-            ],
-            [
-                'Phụ cấp khác',
-                '',
-                '{{ $allowance_different }}',
-                '{{ $allowance_different_notice }}',
-            ],
-            [
-                'Tiền thưởng đạt chuyên cần',
-                '',
-                '{{ $bonuses_for_attendance }}',
-                '{{ $bonuses_for_attendance_notice }}',
-            ],
-            [
-                'Tiền sinh nhật',
-                '',
-                '{{ $birthday_money }}',
-                '{{ $birthday_money_notice }}',
-            ],
-            [
-                'Tiền lương tháng trước bị thiếu',
-                '',
-                '{{ $previous_period_debt }}',
-                '{{ $previous_period_debt_notice }}',
-            ],
-            ['Tổng thu nhập', '', '{{ $salary_total }}', ''],
-        ];
-
-        const deductionData = [
-            ['Diễn giải', 'Số giờ / Ngày', 'Thành tiền', 'Ghi chú'],
-            [
-                'Khấu trừ BHXH (10.5%)',
-                '',
-                '{{ $insurance_detail }}',
-                '{{ $insurance_detail_notice }}',
-            ],
-            [
-                'Tạm ứng',
-                '',
-                '{{ $advance_money }}',
-                '{{ $advance_money_notice }}',
-            ],
-            [
-                'Phí công đoàn 1%',
-                '{{ $number_of_violations }}',
-                '{{ $subtract_of_violations }}',
-                '{{ $subtract_of_violations_notice }}',
-            ],
-            [
-                'Nghỉ có phép',
-                '{{ $days_leave_allowed }}',
-                '{{ $subtract_days_leave_allowed }}',
-                '{{ $subtract_days_leave_allowed_notice }}',
-            ],
-            [
-                'Nghỉ không phép',
-                '{{ $days_leave_not_allowed }}',
-                '{{ $subtract_days_leave_not_allowed }}',
-                '{{ $subtract_days_leave_not_allowed_notice }}',
-            ],
-            [
-                'Lỗi nặng',
-                '{{ $error_serious }}',
-                '{{ $subtract_error_serious }}',
-                '{{ $subtract_error_serious_notice }}',
-            ],
-            [
-                'Lỗi nhẹ',
-                '{{ $error_minor }}',
-                '{{ $subtract_error_minor }}',
-                '{{ $subtract_error_minor_notice }}',
-            ],
-            [
-                'Trừ KPI',
-                '',
-                '{{ $kpi_subtraction }}',
-                '{{ $kpi_subtraction_notice }}',
-            ],
-            ['Tổng trừ', '', '{{ number_format($total) }}', ''],
-        ];
-
-        const rowHeight = 30;
-        const extraPadding = 200; // Space for title & employee info
-        const tableSpacing = 50; // Space between tables
-        const bottomPadding = 350; // Space at the bottom of the canvas
-        const canvasHeight =
-            (incomeData.length + deductionData.length) * rowHeight +
-            extraPadding +
-            tableSpacing +
-            bottomPadding;
-
-        const canvas = document.getElementById('salaryCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Set canvas dimensions dynamically
-        canvas.width = 800;
-        canvas.height = canvasHeight;
-
-        function drawTableTitle(title, startY) {
-            ctx.font = 'bold 16px Arial';
-            ctx.fillStyle = '#000';
-            ctx.textAlign = 'left';
-            ctx.fillText(title, 50, startY);
-        }
-
-        function drawTable(data, startY, boldRowIndex) {
-            const colWidths = [250, 150, 150, 150];
-            const startX = 50;
-
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 1;
-
-            for (let i = 0; i < data.length; i++) {
-                let x = startX;
-
-                // Bold header row
-                if (i === 0) {
-                    ctx.font = 'bold 14px Arial';
-                    ctx.fillStyle = '#f5f5f5';
-                    ctx.fillRect(
-                        startX,
-                        startY,
-                        colWidths.reduce((a, b) => a + b, 0),
-                        rowHeight,
-                    );
-                } else if (i === boldRowIndex) {
-                    ctx.font = 'bold 14px Arial'; // Bold last row
-                } else {
-                    ctx.font = '14px Arial';
-                }
-
-                ctx.fillStyle = '#000';
-
-                for (let j = 0; j < data[i].length; j++) {
-                    ctx.strokeRect(x, startY, colWidths[j], rowHeight);
-                    ctx.fillText(data[i][j], x + 10, startY + 20);
-                    x += colWidths[j];
-                }
-                startY += rowHeight;
-            }
-        }
-
-        function drawTables() {
-            let startY = 0;
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            startY += 40;
-            ctx.font = 'bold 20px Arial';
-            ctx.fillStyle = '#000';
-            ctx.textAlign = 'center';
-            ctx.fillText('THÔNG TIN BẢNG LƯƠNG', canvas.width / 2, startY);
-
-            startY += 25;
-            ctx.font = '15px Arial';
-            ctx.fillText(
-                'Từ {{ $start_date }} đến {{ $end_date }}',
-                canvas.width / 2,
-                startY,
-            );
-
-            ctx.textAlign = 'left';
-
-            startY += 30;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Tên nhân viên:', 50, startY);
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $name }}', 200, startY);
-
-            startY += 20;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Mã nhân viên:', 50, startY);
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $code }}', 200, startY);
-
-            startY += 20;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Bộ phận:', 50, startY);
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $role }}', 200, startY);
-
-            startY += 20;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Ngày nhận lượng:', 50, startY);
-            ctx.font = '16px Arial';
-            // TODO: Get the actual date
-            ctx.fillText('{{ $date_show }}', 200, startY);
-
-            startY += 40;
-            drawTableTitle('Các khoảng lương', startY);
-            startY += 10;
-            drawTable(incomeData, startY, incomeData.length - 1);
-
-            startY += incomeData.length * rowHeight + tableSpacing - 20;
-            drawTableTitle('Các khoảng trừ ', startY);
-            startY += 10;
-            drawTable(deductionData, startY, deductionData.length - 1);
-
-            // Add extra space before drawing the new description
-            startY += (deductionData.length + 1) * rowHeight + 20;
-
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Thực nhận tiền lương:', 50, startY);
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $actually_received }}', 250, startY);
-
-            startY += 25;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Bằng chữ:', 50, startY);
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $salaryInWords }}', 150, startY);
-
-            startY += 25;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Phương thức:', 50, startY);
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $forms_of_payment }}', 200, startY);
-
-            startY += 50;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(
-                'Công ty phải đóng BHXH 21,5% cho người lao động: ',
-                50,
-                startY,
-            );
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $company_insurance_detail }}', 600, startY);
-
-            startY += 25;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(
-                'Công ty phải đóng Kinh phí công đoàn 2% cho người lao động:',
-                50,
-                startY,
-            );
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $number_of_violations }}', 600, startY);
-
-            startY += 25;
-            ctx.fillStyle = 'red';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText(
-                'Công ty phải tổng trả chi phí lương cho 01 người lao động / tháng:',
-                50,
-                startY,
-            );
-            ctx.fillStyle = '#000';
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $actually_received }}', 600, startY);
-
-            startY += 50;
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Chi chú (nếu có):', 50, startY);
-            ctx.font = '16px Arial';
-            ctx.fillText('{{ $otherNote }}', 200, startY);
-        }
-
-        function downloadCanvas() {
-            // Create a new canvas with a white background
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-
-            // Set the same size as the original canvas
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height;
-
-            // Fill with white background
-            tempCtx.fillStyle = '#ffffff';
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-            // Draw the existing canvas onto the new one
-            tempCtx.drawImage(canvas, 0, 0);
-
-            // Create download link
-            const link = document.createElement('a');
-            link.download = 'salary_breakdown.png';
-            link.href = tempCanvas.toDataURL('image/png');
-            link.click();
-        }
-
-        drawTables();
-    </script>
 @endsection
