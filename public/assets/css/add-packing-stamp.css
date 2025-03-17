@@ -125,6 +125,14 @@
     padding: 0 !important;
 }
 
+.same-width {
+    max-width: 170px !important;
+    min-width: 170px !important;
+    justify-items: center !important;
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
 @media print {
     @page {
         size: A4;
@@ -145,6 +153,11 @@
         background: transparent !important;
         box-shadow: none !important;
         justify-content: center;
+    }
+
+    .same-width {
+        max-width: 170px !important;
+        min-width: 170px !important;
     }
 
     .no-break {
@@ -173,9 +186,9 @@
         display: grid !important;
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(4, 1fr);
-        zoom: 64%;
+        zoom: 63%;
         column-gap: 20px;
-        row-gap: 20px;
+        row-gap: 25px;
     }
 
     .grid-item * {
@@ -250,5 +263,10 @@
 
     .fs-13 {
         font-size: 20px !important;
+    }
+
+    .pro-name {
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
 }

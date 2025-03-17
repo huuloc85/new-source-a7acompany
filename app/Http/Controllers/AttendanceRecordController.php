@@ -819,7 +819,7 @@ class AttendanceRecordController extends Controller
     // Export
     public function export(Request $request)
     {
-        ini_set('max_execution_time', 500);
+        ini_set('max_execution_time', 5000);
         $currentMonth = Carbon::now()->format('m-Y');
         $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
