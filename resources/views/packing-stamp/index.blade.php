@@ -68,13 +68,13 @@
                                             ----- Ca làm việc -----
                                         </option>
                                         <option
-                                            <?= ($request->shift ?? '') == 1 ? 'selected' : '' ?>
+                                            <?= ($request->shift ?? "") == 1 ? "selected" : "" ?>
                                             value="1"
                                         >
                                             Ca 1
                                         </option>
                                         <option
-                                            <?= ($request->shift ?? '') == 2 ? 'selected' : '' ?>
+                                            <?= ($request->shift ?? "") == 2 ? "selected" : "" ?>
                                             value="2"
                                         >
                                             Ca 2
