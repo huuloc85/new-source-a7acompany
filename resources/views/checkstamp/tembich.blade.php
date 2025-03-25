@@ -38,9 +38,11 @@
                                         </td>
                                         <td
                                             colspan="2"
-                                            class="text-center jtf-center"
+                                            class="align-content-center same-width"
                                         >
-                                            <p class="fw-bold mb-0 fs-20 fs-13">
+                                            <p
+                                                class="fw-bold mb-0 fs-20 fs-13 pro-name"
+                                            >
                                                 {{ $product->name }}
                                             </p>
                                         </td>
@@ -148,7 +150,7 @@
                                         </td>
                                         <td
                                             colspan="3"
-                                            class="text-center align-content-center"
+                                            class="text-center align-content-center same-width"
                                         >
                                             Kiểm tra 200%
                                             <br />
