@@ -437,7 +437,8 @@ class EmployeeController extends Controller
             $salaryOfficialsVVP = SalaryOfficialVVP::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
             $salaryOfficialsA7A = SalaryOfficialA7A::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
             $salaryParttimes = SalaryParttime::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
-            $salaryInWords = NumberToWordsHelper::convert($salaryOfficialsVVP->actually_received);
+            $actuallyReceived = $salaryOfficialsVVP->actually_received ?? $salaryOfficialsA7A->actually_received ?? $salaryParttimes->actually_received ?? 0;
+            $salaryInWords = NumberToWordsHelper::convert($actuallyReceived);
 
             return view('employee.salary-detail', compact('salaryOfficialsVVP', 'salaryOfficialsA7A', 'salaryParttimes', 'salaryManager', 'salaryInWords'));
         } catch (\Exception $e) {
