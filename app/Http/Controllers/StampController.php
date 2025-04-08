@@ -44,7 +44,7 @@ class StampController extends Controller
             // Nếu không phải chuỗi hoặc không có dấu phẩy, thực hiện theo cách này
             for ($i = 0; $i < $binCount; $i++) {
                 // Tạo barcode
-                $barcodeString = $product->quanEntityBin.'A'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $binStart + $i);
+                $barcodeString = $product->id.'a'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $binStart + $i);
                 $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
                 $data = [
                     'bin' => sprintf('%03d', $binStart + $i),
@@ -62,7 +62,7 @@ class StampController extends Controller
                 if (is_numeric($currentBinStart)) {
                     $currentBinStart = (int) $currentBinStart; // Chuyển đổi thành số nguyên
                     // Tạo barcode cho từng giá trị binStart
-                    $barcodeString = $product->quanEntityBin.'A'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $currentBinStart);
+                    $barcodeString = $product->id.'a'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $currentBinStart);
                     $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
 
                     $data = [
@@ -126,6 +126,11 @@ class StampController extends Controller
     public function scan(Request $request)
     {
         return view('barcode.scan');
+    }
+
+    public function scanQr(Request $request)
+    {
+        return view('barcode.qr-code');
     }
 
     // handle check barcode when scan success
