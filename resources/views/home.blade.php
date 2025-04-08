@@ -145,6 +145,14 @@
             'link' => route('admin.checkemployee.view-employee-todo'),
         ]);
     }
+
+    if (Auth()->user()->role_id == 4) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Quét QR',
+            'icon' => 'fas fa-qrcode fa-2x',
+            'link' => route('admin.barcode.scan'),
+        ]);
+    }
     if (Auth()->user()->role_id !== 8 && Auth()->user()->role_id !== 10) {
         array_push($employeeWidgets, [
             'title' => 'Yêu Cầu In Tem',
