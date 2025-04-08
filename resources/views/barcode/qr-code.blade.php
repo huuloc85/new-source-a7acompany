@@ -73,6 +73,7 @@
 @section('scripts')
     <script>
         import { Html5Qrcode } from 'html5-qrcode';
+
         document.addEventListener('DOMContentLoaded', function () {
             let startApi = true;
 
