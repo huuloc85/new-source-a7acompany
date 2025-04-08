@@ -1,6 +1,6 @@
 @extends('layouts.'.$layout)
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/scan-barcode.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/scan-qrcode') }}" />
     <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
 @endsection
 
@@ -48,7 +48,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div
-                                    id="interactive"
+                                    id="reader"
                                     data-url="{{ route('admin.barcode.check') }}"
                                     class="viewport"
                                 ></div>
@@ -76,10 +76,10 @@
         document.addEventListener('DOMContentLoaded', function () {
             let startApi = true;
 
-            const reader = document.getElementById('interactive');
+            const reader = document.getElementById('reader');
             const url = reader.dataset.url;
 
-            const html5QrCode = new Html5Qrcode('interactive');
+            const html5QrCode = new Html5Qrcode('reader');
 
             function onScanSuccess(decodedText, decodedResult) {
                 if (

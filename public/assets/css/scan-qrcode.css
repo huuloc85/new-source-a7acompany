@@ -1,0 +1,56 @@
+/* Căn giữa khung quét */
+#reader {
+    width: 500px;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    position: relative;
+}
+
+/* Tạo viền nhấp nháy giả lập hiệu ứng quét */
+#reader::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: red;
+    animation: scan-line 2s infinite;
+}
+
+@keyframes scan-line {
+    0% {
+        top: 0%;
+        opacity: 0.3;
+    }
+
+    50% {
+        top: 50%;
+        opacity: 1;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0.3;
+    }
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+    #reader {
+        width: 100%;
+    }
+}
+
+/* Bố cục spacing */
+.card-body .row+.row {
+    margin-top: 20px;
+}
+
+.btn-danger {
+    margin-top: 20px;
+}
