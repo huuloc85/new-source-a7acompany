@@ -92,6 +92,7 @@
         />
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         @vite('resources/js/pusher.js')
+        @vite('resources/js/scan.js')
 
         <!-- Styling css -->
         <style class="fslightbox-styles">
