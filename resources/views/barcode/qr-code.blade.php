@@ -1,7 +1,6 @@
 @extends('layouts.'.$layout)
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/scan-qrcode') }}" />
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('assets/css/scan-qrcode.css') }}" />
 @endsection
 
 @section('content')
@@ -73,6 +72,7 @@
 
 @section('scripts')
     <script>
+        import { Html5Qrcode } from 'html5-qrcode';
         document.addEventListener('DOMContentLoaded', function () {
             let startApi = true;
 
@@ -81,81 +81,72 @@
 
             const html5QrCode = new Html5Qrcode('reader');
 
-            function onScanSuccess(decodedText, decodedResult) {
+            const onScanSuccess = (decodedText, decodedResult) => {
                 if (
                     decodedText &&
-                    decodedText !== '' &&
                     decodedText !== '*!' &&
                     decodedText !== "U8'48*("
                 ) {
-                    console.log('Mã quét:', decodedText);
+                    console.log('✅ Mã quét:', decodedText);
 
                     if (startApi) {
-                        $.ajax({
-                            url: url,
+                        fetch(url, {
                             method: 'POST',
-                            data: {
-                                barcode: decodedText,
-                                _token: '{{ csrf_token() }}',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document
+                                    .querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content'),
                             },
-                            success: function (response) {
-                                console.log(response.status);
+                            body: JSON.stringify({
+                                barcode: decodedText,
+                            }),
+                        })
+                            .then((res) => res.json())
+                            .then((response) => {
                                 switch (response.status) {
                                     case 200:
                                         alert(
-                                            '✅ Cập nhật Sản lượng xuất hàng thành công, vui lòng nhấn OK và đợi 5s để tiếp tục quét mã!',
+                                            '✅ Cập nhật thành công. Đợi 5 giây...',
                                         );
                                         break;
                                     case 400:
-                                        alert(
-                                            '⚠️ Mã này đã được quét, vui lòng thử lại!',
-                                        );
+                                        alert('⚠️ Mã đã được quét.');
                                         break;
                                     case 404:
-                                        alert('❌ Không tìm thấy sản phẩm!');
-                                        break;
-                                    case 500:
-                                        alert('❌ Mã này không hợp lệ!');
+                                        alert('❌ Không tìm thấy sản phẩm.');
                                         break;
                                     default:
-                                        alert('Lỗi không xác định!');
+                                        alert('⚠️ Lỗi không xác định.');
                                         break;
                                 }
-                            },
-                            error: function (xhr, status, error) {
-                                console.error(
-                                    'Đã xảy ra lỗi khi gửi barcode:',
-                                    error,
-                                );
-                            },
-                        });
+                            })
+                            .catch((err) => console.error('Lỗi gửi mã:', err));
 
                         startApi = false;
-                        setTimeout(function () {
-                            console.log('⏱️ Chờ 5 giây...');
+                        setTimeout(() => {
                             startApi = true;
                         }, 5000);
                     }
                 }
-            }
+            };
 
             Html5Qrcode.getCameras()
                 .then((devices) => {
                     if (devices && devices.length) {
-                        var cameraId = devices[0].id;
+                        const cameraId = devices[0].id;
                         html5QrCode
                             .start(
                                 {
-                                    facingMode: 'environment',
+                                    deviceId: {
+                                        exact: cameraId,
+                                    },
                                 },
                                 {
                                     fps: 10,
                                     qrbox: 250,
                                 },
                                 onScanSuccess,
-                                (errorMessage) => {
-                                    // console.log('Scan error', errorMessage);
-                                },
                             )
                             .catch((err) => {
                                 console.error(
