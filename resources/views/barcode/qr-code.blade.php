@@ -1,7 +1,7 @@
 @extends('layouts.'.$layout)
 @section('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/scan-barcode.css') }}" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
 @endsection
 
 @section('content')
@@ -74,71 +74,51 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var startApi = true;
-            Quagga.init(
-                {
-                    inputStream: {
-                        name: 'Live',
-                        type: 'LiveStream',
-                        target: document.querySelector('#interactive'),
-                        constraints: {
-                            facingMode: 'environment',
-                        },
-                    },
-                    decoder: {
-                        readers: ['code_128_reader'],
-                    },
-                },
-                function (err) {
-                    if (err) {
-                        console.log(err);
-                        return;
-                    }
-                    console.log('QuaggaJS đã được khởi tạo thành công');
-                    Quagga.start();
-                },
-            );
+            let startApi = true;
 
-            Quagga.onDetected(function (result) {
+            const reader = document.getElementById('interactive');
+            const url = reader.dataset.url;
+
+            const html5QrCode = new Html5Qrcode('interactive');
+
+            function onScanSuccess(decodedText, decodedResult) {
                 if (
-                    result &&
-                    result.codeResult.code != '' &&
-                    result.codeResult.code != '*!' &&
-                    result.codeResult.code != "U8'48*("
+                    decodedText &&
+                    decodedText !== '' &&
+                    decodedText !== '*!' &&
+                    decodedText !== "U8'48*("
                 ) {
-                    var code = result.codeResult.code;
+                    console.log('Mã quét:', decodedText);
 
                     if (startApi) {
-                        console.log(startApi);
-                        var url = $('#interactive').data('url');
                         $.ajax({
                             url: url,
                             method: 'POST',
                             data: {
-                                barcode: code,
+                                barcode: decodedText,
                                 _token: '{{ csrf_token() }}',
                             },
                             success: function (response) {
                                 console.log(response.status);
-                                var status = response.status;
-                                switch (status) {
+                                switch (response.status) {
                                     case 200:
                                         alert(
-                                            'Cập nhật Sản lượng xuất hàng thành công, Vui lòng nhấn Ok và đợi 5s để tiếp tục quét mã!!!',
+                                            '✅ Cập nhật Sản lượng xuất hàng thành công, vui lòng nhấn OK và đợi 5s để tiếp tục quét mã!',
                                         );
                                         break;
                                     case 400:
                                         alert(
-                                            'Mã này đã được quét vui lòng thử lại!!!',
+                                            '⚠️ Mã này đã được quét, vui lòng thử lại!',
                                         );
                                         break;
                                     case 404:
-                                        alert('Không tìm thấy sản phẩm!!!');
+                                        alert('❌ Không tìm thấy sản phẩm!');
                                         break;
                                     case 500:
-                                        alert('Mã này không hợp lệ!!!');
+                                        alert('❌ Mã này không hợp lệ!');
                                         break;
                                     default:
+                                        alert('Lỗi không xác định!');
                                         break;
                                 }
                             },
@@ -152,12 +132,42 @@
 
                         startApi = false;
                         setTimeout(function () {
-                            console.log('Wait for 5s!!!');
+                            console.log('⏱️ Chờ 5 giây...');
                             startApi = true;
                         }, 5000);
                     }
                 }
-            });
+            }
+
+            Html5Qrcode.getCameras()
+                .then((devices) => {
+                    if (devices && devices.length) {
+                        var cameraId = devices[0].id;
+                        html5QrCode
+                            .start(
+                                {
+                                    facingMode: 'environment',
+                                },
+                                {
+                                    fps: 10,
+                                    qrbox: 250,
+                                },
+                                onScanSuccess,
+                                (errorMessage) => {
+                                    // console.log('Scan error', errorMessage);
+                                },
+                            )
+                            .catch((err) => {
+                                console.error(
+                                    'Không thể khởi động camera:',
+                                    err,
+                                );
+                            });
+                    }
+                })
+                .catch((err) => {
+                    console.error('Không thể truy cập camera:', err);
+                });
         });
     </script>
 @endsection

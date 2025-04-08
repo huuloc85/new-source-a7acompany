@@ -148,9 +148,14 @@
 
     if (Auth()->user()->role_id == 4) {
         array_unshift($employeeWidgets, [
-            'title' => 'Quét QR',
+            'title' => 'Quét Barcode',
             'icon' => 'fas fa-qrcode fa-2x',
             'link' => route('admin.barcode.scan'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Quét QR Code',
+            'icon' => 'fas fa-qrcode fa-2x',
+            'link' => route('admin.barcode.scanQr'),
         ]);
     }
     if (Auth()->user()->role_id !== 8 && Auth()->user()->role_id !== 10) {
