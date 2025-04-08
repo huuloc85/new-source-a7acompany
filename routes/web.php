@@ -199,7 +199,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/', [StampController::class, 'index'])->name('admin.product.barcode');
         Route::post('/register', [StampController::class, 'barcode'])->name('admin.barcode.register');
         Route::post('/save-print', [StampController::class, 'savePrint'])->name('admin.barcode.save.print');
-        Route::get('/history', [HistoryPrintController::class, 'index'])->name('admin.product.barcode.history');
+        // Route::get('/history', [HistoryPrintController::class, 'index'])->name('admin.product.barcode.history');
     });
 
     // packing-stamp
