@@ -1,8 +1,10 @@
 @extends('layouts.'.$layout)
 
-@section('styles')
+{{--
+    @section('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/scan-qrcode.css') }}" />
-@endsection
+    @endsection
+--}}
 
 @section('content')
     <div class="row">
@@ -20,16 +22,16 @@
                                 <div class="mb-3">
                                     <h2 class="fs-2 mb-3">
                                         <span class="text-danger">*</span>
-                                        Hướng dẫn quét mã QR:
+                                        Hướng dẫn quét mã vạch:
                                     </h2>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 1:</span>
-                                        Đưa mã QR vào khung màn hình quét.
+                                        Đưa mã vạch vào khung màn hình quét.
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 2:</span>
                                         Cân chỉnh để camera có thể nhận diện mã
-                                        QR rõ ràng.
+                                        vạch rõ ràng.
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 3:</span>
@@ -37,7 +39,7 @@
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Lưu ý:</span>
-                                        Khoảng nghỉ giữa 2 lần quét mã thành
+                                        Khoảng nghĩ giữa 2 lần quét mã thành
                                         công là
                                         <span class="text-danger">5 giây</span>
                                         .
