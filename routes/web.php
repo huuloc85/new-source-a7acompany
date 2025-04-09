@@ -214,6 +214,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/scan', [StampController::class, 'scan'])->name('admin.barcode.scan');
         Route::post('/check', [StampController::class, 'checkBarCode'])->name('admin.barcode.check');
         Route::get('/scanqr', [StampController::class, 'scanQr'])->name('admin.barcode.scanQr');
+        Route::post('/checkqr', [StampController::class, 'checkQr'])->name('admin.barcode.checkQr');
     });
 
     // check PO

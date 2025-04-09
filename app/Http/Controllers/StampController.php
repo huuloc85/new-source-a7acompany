@@ -183,6 +183,56 @@ class StampController extends Controller
         return response()->json($result, 200);
     }
 
+    // handle check qr code when scan success
+    public function checkQr(Request $request)
+    {
+        $data = explode('a', $request->barcode);
+        $result = [
+            'status' => 500,
+        ];
+
+        if ($data && count($data) > 1) {
+            $productId = $data[0];
+            $ltoString = $data[1];
+            $date = substr($data[1], 0, 8);
+            $shift = substr($data[1], 8, 1);
+            $bin = substr($data[1], 9);
+            $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
+            $result = [
+                'barcode' => $request->barcode,
+                'date' => $date,
+                'shift' => $shift,
+                'bin' => $bin,
+                'lot' => $lot,
+            ];
+
+            $product = Product::findOrFail($productId);
+
+            if ($product) {
+                // check xem mã đã quét chưa?
+                $checkLot = StorageProduct::where('lot', $lot)->first();
+                if ($checkLot == null) {
+                    $storageProduct = new StorageProduct;
+                    $storageProduct->product_id = $productId;
+                    $storageProduct->lot = $lot;
+                    $storageProduct->save();
+                    $result['status'] = 200;
+
+                    return response()->json($result, 200);
+                }
+                $result['status'] = 400;
+
+                return response()->json($result, 200);
+            } else {
+                $result['status'] = 404;
+
+                return response()->json($result, 200);
+            }
+        }
+
+        return response()->json($result, 200);
+    }
+
     // save history print
     // public function savePrint(Request $request)
     // {
