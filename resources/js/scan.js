@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             .getAttribute("content"),
                     },
                     body: JSON.stringify({
-                        barcode: decodedText,
+                        qr_code: decodedText,
                     }),
                 })
                     .then((res) => res.json())
