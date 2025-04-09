@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <div class="table-responsives">
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
@@ -74,7 +74,7 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            let startApi = true;
+            var startApi = true;
 
             Quagga.init(
                 {
@@ -92,10 +92,8 @@
                 },
                 function (err) {
                     if (err) {
-                        console.log(err);
                         return;
                     }
-                    console.log('✅ QuaggaJS đã khởi động');
                     Quagga.start();
                 },
             );
@@ -107,68 +105,80 @@
                     result.codeResult.code !== '*!' &&
                     result.codeResult.code !== "U8'48*("
                 ) {
-                    const barcode = result.codeResult.code;
+                    var code = result.codeResult.code;
+                    var prefix = code.substring(0, 2); // 🟡 Lấy 2 số đầu
+                    var storedProductId = sessionStorage.getItem('product_id'); // 🟢 Đã lưu sau quét QR
 
-                    if (startApi) {
-                        // ✅ Lấy mã QR đã lưu từ sessionStorage
-                        const qrCode = sessionStorage.getItem('qr_code');
-
-                        if (qrCode && qrCode === barcode) {
-                            const url = $('#interactive').data('url');
-
-                            $.ajax({
-                                url: url,
-                                method: 'POST',
-                                data: {
-                                    barcode: barcode,
-                                    _token: '{{ csrf_token() }}',
-                                },
-                                success: function (response) {
-                                    const status = response.status;
-
-                                    switch (status) {
-                                        case 200:
-                                            alert(
-                                                '✅ Cập nhật thành công! Đợi 5s để tiếp tục...',
-                                            );
-                                            // Xoá mã QR sau khi thành công nếu muốn
-                                            sessionStorage.removeItem(
-                                                'qr_code',
-                                            );
-                                            break;
-                                        case 400:
-                                            alert(
-                                                '⚠️ Mã này đã được quét rồi!',
-                                            );
-                                            break;
-                                        case 404:
-                                            alert(
-                                                '❌ Không tìm thấy sản phẩm!',
-                                            );
-                                            break;
-                                        case 500:
-                                            alert('❌ Mã không hợp lệ!');
-                                            break;
-                                        default:
-                                            alert('❓ Lỗi không xác định!');
-                                            break;
-                                    }
-                                },
-                                error: function (xhr, status, error) {
-                                    console.error('❌ Lỗi gửi barcode:', error);
-                                },
-                            });
-
-                            startApi = false;
-                            setTimeout(function () {
-                                startApi = true;
-                            }, 5000);
-                        } else {
-                            alert(
-                                '❌ Mã barcode không khớp với mã QR đã quét!',
-                            );
-                        }
+                    if (!storedProductId) {
+                        Quagga.stop();
+                        startApi = false;
+                        alert(
+                            '⚠️ Vui lòng quét mã QR sản phẩm trước khi quét mã barcode!',
+                        );
+                        location.reload();
+                        return;
                     }
+
+                    if (storedProductId != prefix) {
+                        Quagga.stop();
+                        startApi = false;
+                        alert(
+                            '⚠️ Mã barcode không khớp với sản phẩm đã chọn! Vui lòng quét lại.',
+                        );
+                        location.reload();
+                        return;
+                    }
+
+                    // ✅ Trùng thì gửi API tiếp
+                    if (startApi) {
+                        var url = $('#interactive').data('url');
+
+                        $.ajax({
+                            url: url,
+                            method: 'POST',
+                            data: {
+                                barcode: code,
+                                _token: '{{ csrf_token() }}',
+                            },
+                            success: function (response) {
+                                var status = response.status;
+
+                                switch (status) {
+                                    case 200:
+                                        alert(
+                                            '✅ Cập nhật thành công! Vui lòng quét tiếp theo sau 5s!',
+                                        );
+                                        sessionStorage.removeItem('product_id'); // 🧹 Xóa sau quét
+                                        break;
+                                    case 400:
+                                        alert('⚠️ Mã này đã được quét rồi!');
+                                        break;
+                                    case 404:
+                                        alert('❌ Không tìm thấy sản phẩm!');
+                                        break;
+                                    case 500:
+                                        alert('❌ Mã không hợp lệ!');
+                                        break;
+                                    default:
+                                        console.warn(
+                                            '⚠️ Trạng thái không xác định:',
+                                            status,
+                                        );
+                                        break;
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('❌ Lỗi khi gửi barcode:', error);
+                            },
+                        });
+
+                        startApi = false;
+                        setTimeout(function () {
+                            startApi = true;
+                        }, 5000);
+                    }
+                } else {
+                    console.warn('🚫 Mã không hợp lệ hoặc bị từ chối');
                 }
             });
         });
