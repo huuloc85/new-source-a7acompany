@@ -13,9 +13,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const onScanSuccess = (decodedText, decodedResult) => {
         if (decodedText && decodedText !== "*!" && decodedText !== "U8'48*(") {
-            console.log("✅ Mã quét:", decodedText);
+            // 👉 Tách mã cần lấy, ví dụ như "00K9P"
+            const match = decodedText.match(/\s+([A-Z0-9]{5})\s+/);
+            const code = match ? match[1] : null;
 
-            if (startApi) {
+            if (code && startApi) {
+                console.log("✅ Mã đã tách:", code);
+                alert("🎉 Quét mã thành công!\nMã: " + code);
+
                 fetch(url, {
                     method: "POST",
                     headers: {
@@ -25,28 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             .getAttribute("content"),
                     },
                     body: JSON.stringify({
-                        qr_code: decodedText,
+                        qr_code: code,
                     }),
-                })
-                    .then((res) => res.json())
-                    .then((response) => {
-                        switch (response.status) {
-                            case 200:
-                                alert("✅ Cập nhật thành công. Đợi 5 giây...");
-                                break;
-                            case 400:
-                                alert("⚠️ Mã đã được quét.");
-                                break;
-                            case 404:
-                                alert("❌ Không tìm thấy sản phẩm.");
-                                break;
-                            default:
-                                alert("⚠️ Lỗi không xác định.");
-                                break;
-                        }
-                    })
-                    .catch((err) => console.error("Lỗi gửi mã:", err));
+                });
 
+                // 👉 Cho nghỉ 5 giây để tránh gửi liên tục
                 startApi = false;
                 setTimeout(() => {
                     startApi = true;
