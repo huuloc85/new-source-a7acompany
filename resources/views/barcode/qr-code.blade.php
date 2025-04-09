@@ -52,7 +52,6 @@
                                 <div
                                     id="reader"
                                     data-url="{{ route('admin.barcode.checkQr') }}"
-                                    class="viewport"
                                 ></div>
                             </div>
                         </div>
@@ -74,5 +73,43 @@
 @endsection
 
 @section('scripts')
-    @vite(['resources/js/scan.js'])
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        let startApi = true;
+
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log('✅ Đã quét được:', decodedText);
+
+            const invalidCodes = ['*!', "U8'48*("];
+            if (!decodedText || invalidCodes.includes(decodedText)) return;
+
+            // Tách chuỗi: tìm mã gồm 5 ký tự in hoa hoặc số
+            const match = decodedText.match(/\b([A-Z0-9]{5})\b/);
+            const code = match ? match[1] : null;
+
+            if (code) {
+                alert('🎯 Mã được tách từ QR: ' + code);
+
+                // ✅ Lưu vào sessionStorage để trang barcode sử dụng
+                sessionStorage.setItem('qr_code', code);
+
+                // ✅ Chuyển qua trang quét mã vạch
+                window.location.href = '{{ route('admin.barcode.check') }}';
+            } else {
+                alert('⚠️ Không tìm thấy mã hợp lệ trong chuỗi QR!');
+            }
+        }
+
+        const html5QrCode = new Html5Qrcode('reader');
+
+        html5QrCode
+            .start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: 250 },
+                onScanSuccess,
+            )
+            .catch((err) => {
+                console.error('❌ Lỗi khởi động camera:', err);
+            });
+    </script>
 @endsection
