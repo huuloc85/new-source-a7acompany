@@ -186,98 +186,18 @@ class StampController extends Controller
     // handle check qr code when scan success
     public function checkQr(Request $request)
     {
-        $data = explode('a', $request->barcode);
-        $result = [
-            'status' => 500,
-        ];
+        $qrCode = $request->input('qr_code');
 
-        if ($data && count($data) > 1) {
-            $productId = $data[0];
-            $ltoString = $data[1];
-            $date = substr($data[1], 0, 8);
-            $shift = substr($data[1], 8, 1);
-            $bin = substr($data[1], 9);
-            $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
-            $result = [
-                'barcode' => $request->barcode,
-                'date' => $date,
-                'shift' => $shift,
-                'bin' => $bin,
-                'lot' => $lot,
-            ];
-
-            $product = Product::findOrFail($productId);
-
-            if ($product) {
-                // check xem mã đã quét chưa?
-                $checkLot = StorageProduct::where('lot', $lot)->first();
-                if ($checkLot == null) {
-                    $storageProduct = new StorageProduct;
-                    $storageProduct->product_id = $productId;
-                    $storageProduct->lot = $lot;
-                    $storageProduct->save();
-                    $result['status'] = 200;
-
-                    return response()->json($result, 200);
-                }
-                $result['status'] = 400;
-
-                return response()->json($result, 200);
-            } else {
-                $result['status'] = 404;
-
-                return response()->json($result, 200);
-            }
+        if (! $qrCode) {
+            return response()->json(['status' => 400, 'message' => 'Không nhận được mã QR']);
         }
 
-        return response()->json($result, 200);
+        Log::info('Mã QR nhận được: '.$qrCode);
+
+        // Xử lý tiếp với DB hoặc logic khác nếu cần
+        return response()->json(['status' => 200, 'message' => 'Mã QR đã được nhận']);
     }
 
-    // save history print
-    // public function savePrint(Request $request)
-    // {
-    //     try {
-    //         Log::info('Dữ liệu nhận được:', $request->all()); // Log request để kiểm tra dữ liệu đầu vào
-
-    //         $product = Product::where('code', $request->productCode)->first();
-    //         if (!$product) {
-    //             Log::error('Sản phẩm không tồn tại: ' . $request->productCode);
-    //             return response()->json(['error' => 'Sản phẩm không tồn tại'], 400);
-    //         }
-
-    //         $listBin = explode(',', $request->binStart);
-    //         if (count($listBin) > 1) {
-    //             foreach ($listBin as $bin) {
-    //                 $history = new SendStamp();
-    //                 $history->product_id = $product->id;
-    //                 $history->manager_id = Auth::id();
-    //                 $history->type = $request->type;
-    //                 $history->date = $request->date;
-    //                 $history->shift = $request->shift;
-    //                 $history->binCount = 1;
-    //                 $history->binStart = $bin;
-    //                 $history->manager_time = Carbon::now()->format('H:i:s');
-    //                 $history->save();
-    //             }
-    //         } else {
-    //             $history = new SendStamp();
-    //             $history->product_id = $product->id;
-    //             $history->manager_id = Auth::id();
-    //             $history->type = $request->type;
-    //             $history->date = $request->date;
-    //             $history->shift = $request->shift;
-    //             $history->binCount = $request->binCount;
-    //             $history->binStart = $request->binStart;
-    //             $history->manager_time = Carbon::now()->format('H:i:s');
-    //             $history->save();
-    //         }
-
-    //         return response()->json(['status' => 200]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Lỗi khi lưu lịch sử print: ' . $e->getMessage() . ' - Dòng: ' . $e->getLine());
-    //         return response()->json(['error' => $e->getMessage()], 500);
-    //     }
-    // }
     public function savePrint(Request $request)
     {
         try {
