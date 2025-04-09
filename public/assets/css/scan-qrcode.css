@@ -18,40 +18,37 @@
 
 /* Khung chứa camera và quét QR */
 #reader {
-    width: 500px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 500px;
     margin: 0 auto;
     border: 2px solid #ccc;
     border-radius: 8px;
     padding: 10px;
     background-color: #f9f9f9;
+    box-sizing: border-box;
 }
 
 /* Responsive khung quét video */
-video {
-    max-width: 100%;
-    height: auto;
+#reader video {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    border-radius: 4px;
 }
 
 /* Ẩn vùng vẽ nếu có */
+canvas.drawingBuffer,
 .drawingBuffer {
-    width: 0px;
-    height: 0px;
-    border: none;
-    padding: 0;
-    margin: 0;
+    display: none !important;
 }
 
 /* Responsive layout cho điện thoại */
 @media (max-width: 600px) {
 
     .col-5,
-    .col-4 {
+    .col-4,
+    .col-12 {
         width: 100% !important;
-    }
-
-    #reader {
-        width: 100%;
     }
 
     .title {

@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const code = match ? match[1] : null;
 
             if (code && startApi) {
-                console.log("✅ Mã đã tách:", code);
                 alert("🎉 Quét mã thành công!\nMã: " + code);
 
                 fetch(url, {
@@ -47,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((devices) => {
             if (devices && devices.length) {
                 const cameraId = devices[0].id;
+                console.log("Camera ID:", cameraId);
                 html5QrCode.start(
                     { deviceId: { exact: cameraId } },
                     { fps: 10, qrbox: 250 },

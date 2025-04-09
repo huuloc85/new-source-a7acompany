@@ -187,12 +187,13 @@ class StampController extends Controller
     public function checkQr(Request $request)
     {
         $qrCode = $request->input('qr_code');
-
+        $cameraId = $request->input('camera_id');
         if (! $qrCode) {
             return response()->json(['status' => 400, 'message' => 'Không nhận được mã QR']);
         }
 
         Log::info('Mã QR nhận được: '.$qrCode);
+        Log::info('camera: '.$cameraId);
 
         // Xử lý tiếp với DB hoặc logic khác nếu cần
         return response()->json(['status' => 200, 'message' => 'Mã QR đã được nhận']);
