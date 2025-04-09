@@ -186,10 +186,23 @@ class StampController extends Controller
     // handle check qr code when scan success
     public function checkQr(Request $request)
     {
-        $barcode = $request->input('barcode');
-        Log::info('📥 QR Code nhận được từ frontend:', ['barcode' => $barcode]);
+        $qrCode = $request->input('qr_code');
 
-        return response()->json(['status' => 'success']);
+        if (! $qrCode) {
+            return response()->json(['status' => 400, 'message' => 'Không nhận được mã QR']);
+        }
+
+        $product = Product::where('code', $qrCode)->first();
+
+        if (! $product) {
+            return response()->json(['status' => 404, 'message' => 'Không tìm thấy sản phẩm']);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+        ]);
     }
 
     public function savePrint(Request $request)
