@@ -10,26 +10,26 @@
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Quét Mã Vạch</h4>
+                        <h4 class="card-title mb-0">Quét QRCODE</h4>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsives">
+                    <div class="table-responsive">
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
                                     <h2 class="fs-2 mb-3">
                                         <span class="text-danger">*</span>
-                                        Hướng dẫn quét mã vạch:
+                                        Hướng dẫn quét mã QR:
                                     </h2>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 1:</span>
-                                        Đưa mã vạch vào khung màn hình quét.
+                                        Đưa mã QR vào khung màn hình quét.
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 2:</span>
                                         Cân chỉnh để camera có thể nhận diện mã
-                                        vạch rõ ràng.
+                                        QR rõ ràng.
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 3:</span>
