@@ -33,8 +33,6 @@
         --}}
         <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
         {{-- <script defer data-site="127.0.0.1" src="https://api.nepcha.com/js/nepcha-analytics.js"></script> --}}
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-        <script src="https://momentjs.com/downloads/moment.min.js"></script>
         <!-- Nucleo Icons -->
         <link
             href="{{ asset('assets/css/nucleo-icons.css') }}"
@@ -48,6 +46,10 @@
             id="pagestyle"
             href="{{ asset('assets/css/material-dashboard.css?v=3.1.0') }}"
             rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
         />
         <!-- Bootstrap JS (with Popper.js for dropdowns) -->
         <link rel="stylesheet" href="{{ asset('assets/css/libs.min.css') }}" />
@@ -87,16 +89,14 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
-        />
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
         <script>
             eruda.init();
         </script>
-        {{-- @vite('resources/js/pusher.js') --}}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://momentjs.com/downloads/moment.min.js"></script>
+        @vite('resources/js/pusher.js')
 
         <!-- Styling css -->
         <style class="fslightbox-styles">
