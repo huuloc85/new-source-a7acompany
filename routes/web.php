@@ -18,8 +18,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\SendStampController;
 use App\Http\Controllers\StampController;
+use App\Http\Controllers\StorageProductController;
 use App\Models\Product;
-use App\Models\StorageProduct;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,7 +72,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('/send-stamp/index', [SendStampController::class, 'handleAdd'])->name('admin.handleAdd-send-stamp');
         Route::get('/send-stamp/check-status', [SendStampController::class, 'checkStampEmployee'])->name('admin.checkstamp-employee');
         //
-        Route::get('/storage', [StorageProduct::class, 'index'])->name('admin.storage.index');
+        Route::get('/storage', [StorageProductController::class, 'index'])->name('admin.storage.index');
     });
 
     // chức năng của Admin CheckEmployee

@@ -149,29 +149,26 @@ class StampController extends Controller
             $shift = substr($data[1], 8, 1);
             $bin = substr($data[1], 9);
             $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
-            $result = [
-                'barcode' => $request->barcode,
-                'date' => $date,
-                'shift' => $shift,
-                'bin' => $bin,
-                'lot' => $lot,
-            ];
 
-            $product = Product::findOrFail($productId);
+            $product = Product::find($productId);
 
             if ($product) {
-                // check xem mã đã quét chưa?
                 $checkLot = StorageProduct::where('lot', $lot)->first();
+
                 if ($checkLot == null) {
                     $storageProduct = new StorageProduct;
                     $storageProduct->product_id = $productId;
                     $storageProduct->lot = $lot;
-                    $storageProduct->employee_code = $employeeId;
+                    $storageProduct->employee_id = $employeeId;
+                    $storageProduct->bin = $bin;
                     $storageProduct->save();
+
                     $result['status'] = 200;
+                    $result['lot'] = $lot;
 
                     return response()->json($result, 200);
                 }
+
                 $result['status'] = 400;
 
                 return response()->json($result, 200);
