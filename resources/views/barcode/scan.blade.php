@@ -83,16 +83,28 @@
                         type: 'LiveStream',
                         target: document.querySelector('#interactive'),
                         constraints: {
-                            facingMode: 'environment',
+                            facingMode: 'environment', // dùng camera sau
                         },
                     },
+                    locator: {
+                        patchSize: 'medium',
+                        halfSample: true,
+                    },
+                    numOfWorkers: 2,
                     decoder: {
                         readers: ['code_128_reader'],
+                        debug: {
+                            drawBoundingBox: true,
+                            showFrequency: true,
+                            drawScanline: true,
+                            showPattern: true,
+                        },
                     },
+                    locate: true,
                 },
                 function (err) {
                     if (err) {
-                        console.error('❌ Quagga init error:', err);
+                        console.error(err);
                         return;
                     }
                     Quagga.start();
