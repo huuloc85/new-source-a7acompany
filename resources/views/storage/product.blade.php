@@ -23,9 +23,13 @@
                                     <tr>
                                         <th>STT</th>
                                         <th>Tên Sản Phẩm</th>
-                                        <th>Nhân Viên Gửi</th>
+                                        <th>Code</th>
+                                        <th>Nhân Viên Nhập</th>
+                                        <th>Mã Nhân Viên</th>
                                         <th>Số Lot</th>
                                         <th>Thùng Số</th>
+                                        <th>Ngày Xuất</th>
+                                        <th>Thời Gian</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center align-middle">
@@ -36,13 +40,25 @@
                                                 {{ $storageItem->product->name }}
                                             </td>
                                             <td>
+                                                {{ $storageItem->product->code }}
+                                            </td>
+                                            <td>
                                                 {{ $storageItem->employee->name }}
+                                            </td>
+                                            <td>
+                                                {{ $storageItem->employee->code }}
                                             </td>
                                             <td>
                                                 {{ $storageItem->lot }}
                                             </td>
                                             <td>
                                                 {{ $storageItem->bin }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($storageItem->created_at)->format('d-m') }}
+                                            </td>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($storageItem->created_at)->format('H:i:s') }}
                                             </td>
                                         </tr>
                                     @endforeach
