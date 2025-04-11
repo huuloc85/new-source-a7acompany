@@ -96,7 +96,7 @@
         <script>
             eruda.init();
         </script>
-        @vite('resources/js/pusher.js')
+        {{-- @vite('resources/js/pusher.js') --}}
 
         <!-- Styling css -->
         <style class="fslightbox-styles">
