@@ -85,8 +85,8 @@
                 {
                     fps: 10,
                     qrbox: {
-                        width: 300,
-                        height: 200,
+                        width: 200,
+                        height: 100,
                     },
                     formatsToSupport: [Html5QrcodeSupportedFormats.CODE_128], // 👈 đọc barcode 128
                 },
