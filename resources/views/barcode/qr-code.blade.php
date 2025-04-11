@@ -90,15 +90,17 @@
                 startApi = false; // ❌ Tắt quét tiếp
 
                 alert('✅ Đã quét mã: ' + code);
-
+                const url = document.querySelector('#reader').dataset.url;
                 // 👉 Gửi lên server để lấy product_id
-                fetch('{{ route('admin.qr.check') }}', {
+                fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     },
-                    body: JSON.stringify({ qr_code: code }),
+                    body: JSON.stringify({
+                        qr_code: code,
+                    }),
                 })
                     .then((response) => response.json())
                     .then((data) => {
@@ -137,8 +139,13 @@
 
         html5QrCode
             .start(
-                { facingMode: 'environment' },
-                { fps: 10, qrbox: 250 },
+                {
+                    facingMode: 'environment',
+                },
+                {
+                    fps: 10,
+                    qrbox: 250,
+                },
                 onScanSuccess,
             )
             .catch((err) => {

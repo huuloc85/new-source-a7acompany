@@ -145,25 +145,43 @@
 
                                 switch (status) {
                                     case 200:
-                                        alert(
-                                            '✅ Cập nhật thành công! Vui lòng quét tiếp theo sau 5s!',
+                                        // 👉 Hỏi người dùng muốn đến đâu sau khi quét thành công
+                                        const goToScanQr = confirm(
+                                            '✅ Cập nhật thành công! Nhấn "OK" để đến trang QUÉT QR, hoặc "Hủy" để về TRANG CHÍNH.',
                                         );
-                                        sessionStorage.removeItem('product_id'); // 🧹 Xóa sau quét
+
+                                        sessionStorage.removeItem('product_id'); // 🧹 Xóa sau khi quét xong
+
+                                        if (goToScanQr) {
+                                            window.location.href =
+                                                '{{ route('admin.barcode.scanQr') }}';
+                                        } else {
+                                            window.location.href =
+                                                '{{ route('admin.home') }}';
+                                        }
                                         break;
+
                                     case 400:
                                         alert('⚠️ Mã này đã được quét rồi!');
+                                        location.reload(); // 🔄 Refresh
                                         break;
+
                                     case 404:
                                         alert('❌ Không tìm thấy sản phẩm!');
+                                        location.reload(); // 🔄 Refresh
                                         break;
+
                                     case 500:
                                         alert('❌ Mã không hợp lệ!');
+                                        location.reload(); // 🔄 Refresh
                                         break;
+
                                     default:
                                         console.warn(
                                             '⚠️ Trạng thái không xác định:',
                                             status,
                                         );
+                                        location.reload(); // 🔄 Refresh fallback
                                         break;
                                 }
                             },

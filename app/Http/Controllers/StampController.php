@@ -136,6 +136,7 @@ class StampController extends Controller
     // handle check barcode when scan success
     public function checkBarCode(Request $request)
     {
+        $employeeId = auth()->user()->id;
         $data = explode('a', $request->barcode);
         $result = [
             'status' => 500,
@@ -165,6 +166,7 @@ class StampController extends Controller
                     $storageProduct = new StorageProduct;
                     $storageProduct->product_id = $productId;
                     $storageProduct->lot = $lot;
+                    $storageProduct->employee_code = $employeeId;
                     $storageProduct->save();
                     $result['status'] = 200;
 

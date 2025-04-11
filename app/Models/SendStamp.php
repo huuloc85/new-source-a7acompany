@@ -34,11 +34,6 @@ class SendStamp extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function historyPrints()
-    {
-        return $this->hasOne(HistoryPrint::class);
-    }
-
     public function manager()
     {
         return $this->belongsTo(Employee::class);

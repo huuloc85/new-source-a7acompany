@@ -11,28 +11,28 @@ class Product extends Model
     use HasFactory;
     use SoftDeletes;
 
-    //paginate
+    // paginate
     public const paginate = 10;
 
-    //table
+    // table
     protected $table = 'products';
 
-    //fillable
+    // fillable
     protected $fillable = [
-        'code',                //Mã sản phẩm
-        'name',                //Tên sản phẩm
-        'quantity',            //Sản lượng
+        'code',                // Mã sản phẩm
+        'name',                // Tên sản phẩm
+        'quantity',            // Sản lượng
         // 'quantityCaTon',       //Số lượng thùng caton
-        'moldSize',            //Kích thước khuôn
-        'CAV',                 //Số cái/shot
-        'cycle',               //Chu kì s/shot
+        'moldSize',            // Kích thước khuôn
+        'CAV',                 // Số cái/shot
+        'cycle',               // Chu kì s/shot
         // 'planTime',            //Dự định thời gian hoạt động thiết bị(ngày/tháng)
         // 'realTime',            //Thực tế thời gian hoạt động thiết bị(ngày/tháng)
-        'FAPV',                //Công ty A
-        'FASV',                //Công ty B
-        'FAVV',                //Công ty C
-        'binCode',             //Mã thùng
-        'quanEntityBin',       //Số lượng con/thùng
+        'FAPV',                // Công ty A
+        'FASV',                // Công ty B
+        'FAVV',                // Công ty C
+        'binCode',             // Mã thùng
+        'quanEntityBin',       // Số lượng con/thùng
         // 'stockQuan',           //Số lượng tồn đầu kì
         // 'stockQuan200',        //Số lượng tồn đầu hàng 200%
         // 'prorealityQuan',      //Tổng số lượng sản xuất thực tế (nhân viên nhập vào hằng ngày)
@@ -50,7 +50,7 @@ class Product extends Model
 
     public $modelSizes = ['350×350', '500×500', '550×550', '700×700', '800×700'];
 
-    //relationship DailyQuantity
+    // relationship DailyQuantity
     public function DailyQuantities()
     {
         return $this->hasMany(DailyQuantity::class, 'product_id', 'id');
@@ -66,28 +66,22 @@ class Product extends Model
         return $this->hasMany(CheckEmployee::class, 'product_id', 'id');
     }
 
-    //relationship TotalDailyQuantity
+    // relationship TotalDailyQuantity
     public function TotalDailyQuantities()
     {
         return $this->hasMany(TotalDailyQuantity::class, 'product_id', 'id');
     }
 
-    //relationship TotalMonthQuantity
+    // relationship TotalMonthQuantity
     public function TotalMonthQuantities()
     {
         return $this->hasMany(TotalMonthQuantity::class, 'product_id', 'id');
     }
 
-    //relationship StorageProduct
+    // relationship StorageProduct
     public function StorageProducts()
     {
         return $this->hasMany(StorageProduct::class, 'product_id', 'id');
-    }
-
-    //relationship HistoryPrints
-    public function historyPrints()
-    {
-        return $this->hasMany(HistoryPrint::class, 'product_id', 'id');
     }
 
     public function sendStamps()
@@ -95,7 +89,7 @@ class Product extends Model
         return $this->hasMany(SendStamp::class, 'product_id', 'id');
     }
 
-    //relationship productionPlan
+    // relationship productionPlan
     public function productionPlans()
     {
         return $this->hasMany(ProductionPlan::class);
@@ -106,41 +100,41 @@ class Product extends Model
         return $this->hasMany(MaterialProduct::class);
     }
 
-    //search by name
+    // search by name
     public function scopeName($query, $request)
     {
         if ($request->has('name')) {
-            return $query->where('name', 'like', '%' . $request->name . '%');
+            return $query->where('name', 'like', '%'.$request->name.'%');
         }
 
         return $query;
     }
 
-    //search by code
+    // search by code
     public function scopeCode($query, $request)
     {
         if ($request->has('code')) {
-            return $query->where('code', 'like', '%' . $request->code . '%');
+            return $query->where('code', 'like', '%'.$request->code.'%');
         }
 
         return $query;
     }
 
-    //search by name
+    // search by name
     public function scopeMoldSize($query, $request)
     {
         if ($request->has('moldSize')) {
-            return $query->where('moldSize', 'like', '%' . $request->moldSize . '%');
+            return $query->where('moldSize', 'like', '%'.$request->moldSize.'%');
         }
 
         return $query;
     }
 
-    //search by code
+    // search by code
     public function scopeBinCode($query, $request)
     {
         if ($request->has('binCode')) {
-            return $query->where('binCode', 'like', '%' . $request->binCode . '%');
+            return $query->where('binCode', 'like', '%'.$request->binCode.'%');
         }
 
         return $query;
