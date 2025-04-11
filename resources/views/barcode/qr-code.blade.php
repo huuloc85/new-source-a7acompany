@@ -78,6 +78,23 @@
         let startApi = true;
         const html5QrCode = new Html5Qrcode('reader');
 
+        // 👉 Bắt đầu quét QR khi trang load
+        html5QrCode
+            .start(
+                {
+                    facingMode: 'environment',
+                }, // Camera sau
+                {
+                    fps: 10,
+                    qrbox: 250,
+                },
+                onScanSuccess,
+            )
+            .catch((err) => {
+                console.error('❌ Lỗi khởi động camera:', err);
+            });
+
+        // 👉 Hàm xử lý khi quét thành công
         function onScanSuccess(decodedText, decodedResult) {
             if (!startApi) return; // 🔁 Ngăn quét nhiều lần
             const invalidCodes = ['*!', "U8'48*("];
@@ -87,28 +104,35 @@
             const code = match ? match[1] : null;
 
             if (code) {
-                startApi = false; // ❌ Tắt quét tiếp
+                startApi = false; // ❌ Tạm dừng quét
 
-                alert('✅ Đã quét mã: ' + code);
                 const url = document.querySelector('#reader').dataset.url;
-                // 👉 Gửi lên server để lấy product_id
-                fetch(url, {
-                    method: 'POST',
+
+                // 🔁 Gửi mã QR lên server bằng Ajax
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
                     headers: {
-                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     },
-                    body: JSON.stringify({
+                    contentType: 'application/json',
+                    data: JSON.stringify({
                         qr_code: code,
                     }),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
+                    success: function (data) {
                         if (data.status === 200) {
                             const productId = data.product_id;
+                            const productName = data.product_name;
 
                             // ✅ Lưu product_id vào sessionStorage
                             sessionStorage.setItem('product_id', productId);
+
+                            // ✅ Thông báo tên sản phẩm
+                            alert(
+                                '✅ Đã quét thành công sản phẩm: ' +
+                                    productName,
+                            );
 
                             // ✅ Ngừng camera rồi chuyển trang
                             html5QrCode
@@ -126,30 +150,16 @@
                             alert('❌ ' + data.message);
                             startApi = true; // Cho phép quét lại
                         }
-                    })
-                    .catch((err) => {
-                        console.error('❌ Lỗi kết nối:', err);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('❌ Lỗi kết nối:', error);
                         alert('⚠️ Lỗi khi gửi mã QR!');
                         startApi = true;
-                    });
+                    },
+                });
             } else {
                 alert('⚠️ Không tìm thấy mã hợp lệ trong QR!');
             }
         }
-
-        html5QrCode
-            .start(
-                {
-                    facingMode: 'environment',
-                },
-                {
-                    fps: 10,
-                    qrbox: 250,
-                },
-                onScanSuccess,
-            )
-            .catch((err) => {
-                console.error('❌ Lỗi khởi động camera:', err);
-            });
     </script>
 @endsection
