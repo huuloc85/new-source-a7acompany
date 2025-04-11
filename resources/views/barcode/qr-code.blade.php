@@ -159,6 +159,7 @@
                 });
             } else {
                 alert('⚠️ Không tìm thấy mã hợp lệ trong QR!');
+                location.reload();
             }
         }
     </script>
