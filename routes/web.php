@@ -9,7 +9,6 @@ use App\Http\Controllers\CheckPoController;
 use App\Http\Controllers\DailyProductivityHistoryController;
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\HistoryPrintController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\LoginHistoryController;
 use App\Http\Controllers\MaterialProductController;
@@ -20,6 +19,7 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\SendStampController;
 use App\Http\Controllers\StampController;
 use App\Models\Product;
+use App\Models\StorageProduct;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,6 +71,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/send-stamp/index', [SendStampController::class, 'index'])->name('admin.send-stamp');
         Route::post('/send-stamp/index', [SendStampController::class, 'handleAdd'])->name('admin.handleAdd-send-stamp');
         Route::get('/send-stamp/check-status', [SendStampController::class, 'checkStampEmployee'])->name('admin.checkstamp-employee');
+        //
+        Route::get('/storage', [StorageProduct::class, 'index'])->name('admin.storage.index');
     });
 
     // chức năng của Admin CheckEmployee
@@ -199,7 +201,6 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/', [StampController::class, 'index'])->name('admin.product.barcode');
         Route::post('/register', [StampController::class, 'barcode'])->name('admin.barcode.register');
         Route::post('/save-print', [StampController::class, 'savePrint'])->name('admin.barcode.save.print');
-        // Route::get('/history', [HistoryPrintController::class, 'index'])->name('admin.product.barcode.history');
     });
 
     // packing-stamp
