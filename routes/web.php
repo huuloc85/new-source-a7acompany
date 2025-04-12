@@ -149,13 +149,13 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // quản lý bảng lương
-    Route::middleware(['authAccountant'])->prefix('/salary')->group(function () {
-        Route::get('/', [SalaryController::class, 'index'])->name('admin.salary.home');
-        Route::get('/import', [SalaryController::class, 'getImportSalary'])->name('admin.salary.getimport');
-        Route::post('/import', [SalaryController::class, 'importSalary'])->name('admin.salary.import');
-        Route::get('/detail/{id}', [SalaryController::class, 'detail'])->name('admin.salary.detail');
-        Route::delete('/delete/{id}', [SalaryController::class, 'delete'])->name('admin.salary.delete');
-    });
+    // Route::middleware(['authAccountant'])->prefix('/salary')->group(function () {
+    //     Route::get('/', [SalaryController::class, 'index'])->name('admin.salary.home');
+    //     Route::get('/import', [SalaryController::class, 'getImportSalary'])->name('admin.salary.getimport');
+    //     Route::post('/import', [SalaryController::class, 'importSalary'])->name('admin.salary.import');
+    //     Route::get('/detail/{id}', [SalaryController::class, 'detail'])->name('admin.salary.detail');
+    //     Route::delete('/delete/{id}', [SalaryController::class, 'delete'])->name('admin.salary.delete');
+    // });
 
     // quản lý nhân sự
     Route::middleware(['authAdmin'])->prefix('/employee')->group(function () {
@@ -232,23 +232,23 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // lịch làm việc
-    Route::middleware(['authManager'])->prefix('/celender')->group(function () {
-        Route::get('/', [CelenderController::class, 'index'])->name('admin.celender.home');
-        Route::post('/add', [CelenderController::class, 'add'])->name('admin.celender.add');
-        Route::post('/store/{id}', [CelenderController::class, 'store'])->name('admin.celender.store');
-        Route::get('/edit/{id}', [CelenderController::class, 'edit'])->name('admin.celender.edit');
-        Route::post('/update/{id}', [CelenderController::class, 'update'])->name('admin.celender.update');
-        Route::get('/detail/{id}', [CelenderController::class, 'detail'])->name('admin.celender.detail');
-        Route::delete('/delete/{id}', [CelenderController::class, 'delete'])->name('admin.celender.delete');
-    });
+    // Route::middleware(['authManager'])->prefix('/celender')->group(function () {
+    //     Route::get('/', [CelenderController::class, 'index'])->name('admin.celender.home');
+    //     Route::post('/add', [CelenderController::class, 'add'])->name('admin.celender.add');
+    //     Route::post('/store/{id}', [CelenderController::class, 'store'])->name('admin.celender.store');
+    //     Route::get('/edit/{id}', [CelenderController::class, 'edit'])->name('admin.celender.edit');
+    //     Route::post('/update/{id}', [CelenderController::class, 'update'])->name('admin.celender.update');
+    //     Route::get('/detail/{id}', [CelenderController::class, 'detail'])->name('admin.celender.detail');
+    //     Route::delete('/delete/{id}', [CelenderController::class, 'delete'])->name('admin.celender.delete');
+    // });
 
     // quản lý chức vụ
-    Route::middleware(['authManager'])->prefix('/category')->group(function () {
-        Route::get('/', [CategoryCelenderController::class, 'index'])->name('admin.category.home');
-        Route::get('/add', [CategoryCelenderController::class, 'add'])->name('admin.category.add');
-        Route::post('/store', [CategoryCelenderController::class, 'store'])->name('admin.category.store');
-        Route::get('/edit/{id}', [CategoryCelenderController::class, 'edit'])->name('admin.category.edit');
-        Route::post('/update/{id}', [CategoryCelenderController::class, 'update'])->name('admin.category.update');
-        Route::delete('/delete/{id}', [CategoryCelenderController::class, 'delete'])->name('admin.category.delete');
-    });
+    // Route::middleware(['authManager'])->prefix('/category')->group(function () {
+    //     Route::get('/', [CategoryCelenderController::class, 'index'])->name('admin.category.home');
+    //     Route::get('/add', [CategoryCelenderController::class, 'add'])->name('admin.category.add');
+    //     Route::post('/store', [CategoryCelenderController::class, 'store'])->name('admin.category.store');
+    //     Route::get('/edit/{id}', [CategoryCelenderController::class, 'edit'])->name('admin.category.edit');
+    //     Route::post('/update/{id}', [CategoryCelenderController::class, 'update'])->name('admin.category.update');
+    //     Route::delete('/delete/{id}', [CategoryCelenderController::class, 'delete'])->name('admin.category.delete');
+    // });
 });
