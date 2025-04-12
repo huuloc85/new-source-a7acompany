@@ -132,7 +132,7 @@ $salaryInWords = $salaryInWords ?? '';
 $company_insurance_detail = number_format($salaryOfficialsVVP->company_insurance_detail) ?? 0;
 $number_of_violations = number_format($salaryOfficialsVVP->number_of_violations) ?? '';
 $actually_received = number_format($salaryOfficialsVVP->actually_received) ?? 0;
-
+$unicon_deduction = number_format($salaryOfficialsVVP->unicon_deduction) ?? 0;
 $otherNote = '........';
 
 ?>
@@ -562,7 +562,7 @@ $otherNote = '........';
                                             {{ $number_of_violations }}
                                         </div>
                                         <div class="col-3 border text-sm py-2">
-                                            {{ $subtract_of_violations }}
+                                            {{ $unicon_deduction }}
                                         </div>
                                         <div class="col-3 border text-sm py-2">
                                             {{ $subtract_of_violations_notice }}
@@ -682,11 +682,11 @@ $otherNote = '........';
                                     {{ $company_insurance_detail }}
                                 </div>
                                 <div>
-                                    <strong class="fw-bold">
+                                    <strong class="fw-bold text-danger">
                                         Công ty phải đóng Kinh phí công đoàn 2%
                                         cho người lao động:
                                     </strong>
-                                    {{ $number_of_violations }}
+                                    {{ number_format((float) str_replace([',', ','], '', $unicon_deduction) * 2, 0, ',', ',') }}
                                 </div>
                                 <div>
                                     <strong class="fw-bold text-danger">

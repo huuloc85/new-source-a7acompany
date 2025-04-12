@@ -9,21 +9,26 @@ class StorageProduct extends Model
 {
     use HasFactory;
 
-    //paginate
+    // paginate
     public const paginate = 10;
 
-    //table
+    // table
     protected $table = 'storage_product';
 
-    //fillable
+    // fillable
     protected $fillable = [
         'product_id',
         'lot',
     ];
 
-    //relationship product
+    // relationship product
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'id');
     }
 }
