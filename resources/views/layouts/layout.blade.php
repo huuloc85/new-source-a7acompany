@@ -83,12 +83,14 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
         />
-        @if (config('app.debug'))
+        {{--
+            @if (config('app.debug'))
             <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
             <script>
-                eruda.init();
+            eruda.init();
             </script>
-        @endif
+            @endif
+        --}}
 
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
