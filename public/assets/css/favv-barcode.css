@@ -72,8 +72,6 @@
 
 }
 
-
-
 /* .qrcode-img svg {
     width: 80px;
     height: 80px;
@@ -145,6 +143,9 @@
 
 }
 
+.qrcode-favv {
+    text-align: center;
+}
 
 @media print {
     @page {
@@ -175,6 +176,10 @@
 
     }
 
+    .qrcode-favv {
+        text-align: center;
+    }
+
     .card {
         padding: 0 !important;
         margin: 0 !important;
@@ -189,14 +194,12 @@
 
     }
 
-
     .grid-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        zoom: 65%;
-        row-gap: 15px;
-        margin-top: 30px;
+        zoom: 61%;
+        row-gap: 20px;
     }
 
     .grid-item {
@@ -205,9 +208,9 @@
     }
 
     .table {
-        width: 125%;
+        width: 130% !important;
         max-width: none;
-        height: auto !important;
+        /* height: auto !important; */
         max-height: 100% !important;
         min-width: none;
         border-top: 3px solid;

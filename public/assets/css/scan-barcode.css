@@ -1,37 +1,34 @@
-.required {
-    color: red
-}
-.title {
-    font-size: 20px;
-}
-.content {
-    font-size: 15px;
-}
-#interactive.viewport {
+/* Khung chứa camera và quét Barcode */
+#interactive {
     width: 100%;
-    height: auto;
+    max-width: 500px;
+    margin: 0 auto;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f1f8ff;
+    box-sizing: border-box;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
-video {
-    max-width: 100%;
-    height: auto;
+
+/* Responsive video camera */
+#interactive video {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    border-radius: 4px;
 }
-.drawingBuffer {
-    width: 0px;
-    height: 0px;
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-@media (max-width: 600px) {
-    .col-5 {
-        width: 100% !important;
-    }
-    .col-4 {
-        width: 100% !important;
-    }
+
+/* Hiệu ứng định hướng khung quét */
+#interactive::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 40%;
+    transform: translate(-50%, -50%);
+    border: 2px dashed red;
+    border-radius: 8px;
+    box-shadow: 0 0 10px red;
 }

@@ -31,12 +31,15 @@
 </style>
 
 @php
-    $isAdmin = Auth()->user()->role->role_name == 'admin';
-    $isManager = auth()->user()->role->role_name == 'manager';
-    $isAccountant = auth()->user()->role->role_name == 'accountant';
-    $isQA = Auth()->user()->role->role_name == 'QA-QC';
+    $roleId = Auth()->user()->role_id;
 
-    $isHighRole = $isAdmin || $isManager || $isAccountant;
+    $isAdmin = Auth()->user()->role->role_name == 'admin';
+    $isQA = in_array($roleId, [8, 13]);
+    $isStorage = $roleId == 4;
+    // Ngoại quan + sản suất
+    $isReqRole = in_array($roleId, [9, 14, 18, 19]);
+
+    $isEmployee = ! $isAdmin && ! $isQA && ! $isStorage && ! $isReqRole;
 
     $navConfig = [
         [
@@ -45,6 +48,7 @@
             'path' => 'admin.home',
         ],
     ];
+
     $navAdmin = [
         [
             'label' => 'Nhân Sự',
@@ -82,6 +86,11 @@
                     'path' => 'admin.material.index',
                 ],
             ],
+        ],
+        [
+            'label' => 'Kho Xuất Hàng',
+            'icon' => 'fas fa-box fa-lg',
+            'path' => 'admin.storage.index',
         ],
         [
             'label' => 'Lịch hoạt động / ngày',
@@ -135,8 +144,6 @@
             'icon' => 'fas fa-history fa-lg',
             'path' => 'admin.history.home',
         ],
-    ];
-    $navManager = [
         [
             'label' => 'Lịch làm việc',
             'icon' => 'fas fa-calendar-alt fa-lg',
@@ -147,8 +154,6 @@
             'icon' => 'fas fa-briefcase fa-lg',
             'path' => 'admin.category.home',
         ],
-    ];
-    $navAccountant = [
         [
             'label' => 'Bảng lương',
             'icon' => 'fas fa-money-check-alt fa-lg',
@@ -220,30 +225,46 @@
             'icon' => 'fas fa-history fa-lg',
             'path' => 'admin.employee-history-check',
         ],
-        // [
-        //     'label' => 'Yêu Cầu In Tem',
-        //     'icon' => 'fas fa-envelopes-bulk fa-lg',
-        //     'path' => 'admin.send-stamp',
-        //         [
-        //             'label' => 'Yêu Cầu In Tem',
-        //             'icon' => 'fas fa-clipboard-list fa-lg',
-        //             'path' => 'admin.send-stamp',
-        //         ],
-        //         [
-        //             'label' => 'Trạng Thái In Tem',
-        //             'icon' => 'fas fa-clipboard-check fa-lg',
-        //             'path' => 'admin.checkstamp-employee',
-        //         ],
-        //     ],
-        // ],
     ];
-    if (Auth()->user()->role_id !== 10) {
-        $navNotQA[] = [
+
+    $navReqRole = [
+        [
             'label' => 'Yêu Cầu In Tem',
             'icon' => 'fas fa-envelopes-bulk fa-lg',
             'path' => 'admin.send-stamp',
-        ];
+        ],
+    ];
+    if (in_array($roleId, [14, 18, 19])) {
+        array_push($navReqRole, [
+            'label' => 'Lịch làm việc nhân viên',
+            'icon' => 'fas fa-calendar-alt fa-lg',
+            'path' => 'admin.celender.home',
+        ]);
+        array_push($navReqRole, [
+            'label' => 'Lịch hoạt động / ngày',
+            'icon' => 'fas fa-calendar-day fa-lg',
+            'path' => 'admin.checkemployee.view-employee-todo',
+        ]);
     }
+
+    $navStorage = [
+        [
+            'label' => 'Kho Đã Xuất Hàng',
+            'icon' => 'fas fa-box fa-lg',
+            'path' => 'admin.storage.index',
+        ],
+        [
+            'label' => 'Quét QR code',
+            'icon' => 'fas fa-qrcode fa-lg',
+            'path' => 'admin.barcode.scanQr',
+        ],
+        [
+            'label' => 'Quét Barcode',
+            'icon' => 'fas fa-barcode fa-lg',
+            'path' => 'admin.barcode.scan',
+        ],
+    ];
+
     $navProfile = [
         [
             'label' => 'Thông Tin Tài Khoản',
@@ -251,16 +272,12 @@
             'path' => 'admin.profile',
         ],
     ];
-    $isAdmin && array_push($navConfig, ...$navAdmin, ...$navManager, ...$navAccountant);
-    $isManager && array_push($navConfig, ...$navManager);
-    $isAccountant && array_push($navConfig, ...$navAccountant);
 
-    if (! $isHighRole) {
-        array_push($navConfig, ...$navEmployee);
-        $isQA
-            ? array_push($navConfig, ...$navQA, ...$navProfile)
-            : array_push($navConfig, ...$navNotQA, ...$navProfile);
-    }
+    $isAdmin && array_push($navConfig, ...$navAdmin);
+    $isQA && array_push($navConfig, ...$navEmployee, ...$navQA, ...$navProfile);
+    $isStorage && array_push($navConfig, ...$navEmployee, ...$navStorage, ...$navProfile);
+    $isReqRole && array_push($navConfig, ...$navEmployee, ...$navNotQA, ...$navReqRole, ...$navProfile);
+    $isEmployee && array_push($navConfig, ...$navEmployee, ...$navNotQA, ...$navProfile);
 
     $isActive = function ($path) {
         return request()->routeIs($path) ? 'active' : '';

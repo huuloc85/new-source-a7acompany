@@ -15,10 +15,16 @@
 @endsection
 
 @php
-    $isManager =
-        Auth()->user()->role->role_name == 'admin' ||
-        Auth()->user()->role->role_name == 'manager' ||
-        Auth()->user()->role->role_name == 'accountant';
+    $roleId = Auth()->user()->role_id;
+
+    $isManager = Auth()->user()->role->role_name == 'admin';
+
+    $isQA = in_array($roleId, [8, 13]);
+    $isStorage = $roleId == 4;
+    // Ngoại quan + sản suất
+    $isReqRole = in_array($roleId, [9, 14, 18, 19]);
+
+    $isEmployee = ! $isManager && ! $isQA && ! $isStorage && ! $isReqRole;
 
     $managerWidgets = [
         [
@@ -93,6 +99,12 @@
             'link' => route('admin.checkstamp'),
             'data' => $today->format('d-m'),
         ],
+        [
+            'title' => 'Kho Xuất Hàng',
+            'icon' => 'fas fa-box fa-lg',
+            'link' => route('admin.storage.index'),
+            'data' => 'Tháng'.$today->format('m'),
+        ],
     ];
 
     $employeeWidgets = [
@@ -116,24 +128,9 @@
             'icon' => 'fas fa-money-check-alt fa-2x',
             'link' => route('admin.employee-show.salary'),
         ],
-        [
-            'title' => 'Chọn sản phẩm hoạt động',
-            'icon' => 'fas fa-boxes fa-2x',
-            'link' => route('admin.employee.check-employee-todo'),
-        ],
-        [
-            'title' => 'Lịch sử nhập hàng ngày',
-            'icon' => 'fas fa-history fa-2x',
-            'link' => route('admin.employee-history-check'),
-        ],
-        // [
-        //     'title' => 'Thông tin tài khoản',
-        //     'icon' => 'fas fa-id-card fa-2x',
-        //     'link' => route('admin.profile'),
-        // ],
     ];
 
-    if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18 || Auth()->user()->role_id == 19) {
+    if (in_array($roleId, [14, 18, 19])) {
         array_unshift($employeeWidgets, [
             'title' => 'Lịch làm việc nhân viên',
             'icon' => 'fas fa-calendar-alt fa-2x',
@@ -145,15 +142,58 @@
             'link' => route('admin.checkemployee.view-employee-todo'),
         ]);
     }
-    if (Auth()->user()->role_id !== 8 && Auth()->user()->role_id !== 10) {
-        array_push($employeeWidgets, [
+    if ($isStorage) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Quét Barcode',
+            'icon' => 'fas fa-barcode fa-2x',
+            'link' => route('admin.barcode.scan'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Quét QR Code',
+            'icon' => 'fas fa-qrcode fa-2x',
+            'link' => route('admin.barcode.scanQr'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Kho Đã Xuất Hàng',
+            'icon' => 'fas fa-box-open fa-2x',
+            'link' => route('admin.storage.index'),
+        ]);
+    }
+
+    if (in_array($roleId, [9, 10]) || $isEmployee || $isReqRole) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Chọn sản phẩm hoạt động',
+            'icon' => 'fas fa-boxes fa-2x',
+            'link' => route('admin.employee.check-employee-todo'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Lịch sử nhập hàng ngày',
+            'icon' => 'fas fa-history fa-2x',
+            'link' => route('admin.employee-history-check'),
+        ]);
+    }
+
+    if ($isReqRole) {
+        array_unshift($employeeWidgets, [
             'title' => 'Yêu Cầu In Tem',
             'icon' => 'fas fa-print fa-2x',
             'link' => route('admin.send-stamp'),
         ]);
     }
 
-    if (Auth()->user()->role_id == 8) {
+    if ($isQA) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Tạo Tem Thùng',
+            'icon' => 'fas fa-box fa-2x',
+            'link' => route('admin.product.barcode'),
+            'data' => $today->format('d-m'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Tạo Tem Bịch',
+            'icon' => 'fas fa-sheet-plastic fa-2x',
+            'link' => route('admin.product.packing'),
+            'data' => $today->format('d-m'),
+        ]);
         array_unshift($employeeWidgets, [
             'title' => 'Danh Sách Tem Cần In',
             'icon' => 'fas fa-print fa-2x',
@@ -161,6 +201,13 @@
             'data' => $today->format('d-m'),
         ]);
     }
+
+    array_push($employeeWidgets, [
+        'title' => 'Thông tin tài khoản',
+        'icon' => 'fas fa-id-card fa-2x',
+        'link' => route('admin.profile'),
+    ]);
+
     array_push($employeeWidgets, [
         'title' => 'Đăng xuất',
         'icon' => 'fas fa-right-from-bracket fa-2x',

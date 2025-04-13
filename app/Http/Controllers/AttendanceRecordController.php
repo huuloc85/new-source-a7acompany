@@ -556,7 +556,7 @@ class AttendanceRecordController extends Controller
                 $record->total_hours = 'Cho Về Sớm';
             }
         }
-        // if ($record->employee_code == '17030500	' && $record->date == '2024-12-22') {
+        // if ($record->employee_code == '20020700	' && $record->date == '2025-03-25') {
         //     dd($record->total_hours);
         // }
     }
@@ -649,43 +649,50 @@ class AttendanceRecordController extends Controller
         if (! $record->time_in || ! $record->time_out) {
             return 0;
         }
+
         $timeInDate = Carbon::parse($record->time_in);
         $timeOutDate = Carbon::parse($record->time_out);
         $workStartDate = Carbon::parse($workStartTime);
         $workEndDate = Carbon::parse($workEndTime);
+
+        // Xử lý thời gian bắt đầu
         $effectiveStart = $timeInDate < $workStartDate ? $workStartDate : $timeInDate;
-        $effectiveEnd = $timeOutDate > $workEndDate ? $workEndDate : $timeOutDate;
+
+        // Xử lý thời gian kết thúc
+        // Nếu đi trễ nhưng về trễ hơn cả giờ làm → cho phép lấy giờ thực tế để bù
+        if ($timeInDate > $workStartDate && $timeOutDate > $workEndDate) {
+            $effectiveEnd = $timeOutDate;
+        } else {
+            $effectiveEnd = $timeOutDate > $workEndDate ? $workEndDate : $timeOutDate;
+        }
+
+        // Xử lý ca 2 nếu có ngày khác
         if ($shift2 && $record->date_out == null) {
             $effectiveEnd = $timeOutDate;
         }
-        // Không cộng thêm ngày nếu về sớm trước 24h
+
         if ($shift2 && $timeOutDate->hour < 24 && $record->date == $record->date_out) {
             $effectiveEnd = $timeOutDate;
         }
+
         if ($shift2 && $effectiveEnd < $effectiveStart && $record->date_out != null && $record->date != $record->date_out) {
             $effectiveEnd->addDay();
         }
-        // Tính toán thời gian làm việc (tính theo giây)
-        $workingMillis = max(0, $effectiveEnd->diffInSeconds($effectiveStart));
-        // Trừ giờ nghỉ (breakTime) nếu có
-        $workingHours = $workingMillis / 3600 - ($breakTime / 60);
-        // Trường hợp đặc biệt khi ca 2, bạn cần xử lý lại giờ nghỉ cho hợp lý
-        // if ($shift2) {
-        //     $workingHours -= 1; // Trừ thêm giờ nghỉ cho ca 2
-        // }
+
+        // Tính thời gian làm việc
+        $workingSeconds = max(0, $effectiveEnd->diffInSeconds($effectiveStart));
+        $workingHours = $workingSeconds / 3600 - ($breakTime / 60);
+
+        // Tính thêm giờ nếu làm chưa đủ
         $dailyWorkHours = 8;
         if ($workingHours < $dailyWorkHours) {
             $requiredHours = $dailyWorkHours - $workingHours;
-            $timeOutDate = $shift2 == true ? $timeOutDate->subDay() : $timeOutDate;
-            $billedHours = $timeOutDate <= $workEndDate ? 0 : min($timeOutDate->DiffInHours($workEndDate), $requiredHours);
+            $adjustedTimeOut = $shift2 ? $timeOutDate->copy()->subDay() : $timeOutDate;
+            $billedHours = $adjustedTimeOut <= $workEndDate ? 0 : min($adjustedTimeOut->diffInHours($workEndDate), $requiredHours);
             $workingHours += $billedHours;
         }
 
-        // if ($record->employee_code == '17030500	' && $record->date == '2024-12-22') {
-        //     dd($effectiveStart, $effectiveEnd, $timeOutDate, $workingHours);
-        // }
-        // Làm tròn kết quả cuối cùng
-        return round($workingHours * 4) / 4;
+        return round($workingHours * 4) / 4; // Làm tròn 15 phút
     }
 
     // Tính Giờ Tăng Ca
@@ -765,7 +772,7 @@ class AttendanceRecordController extends Controller
         $employeeCode = auth()->user()->code;
         $categoryId = auth()->user()->category_celender_id;
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
-        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->pluck('id')->first();
+        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->whereYear('date', Carbon::parse($currentMonth)->year)->pluck('id')->first();
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
         $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
             ->whereMonth('date', Carbon::parse($currentMonth)->month)
