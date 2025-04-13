@@ -16,7 +16,10 @@
             <div class="card">
                 <div class="card-header p-1 position-relative mt-n1 mx-1">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
-                        <h4 class="card-title mb-0">Bảng Yêu Cầu In Tem</h4>
+                        <h4 class="card-title mb-0">
+                            Bảng Lịch Sử In Tem Ngày
+                            {{ \Carbon\Carbon::parse($date)->format('d-m') }}
+                        </h4>
                     </div>
                 </div>
                 <div class="card-body">
@@ -27,6 +30,7 @@
                         id="filterForm"
                     >
                         <div class="row">
+                            <!-- Lọc theo sản phẩm -->
                             <div class="col-md-3">
                                 <select
                                     name="product_name"
@@ -44,6 +48,8 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <!-- Lọc theo nhân viên -->
                             <div class="col-md-3">
                                 <select
                                     name="employee_name"
@@ -61,6 +67,27 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <!-- Lọc theo ca làm việc -->
+                            <div class="col-md-2">
+                                <select
+                                    name="shift"
+                                    class="form-control"
+                                    onchange="submitForm()"
+                                >
+                                    <option value="">Chọn Ca</option>
+                                    @foreach ($availableShifts as $shift)
+                                        <option
+                                            value="{{ $shift }}"
+                                            {{ request('shift') == $shift ? 'selected' : '' }}
+                                        >
+                                            {{ $shift }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Lọc theo trạng thái -->
                             <div class="col-md-2">
                                 <select
                                     name="status"
@@ -68,32 +95,32 @@
                                     onchange="submitForm()"
                                 >
                                     <option value="">Trạng Thái</option>
-                                    <option
-                                        value="pending"
-                                        {{ request('status') == 'pending' ? 'selected' : '' }}
-                                    >
-                                        Chờ In
-                                    </option>
-                                    <option
-                                        value="approve"
-                                        {{ request('status') == 'approve' ? 'selected' : '' }}
-                                    >
-                                        Đã In
-                                    </option>
-                                    <option
-                                        value="rejected"
-                                        {{ request('status') == 'rejected' ? 'selected' : '' }}
-                                    >
-                                        Từ Chối
-                                    </option>
+                                    @php
+                                        $statusLabels = [
+                                            'approve' => 'Đã In',
+                                            'rejected' => 'Từ chối',
+                                            'pending' => 'Chờ In',
+                                        ];
+                                    @endphp
+
+                                    @foreach ($availableStatuses as $status)
+                                        <option
+                                            value="{{ $status }}"
+                                            {{ request('status') == $status ? 'selected' : '' }}
+                                        >
+                                            {{ $statusLabels[$status] ?? ucfirst($status) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
+
+                            <!-- Lọc theo ngày -->
                             <div class="col-md-2">
                                 <input
                                     type="date"
                                     name="date"
                                     class="form-control"
-                                    value="{{ request('date') }}"
+                                    value="{{ request('date', now()->toDateString()) }}"
                                     onchange="submitForm()"
                                 />
                             </div>
@@ -111,14 +138,16 @@
                                     <tr>
                                         <th>STT</th>
                                         <th>Tên Sản Phẩm</th>
-                                        <th>Tên Nhân Viên</th>
-                                        <th>Ngày (Số Lot)</th>
+                                        <th>Nhân Viên Gửi</th>
+                                        <th>Số Lot</th>
                                         <th>Ca</th>
                                         <th>Số Lượng Tem</th>
                                         <th>Bắt Đầu Từ Tem Số</th>
                                         <th>Loại Tem</th>
-                                        <th>Ngày Gửi Yêu Cầu</th>
-                                        <th>Thời Gian Gửi Yêu Cầu</th>
+                                        <th>Ngày Gửi</th>
+                                        <th>Thời Gian Gửi</th>
+                                        <th>Người In</th>
+                                        <th>Thời Gian In</th>
                                         <th>Trạng Thái</th>
                                         <th>Thao Tác</th>
                                     </tr>
@@ -145,6 +174,12 @@
                                             </td>
                                             <td>
                                                 {{ \Carbon\Carbon::parse($history->created_at)->format('H:i:s') }}
+                                            </td>
+                                            <td>
+                                                {{ $history->manager->name ?? 'Chưa In' }}
+                                            </td>
+                                            <td>
+                                                {{ $history->manager_time ?? 'Chưa In' }}
                                             </td>
                                             <td>
                                                 @php

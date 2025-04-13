@@ -1,6 +1,17 @@
 @extends('layouts.layout')
 @section('content')
-    <link rel="stylesheet" href="{{ asset('assets/css/add-barcode.css') }}" />
+    @if (! empty($product) && $product->FAVV == 1)
+        <link
+            rel="stylesheet"
+            href="{{ asset('assets/css/favv-barcode.css') }}"
+        />
+    @else
+        <link
+            rel="stylesheet"
+            href="{{ asset('assets/css/add-barcode.css') }}"
+        />
+    @endif
+
     <div class="row">
         <div class="col-12 print-container">
             <div class="card my-4">
@@ -289,9 +300,9 @@
                                                                     class="align-content-center"
                                                                 >
                                                                     <img
-                                                                        src="{{ asset('assets/img/logos/VVP.png') }}"
+                                                                        src="{{ asset('assets/img/logos/vvp02.png') }}"
                                                                         alt=""
-                                                                        width="110"
+                                                                        width="140"
                                                                         title="VINH VINH PHAT ONE MEMBER CO.LTD"
                                                                     />
                                                                     {{--
@@ -303,6 +314,12 @@
                                                                     colspan="4"
                                                                     class="align-content-center"
                                                                 >
+                                                                    {{--
+                                                                        @if ($product->FAVV == 1)
+                                                                        <div class="qrcode-favv">{!! $qrCode !!}
+                                                                        </div>
+                                                                        @else
+                                                                    --}}
                                                                     <div
                                                                         class="qrcode-img"
                                                                     >
@@ -348,6 +365,7 @@
                                                                         Made in
                                                                         Viet Nam
                                                                     </div>
+                                                                    {{-- @endif --}}
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -371,7 +389,7 @@
                                                                         PARTS
                                                                         <br />
                                                                         (VIET
-                                                                        NAM)INC
+                                                                        NAM) INC
                                                                     </p>
                                                                 </td>
                                                             </tr>
@@ -515,19 +533,28 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr>
-                                                                {{--
-                                                                    <td class="text-start">
-                                                                    Mã vạch<br>バーコード
+                                                            @if ($product->FAVV == 1)
+                                                                <tr>
+                                                                    <td
+                                                                        class="text-start"
+                                                                    >
+                                                                        Mã vạch
+                                                                        <br />
+                                                                        バーコード
                                                                     </td>
-                                                                    <td colspan="5"
-                                                                    class="text-center align-content-center">
-                                                                    <img id="barcode-image"
-                                                                    src="data:image/png;base64,{{ $bin['barcode'] }}"
-                                                                    alt="Mã vạch">
+                                                                    <td
+                                                                        colspan="5"
+                                                                        class="text-center align-content-center"
+                                                                    >
+                                                                        <img
+                                                                            id="barcode-image"
+                                                                            src="data:image/png;base64,{{ $bin['barcode'] }}"
+                                                                            alt="Mã vạch"
+                                                                        />
                                                                     </td>
-                                                                --}}
-                                                            </tr>
+                                                                </tr>
+                                                            @endif
+
                                                             <tr>
                                                                 <td
                                                                     class="text-start"

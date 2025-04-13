@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
-    //view login
+    // view login
     public function login()
     {
         if (Auth::check()) {
@@ -32,7 +32,7 @@ class AuthController extends Controller
         }
     }
 
-    //handle loginuse Carbon\Carbon;
+    // handle loginuse Carbon\Carbon;
     public function handleLogin(Request $request)
     {
         $credentials = $request->only('phone', 'password');
@@ -68,8 +68,7 @@ class AuthController extends Controller
                 session()->flash('birthday_employees', $birthdayEmployees);
             }
 
-            //Kiểm tra lịch làm việc
-            //Kiểm tra lịch làm việc
+            // Kiểm tra lịch làm việc
             $calendar = Celender::latest('id')->first();
 
             if ($calendar) {
@@ -138,7 +137,7 @@ class AuthController extends Controller
         return redirect()->back();
     }
 
-    //logout
+    // logout
     public function logout()
     {
         Auth::logout();
@@ -147,13 +146,13 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    //profile
+    // profile
     public function profile()
     {
         return view('auth.profile');
     }
 
-    //change profile for admin
+    // change profile for admin
     public function changeProfile(UserChangeInfoRequest $request)
     {
         $employee = Employee::find(Auth()->user()->id);
@@ -165,7 +164,7 @@ class AuthController extends Controller
             $fileExtension = $file->getClientOriginalName();
             $fileName = time(); // Tạo tên file dựa trên thời gian
             $newFileName = $fileName.'.'.$fileExtension; // Tên file mới
-            //Lưu file vào thư mục storage/app/public/image với tên mới
+            // Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('photo')->storeAs('public/admin', $newFileName);
             // Gán trường image của đối tượng task với tên mới
             $employee->photo = $newFileName;
@@ -192,7 +191,7 @@ class AuthController extends Controller
         }
     }
 
-    //change info for employee
+    // change info for employee
     public function changeInfo(EmployeeChangeInfoRequest $request)
     {
         $employee = Employee::find(Auth()->user()->id);
@@ -220,7 +219,7 @@ class AuthController extends Controller
         }
     }
 
-    //change password
+    // change password
     public function changePassword(UserChangePasswordRequest $request)
     {
         try {
@@ -254,7 +253,7 @@ class AuthController extends Controller
         }
     }
 
-    //reset password
+    // reset password
     public function resetPassword($id)
     {
         try {

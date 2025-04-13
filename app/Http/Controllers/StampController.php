@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HistoryPrint;
 use App\Models\Product;
+use App\Models\SendStamp;
 use App\Models\StorageProduct;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class StampController extends Controller
 {
-    //view register barcode
+    // view register barcode
     public function index()
     {
         $products = Product::where('deleted_at', null)->get();
@@ -20,7 +21,7 @@ class StampController extends Controller
         return view('barcode.add', compact('products'));
     }
 
-    //handle register barcode
+    // handle register barcode
     public function barcode(Request $request)
     {
         $products = Product::where('deleted_at', null)->get();
@@ -29,7 +30,7 @@ class StampController extends Controller
 
         // Tạo QRCode
         $firstFiveChars = substr($request->code, 0, 5);
-        $qrCodeString = $firstFiveChars . '-' . $request->pcs;
+        $qrCodeString = $firstFiveChars.'-'.$request->pcs;
         $qrCode = QrCode::generate($qrCodeString);
 
         $binCount = $request->binCount;
@@ -43,7 +44,7 @@ class StampController extends Controller
             // Nếu không phải chuỗi hoặc không có dấu phẩy, thực hiện theo cách này
             for ($i = 0; $i < $binCount; $i++) {
                 // Tạo barcode
-                $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $binStart + $i);
+                $barcodeString = $product->id.'a'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $binStart + $i);
                 $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
                 $data = [
                     'bin' => sprintf('%03d', $binStart + $i),
@@ -61,14 +62,13 @@ class StampController extends Controller
                 if (is_numeric($currentBinStart)) {
                     $currentBinStart = (int) $currentBinStart; // Chuyển đổi thành số nguyên
                     // Tạo barcode cho từng giá trị binStart
-                    $barcodeString = $product->id . 'a' . str_replace('/', '', $date) . $request->shift . sprintf('%03d', $currentBinStart);
+                    $barcodeString = $product->id.'a'.str_replace('/', '', $date).$request->shift.sprintf('%03d', $currentBinStart);
                     $barcode = base64_encode($generator->getBarcode($barcodeString, $generator::TYPE_CODE_128));
 
                     $data = [
                         'bin' => sprintf('%03d', $currentBinStart),
                         'barcode' => $barcode,
                     ];
-
                     array_push($binArray, $data);
                 }
             }
@@ -96,14 +96,14 @@ class StampController extends Controller
         $time = ($shift == 1) ? '07:30' : '19:30';
 
         // Kết hợp ngày và giờ
-        return Carbon::createFromFormat('Y-m-d H:i', $formattedDate . ' ' . $time)->format('d/m/Y H:i');
+        return Carbon::createFromFormat('Y-m-d H:i', $formattedDate.' '.$time)->format('d/m/Y H:i');
     }
 
-    //map key data
+    // map key data
     public function mapKeyData($binArray)
     {
-        $oddItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 !== 0);
-        $evenItems = array_filter($binArray, fn($bin) => $bin['bin'] % 2 === 0);
+        $oddItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 !== 0);
+        $evenItems = array_filter($binArray, fn ($bin) => $bin['bin'] % 2 === 0);
 
         $rows = [];
 
@@ -122,15 +122,21 @@ class StampController extends Controller
         return $binArray;
     }
 
-    //view scan
+    // view scan
     public function scan(Request $request)
     {
         return view('barcode.scan');
     }
 
-    //handle check barcode when scan success
+    public function scanQr(Request $request)
+    {
+        return view('barcode.qr-code');
+    }
+
+    // handle check barcode when scan success
     public function checkBarCode(Request $request)
     {
+        $employeeId = auth()->user()->id;
         $data = explode('a', $request->barcode);
         $result = [
             'status' => 500,
@@ -142,29 +148,27 @@ class StampController extends Controller
             $date = substr($data[1], 0, 8);
             $shift = substr($data[1], 8, 1);
             $bin = substr($data[1], 9);
-            $lot = 'A-' . $date . '-' . $shift . '-' . $bin;
-            $result = [
-                'barcode' => $request->barcode,
-                'date' => $date,
-                'shift' => $shift,
-                'bin' => $bin,
-                'lot' => $lot,
-            ];
+            $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
 
-            $product = Product::findOrFail($productId);
+            $product = Product::find($productId);
 
             if ($product) {
-                //check xem mã đã quét chưa?
                 $checkLot = StorageProduct::where('lot', $lot)->first();
+
                 if ($checkLot == null) {
                     $storageProduct = new StorageProduct;
                     $storageProduct->product_id = $productId;
                     $storageProduct->lot = $lot;
+                    $storageProduct->employee_id = $employeeId;
+                    $storageProduct->bin = $bin;
                     $storageProduct->save();
+
                     $result['status'] = 200;
+                    $result['lot'] = $lot;
 
                     return response()->json($result, 200);
                 }
+
                 $result['status'] = 400;
 
                 return response()->json($result, 200);
@@ -178,41 +182,80 @@ class StampController extends Controller
         return response()->json($result, 200);
     }
 
-    //save history print
+    // handle check qr code when scan success
+    public function checkQr(Request $request)
+    {
+        $qrCode = $request->input('qr_code');
+
+        if (! $qrCode) {
+            return response()->json(['status' => 400, 'message' => 'Không nhận được mã QR']);
+        }
+
+        $product = Product::where('code', $qrCode)->first();
+
+        if (! $product) {
+            return response()->json(['status' => 404, 'message' => 'Không tìm thấy sản phẩm']);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+        ]);
+    }
+
     public function savePrint(Request $request)
     {
-        $product = Product::where('code', $request->productCode)->first();
-        if ($product != null) {
+        try {
+            Log::info('Dữ liệu nhận được:', $request->all()); // Log request để kiểm tra dữ liệu đầu vào
+
+            $product = Product::where('code', $request->productCode)->first();
+            if (! $product) {
+                Log::error('Sản phẩm không tồn tại: '.$request->productCode);
+
+                return response()->json(['error' => 'Sản phẩm không tồn tại'], 400);
+            }
+
             $listBin = explode(',', $request->binStart);
             if (count($listBin) > 1) {
                 foreach ($listBin as $bin) {
-                    $history = new HistoryPrint;
+                    $history = new SendStamp;
                     $history->product_id = $product->id;
+                    $history->manager_id = Auth()->user()->id;
                     $history->employee_id = Auth()->user()->id;
                     $history->type = $request->type;
                     $history->date = $request->date;
                     $history->shift = $request->shift;
                     $history->binCount = 1;
                     $history->binStart = $bin;
+                    $history->manager_time = Carbon::now()->format('H:i:s');
+                    $history->status = 'approve';
                     $history->save();
                 }
             } else {
-                $history = new HistoryPrint;
+                $history = new SendStamp;
                 $history->product_id = $product->id;
+                $history->manager_id = Auth()->user()->id;
                 $history->employee_id = Auth()->user()->id;
                 $history->type = $request->type;
                 $history->date = $request->date;
                 $history->shift = $request->shift;
                 $history->binCount = $request->binCount;
                 $history->binStart = $request->binStart;
+                $history->manager_time = Carbon::now()->format('H:i:s');
+                $history->status = 'approve';
                 $history->save();
             }
-        }
 
-        return response()->json(200);
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lưu lịch sử print: '.$e->getMessage().' - Dòng: '.$e->getLine());
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-    //view packing stamp
+    // view packing stamp
     public function packingStamp()
     {
         $products = Product::where('deleted_at', null)->get();
@@ -220,7 +263,7 @@ class StampController extends Controller
         return view('packing-stamp.index', compact('products'));
     }
 
-    //handle make packing stamp
+    // handle make packing stamp
     public function StorePackingStamp(Request $request)
     {
         $products = Product::where('deleted_at', null)->get();

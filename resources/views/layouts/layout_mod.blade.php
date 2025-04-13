@@ -24,10 +24,12 @@
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"
         />
         <!-- Font Awesome Icons -->
-        <script
+        {{--
+            <script
             src="https://kit.fontawesome.com/42d5adcbca.js"
             crossorigin="anonymous"
-        ></script>
+            ></script>
+        --}}
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"

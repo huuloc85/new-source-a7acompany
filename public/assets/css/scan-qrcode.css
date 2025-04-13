@@ -1,0 +1,61 @@
+/* Đánh dấu bắt buộc */
+.required {
+    color: red;
+}
+
+/* Tiêu đề hướng dẫn */
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Nội dung hướng dẫn */
+.content {
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+/* Khung chứa camera và quét QR */
+#reader {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+}
+
+/* Responsive khung quét video */
+#reader video {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    border-radius: 4px;
+}
+
+/* Ẩn vùng vẽ nếu có */
+canvas.drawingBuffer,
+.drawingBuffer {
+    display: none !important;
+}
+
+/* Responsive layout cho điện thoại */
+@media (max-width: 600px) {
+
+    .col-5,
+    .col-4,
+    .col-12 {
+        width: 100% !important;
+    }
+
+    .title {
+        font-size: 18px;
+    }
+
+    .content {
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\AttendanceRecord;
+use App\Models\Celender;
+use App\Models\CheckEmployee;
+use App\Models\Employee;
+use App\Models\LoginHistory;
+use App\Models\Product;
+use App\Models\ProductionPlan;
+use App\Models\Role;
+use App\Models\SalaryManager;
+use Carbon\Carbon;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $today = Carbon::today();
+        $startOfMonth = $today->copy()->startOfMonth();
+        $endOfMonth = $today->copy()->endOfMonth();
+
+        $totalEmployee = Employee::whereNotIn('role_id', [15, 16, 17])
+            ->whereNull('deleted_at')
+            ->count();
+        $totalRole = Role::whereNotIn('id', [15, 16, 17])->count();
+
+        $topUsers = LoginHistory::select('employee_name')
+            ->selectRaw('COUNT(*) as login_count')
+            ->groupBy('employee_name')
+            ->orderByDesc('login_count')
+            ->limit(10)
+            ->get();
+
+        $totalSalary = SalaryManager::count();
+        $totalCelender = Celender::count();
+        $totalProduct = Product::count();
+        $totalHistory = LoginHistory::whereDate('date', $today)->count();
+        $totalPlan = ProductionPlan::count();
+        $totalRecord = AttendanceRecord::count();
+        $totalCheckEmployee = CheckEmployee::whereDate('date', $today)->count();
+
+        $salaryManagers = SalaryManager::orderBy('id', 'DESC')->limit(10)->get();
+        $celenders = Celender::orderBy('id', 'DESC')->limit(10)->get();
+
+        return response()->json([
+            'totalEmployee' => $totalEmployee,
+            'totalRole' => $totalRole,
+            'totalSalary' => $totalSalary,
+            'totalCelender' => $totalCelender,
+            'totalProduct' => $totalProduct,
+            'totalHistory' => $totalHistory,
+            'totalPlan' => $totalPlan,
+            'totalRecord' => $totalRecord,
+            'totalCheckEmployee' => $totalCheckEmployee,
+            'topUsers' => $topUsers,
+            'salaryManagers' => $salaryManagers,
+            'celenders' => $celenders,
+            'dateRange' => [
+                'today' => $today->toDateString(),
+                'startOfMonth' => $startOfMonth->toDateString(),
+                'endOfMonth' => $endOfMonth->toDateString(),
+            ],
+        ]);
+    }
+}

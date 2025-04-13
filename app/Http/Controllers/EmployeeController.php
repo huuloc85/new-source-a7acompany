@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\LogActivity;
 use App\Helpers\LogHelper;
+use App\Helpers\NumberToWordsHelper;
 use App\Http\Requests\EmployeeStoreRequest;
 use App\Http\Requests\EmployeeUpdateRequest;
 use App\Models\CategoryCelender;
@@ -88,7 +89,7 @@ class EmployeeController extends Controller
         return view('employee.index', compact('employees', 'total', 'roles', 'categories', 'companies'));
     }
 
-    //view add
+    // view add
     public function add()
     {
         $roles = Role::where('id', '!=', 15)
@@ -99,7 +100,7 @@ class EmployeeController extends Controller
         return view('employee.add', compact('roles', 'categories'));
     }
 
-    //store new employee
+    // store new employee
     public function store(EmployeeStoreRequest $request)
     {
         $employee = new Employee;
@@ -121,23 +122,23 @@ class EmployeeController extends Controller
         $file = $request->photo;
         $file_card = $request->card_photo;
 
-        //ảnh
+        // ảnh
         if ($request->hasFile('photo')) {
             $fileExtension = $file->getClientOriginalName();
             $fileName = time(); // Tạo tên file dựa trên thời gian
             $newFileName = $fileName.'.'.$fileExtension; // Tên file mới
-            //Lưu file vào thư mục storage/app/public/image với tên mới
+            // Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('photo')->storeAs('public/employee', $newFileName);
             // Gán trường image của đối tượng task với tên mới
             $employee->photo = $newFileName;
         }
 
-        //ảnh thẻ
+        // ảnh thẻ
         if ($request->hasFile('card_photo')) {
             $fileExtensionCard = $file_card->getClientOriginalName();
             $fileNameCard = time(); // Tạo tên file dựa trên thời gian
             $newFileNameCard = $fileNameCard.'.'.$fileExtensionCard; // Tên file mới
-            //Lưu file vào thư mục storage/app/public/image với tên mới
+            // Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('card_photo')->storeAs('public/employee/card', $newFileNameCard);
             // Gán trường image của đối tượng task với tên mới
             $employee->card_photo = $newFileNameCard;
@@ -160,7 +161,7 @@ class EmployeeController extends Controller
         }
     }
 
-    //view edit
+    // view edit
     public function edit($id)
     {
         $employee = Employee::find($id);
@@ -172,7 +173,7 @@ class EmployeeController extends Controller
         return view('employee.edit', compact('employee', 'roles', 'categories'));
     }
 
-    //update employee
+    // update employee
     public function update(EmployeeUpdateRequest $request, $id)
     {
         $employee = Employee::find($id);
@@ -195,23 +196,23 @@ class EmployeeController extends Controller
         $file = $request->photo;
         $file_card = $request->card_photo;
 
-        //ảnh
+        // ảnh
         if ($request->hasFile('photo')) {
             $fileExtension = $file->getClientOriginalName();
             $fileName = time(); // Tạo tên file dựa trên thời gian
             $newFileName = $fileName.'.'.$fileExtension; // Tên file mới
-            //Lưu file vào thư mục storage/app/public/image với tên mới
+            // Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('photo')->storeAs('public/employee', $newFileName);
             // Gán trường image của đối tượng task với tên mới
             $employee->photo = $newFileName;
         }
 
-        //ảnh thẻ
+        // ảnh thẻ
         if ($request->hasFile('card_photo')) {
             $fileExtensionCard = $file_card->getClientOriginalName();
             $fileNameCard = time(); // Tạo tên file dựa trên thời gian
             $newFileNameCard = $fileNameCard.'.'.$fileExtensionCard; // Tên file mới
-            //Lưu file vào thư mục storage/app/public/image với tên mới
+            // Lưu file vào thư mục storage/app/public/image với tên mới
             $request->file('card_photo')->storeAs('public/employee/card', $newFileNameCard);
             // Gán trường image của đối tượng task với tên mới
             $employee->card_photo = $newFileNameCard;
@@ -246,10 +247,37 @@ class EmployeeController extends Controller
         }
     }
 
-    //delete employee
+    // delete employee
     public function delete($id)
     {
         $employees = Employee::findOrFail($id);
+
+        // Lấy bản ghi mới nhất từ SalaryManager
+        $salaryManager = SalaryManager::latest()->first();
+
+        // Nếu không có bản ghi nào trong SalaryManager thì tiếp tục cho xóa
+        if (! $salaryManager) {
+            toast('Không thể xóa vì không tìm thấy dữ liệu trong Salary Manager!', 'error', 'top-right');
+
+            return redirect()->route('admin.employee.home');
+        }
+
+        // Kiểm tra trong bảng SalaryOfficialVVP và SalaryOfficialA7A dựa trên salaries_manager_id từ bản ghi mới nhất
+        $salaryOfficialsVVP = SalaryOfficialVVP::where('salaries_manager_id', $salaryManager->id)
+            ->where('employee_id', $id)
+            ->first();
+
+        $salaryOfficialsA7A = SalaryOfficialA7A::where('salaries_manager_id', $salaryManager->id)
+            ->where('employee_id', $id)
+            ->first();
+
+        // Nếu nhân sự tồn tại trong một trong hai bảng lương, không cho phép xóa
+        if ($salaryOfficialsVVP || $salaryOfficialsA7A) {
+            toast('Không thể xóa nhân sự vì đã có dữ liệu lương trong kỳ lương mới nhất!', 'error', 'top-right');
+
+            return redirect()->route('admin.employee.home');
+        }
+
         try {
             $employees->deleted_at = Carbon::now();
             $employees->save();
@@ -263,7 +291,7 @@ class EmployeeController extends Controller
         }
     }
 
-    //trash
+    // trash
     public function getTrash(Request $request)
     {
         $employees = Employee::where('deleted_at', '!=', null);
@@ -314,7 +342,7 @@ class EmployeeController extends Controller
         return view('employee.trash', compact('employees', 'total', 'roles', 'categories'));
     }
 
-    //restore
+    // restore
     public function restore($id)
     {
         try {
@@ -331,7 +359,7 @@ class EmployeeController extends Controller
         }
     }
 
-    //show celender
+    // show celender
     public function celender(Request $request)
     {
         try {
@@ -350,7 +378,7 @@ class EmployeeController extends Controller
         }
     }
 
-    //show celender detail
+    // show celender detail
     public function celenderDetail($id)
     {
         $employeeId = Auth()->user()->id;
@@ -383,7 +411,7 @@ class EmployeeController extends Controller
         ));
     }
 
-    //show salary
+    // show salary
     public function salary(Request $request)
     {
         $user = auth()->user();
@@ -400,7 +428,7 @@ class EmployeeController extends Controller
         return view('employee.salary', compact('salaryManagers', 'total'));
     }
 
-    //show salary
+    // show salary
     public function salaryDetail($id)
     {
         try {
@@ -409,8 +437,10 @@ class EmployeeController extends Controller
             $salaryOfficialsVVP = SalaryOfficialVVP::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
             $salaryOfficialsA7A = SalaryOfficialA7A::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
             $salaryParttimes = SalaryParttime::where('salaries_manager_id', $id)->where('employee_id', $employee_id)->first();
+            $actuallyReceived = $salaryOfficialsVVP->actually_received ?? $salaryOfficialsA7A->actually_received ?? $salaryParttimes->actually_received ?? 0;
+            $salaryInWords = NumberToWordsHelper::convert($actuallyReceived);
 
-            return view('employee.salary-detail', compact('salaryOfficialsVVP', 'salaryOfficialsA7A', 'salaryParttimes', 'salaryManager'));
+            return view('employee.salary-detail', compact('salaryOfficialsVVP', 'salaryOfficialsA7A', 'salaryParttimes', 'salaryManager', 'salaryInWords'));
         } catch (\Exception $e) {
             LogHelper::saveLog('Xem chi tiết bảng lương', $e->getMessage(), $e->getLine());
             toast('Xem chi tiết bảng lương không thành công!', 'error', 'top-right');

@@ -24,10 +24,12 @@
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"
         />
         <!-- Font Awesome Icons -->
-        <script
+        {{--
+            <script
             src="https://kit.fontawesome.com/42d5adcbca.js"
             crossorigin="anonymous"
-        ></script>
+            ></script>
+        --}}
         <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
         {{-- <script defer data-site="127.0.0.1" src="https://api.nepcha.com/js/nepcha-analytics.js"></script> --}}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
@@ -81,6 +83,13 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
         />
+        @if (config('app.debug'))
+            <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+            <script>
+                eruda.init();
+            </script>
+        @endif
+
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -599,6 +608,8 @@
                                 'list-group-item-action',
                                 'cursor-pointer',
                             );
+                            newNotification.id =
+                                'notification-stamp-' + notification.recordId;
                             newNotification.innerHTML = notification.message;
                             newNotification.addEventListener('click', () => {
                                 if (
@@ -635,6 +646,10 @@
                 window.Echo.channel('user.' + userId).listen(
                     'SendStampEvent',
                     (e) => {
+                        notifications =
+                            JSON.parse(localStorage.getItem('notifications')) ||
+                            [];
+
                         notificationSound
                             .play()
                             .catch((error) =>
