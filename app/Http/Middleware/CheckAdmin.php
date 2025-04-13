@@ -15,7 +15,7 @@ class CheckAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth()->user()->role->role_name == 'admin' || in_array(Auth()->user()->role_id, [8, 14, 18, 19])) {
+        if (Auth()->user()->role->role_name == 'admin' || in_array(Auth()->user()->role_id, [8, 14, 18, 19, 4])) {
             return $next($request);
         }
         toast('Bạn không có quyền truy cập!', 'error', 'top-right');
