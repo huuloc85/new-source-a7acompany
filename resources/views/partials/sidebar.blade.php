@@ -49,8 +49,7 @@
         ],
     ];
 
-    $navAdmin =
-    [
+    $navAdmin = [
         [
             'label' => 'Nhân Sự',
             'icon' => 'fas fa-user-group fa-lg',
@@ -157,8 +156,7 @@
         ],
     ];
 
-    $navEmployee =
-    [
+    $navEmployee = [
         [
             'label' => 'Lịch làm việc',
             'icon' => 'fas fa-calendar-alt fa-lg',
@@ -187,8 +185,7 @@
         ],
     ];
 
-    $navQA =
-    [
+    $navQA = [
         [
             'label' => 'Tạo Tem',
             'icon' => 'fas fa-print fa-lg',
@@ -212,8 +209,7 @@
         ],
     ];
 
-    $navNotQA =
-    [
+    $navNotQA = [
         [
             'label' => 'Chọn Sản Phẩm',
             'icon' => 'fas fa-boxes fa-lg',
@@ -248,7 +244,7 @@
 
     $navStorage = [
         [
-            'label' => 'Kho Nguyên Liệu',
+            'label' => 'Kho Đã Xuất Hàng',
             'icon' => 'fas fa-box fa-lg',
             'path' => 'admin.storage.index',
         ],
