@@ -88,7 +88,7 @@
             ],
         ],
         [
-            'label' => 'Kho Nguyên Liệu',
+            'label' => 'Kho Xuất Hàng',
             'icon' => 'fas fa-box fa-lg',
             'path' => 'admin.storage.index',
         ],
