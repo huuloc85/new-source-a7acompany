@@ -26,8 +26,7 @@
 
     $isEmployee = ! $isManager && ! $isQA && ! $isStorage && ! $isReqRole;
 
-    $managerWidgets =
-    [
+    $managerWidgets = [
         [
             'title' => 'Tổng nhân viên',
             'icon' => 'fas fa-users fa-2x',
@@ -100,10 +99,15 @@
             'link' => route('admin.checkstamp'),
             'data' => $today->format('d-m'),
         ],
+        [
+            'title' => 'Kho Xuất Hàng',
+            'icon' => 'fas fa-box fa-lg',
+            'link' => route('admin.storage.index'),
+            'data' => 'Tháng'.$today->format('m'),
+        ],
     ];
 
-    $employeeWidgets =
-    [
+    $employeeWidgets = [
         [
             'title' => 'Bảng lịch sử chấm công',
             'icon' => 'fas fa-clipboard-user fa-2x',
@@ -177,8 +181,7 @@
         ]);
     }
 
-    if ($isQA
-    ) {
+    if ($isQA) {
         array_unshift($employeeWidgets, [
             'title' => 'Tạo Tem Thùng',
             'icon' => 'fas fa-box fa-2x',
