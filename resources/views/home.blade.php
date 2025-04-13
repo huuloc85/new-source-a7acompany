@@ -15,12 +15,19 @@
 @endsection
 
 @php
-    $isManager =
-        Auth()->user()->role->role_name == 'admin' ||
-        Auth()->user()->role->role_name == 'manager' ||
-        Auth()->user()->role->role_name == 'accountant';
+    $roleId = Auth()->user()->role_id;
 
-    $managerWidgets = [
+    $isManager = Auth()->user()->role->role_name == 'admin';
+
+    $isQA = in_array($roleId, [8, 13]);
+    $isStorage = $roleId == 4;
+    // Ngoại quan + sản suất
+    $isReqRole = in_array($roleId, [9, 14, 18, 19]);
+
+    $isEmployee = ! $isManager && ! $isQA && ! $isStorage && ! $isReqRole;
+
+    $managerWidgets =
+    [
         [
             'title' => 'Tổng nhân viên',
             'icon' => 'fas fa-users fa-2x',
@@ -95,7 +102,8 @@
         ],
     ];
 
-    $employeeWidgets = [
+    $employeeWidgets =
+    [
         [
             'title' => 'Bảng lịch sử chấm công',
             'icon' => 'fas fa-clipboard-user fa-2x',
@@ -118,7 +126,7 @@
         ],
     ];
 
-    if (Auth()->user()->role_id == 14 || Auth()->user()->role_id == 18 || Auth()->user()->role_id == 19) {
+    if (in_array($roleId, [14, 18, 19])) {
         array_unshift($employeeWidgets, [
             'title' => 'Lịch làm việc nhân viên',
             'icon' => 'fas fa-calendar-alt fa-2x',
@@ -130,7 +138,7 @@
             'link' => route('admin.checkemployee.view-employee-todo'),
         ]);
     }
-    if (Auth()->user()->role_id == 4) {
+    if ($isStorage) {
         array_unshift($employeeWidgets, [
             'title' => 'Quét Barcode',
             'icon' => 'fas fa-barcode fa-2x',
@@ -148,7 +156,7 @@
         ]);
     }
 
-    if (in_array(Auth()->user()->role_id, [9, 10])) {
+    if (in_array($roleId, [9, 10]) || $isEmployee || $isReqRole) {
         array_unshift($employeeWidgets, [
             'title' => 'Chọn sản phẩm hoạt động',
             'icon' => 'fas fa-boxes fa-2x',
@@ -161,15 +169,28 @@
         ]);
     }
 
-    if (in_array(Auth()->user()->role_id, [9, 13, 14, 18, 19])) {
-        array_push($employeeWidgets, [
+    if ($isReqRole) {
+        array_unshift($employeeWidgets, [
             'title' => 'Yêu Cầu In Tem',
             'icon' => 'fas fa-print fa-2x',
             'link' => route('admin.send-stamp'),
         ]);
     }
 
-    if (Auth()->user()->role_id == 8) {
+    if ($isQA
+    ) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Tạo Tem Thùng',
+            'icon' => 'fas fa-box fa-2x',
+            'link' => route('admin.product.barcode'),
+            'data' => $today->format('d-m'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Tạo Tem Bịch',
+            'icon' => 'fas fa-sheet-plastic fa-2x',
+            'link' => route('admin.product.packing'),
+            'data' => $today->format('d-m'),
+        ]);
         array_unshift($employeeWidgets, [
             'title' => 'Danh Sách Tem Cần In',
             'icon' => 'fas fa-print fa-2x',
@@ -177,6 +198,7 @@
             'data' => $today->format('d-m'),
         ]);
     }
+
     array_push($employeeWidgets, [
         'title' => 'Thông tin tài khoản',
         'icon' => 'fas fa-id-card fa-2x',

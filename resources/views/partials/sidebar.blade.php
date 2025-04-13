@@ -34,10 +34,10 @@
     $roleId = Auth()->user()->role_id;
 
     $isAdmin = Auth()->user()->role->role_name == 'admin';
-    $isQA = $roleId == 8 || $roleId == 13;
+    $isQA = in_array($roleId, [8, 13]);
     $isStorage = $roleId == 4;
     // Ngoại quan + sản suất
-    $isReqRole = $roleId == 9 || $roleId == 14 || $roleId == 18 || $roleId == 19;
+    $isReqRole = in_array($roleId, [9, 14, 18, 19]);
 
     $isEmployee = ! $isAdmin && ! $isQA && ! $isStorage && ! $isReqRole;
 
@@ -233,6 +233,18 @@
             'path' => 'admin.send-stamp',
         ],
     ];
+    if (in_array($roleId, [14, 18, 19])) {
+        array_push($navReqRole, [
+            'label' => 'Lịch làm việc nhân viên',
+            'icon' => 'fas fa-calendar-alt fa-lg',
+            'path' => 'admin.celender.home',
+        ]);
+        array_push($navReqRole, [
+            'label' => 'Lịch hoạt động / ngày',
+            'icon' => 'fas fa-calendar-day fa-lg',
+            'path' => 'admin.checkemployee.view-employee-todo',
+        ]);
+    }
 
     $navStorage = [
         [

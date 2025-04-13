@@ -15,7 +15,7 @@ class PackingStamp
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth()->user()->role->role_name == 'QA-QC' || Auth()->user()->role->role_name == 'admin') {
+        if (in_array(Auth()->user()->role->role_id, [8, 13]) || Auth()->user()->role->role_name == 'admin') {
             return $next($request);
         }
         toast('Bạn không có quyền truy cập!', 'error', 'top-right');
