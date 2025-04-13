@@ -72,7 +72,6 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('/send-stamp/index', [SendStampController::class, 'handleAdd'])->name('admin.handleAdd-send-stamp');
         Route::get('/send-stamp/check-status', [SendStampController::class, 'checkStampEmployee'])->name('admin.checkstamp-employee');
         //
-        Route::get('/storage', [StorageProductController::class, 'index'])->name('admin.storage.index');
     });
 
     // chức năng của Admin CheckEmployee
@@ -250,5 +249,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/edit/{id}', [CategoryCelenderController::class, 'edit'])->name('admin.category.edit');
         Route::post('/update/{id}', [CategoryCelenderController::class, 'update'])->name('admin.category.update');
         Route::delete('/delete/{id}', [CategoryCelenderController::class, 'delete'])->name('admin.category.delete');
+    });
+
+    // quản lý kho
+    Route::middleware(['authAdmin'])->prefix('storage')->group(function () {
+        Route::get('index', [StorageProductController::class, 'index'])->name('admin.storage.index');
     });
 });

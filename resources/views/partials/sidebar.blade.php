@@ -88,6 +88,11 @@
             ],
         ],
         [
+            'label' => 'Kho Nguyên Liệu',
+            'icon' => 'fas fa-box fa-lg',
+            'path' => 'admin.storage.index',
+        ],
+        [
             'label' => 'Lịch hoạt động / ngày',
             'icon' => 'fas fa-calendar-day fa-lg',
             'path' => 'admin.checkemployee.view-employee-todo',
