@@ -772,7 +772,7 @@ class AttendanceRecordController extends Controller
         $employeeCode = auth()->user()->code;
         $categoryId = auth()->user()->category_celender_id;
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
-        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->pluck('id')->first();
+        $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->whereYear('date', Carbon::parse($currentMonth)->year)->pluck('id')->first();
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
         $query = AttendanceRecord::whereYear('date', Carbon::parse($currentMonth)->year)
             ->whereMonth('date', Carbon::parse($currentMonth)->month)
