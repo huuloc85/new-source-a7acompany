@@ -32,7 +32,7 @@
 
 @php
     $roleId = Auth()->user()->role_id;
-
+    $phone = Auth()->user()->phone;
     $isAdmin = Auth()->user()->role->role_name == 'admin';
     $isQA = in_array($roleId, [8, 13]);
     $isStorage = $roleId == 4;
@@ -154,13 +154,14 @@
             'icon' => 'fas fa-briefcase fa-lg',
             'path' => 'admin.category.home',
         ],
-        [
+    ];
+    if (in_array($phone, ['ctyvinhvinhphat2', 'ctyvinhvinhphat5', 'ctyvinhvinhphat1'])) {
+        array_push($navAdmin, [
             'label' => 'Bảng lương',
             'icon' => 'fas fa-money-check-alt fa-lg',
             'path' => 'admin.salary.home',
-        ],
-    ];
-
+        ]);
+    }
     $navEmployee = [
         [
             'label' => 'Lịch làm việc',

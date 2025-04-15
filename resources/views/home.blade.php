@@ -18,7 +18,7 @@
     $roleId = Auth()->user()->role_id;
 
     $isManager = Auth()->user()->role->role_name == 'admin';
-
+    $phone = Auth()->user()->phone;
     $isQA = in_array($roleId, [8, 13]);
     $isStorage = $roleId == 4;
     // Ngoại quan + sản suất
@@ -58,12 +58,6 @@
             'data' => $totalPlan,
         ],
         [
-            'title' => 'Tổng bảng lương',
-            'icon' => 'fas fa-money-check-alt fa-2x',
-            'link' => route('admin.salary.home'),
-            'data' => $totalSalary,
-        ],
-        [
             'title' => 'Danh sách NV làm việc trong ngày',
             'icon' => 'fas fa-user-check fa-2x',
             'link' => route('admin.checkemployee.view-employee-todo'),
@@ -101,11 +95,19 @@
         ],
         [
             'title' => 'Kho Xuất Hàng',
-            'icon' => 'fas fa-box fa-lg',
+            'icon' => 'fas fa-box fa-2x',
             'link' => route('admin.storage.index'),
-            'data' => 'Tháng'.$today->format('m'),
+            'data' => 'Tháng '.$today->format('m'),
         ],
     ];
+    if (in_array($phone, ['ctyvinhvinhphat1', 'ctyvinhvinhphat2', 'ctyvinhvinhphat5'])) {
+        array_unshift($managerWidgets, [
+            'title' => 'Tổng bảng lương',
+            'icon' => 'fas fa-money-check-alt fa-2x',
+            'link' => route('admin.salary.home'),
+            'data' => $totalSalary,
+        ]);
+    }
 
     $employeeWidgets = [
         [
