@@ -25,14 +25,21 @@ class SalaryController extends Controller
 {
     public function index(Request $request)
     {
-        $salaryManagers = SalaryManager::query();
-        if (! empty($request->key)) {
-            $salaryManagers->Name($request);
-        }
-        $total = count($salaryManagers->get());
-        $salaryManagers = $salaryManagers->orderBy('id', 'DESC')->paginate(SalaryManager::paginate);
+        $user = Auth()->user()->phone;
+        if ($user === 'ctyvinhvinhphat1' && $user === 'ctyvinhvinhphat2' && $user === 'ctyvinhvinhphat5') {
+            $salaryManagers = SalaryManager::query();
+            if (! empty($request->key)) {
+                $salaryManagers->Name($request);
+            }
+            $total = count($salaryManagers->get());
+            $salaryManagers = $salaryManagers->orderBy('id', 'DESC')->paginate(SalaryManager::paginate);
 
-        return view('salary.index', compact('salaryManagers', 'total'));
+            return view('salary.index', compact('salaryManagers', 'total'));
+        } else {
+            toast('Bạn không có quyền truy cập vào trang này!', 'error', 'top-right');
+
+            return redirect()->back();
+        }
     }
 
     public function getImportSalary()
@@ -75,7 +82,7 @@ class SalaryController extends Controller
             // if ($excelFileParttime != null && $salaryManager != null) {
             //     Excel::import(new SalaryParttimeManagerImport($salaryManager->id, $startDateParttime, $endDateParttime), $excelFileParttime);
             // }
-            //save total
+            // save total
             $this->calculateTotal($salaryManager->id);
             DB::commit();
             toast('Import bảng lương thành công!', 'success', 'top-right');
