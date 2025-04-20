@@ -2,16 +2,16 @@
     <style>
         .flags-container {
             position: absolute;
-            height: 10rem;
+            height: 11rem;
             width: 100%;
         }
         .flag {
-            height: 40px;
+            height: 25px;
         }
         .flag-lb {
             position: absolute;
             left: 1rem;
-            bottom: 0;
+            bottom: 1rem;
         }
         .flag-lt {
             position: absolute;
@@ -26,16 +26,41 @@
         .flag-rb {
             position: absolute;
             right: 1rem;
-            bottom: 0;
+            bottom: 1rem;
         }
         @media (min-width: 768px) {
             .flags-container {
                 width: 50%;
                 height: 20rem;
             }
+            .flag {
+                height: 40px;
+            }
         }
     </style>
     <div class="flags-container">
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-lt"
+        />
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-lb"
+        />
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-rt"
+        />
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-rb"
+        />
+    </div>
+    <div class="flags-container" style="bottom: 0">
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"

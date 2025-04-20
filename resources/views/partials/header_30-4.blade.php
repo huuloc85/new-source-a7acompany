@@ -215,7 +215,7 @@
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_3.png') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_3.jpeg') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
@@ -229,14 +229,14 @@
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_5.png') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_5.jpeg') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_6.png') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_6.jpeg') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
