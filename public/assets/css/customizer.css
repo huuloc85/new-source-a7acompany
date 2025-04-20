@@ -1633,3 +1633,16 @@ body {
   color: var(--bs-info);
   background-color: rgba(var(--bs-info-rgb), 0.1) !important;
 }
+
+.tank-move{
+  position: absolute;
+  top: 15%;
+  left: 1rem;
+}
+
+@media (min-width: 768px) {
+  .tank-move{
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

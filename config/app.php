@@ -191,4 +191,8 @@ return [
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
     ])->toArray(),
 
+    /**
+     * Layout
+     */
+    'layout' => env('APP_LAYOUT', 'layout'),
 ];

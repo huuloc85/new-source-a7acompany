@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::defaultView('vendor.pagination.bootstrap-4');
 
-        $layout_dashboard = env('APP_LAYOUT', 'layout');
+        $layout_dashboard = config('app.layout');
 
         // validate if layout files exist
         if (! File::exists(resource_path("views/layouts/{$layout_dashboard}.blade.php"))) {
