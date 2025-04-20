@@ -1,5 +1,5 @@
 <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar no-print">
-    <div class="container-fluid navbar-inner">
+    <div class="container-fluid">
         <a href="{{ route('admin.home') }}" class="navbar-brand">
             <img
                 src="{{ asset('assets/img/logos/VVP.png') }}"
@@ -7,6 +7,43 @@
                 width="100"
             />
         </a>
+        <div class="d-flex align-items-center justify-content-between gap-7">
+            <img
+                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+                alt="flag"
+                height="30"
+            />
+            <img
+                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+                alt="flag"
+                height="30"
+                class="d-none d-sm-block"
+            />
+            <img
+                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+                alt="flag"
+                height="30"
+                class="d-none d-md-block"
+            />
+            <img
+                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+                alt="flag"
+                height="30"
+                class="d-none d-lg-block"
+            />
+            <img
+                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+                alt="flag"
+                height="30"
+                class="d-none d-xl-block"
+            />
+            <img
+                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+                alt="flag"
+                height="30"
+                class="d-none d-xxl-block"
+            />
+        </div>
         <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
             <i class="icon">
                 <svg width="20px" height="20px" viewBox="0 0 24 24">
