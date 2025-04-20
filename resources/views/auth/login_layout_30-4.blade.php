@@ -1,4 +1,62 @@
 <section class="login-content">
+    <style>
+        .flags-container {
+            position: absolute;
+            height: 10rem;
+            width: 100%;
+        }
+        .flag {
+            height: 40px;
+        }
+        .flag-lb {
+            position: absolute;
+            left: 1rem;
+            bottom: 0;
+        }
+        .flag-lt {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+        }
+        .flag-rt {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+        }
+        .flag-rb {
+            position: absolute;
+            right: 1rem;
+            bottom: 0;
+        }
+        @media (min-width: 768px) {
+            .flags-container {
+                width: 50%;
+                height: 20rem;
+            }
+        }
+    </style>
+    <div class="flags-container">
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-lt"
+        />
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-lb"
+        />
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-rt"
+        />
+        <img
+            src="{{ asset('assets/img/vn-flag-waving.gif') }}"
+            alt="flag"
+            class="flag flag-rb"
+        />
+    </div>
     <div class="row m-0 align-items-center bg-white vh-100">
         <div class="col-md-6">
             <div class="logo-30-4">
@@ -18,56 +76,7 @@
                     />
                 </picture>
             </div>
-            <style>
-                .flag-container {
-                    position: absolute;
-                    transform: scale(0.1);
-                    top: -50px;
-                    left: -100px;
-                }
 
-                .flag {
-                    width: 300px;
-                    height: 200px;
-                }
-
-                .flag-element {
-                    position: relative;
-                    background: url('assets/img/vietnam-flag.png');
-                    background-size: 300px 100%;
-                    width: 1px;
-                    height: 100%;
-                    display: inline-block;
-                    animation: wave 1s ease-in-out infinite alternate;
-                }
-                @keyframes wave {
-                    0% {
-                        top: 5%;
-                    }
-                    100% {
-                        top: -5%;
-                    }
-                }
-            </style>
-            <div>
-                <div class="flag-container">
-                    <div class="flag"></div>
-                </div>
-            </div>
-            <script>
-                var flags = document.getElementsByClassName('flag');
-                for (var x = 0; x < flags.length; x++) {
-                    var flag = flags[x];
-                    var flagWidth = flag.offsetWidth;
-                    for (var i = 0; i < flagWidth; i++) {
-                        var flagElement = document.createElement('div');
-                        flagElement.className = 'flag-element';
-                        flagElement.style.backgroundPosition = -i + 'px 0';
-                        flagElement.style.animationDelay = i * 10 + 'ms';
-                        flag.append(flagElement);
-                    }
-                }
-            </script>
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div
