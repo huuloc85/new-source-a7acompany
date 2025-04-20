@@ -505,7 +505,7 @@
         </div>
 
         <!-- ======= Sidebar ======= -->
-        @include('partials.sidebar')
+        @include('partials.sidebar_30-4')
         <main class="main-content">
             <!-- ======= Header 30-4 ======= -->
             <header class="position-relative no-print">

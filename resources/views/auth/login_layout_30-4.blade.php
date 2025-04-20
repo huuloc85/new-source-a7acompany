@@ -18,6 +18,56 @@
                     />
                 </picture>
             </div>
+            <style>
+                .flag-container {
+                    position: absolute;
+                    transform: scale(0.1);
+                    top: -50px;
+                    left: -100px;
+                }
+
+                .flag {
+                    width: 300px;
+                    height: 200px;
+                }
+
+                .flag-element {
+                    position: relative;
+                    background: url('assets/img/vietnam-flag.png');
+                    background-size: 300px 100%;
+                    width: 1px;
+                    height: 100%;
+                    display: inline-block;
+                    animation: wave 1s ease-in-out infinite alternate;
+                }
+                @keyframes wave {
+                    0% {
+                        top: 5%;
+                    }
+                    100% {
+                        top: -5%;
+                    }
+                }
+            </style>
+            <div>
+                <div class="flag-container">
+                    <div class="flag"></div>
+                </div>
+            </div>
+            <script>
+                var flags = document.getElementsByClassName('flag');
+                for (var x = 0; x < flags.length; x++) {
+                    var flag = flags[x];
+                    var flagWidth = flag.offsetWidth;
+                    for (var i = 0; i < flagWidth; i++) {
+                        var flagElement = document.createElement('div');
+                        flagElement.className = 'flag-element';
+                        flagElement.style.backgroundPosition = -i + 'px 0';
+                        flagElement.style.animationDelay = i * 10 + 'ms';
+                        flag.append(flagElement);
+                    }
+                }
+            </script>
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div

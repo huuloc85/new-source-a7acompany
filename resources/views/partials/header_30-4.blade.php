@@ -188,83 +188,131 @@
         </div>
     </div>
 </nav>
-<div class="iq-navbar-header" style="height: 215px">
-    <div class="container-fluid iq-container">
-        <div class="row">
-            <div class="col-md-12">
-                <div
-                    class="d-flex justify-content-between align-items-center flex-wrap"
-                >
-                    <div>
-                        <h2 style="color: white">
-                            Xin Chào {{ Auth()->user()->name }}!
-                        </h2>
-                        <p style="color: white">
-                            Chúc bạn một ngày làm việc hiệu quả
-                            <i class="fas fa-smile"></i>
-                        </p>
-                    </div>
-                    <div>
-                        @php
-                            $icons = [
-                                'Giám đốc' => 'fa-user-tie',
-                                'Quản lí sản xuất' => 'fa-cogs',
-                                'Kế toán' => 'fa-calculator',
-                                'Kho' => 'fa-warehouse',
-                                'Khuôn' => 'fa-toolbox',
-                                'Bảo trì điện' => 'fa-bolt',
-                                'Kỹ thuật' => 'fa-wrench',
-                                'QA-QC' => 'fa-clipboard-check',
-                                'Ngoại Quan' => 'fa-globe',
-                                'Sản xuất' => 'fa-industry',
-                                'Quản lý' => 'fa-users',
-                                'Tổ trưởng sản xuất' => 'fa-chalkboard-teacher',
-                                'admin' => 'fa-user-shield',
-                                'IT' => 'fa-laptop-code',
-                                'Tổ trưởng ngoại quan' => 'fa-user-check',
-                            ];
-                            $userRole = Auth::user()->role->role_name;
-                            $iconClass = isset($icons[$userRole]) ? $icons[$userRole] : 'fa-user';
-                        @endphp
+{{--
+    <div class="iq-navbar-header" style="height: 225px">
+    </div>
+--}}
+<div class="iq-header-img">
+    <div
+        id="carouselAutoplaying"
+        class="carousel slide"
+        data-bs-ride="carousel"
+    >
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img
+                    src="{{ asset('assets/img/dashboard/banner_30-4_1.png') }}"
+                    class="d-block w-100"
+                    alt="banner"
+                />
+            </div>
+            <div class="carousel-item">
+                <img
+                    src="{{ asset('assets/img/dashboard/banner_30-4_2.png') }}"
+                    class="d-block w-100"
+                    alt="banner"
+                />
+            </div>
+            <div class="carousel-item">
+                <img
+                    src="{{ asset('assets/img/dashboard/banner_30-4_3.png') }}"
+                    class="d-block w-100"
+                    alt="banner"
+                />
+            </div>
+            <div class="carousel-item">
+                <img
+                    src="{{ asset('assets/img/dashboard/banner_30-4_4.png') }}"
+                    class="d-block w-100"
+                    alt="banner"
+                />
+            </div>
+            <div class="carousel-item">
+                <img
+                    src="{{ asset('assets/img/dashboard/banner_30-4_5.png') }}"
+                    class="d-block w-100"
+                    alt="banner"
+                />
+            </div>
+            <div class="carousel-item">
+                <img
+                    src="{{ asset('assets/img/dashboard/banner_30-4_6.png') }}"
+                    class="d-block w-100"
+                    alt="banner"
+                />
+            </div>
+        </div>
+        <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselAutoplaying"
+            data-bs-slide="prev"
+        >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselAutoplaying"
+            data-bs-slide="next"
+        >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
 
-                        <a
-                            href=""
-                            class="btn btn-link btn-soft-light"
-                            style="
-                                color: white;
-                                text-transform: uppercase;
-                                text-decoration: none;
-                            "
-                        >
-                            <i class="fas {{ $iconClass }}"></i>
-                            {{ $userRole }}
-                        </a>
-                    </div>
+<div class="container-fluid iq-container mb-2 mt-2 mb-md-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div
+                class="d-flex justify-content-between align-items-center flex-wrap"
+            >
+                <div>
+                    <h2>Xin Chào {{ Auth()->user()->name }}!</h2>
+                    <p>
+                        Chúc bạn một ngày làm việc hiệu quả
+                        <i class="fas fa-smile"></i>
+                    </p>
+                </div>
+                <div>
+                    @php
+                        $icons = [
+                            'Giám đốc' => 'fa-user-tie',
+                            'Quản lí sản xuất' => 'fa-cogs',
+                            'Kế toán' => 'fa-calculator',
+                            'Kho' => 'fa-warehouse',
+                            'Khuôn' => 'fa-toolbox',
+                            'Bảo trì điện' => 'fa-bolt',
+                            'Kỹ thuật' => 'fa-wrench',
+                            'QA-QC' => 'fa-clipboard-check',
+                            'Ngoại Quan' => 'fa-globe',
+                            'Sản xuất' => 'fa-industry',
+                            'Quản lý' => 'fa-users',
+                            'Tổ trưởng sản xuất' => 'fa-chalkboard-teacher',
+                            'admin' => 'fa-user-shield',
+                            'IT' => 'fa-laptop-code',
+                            'Tổ trưởng ngoại quan' => 'fa-user-check',
+                        ];
+                        $userRole = Auth::user()->role->role_name;
+                        $iconClass = isset($icons[$userRole]) ? $icons[$userRole] : 'fa-user';
+                    @endphp
+
+                    <a
+                        href=""
+                        class="btn btn-link btn-soft-light"
+                        style="
+                            color: inherit;
+                            text-transform: uppercase;
+                            text-decoration: none;
+                        "
+                    >
+                        <i class="fas {{ $iconClass }}"></i>
+                        {{ $userRole }}
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="iq-header-img">
-        <div class="tank-move">
-            <img
-                src="{{ asset('assets/img/dashboard/tank-move.gif') }}"
-                alt=""
-                height="175"
-            />
-        </div>
-        <picture>
-            <source
-                media="(max-width: 768px)"
-                srcset="
-                    {{ asset('assets/img/dashboard/banner_mobile_30-4.png') }}
-                "
-            />
-            <img
-                src="{{ asset('assets/img/dashboard/banner_30-4.png') }}"
-                alt="header"
-                class="theme-color-default-img img-fluid w-100 h-100"
-                style="object-fit: fill"
-            />
-        </picture>
     </div>
 </div>
