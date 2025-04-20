@@ -517,3 +517,20 @@ body.uikit .btn-download {
 .top-1 {
   top: 1rem;
 }
+
+.logo-30-4{
+  z-index: inherit;
+  position:absolute;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+@media (min-width: 768px) {
+  .logo-30-4{
+    left: 25%;
+  }
+}
+
+
+
