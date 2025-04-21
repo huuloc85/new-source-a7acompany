@@ -12,38 +12,58 @@
                 src="{{ asset('assets/img/vn-flag-waving.gif') }}"
                 alt="flag"
                 height="30"
+                class="d-lg-none"
             />
             <img
                 src="{{ asset('assets/img/vn-flag-waving.gif') }}"
                 alt="flag"
                 height="30"
-                class="d-none d-sm-block"
+                class="d-none d-sm-block d-lg-none"
             />
             <img
                 src="{{ asset('assets/img/vn-flag-waving.gif') }}"
                 alt="flag"
                 height="30"
-                class="d-none d-md-block"
+                class="d-none d-md-block d-lg-none"
             />
             <img
                 src="{{ asset('assets/img/vn-flag-waving.gif') }}"
                 alt="flag"
                 height="30"
-                class="d-none d-lg-block"
-            />
-            <img
-                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
-                alt="flag"
-                height="30"
-                class="d-none d-xl-block"
-            />
-            <img
-                src="{{ asset('assets/img/vn-flag-waving.gif') }}"
-                alt="flag"
-                height="30"
-                class="d-none d-xxl-block"
+                class="d-none d-md-block d-lg-none"
             />
         </div>
+
+        <div
+            id="flag-header"
+            class="w-75 h-100 d-none d-lg-flex align-items-center py-2 gap-7 overflow-hidden"
+        ></div>
+
+        <script>
+            function createFlagImage() {
+                const flagContainer = document.getElementById('flag-header');
+                const flagSrc = '/assets/img/vn-flag-waving.gif';
+                const flagWidth = 40;
+                const gap = 40;
+                const containerWidth = flagContainer.clientWidth;
+                const count = Math.ceil(containerWidth / (flagWidth + gap)) + 1;
+
+                for (let i = 0; i < count; i++) {
+                    const img = document.createElement('img');
+                    img.src = flagSrc;
+                    img.style.height = '30px';
+                    flagContainer.appendChild(img);
+                }
+            }
+
+            // run on window resize
+            window.addEventListener('resize', createFlagImage);
+            createFlagImage();
+        </script>
+        <button class="custom-navbar-toggler" id="navbarToggler">
+            <i class="fa fa-bars"></i>
+        </button>
+
         <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
             <i class="icon">
                 <svg width="20px" height="20px" viewBox="0 0 24 24">
@@ -54,9 +74,7 @@
                 </svg>
             </i>
         </div>
-        <button class="custom-navbar-toggler" id="navbarToggler">
-            <i class="fa fa-bars"></i>
-        </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto navbar-list mb-2 mb-lg-0">
                 @if (in_array(auth()->user()->role_id, [8, 15]))
