@@ -8,26 +8,6 @@
         .flag {
             height: 25px;
         }
-        .flag-lb {
-            position: absolute;
-            left: 1rem;
-            bottom: 1rem;
-        }
-        .flag-lt {
-            position: absolute;
-            left: 1rem;
-            top: 1rem;
-        }
-        .flag-rt {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-        }
-        .flag-rb {
-            position: absolute;
-            right: 1rem;
-            bottom: 1rem;
-        }
         @media (min-width: 768px) {
             .flags-container {
                 width: 50%;
@@ -42,44 +22,44 @@
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-lt"
+            class="flag position-absolute top-0 start-0 mt-3 ms-3"
         />
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-lb"
+            class="flag position-absolute bottom-0 start-0 mb-3 ms-3"
         />
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-rt"
+            class="flag position-absolute top-0 end-0 mt-3 me-3"
         />
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-rb"
+            class="flag position-absolute bottom-0 end-0 mb-3 me-3"
         />
     </div>
     <div class="flags-container" style="bottom: 0">
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-lt"
+            class="flag position-absolute top-0 start-0 mt-3 ms-3"
         />
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-lb"
+            class="flag position-absolute bottom-0 start-0 mb-3 ms-3"
         />
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-rt"
+            class="flag position-absolute top-0 end-0 mt-3 me-3"
         />
         <img
             src="{{ asset('assets/img/vn-flag-waving.gif') }}"
             alt="flag"
-            class="flag flag-rb"
+            class="flag position-absolute bottom-0 end-0 mb-3 me-3"
         />
     </div>
     <div class="row m-0 align-items-center bg-white vh-100">
