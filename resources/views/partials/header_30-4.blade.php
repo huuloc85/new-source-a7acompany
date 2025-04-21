@@ -263,7 +263,7 @@
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_2.png') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_2.jpeg') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
@@ -277,7 +277,7 @@
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_4.png') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_4.jpeg') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
