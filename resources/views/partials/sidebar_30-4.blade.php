@@ -391,25 +391,28 @@
                         </li>
                     @endif
                 @endforeach
+
+                <li class="d-flex flex-column justify-content-center mt-5">
+                    <img
+                        src="{{ asset('assets/img/auth/30-4/background.png') }}"
+                        height="100"
+                        style="object-fit: contain"
+                        alt="50 năm giải phóng miền nam thống nhất đất nước"
+                    />
+                    <p
+                        class="text-uppercase text-center fw-bold mt-2"
+                        style="font-size: 10px"
+                    >
+                        50 năm ngày giải phóng miền nam
+                        <br />
+                        thống nhất đất nước
+                    </p>
+                </li>
+                <li class="my-5 py-5"></li>
             </ul>
         </div>
     </div>
-    <div class="d-flex flex-column justify-content-center mt-5">
-        <img
-            src="{{ asset('assets/img/auth/30-4/background.png') }}"
-            height="100"
-            style="object-fit: contain"
-            alt="50 năm giải phóng miền nam thống nhất đất nước"
-        />
-        <p
-            class="text-uppercase text-center fw-bold mt-2"
-            style="font-size: 10px"
-        >
-            50 năm ngày giải phóng miền nam
-            <br />
-            thống nhất đất nước
-        </p>
-    </div>
+
     <div
         class="sidebar-footer left-1 border-top"
         style="
