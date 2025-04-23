@@ -64,7 +64,7 @@
     </div>
     <div class="row m-0 align-items-center bg-white vh-100">
         <div class="col-md-6">
-            <div class="logo-30-4">
+            <div class="logo-30-4 text-center">
                 <picture>
                     <source
                         media="(max-width: 767px)"
@@ -72,14 +72,19 @@
                             {{ asset('assets/img/auth/30-4/background.png') }}
                         "
                         type="image/png"
-                        height="125"
+                        height="75"
                     />
                     <img
                         src="{{ asset('assets/img/auth/30-4/background.png') }}"
-                        height="250"
+                        height="150"
                         alt="30-4 background"
                     />
                 </picture>
+                <p class="text-uppercase text-center fw-bold mt-2 text-30-4">
+                    50 năm ngày giải phóng miền nam
+                    <br />
+                    thống nhất đất nước
+                </p>
             </div>
 
             <div class="row justify-content-center">

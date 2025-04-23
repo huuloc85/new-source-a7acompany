@@ -263,35 +263,28 @@
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_2.jpeg') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_2.png') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_3.jpeg') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_3.png') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_4.jpeg') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_4.png') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
             </div>
             <div class="carousel-item">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_5.jpeg') }}"
-                    class="d-block w-100"
-                    alt="banner"
-                />
-            </div>
-            <div class="carousel-item">
-                <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_6.jpeg') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_5.png') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
