@@ -525,10 +525,17 @@ body.uikit .btn-download {
   left: 50%;
   transform: translate(-50%, 0);
 }
+.text-30-4{
+  font-size: 10px;
+  color: #0d6efd
+}
 
 @media (min-width: 768px) {
   .logo-30-4{
     left: 25%;
+  }
+  .text-30-4 {
+    font-size: 1rem;
   }
 }
 
