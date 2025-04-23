@@ -256,7 +256,7 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img
-                    src="{{ asset('assets/img/dashboard/banner_30-4_1.png') }}"
+                    src="{{ asset('assets/img/dashboard/banner_30-4_1.jpg') }}"
                     class="d-block w-100"
                     alt="banner"
                 />
