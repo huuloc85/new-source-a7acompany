@@ -129,10 +129,12 @@ $actually_received = number_format($salaryOfficialsVVP->actually_received) ?? 0;
 $forms_of_payment = $salaryOfficialsVVP->forms_of_payment ?? '';
 $salaryInWords = $salaryInWords ?? '';
 
-$company_insurance_detail = number_format($salaryOfficialsVVP->company_insurance_detail) ?? 0;
-$number_of_violations = number_format($salaryOfficialsVVP->number_of_violations) ?? '';
-$actually_received = number_format($salaryOfficialsVVP->actually_received) ?? 0;
-$unicon_deduction = number_format($salaryOfficialsVVP->unicon_deduction) ?? 0;
+$company_insurance_detail = $salaryOfficialsVVP->company_insurance_detail ?? 0;
+$number_of_violations = $salaryOfficialsVVP->number_of_violations ?? '';
+$actually_received = $salaryOfficialsVVP->actually_received ?? 0;
+$unicon_deduction = $salaryOfficialsVVP->unicon_deduction ?? 0;
+$totalSalary = $actually_received + $unicon_deduction * 2 + $company_insurance_detail;
+
 $otherNote = '........';
 
 ?>
@@ -584,7 +586,7 @@ $otherNote = '........';
                                     </div>
                                     <div class="row">
                                         <div class="col-3 fw-bold border py-2">
-                                            Nghỉ không phép
+                                            unicon_deduction Nghỉ không phép
                                         </div>
                                         <div class="col-3 border text-sm py-2">
                                             {{ $days_leave_not_allowed }}
@@ -661,7 +663,7 @@ $otherNote = '........';
                                     <strong class="fw-bold">
                                         Thực nhận tiền lương:
                                     </strong>
-                                    {{ $actually_received }}
+                                    {{ number_format($actually_received) }}
                                 </div>
                                 <div>
                                     <strong class="fw-bold">Bằng chữ:</strong>
@@ -679,7 +681,7 @@ $otherNote = '........';
                                         Công ty phải đóng BHXH 21,5% cho người
                                         lao động:
                                     </strong>
-                                    {{ $company_insurance_detail }}
+                                    {{ number_format($company_insurance_detail) }}
                                 </div>
                                 <div>
                                     <strong class="fw-bold text-danger">
@@ -693,7 +695,7 @@ $otherNote = '........';
                                         Công ty phải tổng trả chi phí lương cho
                                         01 người lao động / tháng:
                                     </strong>
-                                    {{ $actually_received }}
+                                    {{ number_format($totalSalary) }}
                                 </div>
                                 <br />
                                 <div>

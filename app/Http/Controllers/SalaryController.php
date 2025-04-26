@@ -26,7 +26,7 @@ class SalaryController extends Controller
     public function index(Request $request)
     {
         $user = Auth()->user()->phone;
-        if ($user === 'ctyvinhvinhphat1' && $user === 'ctyvinhvinhphat2' && $user === 'ctyvinhvinhphat5') {
+        if (in_array($user, ['ctyvinhvinhphat1', 'ctyvinhvinhphat2', 'ctyvinhvinhphat5'])) {
             $salaryManagers = SalaryManager::query();
             if (! empty($request->key)) {
                 $salaryManagers->Name($request);
