@@ -114,7 +114,7 @@ $kpi_subtraction = number_format($salaryOfficialsVVP->kpi_subtraction) ?? 0;
 $kpi_subtraction_notice = $salaryOfficialsVVP->kpi_subtraction_notice ?? '';
 
 // Total deductions
-$total = $salaryOfficialsVVP->insurance_detail + $salaryOfficialsVVP->advance_money + $salaryOfficialsVVP->subtract_of_violations + $salaryOfficialsVVP->subtract_daysleave_allowed + $salaryOfficialsVVP->subtract_daysleave_notallowed + $salaryOfficialsVVP->subtract_error_serious + $salaryOfficialsVVP->subtract_error_minor + $salaryOfficialsVVP->kpi_subtraction;
+$total = $salaryOfficialsVVP->insurance_detail + $salaryOfficialsVVP->advance_money + $salaryOfficialsVVP->unicon_deduction + $salaryOfficialsVVP->subtract_daysleave_allowed + $salaryOfficialsVVP->subtract_daysleave_notallowed + $salaryOfficialsVVP->subtract_error_serious + $salaryOfficialsVVP->subtract_error_minor + $salaryOfficialsVVP->kpi_subtraction;
 
 /* More information */
 $start_date = $salaryManager->formatTimeDMY($salaryManager->start_date) ?? 'dd/mm/yyyy';
@@ -564,7 +564,7 @@ $otherNote = '........';
                                             {{ $number_of_violations }}
                                         </div>
                                         <div class="col-3 border text-sm py-2">
-                                            {{ $unicon_deduction }}
+                                            {{ number_format($unicon_deduction) }}
                                         </div>
                                         <div class="col-3 border text-sm py-2">
                                             {{ $subtract_of_violations_notice }}
@@ -586,7 +586,7 @@ $otherNote = '........';
                                     </div>
                                     <div class="row">
                                         <div class="col-3 fw-bold border py-2">
-                                            unicon_deduction Nghỉ không phép
+                                            Nghỉ không phép
                                         </div>
                                         <div class="col-3 border text-sm py-2">
                                             {{ $days_leave_not_allowed }}
