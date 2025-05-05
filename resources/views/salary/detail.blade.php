@@ -431,7 +431,7 @@
                                                                         {{ $salary_detail->employee->role->role_name }}
                                                                     </td>
                                                                     <td class="bg-2">
-                                                                        {{ number_format($salary_detail->number_of_work_days_trial) }}
+                                                                        {{ number_format($salary_detail->number_of_work_days_trial, 2) }}
                                                                     </td>
                                                                     <td class="bg-2">
                                                                         {{ number_format($salary_detail->day_shift_salary_trial) }}

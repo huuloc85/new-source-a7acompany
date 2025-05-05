@@ -200,6 +200,7 @@
         grid-template-rows: repeat(2, 1fr);
         zoom: 61%;
         row-gap: 20px;
+
     }
 
     .grid-item {
