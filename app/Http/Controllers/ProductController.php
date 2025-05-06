@@ -43,8 +43,6 @@ class ProductController extends Controller
         if ($request->month) {
             $monthNearly = $request->month;
         }
-        // $monthDate = Carbon::createFromFormat('m-Y', $monthNearly)->startOfMonth();
-        // $products = $products->whereYear('created_at', $monthDate->year)->whereMonth('created_at', $monthDate->month);
 
         if (! empty($request->code)) {
             $products->Code($request);
@@ -67,15 +65,6 @@ class ProductController extends Controller
             $orderBy = 'asc';
         }
 
-        $productIds = Product::pluck('id'); // Lấy tất cả product IDs
-        $errorQuantities = TotalDailyQuantity::where('status', 6)
-            ->whereIn('product_id', $productIds)
-            ->get()
-            ->groupBy('product_id') // Nhóm theo product_id
-            ->map(function ($prod) {
-                return $prod->sum('totalQuan'); // Tính tổng totalQuan cho mỗi nhóm
-            });
-
         $totalproduct = $products->get();
         if ($orderBy && $orderBy == 'asc') {
             $products = $products->orderBy('id', 'ASC');
@@ -88,10 +77,92 @@ class ProductController extends Controller
         $product = new Product;
         $models = $product->models;
         $modelSizes = $product->modelSizes;
-        // dd($monthNearly);
         $listDate = $this->handleDayInMonth($monthNearly);
+        $products = $this->getInfoProduct($products, $monthNearly, $listMonthExport, $listDate);
 
-        return view('product.index', compact('products', 'total', 'models', 'modelSizes', 'listMonth', 'monthNearly', 'listMonthExport', 'listDate', 'filter', 'errorQuantities', 'page'));
+        return view('product.index', compact('products', 'total', 'models', 'modelSizes', 'listMonth', 'monthNearly', 'listMonthExport', 'listDate', 'filter', 'page'));
+    }
+
+    //get info product
+    public function getInfoProduct($products, $monthNearly, $listMonthExport, $listDate)
+    {
+        foreach ($products as $product) {
+            $product->prorealityQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_PRODUCE)->value('totalQuan') ?? 0; // tổng hàng sản xuất
+            $importedQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_CHECK200)->value('totalQuan') ?? 0; // tổng hàng kiểm 200%
+            $product->exportedQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_EXPORT)->value('totalQuan') ?? 0; // tổng số lượng đã xuất
+            $product->stockQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_INVENTORY)->value('totalQuan') ?? 0; // tồn đầu kỳ
+            $product->stockQuan200 = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_INVENTORY_CHECK200)->value('totalQuan') ?? 0; // tồn đầu kỳ 200%
+            $errorQuantity = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_ERROR)->value('totalQuan') ?? 0; // hàng lỗi
+            $product->stockQuanMOQ = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_MOQ)->value('totalQuan') ?? 0; // MOQ
+
+            $product->checked200 = $product->stockQuan200 + $importedQuan - $product->exportedQuan; // đã kiểm 200%
+            $product->stockEndQuan = $product->stockQuan + $product->prorealityQuan - $product->exportedQuan - $errorQuantity; // tồn cuối kỳ
+            $product->stockNoneCheck200 = $product->stockQuan + $product->prorealityQuan - $product->exportedQuan - $product->checked200 - $errorQuantity; // số lượng hàng chưa kiểm 200%
+            $product->quantityCaTon = $product->stockQuanMOQ / $product->quanEntityBin;
+            $product->planTime = (((($product->stockQuanMOQ / $product->CAV) * $product->cycle) / 3600 / 24) * 100) / 90;
+            $product->realTime = (((($product->exportedQuan / $product->CAV) * $product->cycle) / 3600 / 24) * 100) / 90;
+            $product->inventoryDays = number_format($product->stockQuanMOQ != 0 ? $product->stockEndQuan / ($product->stockQuanMOQ / 24) : 0, 1);
+
+            //tính export
+            foreach ($listMonthExport as $monthExport) {
+                $product->export = number_format($product->TotalMonthQuantities()->where('month', $monthExport)->where('status', Product::STATUS_EXPORT)->value('totalQuan') ?? 0);
+            }
+
+            //tổng hàng sản xuất
+            $product->produce = number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_PRODUCE)->value('totalQuan') ?? 0);
+
+            //total theo ca
+            foreach ($listDate as $date) {
+                $formattedDate = \Carbon\Carbon::parse($date)->startOfDay();
+                // Lấy tất cả các dailyQuantities cho ngày cụ thể
+                $dailyQuantitiesOfTheDay = $product->DailyQuantities()->where('status', Product::STATUS_PRODUCE)->whereDate('date', $formattedDate)->get();
+
+                $product->totalQuanDateCa1[$date] = 0;
+                $product->totalQuanDateCa2[$date] = 0;
+
+                foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
+                    $created_at = \Carbon\Carbon::parse(
+                        $dailyQuantity->created_at,
+                    );
+
+                    // Xác định mốc thời gian của từng ca
+                    $startCa1 = $formattedDate->copy()->setHour(7)->setMinute(30); // 07:30
+                    $endCa1 = $formattedDate->copy()->setHour(21)->setMinute(30); // 21:00
+
+                    $startCa2 = $formattedDate->copy()->setHour(21)->setMinute(30); // 20:30
+                    $endCa2 = $formattedDate->copy()->addDay()->setHour(9)->setMinute(00); // 09:00 (ngày hôm sau)
+
+                    // Xác định ca của bản ghi
+                    if ($created_at->between($startCa1, $endCa1)) {
+                        // Nếu thời gian thuộc khoảng 07:30 - 21:00 => Ca 1
+                        $product->totalQuanDateCa1[$date] += $dailyQuantity->quantity;
+                    } elseif ($created_at->between($startCa2, $endCa2)) {
+                        // Nếu thời gian thuộc khoảng 20:30 - 09:00 hôm sau => Ca 2
+                        $product->totalQuanDateCa2[$date] += $dailyQuantity->quantity;
+                    }
+                }
+
+                //tổng theo ngày check 200
+                $day = date('Y-m-d', strtotime($date));
+                $product->totalQuanDateCheck200[$date] = $product->TotalDailyQuantities()->where('status', Product::STATUS_CHECK200)->where('date', $day)->value('totalQuan') ?? '';
+                //tổng theo ngày error 200
+                $product->totalQuanDateError200[$date] = $product->TotalDailyQuantities()->where('status', Product::STATUS_ERROR)->where('date', $day)->value('totalQuan') ?? '';
+                //tổng theo ngày export
+                $product->totalQuanDateExport[$date] = $product->TotalDailyQuantities()->where('status', Product::STATUS_EXPORT)->where('date', $day)->value('totalQuan') ?? '';
+            }
+
+            //Tồn đầu kỳ check200
+            $product->beginningBalanceCheck200 = number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_INVENTORY_CHECK200)->value('totalQuan') ?? 0);
+            $product->ariseCheck200 = number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_CHECK200)->value('totalQuan') ?? 0);
+
+            //Tổng hàng lỗi
+            $product->totalError200 = number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_ERROR)->value('totalQuan') ?? 0);
+
+            //Tổng export
+            $product->totalexport = number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', Product::STATUS_EXPORT)->value('totalQuan') ?? 0);
+        }
+
+        return $products;
     }
 
     // add
@@ -112,13 +183,9 @@ class ProductController extends Controller
             $product = new Product;
             $product->code = trim($request->code);
             $product->name = trim($request->name);
-            // $product->quantity = trim($request->quantity);
-            // $product->quantityCaTon = trim($request->quantityCaTon);
             $product->moldSize = trim($request->moldSize);
             $product->CAV = trim($request->CAV);
             $product->cycle = trim($request->cycle);
-            // $product->planTime = trim($request->planTime);
-            // $product->realTime = trim($request->realTime);
             $product->binCode = $request->binCode;
             $product->quanEntityBin = trim($request->quanEntityBin);
 
@@ -141,7 +208,7 @@ class ProductController extends Controller
             $stockQuan = new TotalMonthQuantity;
             $stockQuan->product_id = $product->id;
             $stockQuan->month = $month;
-            $stockQuan->status = 4;
+            $stockQuan->status = Product::STATUS_INVENTORY;
             $stockQuan->totalQuan = $request->stockQuan ?? 0;
             $stockQuan->save();
 
@@ -149,7 +216,7 @@ class ProductController extends Controller
             $stockQuan200 = new TotalMonthQuantity;
             $stockQuan200->product_id = $product->id;
             $stockQuan200->month = $month;
-            $stockQuan200->status = 5;
+            $stockQuan200->status = Product::STATUS_INVENTORY_CHECK200;
             $stockQuan200->totalQuan = $request->stockQuan200 ?? 0;
             $stockQuan200->save();
 
@@ -157,7 +224,7 @@ class ProductController extends Controller
             $stockQuanMOQ = new TotalMonthQuantity;
             $stockQuanMOQ->product_id = $product->id;
             $stockQuanMOQ->month = $month;
-            $stockQuanMOQ->status = 7;
+            $stockQuanMOQ->status = Product::STATUS_MOQ;
             $stockQuanMOQ->totalQuan = $request->stockQuanMOQ ?? 0;
             // dd($stockQuanMOQ);
             $stockQuanMOQ->save();
@@ -299,10 +366,10 @@ class ProductController extends Controller
             $year = $monthYearArray[1];
         }
         $product = Product::find($id);
-        $dailyQuanStatus1 = DailyQuantity::where('product_id', $id)->where('status', 1)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
-        $dailyQuanStatus2 = DailyQuantity::where('product_id', $id)->where('status', 2)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
-        $dailyQuanStatus3 = DailyQuantity::where('product_id', $id)->where('status', 3)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
-        $dailyQuanStatus6 = DailyQuantity::where('product_id', $id)->where('status', 6)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus1 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_PRODUCE)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus2 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_CHECK200)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus3 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_EXPORT)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus6 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_ERROR)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
         $total1 = count($dailyQuanStatus1->get());
         $total2 = count($dailyQuanStatus2->get());
         $total3 = count($dailyQuanStatus3->get());

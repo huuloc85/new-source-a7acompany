@@ -18,8 +18,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#import_Modal"
                             data-toggle="tooltip"
-                            title="Thêm Sản Lượng"
-                        >
+                            title="Thêm Sản Lượng">
                             <i class="fas fa-plus"></i>
                         </button>
                         @include('checkpo.add-po-import', ['href' => 'admin.checkpo.index'])
@@ -31,8 +30,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#export_Modal"
                             data-toggle="tooltip"
-                            title="Thêm PO Xuất Hàng"
-                        >
+                            title="Thêm PO Xuất Hàng">
                             <i class="fas fa-truck"></i>
                         </button>
                         @include('checkpo.add-po-export', ['href' => 'admin.checkpo.index'])
@@ -44,8 +42,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#stockQuantityModal"
                             data-toggle="tooltip"
-                            title="Thêm Tồn Đầu Kỳ"
-                        >
+                            title="Thêm Tồn Đầu Kỳ">
                             <i class="fas fa-warehouse"></i>
                         </button>
                         @include('checkpo.add-stock-quantity-inventory', [
@@ -57,50 +54,33 @@
                             href="{{ route('admin.history-import-quantity') }}"
                             class="btn btn-primary tooltip-btn"
                             data-toggle="tooltip"
-                            title="Lịch Sử Nhập PO"
-                        >
+                            title="Lịch Sử Nhập PO">
                             <i class="fas fa-clock-rotate-left"></i>
                         </a>
 
                         {{-- Export --}}
-                        <form
-                            action="{{ route('admin.checkpo.export') }}"
-                            method="GET"
-                        >
+                        <form action="{{ route('admin.checkpo.export') }}" method="GET">
                             <button
                                 class="btn btn-success tooltip-btn"
                                 type="submit"
                                 data-toggle="tooltip"
-                                title="Export"
-                            >
+                                title="Export">
                                 <i class="fas fa-file-export"></i>
                             </button>
-                            <input
-                                name="monthExport"
-                                id="monthExport"
-                                type="hidden"
-                                value="{{ $selectedMonth }}"
-                            />
+                            <input name="monthExport" id="monthExport" type="hidden" value="{{ $selectedMonth }}" />
                         </form>
 
                         {{-- Chọn tháng --}}
-                        <form
-                            action="{{ route('admin.checkpo.index') }}"
-                            method="GET"
-                        >
+                        <form action="{{ route('admin.checkpo.index') }}" method="GET">
                             <select
                                 name="monthFilter"
                                 id="monthFilter"
                                 onchange="this.form.submit()"
                                 class="form-control mt-0"
                                 data-toggle="tooltip"
-                                title="Chọn tháng"
-                            >
+                                title="Chọn tháng">
                                 @foreach ($totalMonthQuantities as $month)
-                                    <option
-                                        value="{{ $month }}"
-                                        {{ $month == $selectedMonth ? 'selected' : '' }}
-                                    >
+                                    <option value="{{ $month }}" {{ $month == $selectedMonth ? 'selected' : '' }}>
                                         {{ Carbon\Carbon::createFromFormat('m-Y', $month)->format('m-Y') }}
                                     </option>
                                 @endforeach
@@ -113,8 +93,7 @@
                         <ul
                             class="nav nav-tabs flex-nowrap text-nowrap overflow-x-auto overflow-y-hidden"
                             id="myTab"
-                            role="tablist"
-                        >
+                            role="tablist">
                             @foreach ($months as $i => $weekArray)
                                 <li class="nav-item" role="presentation">
                                     <button
@@ -125,8 +104,7 @@
                                         type="button"
                                         role="tab"
                                         aria-controls="week-{{ $i }}"
-                                        aria-selected="false"
-                                    >
+                                        aria-selected="false">
                                         Tuần {{ $i + 1 }}
                                     </button>
                                 </li>
@@ -141,8 +119,7 @@
                                     type="button"
                                     role="tab"
                                     aria-controls="daily-tab"
-                                    aria-selected="false"
-                                >
+                                    aria-selected="false">
                                     Hằng Ngày
                                 </button>
                             </li>
@@ -156,8 +133,7 @@
                                     type="button"
                                     role="tab"
                                     aria-controls="error-tab"
-                                    aria-selected="false"
-                                >
+                                    aria-selected="false">
                                     Hàng Lỗi
                                 </button>
                             </li>
@@ -165,119 +141,35 @@
                         <div class="tab-content" id="myTabContent">
                             {{-- Tab Tuần --}}
                             @foreach ($months as $index => $weekArray)
-                                @php
-                                    $weekDays = array_keys($weekArray);
-                                    $startOfWeek = $weekDays[0] ?? '';
-                                    $endOfWeek = end($weekDays) ?? '';
-                                @endphp
-
                                 <div
                                     class="tab-pane po-tab {{ $index == 0 ? 'active show' : 'fade' }}"
                                     id="week-{{ $index }}"
                                     role="tabpanel"
-                                    aria-labelledby="week-{{ $index }}-tab"
-                                >
-                                    <div
-                                        class="text-center text-uppercase font-weight-bolder text-lg my-2"
-                                    >
-                                        Tuần từ {{ $startOfWeek }} đến
-                                        {{ $endOfWeek }}
+                                    aria-labelledby="week-{{ $index }}-tab">
+                                    <div class="text-center text-uppercase font-weight-bolder text-lg my-2">
+                                        Tuần từ {{ $weekArray['startOfWeek'] }} đến
+                                        {{ $weekArray['endOfWeek'] }}
                                     </div>
                                     <div class="table-responsive">
-                                        <table
-                                            class="table table-bordered table-hover"
-                                        >
-                                            <thead
-                                                class="table-light text-uppercase text-center"
-                                            >
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="table-light text-uppercase text-center">
                                                 <tr>
                                                     <th>STT</th>
                                                     <th>Tên linh kiện</th>
-                                                    <th>
-                                                        Tổng số lượng tồn hiện
-                                                        tại
-                                                    </th>
+                                                    <th>Tổng số lượng tồn hiện tại</th>
                                                     <th>Còn lại trong tuần</th>
                                                     <th>Đã xuất trong tuần</th>
                                                     <th>Tồn đầu tuần</th>
-                                                    @foreach ($weekDays as $date)
-                                                        @php
-                                                            // Chỉ định định dạng của chuỗi ngày
-                                                            $carbonDate = \Carbon\Carbon::createFromFormat(
-                                                                'd/m/Y',
-                                                                $date,
-                                                            );
-                                                        @endphp
-
+                                                    @foreach ($weekArray['weekDays'] as $date)
                                                         <th>
-                                                            {{ $carbonDate->format('d-m') }}
+                                                            {{ \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('d-m') }}
                                                         </th>
                                                     @endforeach
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($products as $product)
-                                                    @php
-                                                        $quan100 = 0;
-                                                        $quanExport = 0;
-                                                        $reamingOfWeek = 0;
-                                                        $beginningOfWeek = 0;
-                                                        $errorQuantity = 0;
-                                                        $previousReamingOfWeekValue = 0;
-
-                                                        if ($index === 0) {
-                                                            $totalMonthQuantities = $product
-                                                                ->TotalMonthQuantities()
-                                                                ->where('status', 4)
-                                                                ->where('month', $selectedMonth)
-                                                                ->first();
-
-                                                            if ($totalMonthQuantities) {
-                                                                $beginningOfWeek = $totalMonthQuantities->totalQuan;
-                                                            }
-                                                        } else {
-                                                            $previousReamingOfWeekValue =
-                                                                $previousReamingOfWeek[$product->id] ?? 0;
-                                                            $beginningOfWeek = $previousReamingOfWeekValue;
-                                                        }
-
-                                                        foreach ($weekArray as $date => $quantities) {
-                                                            $quan100 += $quantities['quan100'][$product->id] ?? 0;
-                                                            $quanExport += $quantities['quanExport'][$product->id] ?? 0;
-                                                        }
-
-                                                        $reamingOfWeek = $quan100 - $quanExport + $beginningOfWeek;
-
-                                                        if ($index > 0) {
-                                                            $previousReamingOfWeek[$product->id] = $reamingOfWeek;
-                                                        } else {
-                                                            $previousReamingOfWeek[$product->id] = $reamingOfWeek;
-                                                        }
-
-                                                        $errorQuantity = $product
-                                                            ->TotalMonthQuantities()
-                                                            ->where('status', 6)
-                                                            ->where('month', $selectedMonth)
-                                                            ->sum('totalQuan');
-
-                                                        $total = $quan100 + $beginningOfWeek;
-                                                        $totalReamingOfWeek = $reamingOfWeek - $errorQuantity;
-
-                                                        session()->put("$index.$product->id.total", $total);
-                                                        session()->put(
-                                                            "$index.$product->id.totalReamingOfWeek",
-                                                            $totalReamingOfWeek,
-                                                        );
-                                                        session()->put("$index.$product->id.quanExport", $quanExport);
-                                                        session()->put(
-                                                            "$index.$product->id.beginningOfWeek",
-                                                            $beginningOfWeek,
-                                                        );
-                                                    @endphp
-
-                                                    <tr
-                                                        class="text-center align-middle"
-                                                    >
+                                                    <tr class="text-center align-middle">
                                                         <th>
                                                             {{ $loop->iteration }}
                                                         </th>
@@ -285,27 +177,20 @@
                                                             {{ $product->name }}
                                                         </td>
                                                         <td>
-                                                            {{ number_format($total) }}
+                                                            {{ number_format($weekArray['products'][$product->id]['total']) }}
                                                         </td>
                                                         <td>
-                                                            {{ number_format($totalReamingOfWeek) }}
+                                                            {{ number_format($weekArray['products'][$product->id]['totalReamingOfWeek']) }}
                                                         </td>
                                                         <td>
-                                                            {{ number_format($quanExport) }}
+                                                            {{ number_format($weekArray['products'][$product->id]['quanExport']) }}
                                                         </td>
                                                         <td>
-                                                            {{ number_format($beginningOfWeek) }}
+                                                            {{ number_format($weekArray['products'][$product->id]['beginningOfWeek']) }}
                                                         </td>
-                                                        @foreach ($weekDays as $date)
-                                                            @php
-                                                                $quanExport =
-                                                                    $weekArray[$date]['quanExport'][$product->id] ?? 0;
-                                                            @endphp
-
-                                                            <td
-                                                                class="text-center bg-secondary-subtle"
-                                                            >
-                                                                {{ number_format($quanExport) }}
+                                                        @foreach ($weekArray['weekDays'] as $date)
+                                                            <td class="text-center bg-secondary-subtle">
+                                                                {{ number_format($weekArray[$date]['quanExport'][$product->id] ?? 0) }}
                                                             </td>
                                                         @endforeach
                                                     </tr>
@@ -321,50 +206,31 @@
                                 class="tab-pane tab-vvp fade po-tab"
                                 id="daily-tab"
                                 role="tabpanel"
-                                aria-labelledby="daily-tab-btn"
-                            >
-                                <div
-                                    class="text-center text-uppercase font-weight-bolder text-lg my-2"
-                                >
-                                    BẢNG SẢN LƯỢNG SẢN XUẤT HẰNG NGÀY TRONG
-                                    THÁNG {{ $selectedMonth }}
+                                aria-labelledby="daily-tab-btn">
+                                <div class="text-center text-uppercase font-weight-bolder text-lg my-2">
+                                    BẢNG SẢN LƯỢNG SẢN XUẤT HẰNG NGÀY TRONG THÁNG {{ $selectedMonth }}
                                 </div>
                                 <div class="table-responsive">
-                                    <table
-                                        class="table table-bordered table-hover"
-                                    >
-                                        <thead
-                                            class="table-light text-uppercase text-center align-middle"
-                                        >
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-light text-uppercase text-center align-middle">
                                             <tr>
                                                 <th rowspan="2">STT</th>
-                                                <th rowspan="2">
-                                                    Tên linh kiện
-                                                </th>
+                                                <th rowspan="2">Tên linh kiện</th>
                                                 <th rowspan="2">Tổng cộng</th>
                                                 @foreach ($listDate as $key => $date)
-                                                    @php
-                                                        $formattedDate = \Carbon\Carbon::parse($date)->format('d-m'); // Định dạng ngày tháng
-                                                    @endphp
-
-                                                    <th
-                                                        colspan="2"
-                                                        title="{{ $date }}"
-                                                    >
-                                                        {{ $formattedDate }}
+                                                    <th colspan="2" title="{{ $date }}">
+                                                        {{ \Carbon\Carbon::parse($date)->format('d-m') }}
                                                     </th>
                                                 @endforeach
                                             </tr>
                                             <tr>
                                                 @foreach ($listDate as $key => $date)
                                                     <th
-                                                        class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>"
-                                                    >
+                                                        class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
                                                         Ca 1
                                                     </th>
                                                     <th
-                                                        class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>"
-                                                    >
+                                                        class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
                                                         Ca 2
                                                     </th>
                                                 @endforeach
@@ -377,59 +243,21 @@
                                                         {{ $loop->iteration }}
                                                     </th>
                                                     <td>
-                                                        <a
-                                                            href="{{ route('admin.product.detail', $product->id) }}"
-                                                        >
+                                                        <a href="{{ route('admin.product.detail', $product->id) }}">
                                                             {{ $product->name }}
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $selectedMonth)->where('status', 1)->value('totalQuan') ?? 0) }}
+                                                        {{ $product->total }}
                                                     </td>
                                                     @foreach ($listDate as $key => $date)
-                                                        @php
-                                                            // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
-                                                            $formattedDate = Carbon\Carbon::parse($date)->startOfDay();
-                                                            // Lấy tất cả các dailyQuantities cho ngày cụ thể
-                                                            $dailyQuantitiesOfTheDay = $product
-                                                                ->DailyQuantities()
-                                                                ->where('status', 1)
-                                                                ->whereDate('date', $formattedDate)
-                                                                ->get();
-
-                                                            $totalQuanDateCa1 = 0;
-                                                            $totalQuanDateCa2 = 0;
-
-                                                            // Xử lý số lượng cho mỗi ca
-                                                            foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
-                                                                $created_at = Carbon\Carbon::parse(
-                                                                    $dailyQuantity->created_at,
-                                                                );
-                                                                $nextDayEightAM = $formattedDate
-                                                                    ->copy()
-                                                                    ->addDay()
-                                                                    ->setHour(9);
-
-                                                                // Phân biệt ca dựa vào thời gian trong cột created_at
-                                                                if ($created_at->isSameDay($formattedDate)) {
-                                                                    // Ca 1 nếu created_at cùng ngày với date
-                                                                    $totalQuanDateCa1 += $dailyQuantity->quantity;
-                                                                } elseif ($created_at < $nextDayEightAM) {
-                                                                    // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date
-                                                                    $totalQuanDateCa2 += $dailyQuantity->quantity;
-                                                                }
-                                                            }
-                                                        @endphp
-
                                                         <td
-                                                            class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>"
-                                                        >
-                                                            {{ number_format($totalQuanDateCa1) }}
+                                                            class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
+                                                            {{ number_format($product->totalQuanDateCa1[$date]) }}
                                                         </td>
                                                         <td
-                                                            class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>"
-                                                        >
-                                                            {{ number_format($totalQuanDateCa2) }}
+                                                            class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
+                                                            {{ number_format($product->totalQuanDateCa2[$date]) }}
                                                         </td>
                                                     @endforeach
                                                 </tr>
@@ -444,35 +272,22 @@
                                 class="tab-pane tab-vvp fade po-tab"
                                 id="error-tab"
                                 role="tabpanel"
-                                aria-labelledby="error-tab"
-                            >
-                                <div
-                                    class="text-center text-uppercase font-weight-bolder text-lg my-2"
-                                >
+                                aria-labelledby="error-tab">
+                                <div class="text-center text-uppercase font-weight-bolder text-lg my-2">
                                     BẢNG NHẬP HÀNG LỖI HÀNG NGÀY TRONG THÁNG
                                     {{ $selectedMonth }}
                                 </div>
                                 <div class="table-responsive">
-                                    <table
-                                        class="table table-bordered table-hover"
-                                    >
-                                        <thead
-                                            class="table-light text-uppercase text-center"
-                                        >
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-light text-uppercase text-center">
                                             <tr>
                                                 <th>STT</th>
                                                 <th>Tên linh kiện</th>
                                                 <th>Tổng cộng</th>
                                                 @foreach ($listDate as $key => $date)
-                                                    @php
-                                                        // Sử dụng Carbon để định dạng ngày tháng theo 'd-m'
-                                                        $formattedDate = \Carbon\Carbon::parse($date)->format('d-m');
-                                                    @endphp
-
                                                     <th
-                                                        class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>"
-                                                    >
-                                                        {{ $formattedDate }}
+                                                        class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
+                                                        {{ \Carbon\Carbon::parse($date)->format('d-m') }}
                                                     </th>
                                                 @endforeach
                                             </tr>
@@ -484,32 +299,18 @@
                                                         {{ $loop->iteration }}
                                                     </th>
                                                     <td>
-                                                        <a
-                                                            href="{{ route('admin.product.detail', $product->id) }}"
-                                                        >
+                                                        <a href="{{ route('admin.product.detail', $product->id) }}">
                                                             {{ $product->name }}
                                                         </a>
                                                     </td>
 
                                                     <td>
-                                                        {{ number_format($product->TotalMonthQuantities()->where('month', $selectedMonth)->where('status', 6)->value('totalQuan') ?? 0) }}
+                                                        {{ $product->totalEror }}
                                                     </td>
                                                     @foreach ($listDate as $key => $date)
-                                                        @php
-                                                            $timestam = strtotime($date);
-                                                            $day = date('Y-m-d', $timestam);
-                                                            $totalQuanDate =
-                                                                $product
-                                                                    ->TotalDailyQuantities()
-                                                                    ->where('status', 6)
-                                                                    ->where('date', $day)
-                                                                    ->value('totalQuan') ?? '';
-                                                        @endphp
-
                                                         <td
-                                                            class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>"
-                                                        >
-                                                            {{ number_format((float) $totalQuanDate) }}
+                                                            class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
+                                                            {{ number_format((float) $product->totalQuanDateError[$date]) }}
                                                         </td>
                                                     @endforeach
                                                 </tr>

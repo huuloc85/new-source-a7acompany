@@ -39,7 +39,7 @@ class CheckPoController extends Controller
             $nameDay = $date->format('l');
 
             $dailyQuantitiesStatus1 = TotalDailyQuantity::whereDate('date', $dateFormatted)
-                ->where('status', 1)
+                ->where('status', Product::STATUS_PRODUCE)
                 ->get();
 
             // Lấy dữ liệu từ bảng TotalDailyQuantityPO với status = 8
@@ -58,7 +58,7 @@ class CheckPoController extends Controller
             ];
 
             foreach ($dailyQuantities as $record) {
-                if ($record->status == 1) {
+                if ($record->status == Product::STATUS_PRODUCE) {
                     $quantities['quan100'][$record->product_id] = ($quantities['quan100'][$record->product_id] ?? 0) + $record->totalQuan;
                 } elseif ($record->status == 8) {
                     $quantities['quanExport'][$record->product_id] = ($quantities['quanExport'][$record->product_id] ?? 0) + $record->totalQuan;
@@ -78,7 +78,7 @@ class CheckPoController extends Controller
         $productNearData = [];
         foreach ($productIds as $productId) {
             // Lấy dữ liệu gần nhất cho mỗi sản phẩm theo tháng
-            $stockQuanNearly = TotalMonthQuantity::where('product_id', $productId)->where('status', 4)->where('month', $currentMonth)->value('totalQuan');
+            $stockQuanNearly = TotalMonthQuantity::where('product_id', $productId)->where('status', Product::STATUS_INVENTORY)->where('month', $currentMonth)->value('totalQuan');
 
             // Lưu dữ liệu gần nhất vào mảng productNearData cho mỗi sản phẩm
             $productNearData[$productId] = [
@@ -88,8 +88,125 @@ class CheckPoController extends Controller
 
         $listDate = $this->handleDayInMonth($selectedMonth);
         $currentDate = Carbon::now()->format('d-m-Y');
+        $this->getInfoPo($months, $products, $selectedMonth, $listDate);
 
         return view('checkpo.index', compact('months', 'products', 'listDate', 'currentDate', 'totalMonthQuantities', 'selectedMonth', 'productNearData'));
+    }
+
+    public function getInfoPo(&$months, &$products, $selectedMonth, $listDate)
+    {
+        $previousReamingOfWeek = [];
+        foreach ($months as $index => &$weekArray) {
+            $weekArray['weekDays'] = array_keys($weekArray);
+            $weekArray['startOfWeek'] = $weekArray['weekDays'][0] ?? '';
+            $weekArray['endOfWeek'] = end($weekArray['weekDays']) ?? '';
+
+            $weekArray['products'] = [];
+
+            foreach ($products as $product) {
+                $weekArray['products'][$product->id] = [
+                    'total' => 0,
+                    'totalReamingOfWeek' => 0,
+                    'quanExport' => 0,
+                    'beginningOfWeek' => 0,
+                ];
+                $quan100 = 0;
+                $quanExport = 0;
+                $reamingOfWeek = 0;
+                $beginningOfWeek = 0;
+                $errorQuantity = 0;
+                $previousReamingOfWeekValue = 0;
+                $total = 0;
+                $totalReamingOfWeek = 0;
+
+                if ($index === 0) {
+                    $totalMonthQuantities = $product->TotalMonthQuantities()->where('status', Product::STATUS_INVENTORY)->where('month', $selectedMonth)->first();
+
+                    if ($totalMonthQuantities) {
+                        $beginningOfWeek = $totalMonthQuantities->totalQuan;
+                    }
+                } else {
+                    $previousReamingOfWeekValue =
+                        $previousReamingOfWeek[$product->id] ?? 0;
+                    $beginningOfWeek = $previousReamingOfWeekValue;
+                }
+
+                foreach ($weekArray as $date => &$quantities) {
+                    $quan100 += $quantities['quan100'][$product->id] ?? 0;
+                    $quanExport += $quantities['quanExport'][$product->id] ?? 0;
+                }
+
+                $reamingOfWeek = $quan100 - $quanExport + $beginningOfWeek;
+
+                $previousReamingOfWeek[$product->id] = $reamingOfWeek;
+
+                $errorQuantity = $product->TotalMonthQuantities()->where('status', Product::STATUS_ERROR)->where('month', $selectedMonth)->sum('totalQuan');
+
+                $total = $quan100 + $beginningOfWeek;
+                $totalReamingOfWeek = $reamingOfWeek - $errorQuantity;
+
+                session()->put("$index.$product->id.total", $total);
+                session()->put(
+                    "$index.$product->id.totalReamingOfWeek",
+                    $totalReamingOfWeek,
+                );
+                session()->put("$index.$product->id.quanExport", $quanExport);
+                session()->put(
+                    "$index.$product->id.beginningOfWeek",
+                    $beginningOfWeek,
+                );
+
+                $weekArray['products'][$product->id] = [
+                    'total' => $total,
+                    'totalReamingOfWeek' => $totalReamingOfWeek,
+                    'quanExport' => $quanExport,
+                    'beginningOfWeek' => $beginningOfWeek,
+                ];
+            }
+        }
+
+        foreach ($products as &$product) {
+            $product->total = number_format($product->TotalMonthQuantities()->where('month', $selectedMonth)->where('status', Product::STATUS_PRODUCE)->value('totalQuan') ?? 0);
+            $product->totalEror = number_format($product->TotalMonthQuantities()->where('month', $selectedMonth)->where('status', Product::STATUS_ERROR)->value('totalQuan') ?? 0);
+
+            foreach ($listDate as $date) {
+                $product->totalQuanDateCa1[$date] = 0;
+                $product->totalQuanDateCa2[$date] = 0;
+                // Chuyển đổi date được cung cấp sang định dạng Carbon để so sánh
+                $formattedDate = Carbon::parse($date)->startOfDay();
+                // Lấy tất cả các dailyQuantities cho ngày cụ thể
+                $dailyQuantitiesOfTheDay = $product->DailyQuantities()->where('status', Product::STATUS_PRODUCE)->whereDate('date', $formattedDate)->get();
+
+                $totalQuanDateCa1 = 0;
+                $totalQuanDateCa2 = 0;
+
+                // Xử lý số lượng cho mỗi ca
+                foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
+                    $created_at = Carbon::parse(
+                        $dailyQuantity->created_at,
+                    );
+                    $nextDayEightAM = $formattedDate
+                        ->copy()
+                        ->addDay()
+                        ->setHour(9);
+
+                    // Phân biệt ca dựa vào thời gian trong cột created_at
+                    if ($created_at->isSameDay($formattedDate)) {
+                        // Ca 1 nếu created_at cùng ngày với date
+                        $totalQuanDateCa1 += $dailyQuantity->quantity;
+                    } elseif ($created_at < $nextDayEightAM) {
+                        // Ca 2 nếu created_at trước 8 giờ sáng ngày hôm sau của date
+                        $totalQuanDateCa2 += $dailyQuantity->quantity;
+                    }
+                }
+
+                $product->totalQuanDateCa1[$date] = $totalQuanDateCa1;
+                $product->totalQuanDateCa2[$date] = $totalQuanDateCa2;
+
+                $day = date('Y-m-d', strtotime($date));
+                $product->totalQuanDateError[$date] = $product->TotalDailyQuantities()->where('status', Product::STATUS_ERROR)->where('date', $day)->value('totalQuan') ?? '';
+            }
+        }
     }
 
     public function handleAddPoExport(Request $request)
