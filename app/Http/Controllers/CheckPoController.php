@@ -44,7 +44,7 @@ class CheckPoController extends Controller
 
             // Lấy dữ liệu từ bảng TotalDailyQuantityPO với status = 8
             $dailyQuantitiesStatus8 = TotalDailyQuantityPO::whereDate('date', $dateFormatted)
-                ->where('status', 8)
+                ->where('status', Product::STATUS_TOTAL_DAILY_PO)
                 ->get();
 
             // Hợp nhất kết quả từ hai bảng
@@ -60,7 +60,7 @@ class CheckPoController extends Controller
             foreach ($dailyQuantities as $record) {
                 if ($record->status == Product::STATUS_PRODUCE) {
                     $quantities['quan100'][$record->product_id] = ($quantities['quan100'][$record->product_id] ?? 0) + $record->totalQuan;
-                } elseif ($record->status == 8) {
+                } elseif ($record->status == Product::STATUS_TOTAL_DAILY_PO) {
                     $quantities['quanExport'][$record->product_id] = ($quantities['quanExport'][$record->product_id] ?? 0) + $record->totalQuan;
                 }
             }
@@ -394,7 +394,7 @@ class CheckPoController extends Controller
             $status = 4;
 
             // Cập nhật số lượng gần nhất cho status 4
-            $stockQuanNearly = TotalMonthQuantity::where('status', 4)->latest()->first();
+            $stockQuanNearly = TotalMonthQuantity::where('status', Product::STATUS_INVENTORY)->latest()->first();
 
             // Lặp qua danh sách sản phẩm và số lượng tương ứng để cập nhật
             foreach ($listProductId as $key => $productId) {
@@ -455,11 +455,11 @@ class CheckPoController extends Controller
             $nameDay = $date->format('l');
 
             $dailyQuantities = TotalDailyQuantity::whereDate('date', $dateFormatted)
-                ->where('status', 1)
+                ->where('status', Product::STATUS_PRODUCE)
                 ->get();
 
             $exportQuantities = TotalDailyQuantityPo::whereDate('date', $dateFormatted)
-                ->where('status', 8)
+                ->where('status', Product::STATUS_TOTAL_DAILY_PO)
                 ->get();
 
             $quantities = [
@@ -470,13 +470,13 @@ class CheckPoController extends Controller
             ];
 
             foreach ($dailyQuantities as $record) {
-                if ($record->status == 1) {
+                if ($record->status == Product::STATUS_PRODUCE) {
                     $quantities['quan100'][$record->product_id] = ($quantities['quan100'][$record->product_id] ?? 0) + $record->totalQuan;
                 }
             }
 
             foreach ($exportQuantities as $record) {
-                if ($record->status == 8) {
+                if ($record->status == Product::STATUS_TOTAL_DAILY_PO) {
                     $quantities['quanExport'][$record->product_id] = ($quantities['quanExport'][$record->product_id] ?? 0) + $record->totalQuan;
                 }
             }
@@ -504,7 +504,7 @@ class CheckPoController extends Controller
             $month = $request->input('month') ? Carbon::createFromFormat('Y-m', $request->input('month')) : Carbon::now();
         }
         $products = Product::all();
-        //query
+        // query
         if ($selectedDate) {
             $dailyQuantitiesQuery = DailyQuantityPO::whereDate('date', $selectedDate);
         } else {

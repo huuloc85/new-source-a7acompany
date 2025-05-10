@@ -237,7 +237,7 @@ class CheckEmployeeController extends Controller
 
         $checkEmployeeHistory = CheckEmployee::where('employee_id', $employeeId)
             ->whereDate('date', $filterDate)
-            ->whereIn('status', [1, 2, 6])
+            ->whereIn('status', [Product::STATUS_PRODUCE, Product::STATUS_CHECK200, Product::STATUS_ERROR])
             ->orderBy('date', 'desc')
             ->get();
 

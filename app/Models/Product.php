@@ -62,6 +62,8 @@ class Product extends Model
 
     const STATUS_MOQ = 7;
 
+    const STATUS_TOTAL_DAILY_PO = 8;
+
     // Hoặc nếu có nhiều trạng thái hơn:
     const STATUS_PENDING = 2;
 
