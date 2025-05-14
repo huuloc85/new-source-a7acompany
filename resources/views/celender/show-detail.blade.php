@@ -1,5 +1,20 @@
 @extends('layouts.'.$layout)
 
+@section('styles')
+    <style>
+        .table-header-content {
+            height: 4.5rem;
+            min-height: 4.5rem;
+            max-height: 4.5rem;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+@endsection
+
 @php
     $tabWork = [
         'VVP' => ['title' => 'Hàng Nhật - Hàng Chợ'],
@@ -97,11 +112,22 @@
                                             >
                                                 <thead
                                                     class="table-light text-center uppercase align-middle"
-                                                    style="height: 4.5rem"
                                                 >
                                                     <tr>
-                                                        <th>Mã NV</th>
-                                                        <th>Họ và tên</th>
+                                                        <th>
+                                                            <div
+                                                                class="table-header-content"
+                                                            >
+                                                                Mã NV
+                                                            </div>
+                                                        </th>
+                                                        <th>
+                                                            <div
+                                                                class="table-header-content"
+                                                            >
+                                                                Họ và tên
+                                                            </div>
+                                                        </th>
                                                     </tr>
                                                 </thead>
 
@@ -138,14 +164,17 @@
                                             >
                                                 <thead
                                                     class="table-light text-center uppercase align-middle"
-                                                    style="height: 4.5rem"
                                                 >
                                                     <tr>
                                                         @foreach ($dates as $date)
                                                             <th>
-                                                                {{ $formatDate->formatTimeDate($date) }}
-                                                                <br />
-                                                                {{ $formatDate->dayOfWeek($date) }}
+                                                                <div
+                                                                    class="table-header-content"
+                                                                >
+                                                                    {{ $formatDate->formatTimeDate($date) }}
+                                                                    <br />
+                                                                    {{ $formatDate->dayOfWeek($date) }}
+                                                                </div>
                                                             </th>
                                                         @endforeach
                                                     </tr>
@@ -206,11 +235,22 @@
                                         >
                                             <thead
                                                 class="table-light text-center uppercase align-middle"
-                                                style="height: 4.5rem"
                                             >
                                                 <tr>
-                                                    <th>Mã NV</th>
-                                                    <th>Họ và tên</th>
+                                                    <th>
+                                                        <div
+                                                            class="table-header-content"
+                                                        >
+                                                            Mã NV
+                                                        </div>
+                                                    </th>
+                                                    <th>
+                                                        <div
+                                                            class="table-header-content"
+                                                        >
+                                                            Họ và tên
+                                                        </div>
+                                                    </th>
                                                 </tr>
                                             </thead>
 
@@ -347,21 +387,28 @@
                                         >
                                             <thead
                                                 class="table-light text-center uppercase align-middle"
-                                                style="height: 4.5rem"
                                             >
                                                 <tr>
                                                     @foreach ($dates as $date)
                                                         @if ($tabCode == 'part-time' && $formatDate->dayOfWeek($date) == 'T7')
                                                             <th>
-                                                                {{ $formatDate->formatTimeDate($date) }}
-                                                                <br />
-                                                                {{ $formatDate->dayOfWeek($date) }}
+                                                                <div
+                                                                    class="table-header-content"
+                                                                >
+                                                                    {{ $formatDate->formatTimeDate($date) }}
+                                                                    <br />
+                                                                    {{ $formatDate->dayOfWeek($date) }}
+                                                                </div>
                                                             </th>
                                                         @elseif ($tabCode != 'part-time')
                                                             <th>
-                                                                {{ $formatDate->formatTimeDate($date) }}
-                                                                <br />
-                                                                {{ $formatDate->dayOfWeek($date) }}
+                                                                <div
+                                                                    class="table-header-content"
+                                                                >
+                                                                    {{ $formatDate->formatTimeDate($date) }}
+                                                                    <br />
+                                                                    {{ $formatDate->dayOfWeek($date) }}
+                                                                </div>
                                                             </th>
                                                         @endif
                                                     @endforeach

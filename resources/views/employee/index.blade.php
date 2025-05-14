@@ -17,17 +17,14 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div
-                        class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3"
-                    >
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
                         <div class="d-flex flex-wrap align-items-center gap-3">
                             <a
                                 href="{{ route('admin.employee.add') }}"
                                 type="button"
                                 class="btn btn-success"
                                 title="Thêm Nhân Sự"
-                                data-bs-toggle="tooltip"
-                            >
+                                data-bs-toggle="tooltip">
                                 <i class="fas fa-user-plus"></i>
                             </a>
                             <a
@@ -35,38 +32,27 @@
                                 type="button"
                                 class="btn btn-warning"
                                 title="Thùng Rác"
-                                data-bs-toggle="tooltip"
-                            >
+                                data-bs-toggle="tooltip">
                                 <i class="fas fa-trash"></i>
                             </a>
                             <a
-                                href="http://192.168.1.2/doc/index.html#/portal/login"
+                                href="http://192.168.1.5/doc/index.html#/portal/login"
                                 type="button"
                                 class="btn btn-dark"
                                 title="Thêm Nhân Sự Vào Máy Chấm Công"
-                                data-bs-toggle="tooltip"
-                            >
+                                data-bs-toggle="tooltip">
                                 <i class="fas fa-fingerprint"></i>
                             </a>
                         </div>
 
                         <div class="d-flex flex-wrap align-items-center gap-3">
-                            <form
-                                action="{{ route('admin.employee.home') }}"
-                                method="GET"
-                            >
-                                <select
-                                    name="company"
-                                    id="company"
-                                    class="form-control"
-                                    onchange="this.form.submit()"
-                                >
+                            <form action="{{ route('admin.employee.home') }}" method="GET">
+                                <select name="company" id="company" class="form-control" onchange="this.form.submit()">
                                     <option value="">Tất cả công ty</option>
                                     @foreach ($companies as $company)
                                         <option
                                             value="{{ $company }}"
-                                            {{ request('company') == $company ? 'selected' : '' }}
-                                        >
+                                            {{ request('company') == $company ? 'selected' : '' }}>
                                             {{ $company }}
                                         </option>
                                     @endforeach
@@ -78,16 +64,13 @@
                                 class="btn btn-primary"
                                 data-bs-toggle="modal"
                                 data-bs-target="#searchModal"
-                                title="Tìm kiếm nâng cao"
-                            >
+                                title="Tìm kiếm nâng cao">
                                 <i class="fas fa-filter"></i>
                             </button>
                             @include('employee.search-advand', ['href' => 'admin.employee.home'])
                         </div>
                     </div>
-                    <div
-                        class="d-flex flex-wrap-reverse align-items-center justify-content-between gap-3 mb-3"
-                    >
+                    <div class="d-flex flex-wrap-reverse align-items-center justify-content-between gap-3 mb-3">
                         <div>
                             <span class="fw-bold">
                                 {{ $startValue }}
@@ -103,12 +86,7 @@
                         </div>
                         <div class="d-flex align-items-center border rounded">
                             <i class="fas fa-search ps-2"></i>
-                            <input
-                                type="text"
-                                id="search"
-                                class="form-control border-0"
-                                placeholder="Tìm kiếm"
-                            />
+                            <input type="text" id="search" class="form-control border-0" placeholder="Tìm kiếm" />
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -127,18 +105,9 @@
                             <tbody>
                                 @if ($total == 0)
                                     <tr>
-                                        <td
-                                            colspan="7"
-                                            class="text-center pt-4"
-                                        >
-                                            Hiện tại chưa có Nhân viên nào. Vui
-                                            lòng
-                                            <a
-                                                class="href"
-                                                href="{{ route('admin.employee.add') }}"
-                                            >
-                                                Thêm nhân viên
-                                            </a>
+                                        <td colspan="7" class="text-center pt-4">
+                                            Hiện tại chưa có Nhân viên nào. Vui lòng
+                                            <a class="href" href="{{ route('admin.employee.add') }}">Thêm nhân viên</a>
                                         </td>
                                     </tr>
                                 @endif
@@ -149,22 +118,17 @@
                                             {{ $loop->iteration + $startValue - 1 }}
                                         </td>
                                         <td class="text-start">
-                                            <div
-                                                class="d-flex align-items-center gap-3"
-                                            >
+                                            <div class="d-flex align-items-center gap-3">
                                                 <img
                                                     src="{{ asset('storage/employee/'.$employee->photo) }}"
                                                     class="avatar avatar-sm border-radius-lg shadow"
                                                     alt="avatar"
-                                                    onerror="this.src='{{ $defaultAvatar }}';"
-                                                />
+                                                    onerror="this.src='{{ $defaultAvatar }}';" />
                                                 <div>
                                                     <h6>
                                                         {{ $employee->name }}
                                                     </h6>
-                                                    <div
-                                                        class="text-xs text-secondary"
-                                                    >
+                                                    <div class="text-xs text-secondary">
                                                         {{ $employee->phone }}
                                                     </div>
                                                 </div>
@@ -185,8 +149,7 @@
                                         <td>
                                             <a
                                                 href="{{ route('admin.employee.edit', $employee->id) }}"
-                                                class="btn btn-primary"
-                                            >
+                                                class="btn btn-primary">
                                                 <i class="fas fa-edit"></i>
                                                 Sửa
                                             </a>
@@ -194,8 +157,7 @@
                                                 type="button"
                                                 class="btn btn-danger"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal-{{ $employee->id }}"
-                                            >
+                                                data-bs-target="#deleteModal-{{ $employee->id }}">
                                                 <i class="fas fa-trash-alt"></i>
                                                 Xóa
                                             </button>
@@ -207,30 +169,22 @@
                                         id="deleteModal-{{ $employee->id }}"
                                         tabindex="-1"
                                         aria-labelledby="deleteModalLabel-{{ $employee->id }}"
-                                        aria-hidden="true"
-                                    >
-                                        <div
-                                            class="modal-dialog modal-dialog-centered"
-                                        >
+                                        aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5
-                                                        class="modal-title"
-                                                        id="deleteModalLabel-{{ $employee->id }}"
-                                                    >
+                                                    <h5 class="modal-title" id="deleteModalLabel-{{ $employee->id }}">
                                                         Xác nhận xóa
                                                     </h5>
                                                     <button
                                                         type="button"
                                                         class="btn-close"
                                                         data-bs-dismiss="modal"
-                                                        aria-label="Close"
-                                                    ></button>
+                                                        aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <p>
-                                                        Bạn có chắc chắn muốn
-                                                        xóa nhân viên "
+                                                        Bạn có chắc chắn muốn xóa nhân viên "
                                                         <span class="fw-bold">
                                                             {{ $employee->code.' - '.$employee->name }}
                                                         </span>
@@ -241,23 +195,16 @@
                                                     <button
                                                         type="button"
                                                         class="btn btn-secondary"
-                                                        data-bs-dismiss="modal"
-                                                    >
+                                                        data-bs-dismiss="modal">
                                                         Hủy
                                                     </button>
                                                     <form
                                                         action="{{ route('admin.employee.delete', $employee->id) }}"
                                                         method="post"
-                                                        class="mb-0"
-                                                    >
+                                                        class="mb-0">
                                                         @method('DELETE')
                                                         @csrf
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-danger"
-                                                        >
-                                                            Xóa
-                                                        </button>
+                                                        <button type="submit" class="btn btn-danger">Xóa</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -295,9 +242,7 @@
                     let found = false;
 
                     cells.forEach((cell) => {
-                        if (
-                            cell.textContent.toLowerCase().includes(searchTerm)
-                        ) {
+                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
                             found = true;
                         }
                     });
