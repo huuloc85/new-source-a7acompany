@@ -6,6 +6,7 @@ use App\Models\Celender;
 use App\Models\CelenderDetailHNHC;
 use App\Models\DailyQuantity;
 use App\Models\LoginHistory;
+use App\Models\Product;
 use App\Traits\CalenderTranslate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -121,16 +122,16 @@ class LoginHistoryController extends Controller
     public function viewAllQuantity(Request $request)
     {
         $selectedDate = $request->input('date', Carbon::today()->toDateString());
-        $dailyQuantities = DailyQuantity::whereIn('status', [1, 2, 6])
+        $dailyQuantities = DailyQuantity::whereIn('status', [Product::STATUS_PRODUCE, Product::STATUS_CHECK200, Product::STATUS_ERROR])
             ->whereDate('date', $selectedDate)
             ->get();
         $translateStatus = function ($status) {
             switch ($status) {
-                case 1:
+                case Product::STATUS_PRODUCE:
                     return 'Hàng 100%';
-                case 2:
+                case Product::STATUS_CHECK200:
                     return 'Hàng 200%';
-                case 6:
+                case Product::STATUS_ERROR:
                     return 'Hàng lỗi';
                 default:
                     return 'Unknown';

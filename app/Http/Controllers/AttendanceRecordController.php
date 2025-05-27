@@ -424,13 +424,13 @@ class AttendanceRecordController extends Controller
                         if ($timeIn < $breakStart && $timeOut > $breakEnd) {
                             $breakTime += $break['duration'];
                         }
-                    } elseif ($timeOut->hour < 8) {
+                    } elseif ($timeOut->hour < 9) {
                         // về ngày hôm sau
                         if ($breakStart->hour >= 18) {
                             if ($timeIn < $breakStart) {
                                 $breakTime += $break['duration'];
                             }
-                        } elseif ($breakStart->hour < 8) {
+                        } elseif ($breakStart->hour < 9) {
                             if ($timeOut > $breakEnd) {
                                 $breakTime += $break['duration'];
                             }
@@ -438,7 +438,7 @@ class AttendanceRecordController extends Controller
                     }
                 } else {
                     // đi làm khi qua ngày hôm sau
-                    if ($breakStart->hour < 8) {
+                    if ($breakStart->hour < 9) {
                         if ($timeIn < $breakStart && $timeOut > $breakEnd) {
                             $breakTime += $break['duration'];
                         }
@@ -450,10 +450,6 @@ class AttendanceRecordController extends Controller
         // Nếu ca là qc_day và giờ về sớm hơn 17:00, vẫn trừ thêm 10 phút
         if ($timeFilter === 'qc_day' && $timeOut < Carbon::parse('17:00')) {
             $breakTime += 10;
-        }
-
-        if ($record->employee_code == '16100400' && $record->date == '2024-11-06') {
-            dd($record, $timeIn, $breakTime);
         }
 
         return $breakTime;
