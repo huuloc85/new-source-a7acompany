@@ -42,7 +42,7 @@ class FAPVExport extends DefaultValueBinder implements FromView, ShouldAutoSize,
         $productModel = new Product;
         $products = Product::all();
         $models = $productModel->models;
-        $listMonthExport = TotalMonthQuantity::where('status', 3)->distinct()->pluck('month');
+        $listMonthExport = TotalMonthQuantity::where('status', Product::STATUS_EXPORT)->distinct()->pluck('month');
 
         $time = $this->time;
         foreach ($products as $product) {
@@ -53,7 +53,7 @@ class FAPVExport extends DefaultValueBinder implements FromView, ShouldAutoSize,
             $realityQuantity = $this->getQuantity($this->time, self::ACTUAL_PRODUCT, $product->id);
             $quanError = $this->getQuantity($this->time, self::ERROR_PRODUCT, $product->id);
             // Truy vấn stockMOQ theo product_id, status và tháng hiện tại
-            $stockMOQ = TotalMonthQuantity::where('status', 7)
+            $stockMOQ = TotalMonthQuantity::where('status', Product::STATUS_MOQ)
                 ->where('product_id', $product->id)
                 ->where('month', $time)
                 ->distinct()
