@@ -52,7 +52,7 @@ class ProductionPlanController extends Controller
         $machineRunDays = $dailyProductionPlan == 0 ? 0 : $productionPlan / $dailyProductionPlan;
 
         // Lấy số lượng đã sản xuất từ bảng DailyQuantity
-        $producedQuantity = DailyQuantity::where('status', Product::STATUS_PRODUCE)
+        $producedQuantity = DailyQuantity::where('status', 1)
             ->where('product_id', $request->input('product_id'))
             ->whereMonth('date', now()->month)
             ->whereYear('date', now()->year)
@@ -153,7 +153,7 @@ class ProductionPlanController extends Controller
 
         foreach ($plans as $plan) {
             // Lấy số lượng đã sản xuất từ bảng DailyQuantity cho tháng hiện tại
-            $producedQuantity = DailyQuantity::where('status', Product::STATUS_PRODUCE)
+            $producedQuantity = DailyQuantity::where('status', 1)
                 ->where('product_id', $plan->product_id)
                 ->whereMonth('date', Carbon::createFromFormat('m-Y', $selectedMonth)->month)
                 ->whereYear('date', Carbon::createFromFormat('m-Y', $selectedMonth)->year)

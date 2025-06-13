@@ -33,7 +33,7 @@ class ProductController extends Controller
         }
         $monthNearly = Carbon::now()->format('m-Y');
         $listMonth = TotalMonthQuantity::distinct()->pluck('month');
-        $listMonthExport = TotalMonthQuantity::where('status', Product::STATUS_EXPORT)->distinct()->pluck('month');
+        $listMonthExport = TotalMonthQuantity::where('status', 3)->distinct()->pluck('month');
         $orderBy = $request->orderBy;
         $filter = 'desc';
         if (count($listMonth) == 0) {
@@ -802,7 +802,7 @@ class ProductController extends Controller
     {
         $listMonth = TotalMonthQuantity::distinct()->pluck('month');
         $productsId = DailyQuantity::where('employee_id', Auth()->user()->id)
-            ->whereIn('status', [Product::STATUS_PRODUCE, Product::STATUS_CHECK200])
+            ->whereIn('status', [1, 2])
             ->distinct()
             ->pluck('product_id');
         $listProduct = Product::whereIn('id', $productsId)->get();
@@ -818,7 +818,7 @@ class ProductController extends Controller
         if ($product_id != '') {
             $datas = DailyQuantity::where('employee_id', Auth()->user()->id)
                 ->where('product_id', $product_id)
-                ->whereIn('status', [Product::STATUS_PRODUCE, Product::STATUS_CHECK200])
+                ->whereIn('status', [1, 2])
                 ->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->get();
@@ -844,7 +844,7 @@ class ProductController extends Controller
     {
         $listMonth = TotalMonthQuantity::distinct()->pluck('month');
         $productsId = DailyQuantity::where('employee_id', Auth()->user()->id)
-            ->where('status', Product::STATUS_ERROR)
+            ->where('status', 6)
             ->distinct()
             ->pluck('product_id');
         $listProduct = Product::whereIn('id', $productsId)->get();
@@ -857,7 +857,7 @@ class ProductController extends Controller
             [$month, $year] = explode('-', $monthNearly);
             $datas = DailyQuantity::where('employee_id', Auth()->user()->id)
                 ->where('product_id', $product_id)
-                ->where('status', Product::STATUS_ERROR)
+                ->where('status', 6)
                 ->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->get();
@@ -868,7 +868,7 @@ class ProductController extends Controller
         // Lọc theo monthNearly
         if ($monthNearly) {
             $productsId = DailyQuantity::where('employee_id', Auth()->user()->id)
-                ->where('status', Product::STATUS_ERROR)
+                ->where('status', 6)
                 ->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->distinct()
@@ -1016,9 +1016,9 @@ class ProductController extends Controller
         $productNearData = [];
         foreach ($productIds as $productId) {
             // Lấy dữ liệu gần nhất cho mỗi sản phẩm theo tháng
-            $stockQuanNearly = TotalMonthQuantity::where('product_id', $productId)->where('status', Product::STATUS_INVENTORY)->where('month', $currentMonth)->value('totalQuan');
-            $stockQuan200Nearly = TotalMonthQuantity::where('product_id', $productId)->where('status', Product::STATUS_INVENTORY_CHECK200)->where('month', $currentMonth)->value('totalQuan');
-            $stockQuanMOQNearly = TotalMonthQuantity::where('product_id', $productId)->where('status', Product::STATUS_MOQ)->where('month', $currentMonth)->value('totalQuan');
+            $stockQuanNearly = TotalMonthQuantity::where('product_id', $productId)->where('status', 4)->where('month', $currentMonth)->value('totalQuan');
+            $stockQuan200Nearly = TotalMonthQuantity::where('product_id', $productId)->where('status', 5)->where('month', $currentMonth)->value('totalQuan');
+            $stockQuanMOQNearly = TotalMonthQuantity::where('product_id', $productId)->where('status', 7)->where('month', $currentMonth)->value('totalQuan');
 
             // Lưu dữ liệu gần nhất vào mảng productNearData cho mỗi sản phẩm
             $productNearData[$productId] = [

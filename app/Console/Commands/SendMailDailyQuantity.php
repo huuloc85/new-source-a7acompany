@@ -7,7 +7,6 @@ use App\Models\Celender;
 use App\Models\CelenderDetailHNHC;
 use App\Models\DailyQuantity;
 use App\Models\Employee;
-use App\Models\Product;
 use App\Traits\CalenderTranslate;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -52,7 +51,7 @@ class SendMailDailyQuantity extends Command
 
         $productivityLogsQuery = DailyQuantity::select(['employee_id', 'date', 'quantity', 'status', 'product_id'])
             ->whereIn('employee_id', $employees->pluck('id'))
-            ->whereIn('status', [Product::STATUS_PRODUCE, Product::STATUS_CHECK200, Product::STATUS_ERROR])
+            ->whereIn('status', [1, 2, 6])
             ->whereDate('date', $selectedDate)
             ->get();
 
