@@ -36,7 +36,7 @@
                                 <i class="fas fa-trash"></i>
                             </a>
                             <a
-                                href="http://192.168.1.5/doc/index.html#/portal/login"
+                                href="http://192.168.1.6/doc/index.html#/portal/login"
                                 type="button"
                                 class="btn btn-dark"
                                 title="Thêm Nhân Sự Vào Máy Chấm Công"
