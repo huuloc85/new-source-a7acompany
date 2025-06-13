@@ -398,25 +398,42 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($products as $key => $product)
+                                                    <?php
+                                                    $prorealityQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 1)->value('totalQuan') ?? 0; // tổng hàng sản xuất
+                                                    $importedQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 2)->value('totalQuan') ?? 0; // tổng hàng kiểm 200%
+                                                    $exportedQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 3)->value('totalQuan') ?? 0; // tổng số lượng đã xuất
+                                                    $stockQuan = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 4)->value('totalQuan') ?? 0; // tồn đầu kỳ
+                                                    $stockQuan200 = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0; // tồn đầu kỳ 200%
+                                                    $errorQuantity = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 6)->value('totalQuan') ?? 0; // hàng lỗi
+                                                    $stockQuanMOQ = $product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 7)->value('totalQuan') ?? 0; // MOQ
+
+                                                    $checked200 = $stockQuan200 + $importedQuan - $exportedQuan; // đã kiểm 200%
+                                                    $stockEndQuan = $stockQuan + $prorealityQuan - $exportedQuan - $errorQuantity; // tồn cuối kỳ
+                                                    $stockNoneCheck200 = $stockQuan + $prorealityQuan - $exportedQuan - $checked200 - $errorQuantity; // số lượng hàng chưa kiểm 200%
+                                                    $quantityCaTon = $stockQuanMOQ / $product->quanEntityBin;
+                                                    $planTime = (((($stockQuanMOQ / $product->CAV) * $product->cycle) / 3600 / 24) * 100) / 90;
+                                                    $realTime = (((($exportedQuan / $product->CAV) * $product->cycle) / 3600 / 24) * 100) / 90;
+                                                    ?>
+
                                                     <tr>
                                                         <td class="text-center bg-3">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->stockQuanMOQ) }}
+                                                                {{ number_format($stockQuanMOQ) }}
                                                             </div>
                                                         </td>
                                                         <td class="text-center bg-3">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->quantityCaTon) }}
+                                                                {{ number_format($quantityCaTon) }}
                                                             </div>
                                                         </td>
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->planTime, 1) }}
+                                                                {{ number_format($planTime, 1) }}
                                                             </div>
                                                         </td>
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->realTime, 1) }}
+                                                                {{ number_format($realTime, 1) }}
                                                             </div>
                                                         </td>
                                                         <td class="text-center bg-3">
@@ -436,50 +453,54 @@
                                                         </td>
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->stockQuan) }}
+                                                                {{ number_format($stockQuan) }}
                                                             </div>
                                                         </td>
 
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->prorealityQuan) }}
+                                                                {{ number_format($prorealityQuan) }}
                                                             </div>
                                                         </td>
 
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->exportedQuan) }}
+                                                                {{ number_format($exportedQuan) }}
                                                             </div>
                                                         </td>
 
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->checked200) }}
+                                                                {{ number_format($checked200) }}
                                                             </div>
                                                         </td>
 
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->stockNoneCheck200) }}
+                                                                {{ number_format($stockNoneCheck200) }}
                                                             </div>
                                                         </td>
 
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->stockEndQuan) }}
+                                                                {{ number_format($stockEndQuan) }}
                                                             </div>
                                                         </td>
 
                                                         <td class="text-center bg-2">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ $product->inventoryDays }}
+                                                                {{ number_format($stockQuanMOQ != 0 ? $stockEndQuan / ($stockQuanMOQ / 24) : 0, 1) }}
                                                             </div>
                                                         </td>
 
                                                         @foreach ($listMonthExport as $monthExport)
                                                             <td class="text-center bg-3">
                                                                 <div class="d-flex px-3 py-1 justify-content-center">
-                                                                    {{ $product->export }}
+                                                                    <?php
+                                                                    $export = $product->TotalMonthQuantities()->where('month', $monthExport)->where('status', 3)->value('totalQuan') ?? 0;
+                                                                    ?>
+
+                                                                    {{ number_format($export) }}
                                                                 </div>
                                                             </td>
                                                         @endforeach
@@ -568,7 +589,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ $product->produce }}
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 1)->value('totalQuan') ?? 0) }}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -610,14 +631,63 @@
                                             @foreach ($products as $product)
                                                 <tr>
                                                     @foreach ($listDate as $key => $date)
+                                                        @php
+                                                            $formattedDate = \Carbon\Carbon::parse($date)->startOfDay();
+
+                                                            // Lấy tất cả các dailyQuantities cho ngày cụ thể
+                                                            $dailyQuantitiesOfTheDay = $product
+                                                                ->DailyQuantities()
+                                                                ->where('status', 1)
+                                                                ->whereDate('date', $formattedDate)
+                                                                ->get();
+
+                                                            $totalQuanDateCa1 = 0;
+                                                            $totalQuanDateCa2 = 0;
+
+                                                            foreach ($dailyQuantitiesOfTheDay as $dailyQuantity) {
+                                                                $created_at = \Carbon\Carbon::parse(
+                                                                    $dailyQuantity->created_at,
+                                                                );
+
+                                                                // Xác định mốc thời gian của từng ca
+                                                                $startCa1 = $formattedDate
+                                                                    ->copy()
+                                                                    ->setHour(7)
+                                                                    ->setMinute(30); // 07:30
+                                                                $endCa1 = $formattedDate
+                                                                    ->copy()
+                                                                    ->setHour(21)
+                                                                    ->setMinute(30); // 21:00
+
+                                                                $startCa2 = $formattedDate
+                                                                    ->copy()
+                                                                    ->setHour(21)
+                                                                    ->setMinute(30); // 20:30
+                                                                $endCa2 = $formattedDate
+                                                                    ->copy()
+                                                                    ->addDay()
+                                                                    ->setHour(9)
+                                                                    ->setMinute(00); // 09:00 (ngày hôm sau)
+
+                                                                // Xác định ca của bản ghi
+                                                                if ($created_at->between($startCa1, $endCa1)) {
+                                                                    // Nếu thời gian thuộc khoảng 07:30 - 21:00 => Ca 1
+                                                                    $totalQuanDateCa1 += $dailyQuantity->quantity;
+                                                                } elseif ($created_at->between($startCa2, $endCa2)) {
+                                                                    // Nếu thời gian thuộc khoảng 20:30 - 09:00 hôm sau => Ca 2
+                                                                    $totalQuanDateCa2 += $dailyQuantity->quantity;
+                                                                }
+                                                            }
+                                                        @endphp
+
                                                         <td class="{{ $key % 2 == 0 ? 'bg-3' : 'bg-2' }}">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->totalQuanDateCa1[$date]) }}
+                                                                {{ number_format($totalQuanDateCa1) }}
                                                             </div>
                                                         </td>
                                                         <td class="{{ $key % 2 == 0 ? 'bg-3' : 'bg-2' }}">
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ number_format($product->totalQuanDateCa2[$date]) }}
+                                                                {{ number_format($totalQuanDateCa2) }}
                                                             </div>
                                                         </td>
                                                     @endforeach
@@ -709,12 +779,12 @@
 
                                                         <td>
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ $product->beginningBalanceCheck200 }}
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 5)->value('totalQuan') ?? 0) }}
                                                             </div>
                                                         </td>
                                                         <td>
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ $product->ariseCheck200 }}
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 2)->value('totalQuan') ?? 0) }}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -749,9 +819,15 @@
                                                 @foreach ($products as $product)
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
+                                                            <?php
+                                                            $timestam = strtotime($date);
+                                                            $day = date('Y-m-d', $timestam);
+                                                            $totalQuanDate = $product->TotalDailyQuantities()->where('status', 2)->where('date', $day)->value('totalQuan') ?? '';
+                                                            ?>
+
                                                             <td class="<?= $key % 2 == 0 ? "bg-3" : "bg-2" ?>">
                                                                 <div class="d-flex px-3 py-1 justify-content-center">
-                                                                    {{ number_format((float) $product->totalQuanDateCheck200[$date]) }}
+                                                                    {{ number_format((float) $totalQuanDate) }}
                                                                 </div>
                                                             </td>
                                                         @endforeach
@@ -835,7 +911,7 @@
 
                                                         <td>
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ $product->totalError200 }}
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 6)->value('totalQuan') ?? 0) }}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -870,9 +946,15 @@
                                                 @foreach ($products as $product)
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
+                                                            <?php
+                                                            $timestam = strtotime($date);
+                                                            $day = date('Y-m-d', $timestam);
+                                                            $totalQuanDate = $product->TotalDailyQuantities()->where('status', 6)->where('date', $day)->value('totalQuan') ?? '';
+                                                            ?>
+
                                                             <td class="<?= $key % 2 == 0 ? "bg-3" : "bg-2" ?>">
                                                                 <div class="d-flex px-3 py-1 justify-content-center">
-                                                                    {{ number_format((float) $product->totalQuanDateError200[$date]) }}
+                                                                    {{ number_format((float) $totalQuanDate) }}
                                                                 </div>
                                                             </td>
                                                         @endforeach
@@ -956,7 +1038,7 @@
 
                                                         <td>
                                                             <div class="d-flex px-3 py-1 justify-content-center">
-                                                                {{ $product->totalexport }}
+                                                                {{ number_format($product->TotalMonthQuantities()->where('month', $monthNearly)->where('status', 3)->value('totalQuan') ?? 0) }}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -991,9 +1073,15 @@
                                                 @foreach ($products as $product)
                                                     <tr>
                                                         @foreach ($listDate as $key => $date)
+                                                            <?php
+                                                            $timestam = strtotime($date);
+                                                            $day = date('Y-m-d', $timestam);
+                                                            $totalQuanDate = $product->TotalDailyQuantities()->where('status', 3)->where('date', $day)->value('totalQuan') ?? '';
+                                                            ?>
+
                                                             <td class="<?= $key % 2 == 0 ? "bg-3" : "bg-2" ?>">
                                                                 <div class="d-flex px-3 py-1 justify-content-center">
-                                                                    {{ number_format((float) $product->totalQuanDateExport[$date]) }}
+                                                                    {{ number_format((float) $totalQuanDate) }}
                                                                 </div>
                                                             </td>
                                                         @endforeach

@@ -43,6 +43,8 @@ class ProductController extends Controller
         if ($request->month) {
             $monthNearly = $request->month;
         }
+        // $monthDate = Carbon::createFromFormat('m-Y', $monthNearly)->startOfMonth();
+        // $products = $products->whereYear('created_at', $monthDate->year)->whereMonth('created_at', $monthDate->month);
 
         if (! empty($request->code)) {
             $products->Code($request);
@@ -65,6 +67,15 @@ class ProductController extends Controller
             $orderBy = 'asc';
         }
 
+        $productIds = Product::pluck('id'); // Lấy tất cả product IDs
+        $errorQuantities = TotalDailyQuantity::where('status', 6)
+            ->whereIn('product_id', $productIds)
+            ->get()
+            ->groupBy('product_id') // Nhóm theo product_id
+            ->map(function ($prod) {
+                return $prod->sum('totalQuan'); // Tính tổng totalQuan cho mỗi nhóm
+            });
+
         $totalproduct = $products->get();
         if ($orderBy && $orderBy == 'asc') {
             $products = $products->orderBy('id', 'ASC');
@@ -77,8 +88,8 @@ class ProductController extends Controller
         $product = new Product;
         $models = $product->models;
         $modelSizes = $product->modelSizes;
+        // dd($monthNearly);
         $listDate = $this->handleDayInMonth($monthNearly);
-        $products = $this->getInfoProduct($products, $monthNearly, $listMonthExport, $listDate);
 
         return view('product.index', compact('products', 'total', 'models', 'modelSizes', 'listMonth', 'monthNearly', 'listMonthExport', 'listDate', 'filter', 'page'));
     }
@@ -163,6 +174,8 @@ class ProductController extends Controller
         }
 
         return $products;
+
+        return view('product.index', compact('products', 'total', 'models', 'modelSizes', 'listMonth', 'monthNearly', 'listMonthExport', 'listDate', 'filter', 'errorQuantities', 'page'));
     }
 
     // add
@@ -183,9 +196,13 @@ class ProductController extends Controller
             $product = new Product;
             $product->code = trim($request->code);
             $product->name = trim($request->name);
+            // $product->quantity = trim($request->quantity);
+            // $product->quantityCaTon = trim($request->quantityCaTon);
             $product->moldSize = trim($request->moldSize);
             $product->CAV = trim($request->CAV);
             $product->cycle = trim($request->cycle);
+            // $product->planTime = trim($request->planTime);
+            // $product->realTime = trim($request->realTime);
             $product->binCode = $request->binCode;
             $product->quanEntityBin = trim($request->quanEntityBin);
 
@@ -208,7 +225,7 @@ class ProductController extends Controller
             $stockQuan = new TotalMonthQuantity;
             $stockQuan->product_id = $product->id;
             $stockQuan->month = $month;
-            $stockQuan->status = Product::STATUS_INVENTORY;
+            $stockQuan->status = 4;
             $stockQuan->totalQuan = $request->stockQuan ?? 0;
             $stockQuan->save();
 
@@ -216,7 +233,7 @@ class ProductController extends Controller
             $stockQuan200 = new TotalMonthQuantity;
             $stockQuan200->product_id = $product->id;
             $stockQuan200->month = $month;
-            $stockQuan200->status = Product::STATUS_INVENTORY_CHECK200;
+            $stockQuan200->status = 5;
             $stockQuan200->totalQuan = $request->stockQuan200 ?? 0;
             $stockQuan200->save();
 
@@ -224,7 +241,7 @@ class ProductController extends Controller
             $stockQuanMOQ = new TotalMonthQuantity;
             $stockQuanMOQ->product_id = $product->id;
             $stockQuanMOQ->month = $month;
-            $stockQuanMOQ->status = Product::STATUS_MOQ;
+            $stockQuanMOQ->status = 7;
             $stockQuanMOQ->totalQuan = $request->stockQuanMOQ ?? 0;
             // dd($stockQuanMOQ);
             $stockQuanMOQ->save();
@@ -366,10 +383,10 @@ class ProductController extends Controller
             $year = $monthYearArray[1];
         }
         $product = Product::find($id);
-        $dailyQuanStatus1 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_PRODUCE)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
-        $dailyQuanStatus2 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_CHECK200)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
-        $dailyQuanStatus3 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_EXPORT)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
-        $dailyQuanStatus6 = DailyQuantity::where('product_id', $id)->where('status', Product::STATUS_ERROR)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus1 = DailyQuantity::where('product_id', $id)->where('status', 1)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus2 = DailyQuantity::where('product_id', $id)->where('status', 2)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus3 = DailyQuantity::where('product_id', $id)->where('status', 3)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
+        $dailyQuanStatus6 = DailyQuantity::where('product_id', $id)->where('status', 6)->whereYear('date', $year)->whereMonth('date', $month)->orderBy('id', 'DESC');
         $total1 = count($dailyQuanStatus1->get());
         $total2 = count($dailyQuanStatus2->get());
         $total3 = count($dailyQuanStatus3->get());
