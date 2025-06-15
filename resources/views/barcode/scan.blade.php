@@ -28,8 +28,7 @@
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 2:</span>
-                                        Cân chỉnh để camera có thể nhận diện mã
-                                        vạch rõ ràng.
+                                        Cân chỉnh để camera có thể nhận diện mã vạch rõ ràng.
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 3:</span>
@@ -37,8 +36,7 @@
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Lưu ý:</span>
-                                        Khoảng nghĩ giữa 2 lần quét mã thành
-                                        công là
+                                        Khoảng nghĩ giữa 2 lần quét mã thành công là
                                         <span class="text-danger">5 giây</span>
                                         .
                                     </p>
@@ -47,20 +45,12 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <div
-                                    id="reader"
-                                    data-url="{{ route('admin.barcode.check') }}"
-                                ></div>
+                                <div id="reader" data-url="{{ route('admin.barcode.check') }}"></div>
                             </div>
                         </div>
                         <div class="row">
                             <div>
-                                <a
-                                    class="btn btn-danger"
-                                    href="{{ route('admin.home') }}"
-                                >
-                                    Trang chủ
-                                </a>
+                                <a class="btn btn-danger" href="{{ route('admin.home') }}">Trang chủ</a>
                             </div>
                         </div>
                     </div>
@@ -75,8 +65,43 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let startApi = true;
+            let cachedVoice = null;
 
-            const html5QrCode = new Html5Qrcode('reader'); // 👈 dùng đúng ID reader
+            // 🗣️ Giọng nói + alert (sau vài mili-giây) + callback sau alert
+            function speakText(text, afterAlertCallback = null) {
+                const synth = window.speechSynthesis;
+                if (synth.speaking) synth.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'vi-VN';
+                utterance.pitch = 1;
+                utterance.rate = 1.4;
+                utterance.volume = 1;
+
+                if (cachedVoice) {
+                    utterance.voice = cachedVoice;
+                } else {
+                    const voices = synth.getVoices().filter((v) => v.lang === 'vi-VN');
+                    if (voices.length > 0) {
+                        cachedVoice = voices.find((v) => v.name.includes('Google')) || voices[0];
+                        utterance.voice = cachedVoice;
+                    }
+                }
+
+                synth.speak(utterance);
+
+                // ✅ Hiện alert sau vài mili-giây để không block voice
+                setTimeout(() => {
+                    alert(text);
+                    if (typeof afterAlertCallback === 'function') {
+                        afterAlertCallback();
+                    }
+                }, 100);
+            }
+
+            window.speechSynthesis.getVoices(); // tải trước giọng
+
+            const html5QrCode = new Html5Qrcode('reader');
 
             html5QrCode.start(
                 {
@@ -85,50 +110,39 @@
                 {
                     fps: 10,
                     qrbox: {
-                        width: 200,
-                        height: 100,
+                        width: 300,
+                        height: 200,
                     },
-                    formatsToSupport: [Html5QrcodeSupportedFormats.CODE_128], // 👈 đọc barcode 128
+                    formatsToSupport: [Html5QrcodeSupportedFormats.CODE_128],
                 },
-                function (decodedText, decodedResult) {
-                    const code = decodedText;
-
-                    if (!code || code === '*!' || code === "U8'48*(") {
-                        console.warn(
-                            '🚫 Mã không hợp lệ hoặc bị từ chối:',
-                            code,
-                        );
-                        return;
-                    }
+                function (code) {
+                    if (!code || code === '*!' || code === "U8'48*(") return;
 
                     const prefix = code.substring(0, 2);
-                    const storedProductId =
-                        sessionStorage.getItem('product_id');
+                    const storedProductId = sessionStorage.getItem('product_id');
 
                     if (!storedProductId) {
                         html5QrCode.stop();
                         startApi = false;
-                        alert(
-                            '⚠️ Vui lòng quét mã QR sản phẩm trước khi quét mã barcode!',
-                        );
-                        window.location.href =
-                            '{{ route('admin.barcode.scanQr') }}';
+                        const msg = 'Vui lòng quét mã QR sản phẩm trước khi quét mã vạch';
+                        speakText(msg, () => {
+                            window.location.href = '{{ route('admin.barcode.scanQr') }}';
+                        });
                         return;
                     }
 
                     if (storedProductId != prefix) {
                         html5QrCode.stop();
                         startApi = false;
-                        alert(
-                            '⚠️ Mã barcode không khớp với sản phẩm đã chọn! Vui lòng quét lại.',
-                        );
-                        location.reload();
+                        const msg = 'Mã vạch không khớp với sản phẩm đã chọn. Vui lòng quét lại.';
+                        speakText(msg, () => {
+                            location.reload();
+                        });
                         return;
                     }
 
                     if (startApi) {
-                        const url =
-                            document.querySelector('#reader').dataset.url;
+                        const url = document.querySelector('#reader').dataset.url;
 
                         $.ajax({
                             url: url,
@@ -140,41 +154,39 @@
                             success: function (response) {
                                 switch (response.status) {
                                     case 200:
-                                        const goToScanQr = confirm(
-                                            '✅ Cập nhật thành công! Nhấn "OK" để tiếp quét, hoặc "Hủy" để về TRANG CHÍNH.',
-                                        );
-                                        sessionStorage.removeItem('product_id');
-                                        window.location.href = goToScanQr
-                                            ? '{{ route('admin.barcode.scanQr') }}'
-                                            : '{{ route('admin.home') }}';
+                                        speakText('Cập nhật thành công', () => {
+                                            sessionStorage.removeItem('product_id');
+                                            window.location.href = '{{ route('admin.barcode.scanQr') }}';
+                                        });
                                         break;
 
                                     case 400:
-                                        alert('⚠️ Mã này đã được quét rồi!');
-                                        location.reload();
+                                        speakText('Mã này đã được quét rồi', () => {
+                                            location.reload();
+                                        });
                                         break;
 
                                     case 404:
-                                        alert('❌ Không tìm thấy sản phẩm!');
-                                        location.reload();
+                                        speakText('Không tìm thấy sản phẩm', () => {
+                                            location.reload();
+                                        });
                                         break;
 
                                     case 500:
-                                        alert('❌ Mã không hợp lệ!');
-                                        location.reload();
+                                        speakText('Mã không hợp lệ', () => {
+                                            location.reload();
+                                        });
                                         break;
 
                                     default:
-                                        console.warn(
-                                            '⚠️ Trạng thái không xác định:',
-                                            response.status,
-                                        );
-                                        location.reload();
+                                        speakText('Có lỗi xảy ra', () => {
+                                            location.reload();
+                                        });
                                         break;
                                 }
                             },
-                            error: function (xhr, status, error) {
-                                console.error('❌ Lỗi khi gửi barcode:', error);
+                            error: function () {
+                                speakText('Không thể gửi mã vạch đến máy chủ');
                             },
                         });
 
@@ -182,8 +194,8 @@
                         setTimeout(() => (startApi = true), 5000);
                     }
                 },
-                function (errorMessage) {
-                    // Không log nếu không cần debug
+                function () {
+                    // Không log lỗi camera liên tục
                 },
             );
         });

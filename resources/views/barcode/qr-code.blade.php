@@ -30,8 +30,7 @@
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 2:</span>
-                                        Cân chỉnh để camera có thể nhận diện mã
-                                        QR CODE rõ ràng.
+                                        Cân chỉnh để camera có thể nhận diện mã QR CODE rõ ràng.
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Bước 3:</span>
@@ -39,8 +38,7 @@
                                     </p>
                                     <p class="fs-6">
                                         <span class="fw-bold">Lưu ý:</span>
-                                        Khoảng nghĩ giữa 2 lần quét mã QR CODE
-                                        thành công là
+                                        Khoảng nghĩ giữa 2 lần quét mã QR CODE thành công là
                                         <span class="text-danger">5 giây</span>
                                         .
                                     </p>
@@ -49,20 +47,12 @@
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <div
-                                    id="reader"
-                                    data-url="{{ route('admin.barcode.checkQr') }}"
-                                ></div>
+                                <div id="reader" data-url="{{ route('admin.barcode.checkQr') }}"></div>
                             </div>
                         </div>
                         <div class="row">
                             <div>
-                                <a
-                                    class="btn btn-danger"
-                                    href="{{ route('admin.home') }}"
-                                >
-                                    Trang chủ
-                                </a>
+                                <a class="btn btn-danger" href="{{ route('admin.home') }}">Trang chủ</a>
                             </div>
                         </div>
                     </div>
@@ -76,39 +66,141 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
         let startApi = true;
+        let cachedVoice = null;
         const html5QrCode = new Html5Qrcode('reader');
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // 👉 Bắt đầu quét QR khi trang load
-        html5QrCode
-            .start(
-                {
-                    facingMode: 'environment',
-                }, // Camera sau
-                {
-                    fps: 10,
-                    qrbox: 250,
-                },
-                onScanSuccess,
-            )
-            .catch((err) => {
-                console.error('❌ Lỗi khởi động camera:', err);
-            });
+        // 🔊 Phát âm thanh: success hoặc error
+        function playBeep(type = 'success', callback) {
+            const oscillator = ctx.createOscillator();
+            const gain = ctx.createGain();
 
-        // 👉 Hàm xử lý khi quét thành công
+            oscillator.type = 'sine';
+
+            if (type === 'success') {
+                oscillator.frequency.setValueAtTime(880, ctx.currentTime); // âm cao
+                gain.gain.setValueAtTime(0.7, ctx.currentTime);
+                oscillator.connect(gain);
+                gain.connect(ctx.destination);
+                oscillator.start();
+                oscillator.stop(ctx.currentTime + 0.2);
+            } else if (type === 'error' || type === 'cancel') {
+                oscillator.frequency.setValueAtTime(300, ctx.currentTime); // âm thấp
+                gain.gain.setValueAtTime(0.6, ctx.currentTime);
+                oscillator.connect(gain);
+                gain.connect(ctx.destination);
+                oscillator.start();
+                oscillator.stop(ctx.currentTime + 0.5);
+            }
+
+            oscillator.onended = () => {
+                if (typeof callback === 'function') callback();
+            };
+        }
+
+        // 🗣️ Đọc giọng kèm alert nếu cần
+        function speakText(text, afterAlertCallback = null, showAlert = false) {
+            const synth = window.speechSynthesis;
+            if (synth.speaking) synth.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'vi-VN';
+            utterance.pitch = 1;
+            utterance.rate = 1.4;
+            utterance.volume = 1;
+
+            if (cachedVoice) {
+                utterance.voice = cachedVoice;
+            } else {
+                const voices = synth.getVoices().filter((v) => v.lang === 'vi-VN');
+                if (voices.length > 0) {
+                    cachedVoice = voices.find((v) => v.name.includes('Google')) || voices[0];
+                    utterance.voice = cachedVoice;
+                }
+            }
+
+            synth.speak(utterance);
+
+            if (showAlert) {
+                setTimeout(() => {
+                    alert(text);
+                    if (typeof afterAlertCallback === 'function') {
+                        afterAlertCallback(); // chạy sau khi bấm OK
+                    }
+                }, 100);
+            } else {
+                utterance.onend = () => {
+                    if (typeof afterAlertCallback === 'function') afterAlertCallback();
+                };
+            }
+        }
+        // Tải giọng nói và bắt đầu quét QR
+        function loadVoicesAndStartQR() {
+            const synth = window.speechSynthesis;
+            let voices = synth.getVoices();
+            if (voices.length > 0) {
+                cachedVoice =
+                    voices.find((v) => v.lang === 'vi-VN' && v.name.includes('Google')) ||
+                    voices.find((v) => v.lang === 'vi-VN');
+                startQRScanner();
+            } else {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    voices = synth.getVoices();
+                    cachedVoice =
+                        voices.find((v) => v.lang === 'vi-VN' && v.name.includes('Google')) ||
+                        voices.find((v) => v.lang === 'vi-VN');
+                    startQRScanner();
+                };
+            }
+        }
+
+        function startQRScanner() {
+            html5QrCode
+                .start(
+                    {
+                        facingMode: 'environment',
+                    },
+                    {
+                        fps: 10,
+                        qrbox: 150,
+                    },
+                    onScanSuccess,
+                )
+                .catch((err) => {
+                    console.error('❌ Lỗi khởi động camera:', err);
+                    playBeep('cancel', () => {
+                        speakText('Không thể khởi động camera', null, true);
+                    });
+                });
+        }
+
         function onScanSuccess(decodedText, decodedResult) {
-            if (!startApi) return; // 🔁 Ngăn quét nhiều lần
+            if (!startApi) return;
+
             const invalidCodes = ['*!', "U8'48*("];
             if (!decodedText || invalidCodes.includes(decodedText)) return;
 
             const match = decodedText.match(/\b([A-Z0-9]{5})\b/);
             const code = match ? match[1] : null;
 
-            if (code) {
-                startApi = false; // ❌ Tạm dừng quét
+            if (!code) {
+                playBeep('cancel', () => {
+                    speakText(
+                        'Không tìm thấy mã hợp lệ trong mã QR',
+                        () => {
+                            location.reload();
+                        },
+                        true,
+                    );
+                });
+                return;
+            }
 
+            startApi = false;
+
+            playBeep('success', () => {
                 const url = document.querySelector('#reader').dataset.url;
 
-                // 🔁 Gửi mã QR lên server bằng Ajax
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -125,42 +217,59 @@
                             const productId = data.product_id;
                             const productName = data.product_name;
 
-                            // ✅ Lưu product_id vào sessionStorage
                             sessionStorage.setItem('product_id', productId);
 
-                            // ✅ Thông báo tên sản phẩm
-                            alert(
-                                '✅ Đã quét thành công sản phẩm: ' +
-                                    productName,
+                            speakText(
+                                'Đã quét thành công sản phẩm ' + productName + '. Vui lòng quét mã vạch sản phẩm',
+                                () => {
+                                    html5QrCode
+                                        .stop()
+                                        .then(() => {
+                                            window.location.href = '{{ route('admin.barcode.scan') }}';
+                                        })
+                                        .catch((err) => {
+                                            console.error('❌ Lỗi dừng camera:', err);
+                                            playBeep('cancel', () => {
+                                                speakText(
+                                                    'Lỗi dừng camera, đang chuyển trang',
+                                                    () => {
+                                                        window.location.href = '{{ route('admin.barcode.scan') }}';
+                                                    },
+                                                    true,
+                                                );
+                                            });
+                                        });
+                                },
+                                true,
                             );
-
-                            // ✅ Ngừng camera rồi chuyển trang
-                            html5QrCode
-                                .stop()
-                                .then(() => {
-                                    window.location.href =
-                                        '{{ route('admin.barcode.scan') }}';
-                                })
-                                .catch((err) => {
-                                    console.error('❌ Lỗi dừng camera:', err);
-                                    window.location.href =
-                                        '{{ route('admin.barcode.scan') }}';
-                                });
                         } else {
-                            alert('❌ ' + data.message);
-                            startApi = true; // Cho phép quét lại
+                            playBeep('cancel', () => {
+                                speakText(
+                                    'Không thành công: ' + data.message,
+                                    () => {
+                                        startApi = true;
+                                    },
+                                    true,
+                                );
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error('❌ Lỗi kết nối:', error);
-                        alert('⚠️ Lỗi khi gửi mã QR!');
-                        startApi = true;
+                        playBeep('cancel', () => {
+                            speakText(
+                                'Có lỗi khi gửi mã QR',
+                                () => {
+                                    startApi = true;
+                                },
+                                true,
+                            );
+                        });
                     },
                 });
-            } else {
-                alert('⚠️ Không tìm thấy mã hợp lệ trong QR!');
-                location.reload();
-            }
+            });
         }
+
+        loadVoicesAndStartQR();
     </script>
 @endsection
