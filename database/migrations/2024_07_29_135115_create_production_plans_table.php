@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('production_plans', function (Blueprint $table) {
             $table->id();
             $table->integer('product_id');
-            $table->string('material_name', 255)->nullable();                   // Tên Nguyên Vật Liệu
+            // FIXME: Do not have column 'material_name' in database
+            // $table->string('material_name', 255)->nullable();                   // Tên Nguyên Vật Liệu
             $table->integer('production_plan')->nullable();                     // Kế Hoạch Sản Xuất (PCS)
             $table->double('planned_material', 16, 2)->nullable();              // Dự Định Vật Liệu (KG)
             $table->string('packaging_type', 255)->nullable();                  // Loại Bao Bì

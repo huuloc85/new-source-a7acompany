@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\LogActivity;
 use App\Helpers\LogHelper;
-use App\Http\Controllers\Controller;
 use App\Imports\Celender\CelenderManagerImport;
 use App\Models\CategoryCelender;
 use App\Models\Celender;
@@ -14,38 +13,47 @@ use App\Models\CelenderDetailWC;
 use App\Models\CelenderDetailWCCleanMen;
 use App\Models\CelenderDetailWCCleanWomen;
 use App\Models\Employee;
+use App\Utils\SearchFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
-class CalendarController extends Controller
+class ScheduleController extends BaseController
 {
     public function index(Request $request)
     {
         try {
-            $celenders = Celender::query();
+            $schedules = Celender::query()->select('id', 'title', 'date');
 
-            if (! empty($request->key)) {
-                $celenders->Name($request);
+            SearchFilter::apply(
+                $schedules,
+                $request,
+                [
+                    'title' => 'string',
+                    'date' => 'date',
+                ],
+                [
+                    'title',
+                    'date',
+                ]
+            );
+
+            $limit = $request->limit;
+            if (! is_null($limit) && $limit == 0) {
+                $limit = $schedules->count();
             }
+            $schedules = $schedules->paginate($limit ?? 10);
 
-            $total = count($celenders->get());
-            $celenders = $celenders->orderBy('id', 'DESC')->paginate(Celender::paginate);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Lấy danh sách lịch làm việc thành công',
-                'data' => $celenders,
-                'total' => $total,
-            ], 200);
+            return response()->json($schedules, 200);
         } catch (\Exception $e) {
-            Log::error('Error getting celenders: '.$e->getMessage().' at line '.$e->getLine());
+            Log::error('Error getting schedules: '.$e->getMessage().' at line '.$e->getLine());
 
             return response()->json([
-                'status' => false,
-                'message' => 'Lấy danh sách lịch làm việc không thành công',
-                'error' => $e->getMessage(),
+                'error' => [
+                    'code' => 500,
+                    'message' => 'An error occurred while fetching schedules.',
+                ],
             ], 500);
         }
     }
@@ -268,35 +276,23 @@ class CalendarController extends Controller
     public function detail($id)
     {
         try {
-            $calendar = Celender::find($id);
+            $schedule = Celender::select('id', 'title', 'date')->find($id);
 
-            if (! $calendar) {
+            if (! $schedule) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Không tìm thấy lịch làm việc',
                 ], 404);
             }
 
-            $startDate = $calendar->date;
-            $dates = [];
-            $month = date('m', strtotime($startDate));
-            $monthNext = $month;
-            $date = $startDate;
-
-            while ($monthNext == $month) {
-                array_push($dates, $date);
-                $date = date('Y/m/d', strtotime('+1 day', strtotime($date)));
-                $monthNext = date('m', strtotime($date));
-            }
-
-            $celenderDetailsHNHC = CelenderDetailHNHC::where('celender_id', $id)
+            $scheduleDetailsHNHC = CelenderDetailHNHC::where('celender_id', $id)
                 ->whereHas('employee', function ($query) {
                     $query->where('deleted_at', '=', null);
                 })
                 ->with('employee')
                 ->get();
 
-            $celenderDetailsEatroom = CelenderDetailEatroom::where('celender_id', $id)
+            $scheduleDetailsEatRoom = CelenderDetailEatroom::where('celender_id', $id)
                 ->whereHas('employee', function ($query) {
                     $query->where('deleted_at', '=', null);
                 })
@@ -304,43 +300,41 @@ class CalendarController extends Controller
                 ->orderBy('celender_detail_eatroom.id')
                 ->get();
 
-            $celenderDetailsWC = CelenderDetailWC::where('celender_id', $id)
+            $scheduleDetailsWC = CelenderDetailWC::where('celender_id', $id)
                 ->whereHas('employee', function ($query) {
                     $query->where('deleted_at', '=', null);
                 })
                 ->with('employee')
                 ->get();
 
-            $celenderDetailsWCCleanWomen = CelenderDetailWCCleanWomen::where('celender_id', $id)
+            $scheduleDetailsWCCleanWomen = CelenderDetailWCCleanWomen::where('celender_id', $id)
                 ->whereHas('employee', function ($query) {
                     $query->where('deleted_at', '=', null);
                 })
                 ->with('employee')
                 ->get();
 
-            $celenderDetailsWCCleanMen = CelenderDetailWCCleanMen::where('celender_id', $id)
+            $scheduleDetailsWCCleanMen = CelenderDetailWCCleanMen::where('celender_id', $id)
                 ->whereHas('employee', function ($query) {
                     $query->where('deleted_at', '=', null);
                 })
                 ->with('employee')
                 ->get();
 
-            $categories = CategoryCelender::all();
+            $categories = CategoryCelender::all()->select('id', 'name');
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Lấy chi tiết lịch làm việc thành công',
-                'data' => [
-                    'calendar' => $calendar,
-                    'dates' => $dates,
-                    'celenderDetailsHNHC' => $celenderDetailsHNHC,
-                    'celenderDetailsEatroom' => $celenderDetailsEatroom,
-                    'celenderDetailsWC' => $celenderDetailsWC,
-                    'celenderDetailsWCCleanWomen' => $celenderDetailsWCCleanWomen,
-                    'celenderDetailsWCCleanMen' => $celenderDetailsWCCleanMen,
+            return response()->json(
+                [
+                    'schedule' => $schedule,
+                    'scheduleDetailsHNHC' => $scheduleDetailsHNHC,
+                    'scheduleDetailsEatRoom' => $scheduleDetailsEatRoom,
+                    'scheduleDetailsWC' => $scheduleDetailsWC,
+                    'scheduleDetailsWCCleanWomen' => $scheduleDetailsWCCleanWomen,
+                    'scheduleDetailsWCCleanMen' => $scheduleDetailsWCCleanMen,
                     'categories' => $categories,
                 ],
-            ], 200);
+                200
+            );
         } catch (\Exception $e) {
             Log::error('Errors: '.$e->getMessage().' getLine: '.$e->getLine());
 

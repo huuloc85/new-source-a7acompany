@@ -89,10 +89,11 @@ class AuthController extends Controller
 
                     // Kiểm tra từng loại lịch trực
                     foreach ($duties as $dutyType => $model) {
-                        if ($model::where('celender_id', $celenderId)
-                            ->where('employee_id', $employee->id)
-                            ->where($currentDay, 'x')
-                            ->exists()
+                        if (
+                            $model::where('celender_id', $celenderId)
+                                ->where('employee_id', $employee->id)
+                                ->where($currentDay, 'x')
+                                ->exists()
                         ) {
                             $upcomingDuties[] = [
                                 'date' => $checkDate,

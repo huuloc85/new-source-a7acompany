@@ -72,6 +72,12 @@ class Product extends Model
         return $this->hasMany(TotalDailyQuantity::class, 'product_id', 'id');
     }
 
+    // relationship TotalDailyQuantityPO
+    public function TotalDailyQuantitiesPO()
+    {
+        return $this->hasMany(TotalDailyQuantityPO::class, 'product_id', 'id');
+    }
+
     // relationship TotalMonthQuantity
     public function TotalMonthQuantities()
     {

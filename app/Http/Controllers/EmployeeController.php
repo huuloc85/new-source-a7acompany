@@ -71,8 +71,7 @@ class EmployeeController extends Controller
         }
 
         $employees = $employees->where('role_id', '!=', 15)
-            ->where('role_id', '!=', 17)
-            ->where('deleted_at', null);
+            ->where('role_id', '!=', 17);
         $totalEmployee = $employees->get();
         $limit = $request->limit ?? Employee::paginate;
         $employees = $employees->orderBy('id', 'DESC')->paginate($limit);
@@ -294,7 +293,7 @@ class EmployeeController extends Controller
     // trash
     public function getTrash(Request $request)
     {
-        $employees = Employee::where('deleted_at', '!=', null);
+        $employees = Employee::onlyTrashed();
 
         if (! empty($request->role_id)) {
             $employees->NameRole($request);
@@ -346,7 +345,7 @@ class EmployeeController extends Controller
     public function restore($id)
     {
         try {
-            $employee = Employee::findOrFail($id);
+            $employee = Employee::onlyTrashed()->findOrFail($id);
             $employee->deleted_at = null;
             $employee->save();
             toast('Nhân sự được khôi phục thành công thành công!', 'success', 'top-right');

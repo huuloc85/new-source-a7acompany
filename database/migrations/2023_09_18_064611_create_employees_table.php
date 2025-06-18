@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('marital_status')->nullable();
             $table->date('date_joining')->nullable();
             $table->foreignId('role_id')->references('id')->on('roles');
+            $table->string('company')->nullable();
             $table->foreignId('category_celender_id')->references('id')->on('categories_celender')->nullable();
             $table->string('password')->nullable();
             $table->softDeletes();

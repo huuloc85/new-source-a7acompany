@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LoginHistory extends Model
 {
-    //paginate
+    // paginate
     public const paginate = 200;
 
     // Tên bảng trong cơ sở dữ liệu
@@ -17,6 +17,6 @@ class LoginHistory extends Model
     // Định nghĩa mối quan hệ với model Employee
     public function employee()
     {
-        return $this->belongsTo(Employee::class, 'employee_id', 'id', 'employee_code', 'employee_name');
+        return $this->belongsTo(Employee::class, 'employee_id', 'id', 'employee_code');
     }
 }

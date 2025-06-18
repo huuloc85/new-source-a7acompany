@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Log;
 
-class LogController extends Controller
+class LogController extends BaseController
 {
     // Lấy danh sách log
     public function index()

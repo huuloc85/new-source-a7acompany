@@ -16,7 +16,7 @@ class CheckEmployee extends Model
         'employee_id',
         'date',
         'shift',
-        'timestamp',
+        'status',
     ];
 
     // Định nghĩa quan hệ với model Product

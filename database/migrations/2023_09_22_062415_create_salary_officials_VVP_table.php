@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('salary_officials_vvp', function (Blueprint $table) {
-            //danh muc
+            // danh muc
             $table->id();
             $table->foreignId('salaries_manager_id')->references('id')->on('salaries_manager');
             $table->foreignId('employee_id')->references('id')->on('employees');
@@ -33,22 +33,22 @@ return new class extends Migration
             $table->double('company_insurance', 19, 2)->nullable();                          // BHXH công ty đóng
             $table->double('insurance', 19, 2)->nullable();
 
-            //chấm công
-            $table->double('total_day_offical', 19, 2)->nullable();                    //tổng ngày
-            $table->double('total_night_offical', 19, 2)->nullable();                  //tổng đêm
-            $table->double('total_overtime_offical', 19, 2)->nullable();               //tổng tăng ca
-            $table->double('workday_count_trial', 19, 2)->nullable();                  //số công ngày
-            $table->double('worknight_count_trial', 19, 2)->nullable();                //số công đêm
-            $table->double('overtime_day_count_trial', 19, 2)->nullable();             //số ngày tăng ca
-            $table->double('allowance_rice_day_timekeeping', 19, 2)->nullable();       //Phụ cấp tiền cơm ngày
-            $table->double('allowance_rice_night_timekeeping', 19, 2)->nullable();     //Phụ cấp tiền cơm đêm
-            $table->double('allowance_overtime_timekeeping', 19, 2)->nullable();       //phụ cấp tăng ca
-            $table->double('holidays_count', 19, 2)->nullable();                       //số ngày nghĩ lễ tết
-            $table->double('paid_holidays_count', 19, 2)->nullable();                  //số ngày phép năm
-            $table->double('daysleave_allowed_timekeeping', 19, 2)->nullable();        //số ngày nghỉ có phép
-            $table->double('daysleave_notallowed_timekeeping', 19, 2)->nullable();     //số ngày nghỉ không phép
+            // chấm công
+            $table->double('total_day_offical', 19, 2)->nullable();                    // tổng ngày
+            $table->double('total_night_offical', 19, 2)->nullable();                  // tổng đêm
+            $table->double('total_overtime_offical', 19, 2)->nullable();               // tổng tăng ca
+            $table->double('workday_count_trial', 19, 2)->nullable();                  // số công ngày
+            $table->double('worknight_count_trial', 19, 2)->nullable();                // số công đêm
+            $table->double('overtime_day_count_trial', 19, 2)->nullable();             // số ngày tăng ca
+            $table->double('allowance_rice_day_timekeeping', 19, 2)->nullable();       // Phụ cấp tiền cơm ngày
+            $table->double('allowance_rice_night_timekeeping', 19, 2)->nullable();     // Phụ cấp tiền cơm đêm
+            $table->double('allowance_overtime_timekeeping', 19, 2)->nullable();       // phụ cấp tăng ca
+            $table->double('holidays_count', 19, 2)->nullable();                       // số ngày nghĩ lễ tết
+            $table->double('paid_holidays_count', 19, 2)->nullable();                  // số ngày phép năm
+            $table->double('daysleave_allowed_timekeeping', 19, 2)->nullable();        // số ngày nghỉ có phép
+            $table->double('daysleave_notallowed_timekeeping', 19, 2)->nullable();     // số ngày nghỉ không phép
 
-            //chi tiết
+            // chi tiết
             $table->integer('number_of_work_days_trial')->nullable();                       // Số công ngày (thử việc)
             $table->double('day_shift_salary_trial', 19, 2)->nullable();                    // Lương ca ngày (thử việc)
             $table->string('day_shift_salary_trial_notice', 255)->nullable();               // Lương ca ngày (thử việc) Ghi Chú
@@ -116,8 +116,8 @@ return new class extends Migration
             $table->double('advance_money', 19, 2)->nullable();                                                      // Tạm ứng
             $table->string('advance_money_notice', 255)->nullable();                                                   // Tạm ứng Ghi Chú
             $table->double('number_of_violations')->nullable();                                                        // Số lần vi phạm
-            $table->double('subtract_of_violations', 19, 2)->nullable();                                                  // Trừ vi phạm
-            $table->string('subtract_of_violations_notice', 255)->nullable();                                               // Trừ vi phạm Ghi Chú
+            $table->double('unicon_deduction', 19, 2)->nullable();                                                  // Trừ vi phạm
+            $table->string('unicon_deduction_notice', 255)->nullable();                                               // Trừ vi phạm Ghi Chú
             $table->double('daysleave_allowed', 19, 2)->nullable();                                                         // Số ngày nghỉ có phép
             $table->double('subtract_daysleave_allowed', 19, 2)->nullable();                                                  // Trừ tiền nghỉ có phép
             $table->string('subtract_daysleave_allowed_notice', 255)->nullable();                                               // Trừ tiền nghỉ có phép Ghi Chú
@@ -136,14 +136,14 @@ return new class extends Migration
             $table->string('forms_of_payment', 255)->nullable();                                                                                                 // Hình thức thanh toán
             $table->double('company_insurance_detail', 19, 2)->nullable();
 
-            //bảng lương
-            $table->integer('salary_total')->nullable();                              //tổng lương
-            $table->double('insurance_payroll', 19, 2)->nullable();                   //trừ bảo hiểm
-            $table->double('advance_money_payroll')->nullable();                      //tạm ứng
-            $table->double('company_insurance_payroll', 19, 2)->nullable();           //bảo hiểm công ty đóng
-            $table->double('KPI_Subtraction_payroll', 19, 2)->nullable();             //trừ KPI
-            $table->double('previous_period_debt_payroll', 19, 2)->nullable();        //Nợ kỳ trước
-            $table->double('actually_received_payroll', 19, 2)->nullable();           //thực lãnh detail
+            // bảng lương
+            $table->integer('salary_total')->nullable();                              // tổng lương
+            $table->double('insurance_payroll', 19, 2)->nullable();                   // trừ bảo hiểm
+            $table->double('advance_money_payroll')->nullable();                      // tạm ứng
+            $table->double('company_insurance_payroll', 19, 2)->nullable();           // bảo hiểm công ty đóng
+            $table->double('KPI_Subtraction_payroll', 19, 2)->nullable();             // trừ KPI
+            $table->double('previous_period_debt_payroll', 19, 2)->nullable();        // Nợ kỳ trước
+            $table->double('actually_received_payroll', 19, 2)->nullable();           // thực lãnh detail
 
             $table->timestamps();
         });

@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('storage_product', function (Blueprint $table) {
             $table->id();
-            $table->integer('product_id');
+            $table->foreignId('product_id')->references('id')->on('products');
             $table->string('lot');
             $table->timestamps();
-
-            $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

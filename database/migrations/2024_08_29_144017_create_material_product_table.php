@@ -15,14 +15,11 @@ class CreateMaterialProductTable extends Migration
     {
         Schema::create('material_product', function (Blueprint $table) {
             $table->id();
-            $table->integer('product_id');                      // Cột product_id
-            $table->unsignedBigInteger('production_plans_id');          // Cột productplan_id
+            $table->foreignId('product_id')->references('id')->on('products');
+            $table->foreignId('production_plans_id')->references('id')->on('production_plans');
             $table->integer('quantity');                        // Cột quantity
             $table->integer('real_quantity');                   // Cột real_quantity
             $table->timestamps();                               // Tự động tạo created_at và updated_at
-
-            $table->foreign('product_id')->references('id')->on('products');
-            $table->foreign('production_plans_id')->references('id')->on('production_plans');
         });
     }
 

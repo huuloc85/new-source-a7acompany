@@ -1,14 +1,18 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CalendarController;
-use App\Http\Controllers\Api\CategoryCalendarController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\LogController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SalaryController;
+use App\Http\Controllers\Api\ScheduleCategoryController;
+use App\Http\Controllers\API\ScheduleController;
+use App\Http\Controllers\Api\TotalQuantityController;
 use App\Http\Controllers\AttendanceRecordController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,36 +32,45 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/updateDataCC', [AttendanceRecordController::class, 'updateDataCC'])->name('updateDataCC');
 
 // Đăng nhập
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'authLogin']);
+Route::post('/logout', [AuthController::class, 'authLogout']);
 
 Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    if (connection_aborted()) {
+        Log::info('Request aborted early.');
+
+        return;
+    }
+
+    Route::post('/auth/check', [AuthController::class, 'authCheck']);
+
     // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
-        Route::get('/me', [AuthController::class, 'me']);
-        Route::get('/profile', [AuthController::class, 'profile']);
-        Route::patch('/profile', [AuthController::class, 'changeInfo']);
-        Route::patch('/users/{id}/profile', [AuthController::class, 'changeProfile']);
-        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'authMe']);
+        Route::get('/profile', [AuthController::class, 'authProfile']);
+        Route::patch('/profile', [AuthController::class, 'authChangeInfo']);
+        Route::patch('/users/{id}/profile', [AuthController::class, 'authChangeProfile']);
     });
 
     // Employees (Quản Lý Nhân Sự)
     Route::prefix('employees')->group(function () {
-        Route::get('/', [EmployeeController::class, 'index']);
-        Route::post('/', [EmployeeController::class, 'store']);
-        Route::get('/{id}', [EmployeeController::class, 'show']);
-        Route::patch('/{id}', [EmployeeController::class, 'update']);
-        Route::delete('/{id}', [EmployeeController::class, 'delete']);
-        Route::get('/trash', [EmployeeController::class, 'getTrash']);
-        Route::post('/{id}/restore', [EmployeeController::class, 'restore']);
+        Route::get('/trash', [EmployeeController::class, 'getTrashEmployees']);
+        Route::post('/restore/{id}', [EmployeeController::class, 'restoreEmployee']);
+        Route::get('/', [EmployeeController::class, 'getEmployees']);
+        Route::get('/{id}', [EmployeeController::class, 'getEmployee']);
+        Route::post('/', [EmployeeController::class, 'addEmployee']);
+        Route::patch('/{id}', [EmployeeController::class, 'updateEmployee']);
+        Route::delete('/{id}', [EmployeeController::class, 'removeEmployee']);
     });
 
     // Roles (Quản Lý Chức Vụ)
     Route::prefix('roles')->group(function () {
-        Route::get('/', [RoleController::class, 'index']);
-        Route::post('/', [RoleController::class, 'store']);
-        Route::patch('/{id}', [RoleController::class, 'update']);
-        Route::delete('/{id}', [RoleController::class, 'delete']);
+        Route::get('/', [RoleController::class, 'getRoles']);
+        Route::get('/{id}', [RoleController::class, 'getRole']);
+        Route::post('/', [RoleController::class, 'addRole']);
+        Route::patch('/{id}', [RoleController::class, 'updateRole']);
+        Route::delete('/{id}', [RoleController::class, 'deleteRole']);
     });
 
     // Logs (Quản Lý Logs)
@@ -67,18 +80,79 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/delete-all', [LogController::class, 'deleteAll']);
     });
 
-    Route::prefix('categories')->group(function () {
-        Route::get('/', [CategoryCalendarController::class, 'index']);   // Lấy danh sách danh mục
-        Route::post('/', [CategoryCalendarController::class, 'store']);  // Thêm mới danh mục
-        Route::get('/{id}', [CategoryCalendarController::class, 'show']);  // Lấy chi tiết danh mục
-        Route::patch('/{id}', [CategoryCalendarController::class, 'update']); // Cập nhật danh mục
-        Route::delete('/{id}', [CategoryCalendarController::class, 'delete']); // Xóa danh mục
+    Route::prefix('salaries')->group(function () {
+        Route::get('/', [SalaryController::class, 'getSalaries']);
+        Route::post('/', [SalaryController::class, 'addSalary']);
+        Route::get('/{id}', [SalaryController::class, 'getSalary']);
+        Route::delete('/{id}', [SalaryController::class, 'deleteSalary']);
     });
 
-    Route::prefix('calendars')->group(function () {
-        Route::get('/', [CalendarController::class, 'index']); // Tạo lịch làm việc mới
-        Route::post('/', [CalendarController::class, 'create']); // Lấy chi tiết lịch làm việc
-        Route::get('/{id}', [CalendarController::class, 'show']);
-        Route::delete('/{id}', [CalendarController::class, 'delete']); // Xóa lịch làm việc
+    Route::prefix('schedule-categories')->group(function () {
+        Route::get('/', [ScheduleCategoryController::class, 'index']);   // Lấy danh sách danh mục
+        Route::post('/', [ScheduleCategoryController::class, 'store']);  // Thêm mới danh mục
+        Route::get('/{id}', [ScheduleCategoryController::class, 'show']);  // Lấy chi tiết danh mục
+        Route::patch('/{id}', [ScheduleCategoryController::class, 'update']); // Cập nhật danh mục
+        Route::delete('/{id}', [ScheduleCategoryController::class, 'delete']); // Xóa danh mục
+    });
+
+    Route::prefix('schedules')->group(function () {
+        Route::get('/', [ScheduleController::class, 'index']);
+        Route::post('/', [ScheduleController::class, 'create']);
+        Route::get('/{id}', [ScheduleController::class, 'detail']);
+        Route::delete('/{id}', [ScheduleController::class, 'delete']);
+    });
+
+    Route::prefix('products')->group(function () {
+        Route::get('/month-list', [ProductController::class, 'getMonthList']);
+        Route::get('/trash', [ProductController::class, 'getTrashProducts']);
+        Route::post('/restore/{id}', [ProductController::class, 'restoreProduct']);
+        Route::get('/', [ProductController::class, 'getProducts']);
+        Route::post('/', [ProductController::class, 'addProduct']);
+        Route::get('/{id}', [ProductController::class, 'getProduct']);
+        Route::patch('/{id}', [ProductController::class, 'updateProduct']);
+        Route::delete('/{id}', [ProductController::class, 'deleteProduct']);
+    });
+
+    Route::prefix('quantities')->group(function () {
+        Route::post('/addList', [TotalQuantityController::class, 'addProductsQuantity']);
+        Route::prefix('monthly')->group(function () {
+            Route::patch('/updateList', [TotalQuantityController::class, 'updateMonthQuantities']);
+            Route::get('/', [TotalQuantityController::class, 'getMonthly']);
+            Route::patch('/{id}', [TotalQuantityController::class, 'updateMonthQuantity']);
+        });
+        // TODO: Implement more if needed
+        // Route::post('/', [TotalQuantityController::class, 'store']);
+        // Route::get('/{id}', [TotalQuantityController::class, 'show']);
+        // Route::delete('/{id}', [TotalQuantityController::class, 'delete']);
+    });
+
+    Route::middleware(['auth:sanctum', 'authEmployees'])->group(function () {
+        Route::get('/calendar', [EmployeeController::class, 'calendar'])->name('api.employee.calendar');
+        Route::get('/calendar/{id}', [EmployeeController::class, 'calendarDetail'])->name('api.employee.calendar-detail');
+
+        Route::get('/salary', [EmployeeController::class, 'salary'])->name('api.employee.salary');
+        Route::get('/salary/{id}', [EmployeeController::class, 'salaryDetail'])->name('api.employee.salary-detail');
+
+        Route::get('/update-quantity', [ProductController::class, 'updateQuantity'])->name('api.product.update-quantity');
+        Route::post('/update-quantity', [ProductController::class, 'handleUpdateQuantity'])->name('api.product.handle-update-quantity');
+
+        Route::get('/history-update', [ProductController::class, 'historyUpdate'])->name('api.product.history-update');
+
+        Route::get('/update-error', [ProductController::class, 'showUpdateError'])->name('api.product.update-error');
+        Route::post('/update-error', [ProductController::class, 'handleUpdateError'])->name('api.product.handle-update-error');
+        Route::get('/history-update-error', [ProductController::class, 'historyUpdateError'])->name('api.product.history-update-error');
+
+        Route::get('/check-employee-todo', [CheckEmployeeController::class, 'checkEmployeeTodo'])->name('api.employee.check-employee-todo');
+        Route::post('/check-employee-todo', [CheckEmployeeController::class, 'handleCheckEmployeeTodo'])->name('api.employee.handle.check-employee-todo');
+        Route::get('/check-employee-todo/history', [CheckEmployeeController::class, 'historyEmployeeCheck'])->name('api.employee-history-check');
+        Route::delete('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'deleteHistory'])->name('api.employee.delete-employee-todo');
+        Route::post('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'updateEmployee'])->name('api.employee.update-employee-todo');
+
+        Route::get('/attendance', [AttendanceRecordController::class, 'employeeViewRecords'])->name('api.employee.attendance');
+        Route::get('/attendance-calculate', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('api.employee.attendance-calculate');
+
+        Route::get('/send-stamp', [SendStampController::class, 'index'])->name('api.send-stamp');
+        Route::post('/send-stamp', [SendStampController::class, 'handleAdd'])->name('api.handleAdd-send-stamp');
+        Route::get('/send-stamp/status', [SendStampController::class, 'checkStampEmployee'])->name('api.checkstamp-employee');
     });
 });

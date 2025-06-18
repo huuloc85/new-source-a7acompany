@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\Checkpo;
+namespace App\Exports\CheckPo;
 
 use App\Models\Product;
 use Illuminate\Contracts\View\View;

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -12,6 +13,7 @@ class Employee extends Authenticatable
     use HasApiTokens;
     use HasFactory;
     use Notifiable;
+    use SoftDeletes;
 
     // paginate
     public const paginate = 50;
@@ -35,9 +37,9 @@ class Employee extends Authenticatable
         'marital_status',
         'date_joining',
         'role_id',
+        'company',
         'category_celender_id',
         'password',
-        'deleted_at',
     ];
 
     /**

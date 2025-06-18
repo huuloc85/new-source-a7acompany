@@ -12,13 +12,13 @@ class SendStamp extends Model
     protected $fillable = [
         'product_id',
         'employee_id',
+        'manager_id',
         'date',
         'shift',
         'binCount',
         'binStart',
         'type',
         'status',
-        'manager_id',
         'manager_time',
     ];
 

@@ -2,192 +2,542 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\EmployeeStoreRequest;
-use App\Http\Requests\EmployeeUpdateRequest;
+use App\Helpers\HandleError;
+use App\Helpers\LogActivity;
+use App\Helpers\LogHelper;
+use App\Helpers\NumberToWordsHelper;
+use App\Helpers\UploadHelper;
+use App\Models\Celender;
+use App\Models\CelenderDetailEatroom;
+use App\Models\CelenderDetailHNHC;
+use App\Models\CelenderDetailWC;
+use App\Models\CelenderDetailWCCleanMen;
+use App\Models\CelenderDetailWCCleanWomen;
 use App\Models\Employee;
-use Carbon\Carbon;
+use App\Models\SalaryManager;
+use App\Models\SalaryOfficialA7A;
+use App\Models\SalaryOfficialVVP;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Spatie\QueryBuilder\QueryBuilder;
 
-class EmployeeController extends Controller
+class EmployeeController extends BaseController
 {
     // Lấy danh sách nhân sự
-    public function index(Request $request)
-    {
-        $employees = Employee::query()->whereNotIn('role_id', [15, 17])->whereNull('deleted_at');
-
-        if (! empty($request->role_id)) {
-            $employees->where('role_id', $request->role_id);
-        }
-        if (! empty($request->category_celender_id)) {
-            $employees->where('category_celender_id', $request->category_celender_id);
-        }
-        if (! empty($request->address)) {
-            $employees->where('address', 'LIKE', '%'.$request->address.'%');
-        }
-        if (! empty($request->home_town)) {
-            $employees->where('home_town', 'LIKE', '%'.$request->home_town.'%');
-        }
-        if (! empty($request->phone)) {
-            $employees->where('phone', 'LIKE', '%'.$request->phone.'%');
-        }
-        if (! empty($request->CCCD)) {
-            $employees->where('CCCD', 'LIKE', '%'.$request->CCCD.'%');
-        }
-        if (! empty($request->code)) {
-            $employees->where('code', 'LIKE', '%'.$request->code.'%');
-        }
-        if (! empty($request->name)) {
-            $employees->where('name', 'LIKE', '%'.$request->name.'%');
-        }
-        if (! empty($request->company)) {
-            $employees->where('company', 'LIKE', '%'.$request->company.'%');
-        }
-
-        $employees = $employees->orderBy('id', 'DESC')->paginate($request->limit ?? 10);
-
-        return response()->json([
-            'status' => 'true',
-            'data' => $employees,
-        ], 200);
-    }
-
-    public function store(EmployeeStoreRequest $request)
+    public function getEmployees(Request $request)
     {
         try {
-            $employee = new Employee;
-            $employee->name = trim($request->name);
-            $employee->phone = trim($request->phone);
-            $employee->code = trim($request->code);
-            $employee->email = trim($request->email);
-            $employee->birthday = trim($request->birthday);
-            $employee->address = trim($request->address);
-            $employee->home_town = trim($request->home_town);
-            $employee->CCCD = trim($request->CCCD);
-            $employee->role_id = trim($request->role_id);
-            $employee->company = trim($request->company);
-            $employee->category_celender_id = trim($request->category_celender_id);
-            $employee->gender = trim($request->gender);
-            $employee->marital_status = $request->marital_status;
-            $employee->date_joining = trim($request->date_joining);
-            $employee->password = bcrypt($request->code);
+            $employees = QueryBuilder::for(Employee::class)
+                ->select(
+                    'id',
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'photo',
+                    'card_photo',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'category_celender_id',
+                    'created_at',
+                    'updated_at',
+                )
+                ->allowedFilters([
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'category_celender_id',
+                ])
+                ->defaultSort('-created_at')
+                ->allowedSorts([
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'birthday',
+                    'CCCD',
+                    'date_joining',
+                    'created_at',
+                    'updated_at',
+                ])
+                ->allowedIncludes(['role', 'category_celender'])
+                ->whereNotIn('role_id', [15, 17]);
 
-            // Xử lý ảnh đại diện
+            $limit = $request->limit;
+            if (! is_null($limit) && $limit == 0) {
+                $limit = $employees->count();
+            }
+            $employees = $employees->paginate($limit ?? 10);
+
+            return response()->json($employees);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
+    }
+
+    public function getEmployee($id)
+    {
+        try {
+            $employee = Employee::query()
+                ->select(
+                    'id',
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'photo',
+                    'card_photo',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'category_celender_id',
+                    'created_at',
+                    'updated_at',
+                )
+                ->with([
+                    'role:id,role_name',
+                    'category_celender:id,name',
+                ])
+                ->where('id', $id)
+                ->whereNotIn('role_id', [15, 17])
+                ->firstOrFail();
+
+            return response()->json($employee, 200);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
+    }
+
+    public function addEmployee(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|regex:/^0[0-9]{9}$/|unique:employees,phone',
+                'code' => 'required|string|unique:employees,code',
+                'email' => 'nullable|email|unique:employees,email',
+                'CCCD' => 'required|string|regex:/^[0-9]+$/|unique:employees,cccd',
+                'address' => 'required|string',
+                'home_town' => 'required|string',
+                'birthday' => 'required|date|before:today|after:1900-01-01',
+                'gender' => 'required|in:male,female,other',
+                'marital_status' => 'required|in:single,married,divorced,widowed',
+                'company' => 'required|in:vvp,a7a',
+                'date_joining' => 'required|date|after:2000-01-01',
+                'role_id' => 'required|exists:roles,id',
+                'category_celender_id' => 'required|exists:categories_celender,id',
+                'photo' => 'required|image|mimes:jpeg,png,jpg',
+                'card_photo' => 'required|image|mimes:jpeg,png,jpg',
+            ]);
+
+            // Process avatar
             if ($request->hasFile('photo')) {
                 $file = $request->file('photo');
-                $fileName = uniqid().'.'.$file->getClientOriginalExtension();
-                $file->storeAs('public/employee', $fileName);
-                $employee->photo = $fileName;
+                $validated['photo'] = UploadHelper::upload($file, 'photo');
             }
 
-            // Xử lý ảnh thẻ
+            // Process card photo
             if ($request->hasFile('card_photo')) {
-                $fileCard = $request->file('card_photo');
-                $fileNameCard = uniqid().'.'.$fileCard->getClientOriginalExtension();
-                $fileCard->storeAs('public/employee/card', $fileNameCard);
-                $employee->card_photo = $fileNameCard;
+                $file = $request->file('card_photo');
+                $validated['card_photo'] = UploadHelper::upload($file, 'cardPhoto');
             }
 
-            $employee->save();
+            $employee = Employee::create([
+                ...$validated,
+                'password' => bcrypt($validated['code']),
+            ]);
+
+            DB::commit();
 
             return response()->json([
-                'message' => 'Thêm nhân sự mới thành công!',
-                'employee' => $employee,
+                'message' => 'Employee created successfully!',
+                'data' => $employee,
             ], 201);
-        } catch (\Exception $e) {
-            return response()->json(['false' => 'Thêm nhân sự không thành công!'], 500);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
         }
     }
 
-    public function update(EmployeeUpdateRequest $request, $id)
+    public function updateEmployee(Request $request, $id)
     {
+        DB::beginTransaction();
         try {
-            $employee = Employee::findOrFail($id);
+            $employee = Employee::query()
+                ->select(
+                    'id',
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'photo',
+                    'card_photo',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'category_celender_id',
+                    'created_at',
+                    'updated_at',
+                )
+                ->whereNotIn('role_id', [15, 17])
+                ->findOrFail($id);
 
-            $employee->name = trim($request->name);
-            $employee->phone = trim($request->phone);
-            $employee->email = trim($request->email);
-            $employee->birthday = trim($request->birthday);
-            $employee->address = trim($request->address);
-            $employee->home_town = trim($request->home_town);
-            $employee->role_id = trim($request->role_id);
-            $employee->company = trim($request->company);
-            $employee->category_celender_id = trim($request->category_celender_id);
-            $employee->gender = trim($request->gender);
-            $employee->marital_status = $request->marital_status;
-            $employee->date_joining = trim($request->date_joining);
+            $validated = $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'phone' => 'sometimes|string|regex:/^0[0-9]{9}$/|unique:employees,phone,'.$id,
+                'code' => 'sometimes|string|unique:employees,code,'.$id,
+                'email' => 'nullable|email|unique:employees,email,'.$id,
+                'CCCD' => 'sometimes|string|regex:/^[0-9]+$/|unique:employees,cccd,'.$id,
+                'address' => 'sometimes|string',
+                'home_town' => 'sometimes|string',
+                'birthday' => 'sometimes|date|before:today|after:1900-01-01',
+                'gender' => 'sometimes|in:male,female,other',
+                'marital_status' => 'sometimes|in:single,married,divorced,widowed',
+                'company' => 'sometimes|in:vvp,a7a',
+                'date_joining' => 'sometimes|date|after:2000-01-01',
+                'role_id' => 'sometimes|exists:roles,id',
+                'category_celender_id' => 'sometimes|exists:categories_celender,id',
+                'photo' => 'sometimes|image|mimes:jpeg,png,jpg',
+                'card_photo' => 'sometimes|image|mimes:jpeg,png,jpg',
+            ]);
 
-            // Cập nhật ảnh đại diện
+            $oldPhoto = $employee->photo;
+            $oldCardPhoto = $employee->card_photo;
+
+            // Process avatar
             if ($request->hasFile('photo')) {
-                if ($employee->photo) {
-                    Storage::delete('public/employee/'.$employee->photo);
-                }
                 $file = $request->file('photo');
-                $fileName = uniqid().'.'.$file->getClientOriginalExtension();
-                $file->storeAs('public/employee', $fileName);
-                $employee->photo = $fileName;
+                $validated['photo'] = UploadHelper::upload($file, 'photo');
             }
 
-            // Cập nhật ảnh thẻ
+            // Process card photo
             if ($request->hasFile('card_photo')) {
-                if ($employee->card_photo) {
-                    Storage::delete('public/employee/card/'.$employee->card_photo);
-                }
-                $fileCard = $request->file('card_photo');
-                $fileNameCard = uniqid().'.'.$fileCard->getClientOriginalExtension();
-                $fileCard->storeAs('public/employee/card', $fileNameCard);
-                $employee->card_photo = $fileNameCard;
+                $file = $request->file('card_photo');
+                $validated['card_photo'] = UploadHelper::upload($file, 'cardPhoto');
             }
 
-            $employee->save();
+            $employee->update($validated);
+
+            DB::commit();
+            if ($oldPhoto) {
+                Storage::delete('public/employee/'.$oldPhoto);
+            }
+            if ($oldCardPhoto) {
+                Storage::delete('public/employee/'.$oldCardPhoto);
+            }
 
             return response()->json([
-                'message' => 'Cập nhật nhân sự thành công!',
-                'employee' => $employee,
+                'message' => 'Employee updated successfully!',
+                'data' => $employee,
             ], 200);
-        } catch (\Exception $e) {
-            return response()->json(['false' => 'Cập nhật nhân sự thất bại!'], 500);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
         }
     }
 
     // Xóa nhân sự (Đưa vào thùng rác)
-    public function delete($id)
+    public function removeEmployee($id)
     {
-        $employee = Employee::find($id);
-
-        if (! $employee) {
-            return response()->json(['status' => 'false', 'message' => 'Nhân sự không tồn tại!'], 404);
-        }
-
+        DB::beginTransaction();
         try {
-            $employee->deleted_at = Carbon::now();
-            $employee->save();
+            $employee = Employee::findOrFail($id);
 
-            return response()->json(['status' => 'true', 'message' => 'Nhân sự đã được đưa vào thùng rác!'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'false', 'message' => 'Lỗi khi xóa nhân sự!'], 500);
+            $employee->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Employee deleted successfully!',
+                'data' => $employee,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
         }
     }
 
     // Lấy danh sách nhân sự trong thùng rác
-    public function getTrash(Request $request)
+    public function getTrashEmployees(Request $request)
     {
-        $employees = Employee::whereNotNull('deleted_at')->orderBy('deleted_at', 'DESC')->paginate($request->limit ?? 10);
+        try {
+            $employees = QueryBuilder::for(Employee::class)
+                ->onlyTrashed()
+                ->select(
+                    'id',
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'photo',
+                    'card_photo',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'category_celender_id',
+                    'deleted_at',
+                    'created_at',
+                    'updated_at',
+                )
+                ->allowedFilters([
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'category_celender_id',
+                ])
+                ->defaultSort('-created_at')
+                ->allowedSorts([
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'birthday',
+                    'CCCD',
+                    'date_joining',
+                    'created_at',
+                    'updated_at',
+                    'deleted_at',
+                ])
+                ->allowedIncludes(['role', 'category_celender'])
+                ->whereNotIn('role_id', [15, 17]);
 
-        return response()->json(['status' => 'true', 'data' => $employees], 200);
+            $limit = $request->limit;
+            if (! is_null($limit) && $limit == 0) {
+                $limit = $employees->count();
+            }
+            $employees = $employees->paginate($limit ?? 10);
+
+            return response()->json($employees);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
     }
 
-    public function restore($id)
+    public function restoreEmployee($id)
     {
-        $employee = Employee::whereNotNull('deleted_at')->find($id);
-        if (! $employee) {
-            return response()->json(['status' => false, 'message' => 'Nhân viên không tồn tại trong thùng rác'], 404);
+        DB::beginTransaction();
+        try {
+            $employee = Employee::onlyTrashed()->findOrFail($id);
+
+            $employee->restore();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Employee restored successfully!',
+                'data' => $employee,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
         }
+    }
 
-        $employee->deleted_at = null;
-        $employee->save();
+    // Show Calander For Employee
+    public function calendar(Request $request)
+    {
+        try {
+            $calendars = Celender::query();
 
-        return response()->json(['status' => true, 'message' => 'Nhân viên đã được khôi phục']);
+            if (! empty($request->key)) {
+                $calendars->Name($request->key);
+            }
+
+            $total = count($calendars->get());
+
+            $calendars = $calendars->orderBy('id', 'DESC')->paginate(Celender::paginate);
+
+            LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Làm Việc', 'Nhân viên xem lịch làm việc');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách lịch làm việc thành công.',
+                'data' => $calendars,
+                'total' => $total,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Có lỗi xảy ra khi xem lịch làm việc.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Show Calendar Detail For Employee
+    public function calendarDetail($id)
+    {
+        try {
+            $employeeId = auth()->user()->id;
+
+            $calendarDetailHNHC = CelenderDetailHNHC::where('celender_id', $id)->where('employee_id', $employeeId)->first();
+            $calendarDetailEatroom = CelenderDetailEatroom::where('celender_id', $id)->where('employee_id', $employeeId)->first();
+            $calendarDetailWC = CelenderDetailWC::where('celender_id', $id)->where('employee_id', $employeeId)->first();
+            $calendarDetailWCCleanWomen = CelenderDetailWCCleanWomen::where('celender_id', $id)->where('employee_id', $employeeId)->first();
+            $calendarDetailWCCleanMen = CelenderDetailWCCleanMen::where('celender_id', $id)->where('employee_id', $employeeId)->first();
+
+            $startDate = Celender::where('id', $id)->value('date');
+
+            $dates = [];
+            $month = date('m', strtotime($startDate));
+            $monthNext = $month;
+            $date = $startDate;
+
+            while ($monthNext == $month) {
+                $dates[] = $date;
+                $date = date('Y/m/d', strtotime('+1 day', strtotime($date)));
+                $monthNext = date('m', strtotime($date));
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy chi tiết lịch làm việc thành công.',
+                'data' => [
+                    'calendarDetailHNHC' => $calendarDetailHNHC,
+                    'calendarDetailEatroom' => $calendarDetailEatroom,
+                    'calendarDetailWC' => $calendarDetailWC,
+                    'calendarDetailWCCleanWomen' => $calendarDetailWCCleanWomen,
+                    'calendarDetailWCCleanMen' => $calendarDetailWCCleanMen,
+                    'calendar_id' => $id,
+                    'dates' => $dates,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Có lỗi xảy ra khi lấy chi tiết lịch làm việc.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Show Salary For Employee
+    public function salary(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $salaryManagers = SalaryManager::query();
+            if (! empty($request->key)) {
+                $salaryManagers->Name($request);
+            }
+            // $end_date = Carbon::now()->format('Y-m-d');
+            // $salaryManagers = $salaryManagers->where('date_show', '<=', $end_date);
+            $total = count($salaryManagers->get());
+            $salaryManagers = $salaryManagers->orderBy('id', 'DESC')->paginate(SalaryManager::paginate);
+            LogActivity::logViewActivity($user, 'Xem Bảng Lương', 'Nhân viên xem bảng lương');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách bảng lương thành công.',
+                'data' => $salaryManagers,
+                'total' => $total,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Có lỗi xảy ra khi lấy bảng lương.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Show Salary Detail For Employee
+    public function salaryDetail($id)
+    {
+        try {
+            $employee_id = auth()->user()->id;
+
+            $salaryManager = SalaryManager::findOrFail($id);
+
+            $salaryOfficialsVVP = SalaryOfficialVVP::where('salaries_manager_id', $id)
+                ->where('employee_id', $employee_id)
+                ->first();
+
+            $salaryOfficialsA7A = SalaryOfficialA7A::where('salaries_manager_id', $id)
+                ->where('employee_id', $employee_id)
+                ->first();
+
+            $actuallyReceived = $salaryOfficialsVVP->actually_received
+                ?? $salaryOfficialsA7A->actually_received
+                ?? $salaryParttimes->actually_received
+                ?? 0;
+
+            $salaryInWords = NumberToWordsHelper::convert($actuallyReceived);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy chi tiết bảng lương thành công.',
+                'data' => [
+                    'salaryManager' => $salaryManager,
+                    'salaryOfficialsVVP' => $salaryOfficialsVVP,
+                    'salaryOfficialsA7A' => $salaryOfficialsA7A,
+                    'actuallyReceived' => $actuallyReceived,
+                    'salaryInWords' => $salaryInWords,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            LogHelper::saveLog('Xem chi tiết bảng lương', $e->getMessage(), $e->getLine());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Xem chi tiết bảng lương không thành công!',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\AttendanceRecord;
 use App\Models\Celender;
 use App\Models\CheckEmployee;
@@ -14,7 +13,7 @@ use App\Models\Role;
 use App\Models\SalaryManager;
 use Carbon\Carbon;
 
-class DashboardController extends Controller
+class DashboardController extends BaseController
 {
     public function index()
     {

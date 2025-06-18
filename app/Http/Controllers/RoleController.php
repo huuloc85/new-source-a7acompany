@@ -25,13 +25,13 @@ class RoleController extends Controller
         return view('role.index', compact('roles', 'total'));
     }
 
-    //view add
+    // view add
     public function add()
     {
         return view('role.add');
     }
 
-    //store new role
+    // store new role
     public function store(RoleStoreRequest $request)
     {
         $role = new Role;
@@ -49,7 +49,7 @@ class RoleController extends Controller
         }
     }
 
-    //view edit
+    // view edit
     public function edit($id)
     {
         $role = Role::find($id);
@@ -62,7 +62,7 @@ class RoleController extends Controller
         return view('role.edit', compact('role'));
     }
 
-    //update role
+    // update role
     public function update(RoleUpdateRequest $request, $id)
     {
         $role = Role::find($id);
@@ -85,7 +85,7 @@ class RoleController extends Controller
         }
     }
 
-    //delete role
+    // delete role
     public function delete($id)
     {
         $role = Role::findOrFail($id);

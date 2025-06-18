@@ -2,27 +2,15 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
-        <link
-            rel="apple-touch-icon"
-            sizes="76x76"
-            href="{{ asset('assets/img/apple-icon.png') }}"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            href="{{ asset('assets/img/vvp.jpg') }}"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}" />
+        <link rel="icon" type="image/png" href="{{ asset('assets/img/vvp.jpg') }}" />
         <title>VINH VINH PHAT</title>
         <!--     Fonts and icons     -->
         <link
             rel="stylesheet"
             type="text/css"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"
-        />
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
         <!-- Font Awesome Icons -->
         {{--
             <script
@@ -35,54 +23,20 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://momentjs.com/downloads/moment.min.js"></script>
         <!-- Nucleo Icons -->
-        <link
-            href="{{ asset('assets/css/nucleo-icons.css') }}"
-            rel="stylesheet"
-        />
-        <link
-            href="{{ asset('assets/css/nucleo-svg.css') }}"
-            rel="stylesheet"
-        />
-        <link
-            id="pagestyle"
-            href="{{ asset('assets/css/material-dashboard.css?v=3.1.0') }}"
-            rel="stylesheet"
-        />
+        <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+        <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.css?v=3.1.0') }}" rel="stylesheet" />
         <!-- Bootstrap JS (with Popper.js for dropdowns) -->
         <link rel="stylesheet" href="{{ asset('assets/css/libs.min.css') }}" />
-        <link
-            rel="stylesheet"
-            href="{{ asset('assets/css/hope-ui.css?v=1.1.0') }}"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ asset('assets/css/custom.css?v=1.1.0') }}"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ asset('assets/css/dark.css?v=1.1.0') }}"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ asset('assets/css/rtl.css?v=1.1.0') }}"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ asset('assets/css/customizer.css?v=1.1.0') }}"
-        />
-        <link
-            rel="stylesheet"
-            href="{{ asset('vendor/Leaflet/leaflet.css') }}"
-        />
+        <link rel="stylesheet" href="{{ asset('assets/css/hope-ui.css?v=1.1.0') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/css/custom.css?v=1.1.0') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/css/dark.css?v=1.1.0') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/css/rtl.css?v=1.1.0') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/css/customizer.css?v=1.1.0') }}" />
+        <link rel="stylesheet" href="{{ asset('vendor/Leaflet/leaflet.css') }}" />
         <link rel="stylesheet" href="{{ asset('assets/css/total.css') }}" />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-        />
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         {{--
             @if (config('app.debug'))
             <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
@@ -95,11 +49,16 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
-        />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+        @if (app()->hasDebugModeEnabled())
+            <script>
+                eruda.init()
+            </script>
+        @endif
+
         @vite('resources/js/pusher.js')
 
         <!-- Styling css -->
@@ -119,8 +78,7 @@
             }
 
             .fslightbox-fade-in-strong {
-                animation: fslightbox-fade-in-strong 0.3s
-                    cubic-bezier(0, 0, 0.7, 1);
+                animation: fslightbox-fade-in-strong 0.3s cubic-bezier(0, 0, 0.7, 1);
             }
 
             .fslightbox-fade-out-strong {
@@ -404,8 +362,7 @@
                 border: 5px solid;
                 border-color: #999 transparent transparent transparent;
                 border-radius: 50%;
-                animation: fslightbox-loader 1.2s cubic-bezier(0.5, 0, 0.5, 1)
-                    infinite;
+                animation: fslightbox-loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
             }
 
             .fslightbox-loader div:nth-child(1) {
@@ -497,9 +454,7 @@
 
     <body>
         <div id="loading">
-            <div
-                class="loader simple-loader animate__animated animate__fadeOut d-none"
-            >
+            <div class="loader simple-loader animate__animated animate__fadeOut d-none">
                 <div class="loader-body"></div>
             </div>
         </div>
@@ -532,143 +487,94 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                var navbarToggler = document.getElementById('navbarToggler');
-                var navbarNav = document.getElementById('navbarNav');
+                var navbarToggler = document.getElementById('navbarToggler')
+                var navbarNav = document.getElementById('navbarNav')
 
                 navbarToggler.addEventListener('click', function () {
-                    navbarNav.classList.toggle('show');
-                });
-            });
+                    navbarNav.classList.toggle('show')
+                })
+            })
 
             document.addEventListener('DOMContentLoaded', () => {
-                const userId = {{ auth()->id() }};
-                const allRows = document.querySelectorAll('tr[data-id]');
-                const notificationSound = new Audio(
-                    '{{ asset('assets/music/notification.mp3') }}',
-                );
-                const notificationCount =
-                    document.getElementById('notificationCount');
-                const notificationList =
-                    document.getElementById('notificationList');
-                let notifications =
-                    JSON.parse(localStorage.getItem('notifications')) || [];
+                const userId = {{ auth()->id() }}
+                const allRows = document.querySelectorAll('tr[data-id]')
+                const notificationSound = new Audio('{{ asset('assets/music/notification.mp3') }}')
+                const notificationCount = document.getElementById('notificationCount')
+                const notificationList = document.getElementById('notificationList')
+                let notifications = JSON.parse(localStorage.getItem('notifications')) || []
 
-                notificationSound.onerror = () =>
-                    console.error('Không thể tải tệp âm thanh!');
+                notificationSound.onerror = () => console.error('Không thể tải tệp âm thanh!')
 
-                const clearAllBtn = document.createElement('button');
-                clearAllBtn.className = 'btn btn-danger btn-sm w-100 mb-2';
-                clearAllBtn.innerHTML =
-                    '<i class="fas fa-trash"></i> Xóa tất cả thông báo';
+                const clearAllBtn = document.createElement('button')
+                clearAllBtn.className = 'btn btn-danger btn-sm w-100 mb-2'
+                clearAllBtn.innerHTML = '<i class="fas fa-trash"></i> Xóa tất cả thông báo'
                 clearAllBtn.onclick = () => {
                     if (confirm('Bạn có chắc muốn xóa tất cả thông báo?')) {
-                        notifications = [];
-                        localStorage.setItem(
-                            'notifications',
-                            JSON.stringify(notifications),
-                        );
-                        updateNotificationUI();
+                        notifications = []
+                        localStorage.setItem('notifications', JSON.stringify(notifications))
+                        updateNotificationUI()
                     }
-                };
-                notificationList.parentElement.insertBefore(
-                    clearAllBtn,
-                    notificationList,
-                );
+                }
+                notificationList.parentElement.insertBefore(clearAllBtn, notificationList)
 
                 const highlightRecord = (recordId) => {
-                    allRows.forEach((row) =>
-                        row.classList.remove('bg-secondary', 'bg-opacity-25'),
-                    );
-                    const targetRow = document.querySelector(
-                        `tr[data-id="${recordId}"]`,
-                    );
+                    allRows.forEach((row) => row.classList.remove('bg-secondary', 'bg-opacity-25'))
+                    const targetRow = document.querySelector(`tr[data-id="${recordId}"]`)
                     if (targetRow) {
-                        targetRow.classList.add(
-                            'bg-secondary',
-                            'bg-opacity-25',
-                        );
+                        targetRow.classList.add('bg-secondary', 'bg-opacity-25')
                         targetRow.scrollIntoView({
                             behavior: 'smooth',
                             block: 'center',
-                        });
+                        })
                     } else {
-                        console.error('No row found with data-id:', recordId);
+                        console.error('No row found with data-id:', recordId)
                     }
-                };
+                }
 
                 const updateNotificationUI = () => {
-                    notificationList.innerHTML = '';
-                    notificationCount.textContent = notifications.length;
+                    notificationList.innerHTML = ''
+                    notificationCount.textContent = notifications.length
                     if (notifications.length === 0) {
-                        notificationList.innerHTML = `<li class="text-muted text-center p-3">Không có thông báo</li>`;
+                        notificationList.innerHTML = `<li class="text-muted text-center p-3">Không có thông báo</li>`
                     } else {
                         notifications.forEach((notification, index) => {
-                            const newNotification =
-                                document.createElement('li');
-                            newNotification.classList.add(
-                                'list-group-item',
-                                'list-group-item-action',
-                                'cursor-pointer',
-                            );
-                            newNotification.id =
-                                'notification-stamp-' + notification.recordId;
-                            newNotification.innerHTML = notification.message;
+                            const newNotification = document.createElement('li')
+                            newNotification.classList.add('list-group-item', 'list-group-item-action', 'cursor-pointer')
+                            newNotification.id = 'notification-stamp-' + notification.recordId
+                            newNotification.innerHTML = notification.message
                             newNotification.addEventListener('click', () => {
-                                if (
-                                    !window.location.href.match(
-                                        '{{ route('admin.checkstamp') }}',
-                                    )
-                                ) {
-                                    notifications[index].selected = true;
-                                    localStorage.setItem(
-                                        'notifications',
-                                        JSON.stringify(notifications),
-                                    );
-                                    window.location.href =
-                                        '{{ route('admin.checkstamp') }}';
+                                if (!window.location.href.match('{{ route('admin.checkstamp') }}')) {
+                                    notifications[index].selected = true
+                                    localStorage.setItem('notifications', JSON.stringify(notifications))
+                                    window.location.href = '{{ route('admin.checkstamp') }}'
                                 } else {
-                                    highlightRecord(notification.recordId);
+                                    highlightRecord(notification.recordId)
                                 }
-                            });
+                            })
                             if (notification.selected) {
-                                highlightRecord(notification.recordId);
-                                notifications[index].selected = false;
-                                localStorage.setItem(
-                                    'notifications',
-                                    JSON.stringify(notifications),
-                                );
+                                highlightRecord(notification.recordId)
+                                notifications[index].selected = false
+                                localStorage.setItem('notifications', JSON.stringify(notifications))
                             }
-                            notificationList.appendChild(newNotification);
-                        });
+                            notificationList.appendChild(newNotification)
+                        })
                     }
-                };
+                }
 
-                updateNotificationUI();
+                updateNotificationUI()
 
-                window.Echo.channel('user.' + userId).listen(
-                    'SendStampEvent',
-                    (e) => {
-                        notifications =
-                            JSON.parse(localStorage.getItem('notifications')) ||
-                            [];
+                window.Echo.channel('user.' + userId).listen('SendStampEvent', (e) => {
+                    notifications = JSON.parse(localStorage.getItem('notifications')) || []
 
-                        notificationSound
-                            .play()
-                            .catch((error) =>
-                                console.error('Lỗi khi phát âm thanh:', error),
-                            );
-                        notifications.unshift({
-                            message: e.message,
-                            recordId: e.recordId,
-                        });
-                        localStorage.setItem(
-                            'notifications',
-                            JSON.stringify(notifications),
-                        );
-                        updateNotificationUI();
-                    },
-                );
-            });
+                    notificationSound.play().catch((error) => console.error('Lỗi khi phát âm thanh:', error))
+                    notifications.unshift({
+                        message: e.message,
+                        recordId: e.recordId,
+                    })
+                    localStorage.setItem('notifications', JSON.stringify(notifications))
+                    updateNotificationUI()
+                })
+            })
         </script>
 
         @yield('scripts')

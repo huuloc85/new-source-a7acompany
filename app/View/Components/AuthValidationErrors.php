@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class authvalidationerrors extends Component
+class AuthValidationErrors extends Component
 {
     public $errors;
 

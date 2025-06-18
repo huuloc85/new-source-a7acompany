@@ -2,75 +2,137 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Employee;
+use App\Helpers\HandleError;
 use App\Models\Role;
+use DB;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 
-class RoleController extends Controller
+class RoleController extends BaseController
 {
-    // Danh sách vai trò
-    public function index(Request $request)
-    {
-        $roles = Role::search()
-            ->whereNotIn('id', [15, 16, 17])
-            ->orderBy('id', 'DESC')
-            ->paginate(Role::paginate);
-
-        return response()->json([
-            'success' => true,
-            'data' => $roles,
-            'total' => $roles->total(),
-        ]);
-    }
-
-    // Thêm vai trò
-    public function store(Request $request)
+    // API
+    public function getRoles(Request $request)
     {
         try {
-            $role = Role::create(['role_name' => trim($request->role_name)]);
+            $roles = QueryBuilder::for(Role::class)
+                ->select('id', 'role_name', 'created_at', 'updated_at')
+                ->allowedFilters('role_name', 'created_at', 'updated_at')
+                ->defaultSort('-id')
+                ->allowedSorts(['id', 'role_name', 'created_at', 'updated_at'])
+                ->whereNotIn('id', [15, 16, 17]);
 
-            return response()->json(['success' => true, 'message' => 'Thêm chức vụ mới thành công!', 'data' => $role]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Thêm chức vụ mới không thành công!']);
+            $limit = $request->limit;
+            if (! is_null($limit) && $limit == 0) {
+                $limit = $roles->count();
+            }
+            $roles = $roles->paginate($limit ?? 10);
+
+            return response()->json($roles);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
         }
     }
 
-    // Cập nhật vai trò
-    public function update(Request $request, $id)
+    public function getRole($id)
     {
-        $role = Role::find($id);
-        if (! $role || in_array($role->role_name, ['admin', 'manager', 'accountant'])) {
-            return response()->json(['success' => false, 'message' => 'Không thể cập nhật chức vụ này!']);
-        }
-
         try {
-            $role->update(['role_name' => trim($request->role_name)]);
+            $role = Role::query()
+                ->select(
+                    'id',
+                    'role_name',
+                    'created_at',
+                    'updated_at'
+                )
+                ->whereNotIn('id', [15, 16, 17])
+                ->findOrFail($id);
 
-            return response()->json(['success' => true, 'message' => 'Cập nhật chức vụ thành công!', 'data' => $role]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Cập nhật chức vụ không thành công!']);
+            return response()->json($role);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
         }
     }
 
-    // Xóa vai trò
-    public function delete($id)
+    public function addRole(Request $request)
     {
-        $role = Role::find($id);
-        if (! $role || in_array($role->role_name, ['admin', 'manager', 'accountant'])) {
-            return response()->json(['success' => false, 'message' => 'Không thể xóa chức vụ này!']);
-        }
-
-        if (Employee::where('role_id', $id)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Có nhân viên thuộc chức vụ này!']);
-        }
-
+        DB::beginTransaction();
         try {
+            $validated = $request->validate([
+                'role_name' => 'required|string|unique:roles,role_name',
+            ]);
+
+            $role = Role::create([
+                'role_name' => $validated['role_name'],
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Role created successfully!',
+                'data' => $role,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
+        }
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $role = Role::query()
+                ->select(
+                    'id',
+                    'role_name',
+                    'created_at',
+                    'updated_at'
+                )
+                ->where('id', $id)
+                ->whereNotIn('id', [15, 16, 17])
+                ->firstOrFail();
+
+            $validated = $request->validate([
+                'role_name' => 'sometimes|string|unique:roles,role_name,'.$id,
+            ]);
+
+            $role->update($validated);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Role updated successfully!',
+                'data' => $role,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
+        }
+    }
+
+    public function deleteRole($id)
+    {
+        DB::beginTransaction();
+        try {
+            $role = Role::query()
+                ->select('id', 'role_name', 'created_at', 'updated_at', 'deleted_at')
+                ->where('id', $id)
+                ->whereNotIn('id', [15, 16, 17])
+                ->firstOrFail();
+
             $role->delete();
 
-            return response()->json(['success' => true, 'message' => 'Xóa chức vụ thành công!']);
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Role deleted successfully!',
+                'data' => $role,
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Xóa chức vụ không thành công!']);
+            DB::rollBack();
+
+            return HandleError::handle($e);
         }
     }
 }
