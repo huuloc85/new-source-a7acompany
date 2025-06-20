@@ -44,18 +44,14 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <a
-                        class="btn btn-link mb-3"
-                        href="{{ route('admin.celender.home') }}"
-                    >
+                    <a class="btn btn-link mb-3" href="{{ route('admin.celender.home') }}">
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
                     <ul
                         class="nav nav-tabs flex-nowrap text-nowrap overflow-x-auto overflow-y-hidden"
                         id="myTab"
-                        role="tablist"
-                    >
+                        role="tablist">
                         @foreach ($tabWork as $key => $tab)
                             <li class="nav-item" role="presentation">
                                 <button
@@ -66,8 +62,7 @@
                                     type="button"
                                     role="tab"
                                     aria-controls="{{ $key }}"
-                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}"
-                                >
+                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}">
                                     {{ $tab['title'] }}
                                 </button>
                             </li>
@@ -92,63 +87,36 @@
                         @endphp
 
                         @if (isset($VVP) && isset($categories))
-                            <div
-                                class="tab-pane fade show active"
-                                id="VVP"
-                                role="tabpanel"
-                                aria-labelledby="VVP-tab"
-                            >
+                            <div class="tab-pane fade show active" id="VVP" role="tabpanel" aria-labelledby="VVP-tab">
                                 @foreach ($categories as $key => $category)
-                                    <div
-                                        class="fw-bold bg-info p-2 text-center"
-                                    >
+                                    <div class="fw-bold bg-info p-2 text-center">
                                         {{ $category->name }}
                                     </div>
-
-                                    <div class="d-flex">
-                                        <div class="col-4 table-responsive">
-                                            <table
-                                                class="table table-hover table-bordered"
-                                            >
-                                                <thead
-                                                    class="table-light text-center uppercase align-middle"
-                                                >
+                                    <div class="table-responsive d-flex">
+                                        {{-- Bảng Nhân Viên --}}
+                                        <div class="col-2 table-responsive" style="flex-basis: 19%">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="table-light text-center uppercase align-middle">
                                                     <tr>
                                                         <th>
-                                                            <div
-                                                                class="table-header-content"
-                                                            >
-                                                                Mã NV
-                                                            </div>
+                                                            <div class="table-header-content">Mã NV</div>
                                                         </th>
                                                         <th>
-                                                            <div
-                                                                class="table-header-content"
-                                                            >
-                                                                Họ và tên
-                                                            </div>
+                                                            <div class="table-header-content">Họ và tên</div>
                                                         </th>
                                                     </tr>
                                                 </thead>
 
-                                                <tbody
-                                                    class="text-center align-middle"
-                                                >
+                                                <tbody class="text-center align-middle">
                                                     {{-- Hàng Nhật - Hàng Chợ --}}
                                                     @if (isset($celenderDetailsHNHC))
                                                         @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
                                                             @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
-                                                                <tr
-                                                                    style="
-                                                                        height: 2.75rem;
-                                                                    "
-                                                                >
+                                                                <tr style="height: 2.75rem">
                                                                     <td>
                                                                         {{ $celenderDetailHNHC->employee->code }}
                                                                     </td>
-                                                                    <td
-                                                                        class="text-start"
-                                                                    >
+                                                                    <td class="text-start">
                                                                         {{ $celenderDetailHNHC->employee->name }}
                                                                     </td>
                                                                 </tr>
@@ -158,53 +126,123 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="col-8 table-responsive">
-                                            <table
-                                                class="table table-hover table-bordered"
-                                            >
-                                                <thead
-                                                    class="table-light text-center uppercase align-middle"
-                                                >
+                                        <div class="col-10 table-responsive">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="table-light text-center uppercase align-middle">
                                                     <tr>
                                                         @foreach ($dates as $date)
                                                             <th>
-                                                                <div
-                                                                    class="table-header-content"
-                                                                >
+                                                                <div class="table-header-content">
                                                                     {{ $formatDate->formatTimeDate($date) }}
                                                                     <br />
                                                                     {{ $formatDate->dayOfWeek($date) }}
                                                                 </div>
                                                             </th>
                                                         @endforeach
+
+                                                        <th>
+                                                            <div class="table-header-content">thao tác</div>
+                                                        </th>
                                                     </tr>
                                                 </thead>
 
-                                                <tbody
-                                                    class="text-center align-middle"
-                                                >
+                                                <tbody class="text-center align-middle">
                                                     {{-- Hàng Nhật - Hàng Chợ --}}
                                                     @if (isset($celenderDetailsHNHC))
                                                         @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
                                                             @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
-                                                                <tr
-                                                                    style="
-                                                                        height: 2.75rem;
-                                                                    "
-                                                                >
-                                                                    @foreach ($dates as $key => $date)
+                                                                @php
+                                                                    $rowId = 'row-'.$celenderDetailHNHC->employee_id;
+                                                                @endphp
+
+                                                                <tr id="{{ $rowId }}">
+                                                                    <form
+                                                                        method="POST"
+                                                                        action="{{ route('admin.celender.update-detail', $id) }}">
+                                                                        @csrf
+                                                                        <input
+                                                                            type="hidden"
+                                                                            name="employee_id"
+                                                                            value="{{ $celenderDetailHNHC->employee_id }}" />
+
+                                                                        @foreach ($dates as $dateKey => $date)
+                                                                            @php
+                                                                                $fill = 'day'.($dateKey + 1);
+                                                                                $cellValue =
+                                                                                    $celenderDetailHNHC->$fill ?? '';
+                                                                            @endphp
+
+                                                                            <td>
+                                                                                <span
+                                                                                    id="{{ $rowId }}-view-{{ $fill }}">
+                                                                                    <span
+                                                                                        class="badge {{ $workLegends[$cellValue]['class'] ?? '' }}">
+                                                                                        {{ $cellValue }}
+                                                                                    </span>
+                                                                                </span>
+
+                                                                                <select
+                                                                                    name="days[{{ $fill }}]"
+                                                                                    id="{{ $rowId }}-edit-{{ $fill }}"
+                                                                                    class="form-select form-select-sm d-none"
+                                                                                    style="min-width: 70px">
+                                                                                    {{-- Nếu giá trị hiện tại không có trong $workLegends (fallback) --}}
+                                                                                    @if (! isset($workLegends[$cellValue]))
+                                                                                        <option
+                                                                                            value="{{ $cellValue }}"
+                                                                                            selected>
+                                                                                            {{ $cellValue }}
+                                                                                        </option>
+                                                                                    @endif
+
+                                                                                    @foreach ($workLegends as $code => $legend)
+                                                                                        <option
+                                                                                            value="{{ $code }}"
+                                                                                            {{ $cellValue == $code ? 'selected' : '' }}>
+                                                                                            {{ $code }}
+                                                                                        </option>
+                                                                                    @endforeach
+
+                                                                                    {{-- Cho phép chọn lịch rỗng (xoá dữ liệu) --}}
+                                                                                    <option value=""></option>
+                                                                                </select>
+                                                                            </td>
+                                                                        @endforeach
+
                                                                         @php
-                                                                            $fill = 'day'.$key + 1;
+                                                                            $hiddenRoles = [14, 18, 19];
                                                                         @endphp
 
-                                                                        <td>
-                                                                            <span
-                                                                                class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}"
-                                                                            >
-                                                                                {{ $celenderDetailHNHC->$fill ?? '' }}
-                                                                            </span>
-                                                                        </td>
-                                                                    @endforeach
+                                                                        @if (! in_array(Auth::user()->role_id, $hiddenRoles))
+                                                                            <td>
+                                                                                {{-- Nút Cập nhật chọn (hiển thị mặc định) --}}
+                                                                                <button
+                                                                                    type="button"
+                                                                                    id="{{ $rowId }}-edit-btn"
+                                                                                    class="btn btn-sm btn-warning"
+                                                                                    onclick="toggleEdit('{{ $rowId }}')">
+                                                                                    Cập nhật lịch
+                                                                                </button>
+
+                                                                                {{-- Nút Huỷ (ẩn ban đầu) --}}
+                                                                                <button
+                                                                                    type="button"
+                                                                                    id="{{ $rowId }}-cancel-btn"
+                                                                                    class="btn btn-sm btn-danger d-none"
+                                                                                    onclick="cancelEdit('{{ $rowId }}')">
+                                                                                    Huỷ
+                                                                                </button>
+
+                                                                                {{-- Nút Lưu (ẩn ban đầu) --}}
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    id="{{ $rowId }}-save-btn"
+                                                                                    class="btn btn-sm btn-success d-none">
+                                                                                    Lưu
+                                                                                </button>
+                                                                            </td>
+                                                                        @endif
+                                                                    </form>
                                                                 </tr>
                                                             @endif
                                                         @endforeach
@@ -226,52 +264,28 @@
                                 class="tab-pane fade"
                                 id="{{ $tabCode }}"
                                 role="tabpanel"
-                                aria-labelledby="{{ $tabCode }}-tab"
-                            >
+                                aria-labelledby="{{ $tabCode }}-tab">
                                 <div class="d-flex">
                                     <div class="col-4 table-responsive">
-                                        <table
-                                            class="table table-hover table-bordered"
-                                        >
-                                            <thead
-                                                class="table-light text-center uppercase align-middle"
-                                            >
+                                        <table class="table table-hover table-bordered">
+                                            <thead class="table-light text-center uppercase align-middle">
                                                 <tr>
                                                     <th>
-                                                        <div
-                                                            class="table-header-content"
-                                                        >
-                                                            Mã NV
-                                                        </div>
+                                                        <div class="table-header-content">Mã NV</div>
                                                     </th>
                                                     <th>
-                                                        <div
-                                                            class="table-header-content"
-                                                        >
-                                                            Họ và tên
-                                                        </div>
+                                                        <div class="table-header-content">Họ và tên</div>
                                                     </th>
                                                 </tr>
                                             </thead>
 
-                                            <tbody
-                                                class="text-center align-middle"
-                                            >
+                                            <tbody class="text-center align-middle">
                                                 {{-- Hàng Nhật - Hàng Chợ --}}
                                                 @if ($tabCode == 'VVP' && isset($categories))
                                                     @foreach ($categories as $key => $category)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
-                                                            <td
-                                                                colspan="9999"
-                                                                class="fw-bold bg-info"
-                                                            >
-                                                                <span
-                                                                    class="d-none"
-                                                                >
+                                                        <tr style="height: 2.75rem">
+                                                            <td colspan="9999" class="fw-bold bg-info">
+                                                                <span class="d-none">
                                                                     {{ $category->name }}
                                                                 </span>
                                                             </td>
@@ -279,17 +293,11 @@
                                                         @if (isset($celenderDetailsHNHC))
                                                             @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
                                                                 @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
-                                                                    <tr
-                                                                        style="
-                                                                            height: 2.75rem;
-                                                                        "
-                                                                    >
+                                                                    <tr style="height: 2.75rem">
                                                                         <td>
                                                                             {{ $celenderDetailHNHC->employee->code }}
                                                                         </td>
-                                                                        <td
-                                                                            class="text-start"
-                                                                        >
+                                                                        <td class="text-start">
                                                                             {{ $celenderDetailHNHC->employee->name }}
                                                                         </td>
                                                                     </tr>
@@ -302,17 +310,11 @@
                                                 {{-- Trực Phòng Ăn --}}
                                                 @if ($tabCode == 'A7A' && isset($celenderDetailsEatroom))
                                                     @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             <td>
                                                                 {{ $celenderDetailEatroom->employee->code }}
                                                             </td>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 {{ $celenderDetailEatroom->employee->name }}
                                                             </td>
                                                         </tr>
@@ -322,17 +324,11 @@
                                                 {{-- Đổ Rác WC --}}
                                                 @if ($tabCode == 'part-time' && isset($celenderDetailsWC))
                                                     @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             <td>
                                                                 {{ $celenderDetailWC->employee->code }}
                                                             </td>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 {{ $celenderDetailWC->employee->name }}
                                                             </td>
                                                         </tr>
@@ -342,17 +338,11 @@
                                                 {{-- Trực WC Nữ --}}
                                                 @if ($tabCode == 'women' && isset($celenderDetailsWCCleanWomen))
                                                     @foreach ($celenderDetailsWCCleanWomen as $key => $womenWC)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             <td>
                                                                 {{ $womenWC->employee->code }}
                                                             </td>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 {{ $womenWC->employee->name }}
                                                             </td>
                                                         </tr>
@@ -362,17 +352,11 @@
                                                 {{-- Trực WC Nam --}}
                                                 @if ($tabCode == 'men' && isset($celenderDetailsWCCleanMen))
                                                     @foreach ($celenderDetailsWCCleanMen as $key => $menWC)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             <td>
                                                                 {{ $menWC->employee->code }}
                                                             </td>
-                                                            <td
-                                                                class="text-start"
-                                                            >
+                                                            <td class="text-start">
                                                                 {{ $menWC->employee->name }}
                                                             </td>
                                                         </tr>
@@ -382,19 +366,13 @@
                                         </table>
                                     </div>
                                     <div class="col-8 table-responsive">
-                                        <table
-                                            class="table table-hover table-bordered"
-                                        >
-                                            <thead
-                                                class="table-light text-center uppercase align-middle"
-                                            >
+                                        <table class="table table-hover table-bordered">
+                                            <thead class="table-light text-center uppercase align-middle">
                                                 <tr>
                                                     @foreach ($dates as $date)
                                                         @if ($tabCode == 'part-time' && $formatDate->dayOfWeek($date) == 'T7')
                                                             <th>
-                                                                <div
-                                                                    class="table-header-content"
-                                                                >
+                                                                <div class="table-header-content">
                                                                     {{ $formatDate->formatTimeDate($date) }}
                                                                     <br />
                                                                     {{ $formatDate->dayOfWeek($date) }}
@@ -402,9 +380,7 @@
                                                             </th>
                                                         @elseif ($tabCode != 'part-time')
                                                             <th>
-                                                                <div
-                                                                    class="table-header-content"
-                                                                >
+                                                                <div class="table-header-content">
                                                                     {{ $formatDate->formatTimeDate($date) }}
                                                                     <br />
                                                                     {{ $formatDate->dayOfWeek($date) }}
@@ -415,32 +391,19 @@
                                                 </tr>
                                             </thead>
 
-                                            <tbody
-                                                class="text-center align-middle"
-                                            >
+                                            <tbody class="text-center align-middle">
                                                 {{-- Hàng Nhật - Hàng Chợ --}}
                                                 @if ($tabCode == 'VVP' && isset($categories))
                                                     @foreach ($categories as $key => $category)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
-                                                            <td
-                                                                colspan="9999"
-                                                                class="fw-bold bg-info"
-                                                            >
+                                                        <tr style="height: 2.75rem">
+                                                            <td colspan="9999" class="fw-bold bg-info">
                                                                 {{ $category->name }}
                                                             </td>
                                                         </tr>
                                                         @if (isset($celenderDetailsHNHC))
                                                             @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
                                                                 @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
-                                                                    <tr
-                                                                        style="
-                                                                            height: 2.75rem;
-                                                                        "
-                                                                    >
+                                                                    <tr style="height: 2.75rem">
                                                                         @foreach ($dates as $key => $date)
                                                                             @php
                                                                                 $fill = 'day'.$key + 1;
@@ -448,8 +411,7 @@
 
                                                                             <td>
                                                                                 <span
-                                                                                    class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}"
-                                                                                >
+                                                                                    class="badge {{ $workLegends[$celenderDetailHNHC->$fill]['class'] ?? '' }}">
                                                                                     {{ $celenderDetailHNHC->$fill ?? '' }}
                                                                                 </span>
                                                                             </td>
@@ -464,11 +426,7 @@
                                                 {{-- Trực Phòng Ăn --}}
                                                 @if ($tabCode == 'A7A' && isset($celenderDetailsEatroom))
                                                     @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             @foreach ($dates as $key => $date)
                                                                 @php
                                                                     $fill = 'day'.$key + 1;
@@ -477,8 +435,7 @@
                                                                 <td>
                                                                     @if ($celenderDetailEatroom->$fill)
                                                                         <span
-                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}"
-                                                                        >
+                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}">
                                                                             VS
                                                                         </span>
                                                                     @endif
@@ -491,11 +448,7 @@
                                                 {{-- Đổ Rác WC --}}
                                                 @if ($tabCode == 'part-time' && isset($celenderDetailsWC))
                                                     @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             @php
                                                                 $keyDate = 0;
                                                             @endphp
@@ -510,8 +463,7 @@
                                                                     <td>
                                                                         @if ($celenderDetailWC->$fill)
                                                                             <span
-                                                                                class="badge {{ $workLegends['VS']['class'] ?? '' }}"
-                                                                            >
+                                                                                class="badge {{ $workLegends['VS']['class'] ?? '' }}">
                                                                                 VS
                                                                             </span>
                                                                         @endif
@@ -525,11 +477,7 @@
                                                 {{-- Trực WC Nữ --}}
                                                 @if ($tabCode == 'women' && isset($celenderDetailsWCCleanWomen))
                                                     @foreach ($celenderDetailsWCCleanWomen as $key => $womenWC)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             @foreach ($dates as $key => $date)
                                                                 @php
                                                                     $fill = 'day'.$key + 1;
@@ -538,8 +486,7 @@
                                                                 <td>
                                                                     @if ($womenWC->$fill)
                                                                         <span
-                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}"
-                                                                        >
+                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}">
                                                                             VS
                                                                         </span>
                                                                     @endif
@@ -552,11 +499,7 @@
                                                 {{-- Trực WC Nam --}}
                                                 @if ($tabCode == 'men' && isset($celenderDetailsWCCleanMen))
                                                     @foreach ($celenderDetailsWCCleanMen as $key => $menWC)
-                                                        <tr
-                                                            style="
-                                                                height: 2.75rem;
-                                                            "
-                                                        >
+                                                        <tr style="height: 2.75rem">
                                                             @foreach ($dates as $key => $date)
                                                                 @php
                                                                     $fill = 'day'.$key + 1;
@@ -565,8 +508,7 @@
                                                                 <td>
                                                                     @if ($menWC->$fill)
                                                                         <span
-                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}"
-                                                                        >
+                                                                            class="badge {{ $workLegends['VS']['class'] ?? '' }}">
                                                                             VS
                                                                         </span>
                                                                     @endif
@@ -583,10 +525,7 @@
                         @endforeach
                     </div>
 
-                    <a
-                        class="btn btn-link mt-3"
-                        href="{{ route('admin.celender.home') }}"
-                    >
+                    <a class="btn btn-link mt-3" href="{{ route('admin.celender.home') }}">
                         <i class="fas fa-arrow-left"></i>
                         Quay lại
                     </a>
@@ -599,128 +538,84 @@
 @section('scripts')
     <script>
         $(document).ready(function () {
+            /*** 1. Gán class theo giá trị input ***/
             const listClass = ['N', 'D', 'X', 'TC', 'LN'];
             $('input').on('keyup', function () {
-                $(this).val($(this).val().toUpperCase());
-                for (let i = 0; i < listClass.length; i++) {
-                    if ($(this).hasClass(listClass[i])) {
-                        $(this).removeClass(listClass[i]);
+                if (!$(this).attr('id') || $(this).attr('id') !== 'employeeSearch') {
+                    $(this).val($(this).val().toUpperCase());
+                    for (let cls of listClass) {
+                        $(this).removeClass(cls);
                     }
+                    $(this).addClass($(this).val());
                 }
-                $(this).addClass($(this).val());
             });
-        });
-        $(document).ready(function () {
-            // Add search input after workLegends div
-            $('.d-flex.flex-wrap.gap-3.align-items-center.m-3').after(`
-        <div class="mb-3">
-            <input type="text"
-                   id="employeeSearch"
-                   class="form-control w-100 w-md-25"
-                   placeholder="Tìm kiếm nhân viên..."
-            >
-        </div>
-    `);
 
-            // Handle the search functionality
+            /*** 2. Thêm ô tìm kiếm ***/
+            $('.d-flex.flex-wrap.gap-3.align-items-center.m-3').after(`
+            <div class="mb-3">
+                <input type="text" id="employeeSearch" class="form-control w-100 w-md-25" placeholder="Tìm kiếm nhân viên...">
+            </div>
+        `);
+
+            /*** 3. Tìm kiếm nhân viên ***/
             $('#employeeSearch').on('input', function () {
                 const searchValue = $(this).val().toLowerCase().trim();
-
-                // Get the active tab's ID
                 const activeTabId = $('.tab-pane.active').attr('id');
 
-                // Find both tables in the active tab
-                const $leftTable = $(`#${activeTabId} .col-4 table`);
-                const $rightTable = $(`#${activeTabId} .col-8 table`);
-
-                // Process rows in pairs
-                const $leftRows = $leftTable.find('tbody tr');
-                const $rightRows = $rightTable.find('tbody tr');
+                const $leftTable = $(`#${activeTabId} .col-2 table`);
+                const $rightTable = $(`#${activeTabId} .col-10 table`);
 
                 $leftRows.each(function (index) {
                     const $leftRow = $(this);
                     const $rightRow = $rightRows.eq(index);
 
-                    // Skip category header rows (rows with bg-info class)
-                    if ($leftRow.find('.bg-info').length > 0) {
-                        return;
-                    }
+                    if ($leftRow.find('.bg-info').length > 0) return;
 
-                    // Get employee code and name from the left table
-                    const code = $leftRow
-                        .find('td:first-child')
-                        .text()
-                        .toLowerCase()
-                        .trim();
-                    const name = $leftRow
-                        .find('td:nth-child(2)')
-                        .text()
-                        .toLowerCase()
-                        .trim();
+                    const code = $leftRow.find('td:first-child').text().toLowerCase().trim();
+                    const name = $leftRow.find('td:nth-child(2)').text().toLowerCase().trim();
 
-                    // Show/hide rows based on search match
-                    if (
-                        code.includes(searchValue) ||
-                        name.includes(searchValue)
-                    ) {
+                    if (code.includes(searchValue) || name.includes(searchValue)) {
                         $leftRow.show();
                         $rightRow.show();
-
-                        // If this row matches, also show its category header if it exists
-                        let $currentLeftRow = $leftRow;
-                        let $currentRightRow = $rightRow;
-
-                        while ($currentLeftRow.prev().length > 0) {
-                            $currentLeftRow = $currentLeftRow.prev();
-                            $currentRightRow = $currentRightRow.prev();
-
-                            if ($currentLeftRow.find('.bg-info').length > 0) {
-                                $currentLeftRow.show();
-                                $currentRightRow.show();
-                                break;
-                            }
+                        let $prevLeft = $leftRow.prev(),
+                            $prevRight = $rightRow.prev();
+                        while ($prevLeft.length && !$prevLeft.find('.bg-info').length) {
+                            $prevLeft = $prevLeft.prev();
+                            $prevRight = $prevRight.prev();
                         }
+                        $prevLeft.show();
+                        $prevRight.show();
                     } else {
                         $leftRow.hide();
                         $rightRow.hide();
                     }
                 });
 
-                // Hide category headers if no rows in that category are visible
+                /** Ẩn category nếu không có dòng hiển thị **/
                 $(`#${activeTabId} .col-4 .bg-info`)
                     .closest('tr')
-                    .each(function (index) {
+                    .each(function (i) {
                         const $leftHeader = $(this);
-                        const $rightHeader = $(
-                            `#${activeTabId} .col-8 .bg-info`,
-                        )
-                            .closest('tr')
-                            .eq(index);
+                        const $rightHeader = $(`#${activeTabId} .col-8 .bg-info`).closest('tr').eq(i);
 
-                        let hasVisibleRows = false;
-                        let $nextLeftRow = $leftHeader.next();
-                        let $nextRightRow = $rightHeader.next();
-
-                        while (
-                            $nextLeftRow.length &&
-                            !$nextLeftRow.find('.bg-info').length
-                        ) {
-                            if ($nextLeftRow.is(':visible')) {
-                                hasVisibleRows = true;
+                        let $next = $leftHeader.next(),
+                            visible = false;
+                        while ($next.length && !$next.find('.bg-info').length) {
+                            if ($next.is(':visible')) {
+                                visible = true;
                                 break;
                             }
-                            $nextLeftRow = $nextLeftRow.next();
-                            $nextRightRow = $nextRightRow.next();
+                            $next = $next.next();
                         }
 
-                        if (!hasVisibleRows) {
+                        if (!visible) {
                             $leftHeader.hide();
                             $rightHeader.hide();
                         }
                     });
             });
 
-            // Clear search when changing tabs
+            /*** 4. Reset tìm kiếm khi đổi tab ***/
             $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
                 const $searchInput = $('#employeeSearch');
                 if ($searchInput.val()) {
@@ -728,22 +623,37 @@
                 }
             });
 
-            // Keep the existing input class change functionality
-            const listClass = ['N', 'D', 'X', 'TC', 'LN'];
-            $('input').on('keyup', function () {
-                if (
-                    !$(this).attr('id') ||
-                    $(this).attr('id') !== 'employeeSearch'
-                ) {
-                    $(this).val($(this).val().toUpperCase());
-                    for (let i = 0; i < listClass.length; i++) {
-                        if ($(this).hasClass(listClass[i])) {
-                            $(this).removeClass(listClass[i]);
-                        }
-                    }
-                    $(this).addClass($(this).val());
-                }
+            /*** 5. Đồng bộ chiều cao dòng giữa 2 bảng ***/
+            const $leftRows = $('.col-2 table tbody tr');
+            const $rightRows = $('.col-10 table tbody tr');
+            $leftRows.each(function (i) {
+                const leftHeight = $(this).outerHeight();
+                const rightHeight = $rightRows.eq(i)?.outerHeight() || 0;
+                const max = Math.max(leftHeight, rightHeight);
+                $(this).height(max);
+                $rightRows.eq(i)?.height(max);
             });
         });
+
+        /*** 6. Các hàm toggle bên ngoài $(document).ready) để dùng onclick="..." ***/
+        function toggleEdit(rowId) {
+            const selects = document.querySelectorAll(`#${rowId} select`);
+            const spans = document.querySelectorAll(`#${rowId} span[id^="${rowId}-view-"]`);
+            selects.forEach((select) => select.classList.remove('d-none'));
+            spans.forEach((span) => span.classList.add('d-none'));
+            document.getElementById(`${rowId}-edit-btn`).classList.add('d-none');
+            document.getElementById(`${rowId}-save-btn`).classList.remove('d-none');
+            document.getElementById(`${rowId}-cancel-btn`).classList.remove('d-none');
+        }
+
+        function cancelEdit(rowId) {
+            const selects = document.querySelectorAll(`#${rowId} select`);
+            const spans = document.querySelectorAll(`#${rowId} span[id^="${rowId}-view-"]`);
+            selects.forEach((select) => select.classList.add('d-none'));
+            spans.forEach((span) => span.classList.remove('d-none'));
+            document.getElementById(`${rowId}-edit-btn`).classList.remove('d-none');
+            document.getElementById(`${rowId}-save-btn`).classList.add('d-none');
+            document.getElementById(`${rowId}-cancel-btn`).classList.add('d-none');
+        }
     </script>
 @endsection

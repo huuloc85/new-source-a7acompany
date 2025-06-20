@@ -35,7 +35,7 @@ class CelenderController extends Controller
         return view('celender.index', compact('celenders', 'total'));
     }
 
-    //view add
+    // view add
     public function add(CelenderStoreRequest $request)
     {
         DB::beginTransaction();
@@ -88,7 +88,7 @@ class CelenderController extends Controller
         }
     }
 
-    //store new
+    // store new
     public function store(Request $request, $id)
     {
         DB::beginTransaction();
@@ -96,7 +96,7 @@ class CelenderController extends Controller
             if (! empty($request->employee_id) && count($request->employee_id) != 0) {
                 foreach ($request->employee_id as $employee_id) {
 
-                    ///hnhc
+                    // /hnhc
                     $key = $employee_id.'-hnhc';
                     if ($request->$key && count($request->$key) != 0) {
                         $celenderDetailHNHC = CelenderDetailHNHC::where('celender_id', $id)->where('employee_id', $employee_id)->first();
@@ -107,7 +107,7 @@ class CelenderController extends Controller
                         $celenderDetailHNHC->save();
                     }
 
-                    //eatroom
+                    // eatroom
                     $key = $employee_id.'-eatroom';
                     if ($request->$key && count($request->$key) != 0) {
                         $celenderDetailEatroom = CelenderDetailEatroom::where('celender_id', $id)->where('employee_id', $employee_id)->first();
@@ -118,7 +118,7 @@ class CelenderController extends Controller
                         $celenderDetailEatroom->save();
                     }
 
-                    //wc vứt rác
+                    // wc vứt rác
                     $key = $employee_id.'-wc';
                     if ($request->$key && count($request->$key) != 0) {
                         $celenderDetailWC = CelenderDetailWC::where('celender_id', $id)->where('employee_id', $employee_id)->first();
@@ -129,7 +129,7 @@ class CelenderController extends Controller
                         $celenderDetailWC->save();
                     }
 
-                    //wc trực nữ
+                    // wc trực nữ
                     $key = $employee_id.'-wccleanwomen';
                     if ($request->$key && count($request->$key) != 0) {
                         $celenderDetailWCCleanWomen = CelenderDetailWCCleanWomen::where('celender_id', $id)->where('employee_id', $employee_id)->first();
@@ -140,7 +140,7 @@ class CelenderController extends Controller
                         $celenderDetailWCCleanWomen->save();
                     }
 
-                    //wc trực name
+                    // wc trực name
                     $key = $employee_id.'-wccleanmen';
                     if ($request->$key && count($request->$key) != 0) {
                         $celenderDetailWCCleanMen = CelenderDetailWCCleanMen::where('celender_id', $id)->where('employee_id', $employee_id)->first();
@@ -165,7 +165,7 @@ class CelenderController extends Controller
         }
     }
 
-    //delete
+    // delete
     public function delete($id)
     {
         try {
@@ -187,7 +187,7 @@ class CelenderController extends Controller
         }
     }
 
-    //detail
+    // detail
     public function detail(Request $request, $id)
     {
         $calendar = Celender::find($id);
@@ -203,9 +203,9 @@ class CelenderController extends Controller
             $monthNext = date('m', strtotime($date));
         }
         $formatDate = new Celender;
-        //list cate
+        // list cate
         $categories = CategoryCelender::all();
-        //list celender detail
+        // list celender detail
         $celenderDetailsHNHC = CelenderDetailHNHC::where('celender_id', $id)->whereHas('employee', function ($query) {
             $query->where('deleted_at', '=', null);
         })->get();
@@ -242,5 +242,36 @@ class CelenderController extends Controller
             'roles',
             'calendarTitle'
         ));
+    }
+
+    // update detail
+    public function updateDetail(Request $request, $id)
+    {
+        $calendar = Celender::find($id);
+        if (! $calendar) {
+            return redirect()->back()->with('error', 'Không tìm thấy lịch');
+        }
+
+        // Xử lý cập nhật cho từng nhân viên
+        if ($request->has('employee_id') && $request->has('days')) {
+            $employeeId = $request->input('employee_id');
+            $days = $request->input('days');
+
+            // Xây dựng dữ liệu để cập nhật
+            $updateData = ['celender_id' => $id, 'employee_id' => $employeeId];
+            foreach ($days as $dayKey => $value) {
+                $updateData[$dayKey] = $value;
+            }
+
+            // Cập nhật hoặc tạo mới dòng chi tiết
+            CelenderDetailHNHC::updateOrCreate(
+                ['celender_id' => $id, 'employee_id' => $employeeId],
+                $updateData
+            );
+
+            return redirect()->back()->with('success', 'Cập nhật thành công cho nhân viên');
+        }
+
+        return redirect()->back()->with('error', 'Thiếu dữ liệu để cập nhật');
     }
 }
