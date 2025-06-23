@@ -7,13 +7,13 @@
                 <div class="card-header p-1 position-relative mt-n1 mx-1">
                     <div class="border-radius-lg ps-2 pt-4 pb-3">
                         <h4 class="card-title mb-0">
-                            Kho Đã Xuất Hàng {{ \Carbon\Carbon::now()->format('m-Y') }}
+                            Kho Đã Xuất Hàng Ngày {{ \Carbon\Carbon::now()->format('d-m') }}
                         </h4>
                     </div>
                 </div>
                 <div class="card-body">
                     <form method="GET" class="row g-3 align-items-end mb-4">
-                        <div class="col-md-2">
+                        {{-- <div class="col-md-2">
                             <label for="month" class="form-label">Tháng</label>
                             <select name="month" id="month" class="form-select" onchange="this.form.submit()">
                                 @foreach ($months as $m)
@@ -21,7 +21,7 @@
                                         {{ $m }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
 
                         <div class="col-md-2">
                             <label for="product_id" class="form-label">Sản Phẩm</label>
@@ -48,17 +48,15 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="col-md-2">
-                            <label for="start_date" class="form-label">Từ Ngày</label>
-                            <input type="date" name="start_date" id="start_date" class="form-control"
-                                value="{{ request('start_date') }}" onchange="this.form.submit()">
-                        </div>
-
-                        <div class="col-md-2">
-                            <label for="end_date" class="form-label">Đến Ngày</label>
-                            <input type="date" name="end_date" id="end_date" class="form-control"
-                                value="{{ request('end_date') }}" onchange="this.form.submit()">
+                            <label for="filter_date" class="form-label">Ngày</label>
+                            <select name="filter_date" id="filter_date" class="form-select" onchange="this.form.submit()">
+                                @foreach ($availableDates as $date)
+                                    <option value="{{ $date }}" {{ $filterDate === $date ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </form>
 
@@ -84,36 +82,37 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-center align-middle">
-                                    @foreach ($storage as $storageItem)
-                                        <tr>
-                                            <th>{{ $loop->iteration }}</th>
-                                            <td>
-                                                {{ $storageItem->product->name }}
-                                            </td>
-                                            <td>
-                                                {{ $storageItem->product->code }}
-                                            </td>
-                                            <td>
-                                                {{ $storageItem->employee->name }}
-                                            </td>
-                                            <td>
-                                                {{ $storageItem->employee->code }}
-                                            </td>
-                                            <td>
-                                                {{ $storageItem->lot }}
-                                            </td>
-                                            <td>
-                                                {{ $storageItem->bin }}
-                                            </td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($storageItem->created_at)->format('d-m') }}
-                                            </td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($storageItem->created_at)->format('H:i:s') }}
+                                    @foreach ($storage as $groupKey => $lotItems)
+                                        @php
+                                            [$date, $employeeId] = explode('|', $groupKey);
+                                            $employee = $lotItems->first()->employee;
+                                        @endphp
+                                        <tr class="table-secondary">
+                                            <td colspan="9" class="text-start fw-bold">
+                                                Ngày Xuất: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} |
+                                                Nhân viên: {{ $employee->name }} ({{ $lotItems->count() }} sản phẩm)
                                             </td>
                                         </tr>
+
+                                        @foreach ($lotItems as $storageItem)
+                                            <tr>
+                                                <th>{{ $loop->parent->iteration }}.{{ $loop->iteration }}</th>
+                                                <td>{{ $storageItem->product->name }}</td>
+                                                <td>{{ $storageItem->product->code }}</td>
+                                                <td>{{ $storageItem->employee->name }}</td>
+                                                <td>{{ $storageItem->employee->code }}</td>
+                                                <td>{{ $storageItem->lot }}</td>
+                                                <td>{{ $storageItem->bin }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($storageItem->created_at)->format('d-m') }}
+                                                </td>
+                                                <td>{{ \Carbon\Carbon::parse($storageItem->created_at)->format('H:i:s') }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     @endforeach
                                 </tbody>
+
+
                             </table>
                         @endif
                     </div>
