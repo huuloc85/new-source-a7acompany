@@ -1,4 +1,35 @@
 @extends('layouts.' . $layout)
+<style>
+    /* Ngăn chặn scroll ngang toàn trang */
+    html,
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    /* Đảm bảo các khối chính không vượt chiều rộng màn hình */
+    .container,
+    .row,
+    .card,
+    .content,
+    .main-content {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    /* Cho tất cả thành phần tính kích thước chính xác */
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Card mobile padding đẹp hơn */
+    @media (max-width: 767.98px) {
+        .card-body p {
+            font-size: 15px;
+        }
+    }
+</style>
+
 
 @section('content')
     <div class="row">
@@ -59,14 +90,9 @@
                             </select>
                         </div>
                     </form>
-
-
-                    <div class="table-responsive">
-                        @if ($storage->isEmpty())
-                            <div class="text-center">
-                                Không có sản phẩm trong kho xuất hàng
-                            </div>
-                        @else
+                    @if (!$storage->isEmpty())
+                        {{-- BẢNG CHO DESKTOP --}}
+                        <div class="table-responsive d-none d-md-block">
                             <table class="table table-hover">
                                 <thead class="text-uppercase text-center">
                                     <tr>
@@ -91,7 +117,7 @@
 
                                         <tr class="table-secondary">
                                             <td colspan="9" class="text-start fw-bold">
-                                                🧾 Ngày Xuất: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} |
+                                                Ngày Xuất: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} |
                                                 Nhân viên: {{ $employee->name }} |
                                                 Sản phẩm: {{ $product->name }} ({{ $items->count() }} thùng)
                                             </td>
@@ -112,12 +138,52 @@
                                         @endforeach
                                     @endforeach
                                 </tbody>
-
-
-
                             </table>
-                        @endif
-                    </div>
+                        </div>
+
+                        {{-- CARD CHO MOBILE --}}
+                        <div class="d-md-none">
+                            @foreach ($storage as $groupKey => $items)
+                                @php
+                                    [$date, $employeeId, $productId] = explode('|', $groupKey);
+                                    $employee = $items->first()->employee;
+                                    $product = $items->first()->product;
+                                @endphp
+
+                                <div class="mb-2 fw-bold text-primary">
+                                    Ngày Xuất: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} |
+                                    Nhân viên: {{ $employee->name }} |
+                                    Sản phẩm: {{ $product->name }} ({{ $items->count() }} thùng)
+                                </div>
+
+                                @foreach ($items as $item)
+                                    <div class="card mb-3 shadow-sm">
+                                        <div class="card-body p-3">
+                                            <p class="mb-1"><strong>STT:</strong>
+                                                {{ $loop->parent->iteration }}.{{ $loop->iteration }}</p>
+                                            <p class="mb-1"><strong>Tên Sản Phẩm:</strong> {{ $item->product->name }}</p>
+                                            <p class="mb-1"><strong>Code:</strong> {{ $item->product->code }}</p>
+                                            <p class="mb-1"><strong>Nhân Viên Nhập:</strong> {{ $item->employee->name }}
+                                            </p>
+                                            <p class="mb-1"><strong>Mã Nhân Viên:</strong> {{ $item->employee->code }}
+                                            </p>
+                                            <p class="mb-1"><strong>Số Lot:</strong> {{ $item->lot }}</p>
+                                            <p class="mb-1"><strong>Thùng Số:</strong> {{ $item->bin }}</p>
+                                            <p class="mb-1"><strong>Ngày Xuất:</strong>
+                                                {{ \Carbon\Carbon::parse($item->created_at)->format('d-m') }}</p>
+                                            <p class="mb-0"><strong>Thời Gian:</strong>
+                                                {{ \Carbon\Carbon::parse($item->created_at)->format('H:i:s') }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endforeach
+                        </div>
+                    @else
+                        {{-- THÔNG BÁO KHI KHÔNG CÓ DỮ LIỆU --}}
+                        <div class="text-center my-4 text-danger fw-bold">
+                            Không có sản phẩm trong kho xuất hàng
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
