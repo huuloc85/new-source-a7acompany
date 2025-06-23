@@ -28,8 +28,90 @@
             font-size: 15px;
         }
     }
-</style>
 
+    /* Căn giữa tiêu đề modal và làm nổi bật icon */
+    .modal-header .modal-title {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+
+    /* Căn chỉnh các biểu tượng Bootstrap trong header */
+    .modal-header .bi {
+        font-size: 1.3rem;
+    }
+
+    /* Tăng padding và làm mềm đường viền modal */
+    .modal-content {
+        border-radius: 0.75rem;
+        border-width: 2px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Nền body nhẹ hơn và padding rộng hơn */
+    .modal-body {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+    }
+
+    /* Làm nổi bật alert */
+    .alert {
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    /* Badge đẹp hơn */
+    .badge {
+        padding: 0.45em 0.65em;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+
+    /* Card gọn gàng, hiện đại hơn */
+    .card {
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Tăng spacing giữa các hàng */
+    .card-body .row>div {
+        margin-bottom: 1rem;
+    }
+
+    /* Danh sách thùng thiếu đẹp hơn */
+    .badge.font-monospace {
+        font-size: 0.9em;
+        padding: 0.35em 0.65em;
+    }
+
+    /* Footer gọn gàng và đều nút */
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        background-color: #f1f3f5;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* Nút bấm bóng nhẹ và cân đối */
+    .modal-footer .btn {
+        min-width: 120px;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Nút đóng alert đẹp */
+    .alert .btn-close {
+        top: 0.5rem;
+        right: 0.75rem;
+    }
+
+    /* Responsive tối ưu hơn nếu cần */
+    @media (max-width: 768px) {
+        .modal-dialog {
+            margin: 1.5rem auto;
+        }
+    }
+</style>
 
 @section('content')
     <div class="row">
@@ -43,17 +125,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form method="GET" class="row g-3 align-items-end mb-4">
-                        {{-- <div class="col-md-2">
-                            <label for="month" class="form-label">Tháng</label>
-                            <select name="month" id="month" class="form-select" onchange="this.form.submit()">
-                                @foreach ($months as $m)
-                                    <option value="{{ $m }}" {{ $m == $month ? 'selected' : '' }}>Tháng
-                                        {{ $m }}</option>
-                                @endforeach
-                            </select>
-                        </div> --}}
-
+                    <form method="GET" class="row g-3 align-items-end mb-4" id="searchForm">
                         <div class="col-md-2">
                             <label for="product_id" class="form-label">Sản Phẩm</label>
                             <select name="product_id" id="product_id" class="form-select" onchange="this.form.submit()">
@@ -79,6 +151,7 @@
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-2">
                             <label for="filter_date" class="form-label">Ngày</label>
                             <select name="filter_date" id="filter_date" class="form-select" onchange="this.form.submit()">
@@ -89,7 +162,35 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <div class="col-md-2">
+                            <label for="lot_product_id" class="form-label">Sản phẩm để kiểm Lot <span
+                                    class="text-danger">*</span></label>
+                            <select name="lot_product_id" id="lot_product_id" class="form-select" required>
+                                <option value="">Chọn sản phẩm </option>
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}"
+                                        {{ request('lot_product_id') == $product->id ? 'selected' : '' }}>
+                                        {{ $product->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label for="lot" class="form-label">Mã Lot <span class="text-danger">*</span></label>
+                            <input type="text" name="lot" id="lot" class="form-control"
+                                placeholder="VD: 05062025-2-013" value="{{ request('lot') }}" required>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label d-block">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100" id="searchBtn">
+                                <i class="bi bi-search"></i> Tìm thùng bị sót
+                            </button>
+                        </div>
                     </form>
+
                     @if (!$storage->isEmpty())
                         {{-- BẢNG CHO DESKTOP --}}
                         <div class="table-responsive d-none d-md-block">
@@ -189,3 +290,216 @@
         </div>
     </div>
 @endsection
+
+{{-- MODAL LOT - Chỉ render khi cần thiết --}}
+@if (!empty($lotModalData))
+    @php $data = $lotModalData; @endphp
+
+    <!-- Modal -->
+    <div class="modal fade" id="lotModal" tabindex="-1" aria-labelledby="lotModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-primary">
+                <div
+                    class="modal-header {{ isset($data['error']) ? 'bg-danger' : ($data['status'] === 'success' ? 'bg-success' : 'bg-warning') }} text-white">
+                    <h5 class="modal-title" id="lotModalLabel">
+                        <i
+                            class="bi {{ isset($data['error']) ? 'bi-exclamation-triangle' : ($data['status'] === 'success' ? 'bi-check-circle' : 'bi-info-circle') }} me-2"></i>
+                        Thông tin kiểm tra Lot
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    @if (isset($data['error']))
+                        <div class="alert alert-danger d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>
+                                <strong>Lỗi:</strong> {{ $data['error'] }}
+                                @if (isset($data['code']))
+                                    <br><small class="text-muted">Mã lot nhập: {{ $data['code'] }}</small>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        {{-- Thông tin lot --}}
+                        <div class="card shadow-sm border rounded-3 p-3">
+                            <div class="row gx-4 gy-3 align-items-start">
+                                <!-- Thông tin Lot -->
+                                <div class="col-md-6">
+                                    <h6 class="text-uppercase text-secondary fw-semibold mb-2">Thông tin Lot</h6>
+                                    <p class="mb-1"><strong>Mã Lot:</strong> <span
+                                            class="text-danger fw-semibold">{{ $data['code'] }}</span></p>
+                                    <p class="mb-1"><strong>Sản phẩm:</strong> <span
+                                            class="text-dark">{{ $data['product'] }}</span></p>
+                                    <p class="mb-0"><strong>Ngày sản xuất:</strong> <span
+                                            class="text-dark">{{ $data['date'] }}</span></p>
+                                </div>
+
+                                <!-- Thống kê -->
+                                <div class="col-md-6">
+                                    <h6 class="text-uppercase text-secondary fw-semibold mb-2">Thống kê</h6>
+                                    <p class="mb-1"><strong>Yêu cầu:</strong>
+                                        <span class="badge bg-primary text-uppercase">{{ $data['expected'] }}
+                                            thùng</span>
+                                    </p>
+                                    <p class="mb-1"><strong>Đã nhập:</strong>
+                                        <span class="badge bg-info text-uppercase text-dark">{{ $data['actual'] }}
+                                            thùng</span>
+                                    </p>
+                                    <p class="mb-0"><strong>Tỷ lệ:</strong>
+                                        <span
+                                            class="badge {{ $data['status'] === 'success' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                            {{ $data['expected'] > 0 ? round(($data['actual'] / $data['expected']) * 100, 1) : 0 }}%
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        {{-- Kết quả kiểm tra --}}
+                        @if ($data['missing'] > 0)
+                            <div class="alert alert-warning">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <strong>Còn thiếu {{ $data['missing'] }} thùng</strong>
+                                </div>
+
+                                @if (!empty($data['missingLots']))
+                                    <div class="mt-3">
+                                        <strong>Danh sách thùng thiếu:</strong>
+                                        <div class="mt-2" style="max-height: 200px; overflow-y: auto;">
+                                            @foreach (array_chunk($data['missingLots'], 5) as $chunk)
+                                                <div class="mb-1">
+                                                    @foreach ($chunk as $miss)
+                                                        <span
+                                                            class="badge bg-warning text-dark me-1 mb-1 font-monospace">{{ $miss }}</span>
+                                                    @endforeach
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <div class="alert alert-success">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                    <strong>Hoàn thành! </strong> Đã nhập đủ số lượng thùng yêu cầu.
+                                </div>
+                            </div>
+                        @endif
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i>Đóng
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="resetSearchForm()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Tìm kiếm mới
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Script xử lý modal --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Delay nhỏ để tránh flash content
+            setTimeout(() => {
+                try {
+                    const modalElement = document.getElementById('lotModal');
+                    if (modalElement && typeof bootstrap !== 'undefined') {
+                        const modal = new bootstrap.Modal(modalElement, {
+                            backdrop: 'static',
+                            keyboard: true
+                        });
+
+                        modal.show();
+
+                        // Auto close URL params khi modal đóng
+                        modalElement.addEventListener('hidden.bs.modal', function() {
+                            cleanupUrl();
+                        });
+                    }
+                } catch (error) {
+                    console.error('Modal error:', error);
+                }
+            }, 100);
+        });
+
+        // Reset form và đóng modal
+        function resetSearchForm() {
+            // Đóng modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('lotModal'));
+            if (modal) modal.hide();
+
+            // Reset form fields
+            document.getElementById('lot').value = '';
+            document.getElementById('lot_product_id').value = '';
+
+            // Clean URL
+            cleanupUrl();
+
+            // Focus vào field đầu tiên
+            document.getElementById('lot_product_id').focus();
+        }
+
+        // Clean URL parameters
+        function cleanupUrl() {
+            if (typeof window.history !== 'undefined') {
+                const url = new URL(window.location);
+                url.searchParams.delete('lot');
+                url.searchParams.delete('lot_product_id');
+                window.history.replaceState({}, document.title, url.toString());
+            }
+        }
+
+        // Prevent form submission nếu thiếu data
+        document.getElementById('searchForm')?.addEventListener('submit', function(e) {
+            const lot = document.getElementById('lot')?.value?.trim();
+            const lotProductId = document.getElementById('lot_product_id')?.value;
+
+            // Chỉ validate khi click nút search lot
+            if (e.submitter?.id === 'searchBtn') {
+                if (!lot || !lotProductId) {
+                    e.preventDefault();
+
+                    // Hiển thị thông báo lỗi đẹp hơn
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-warning alert-dismissible fade show mt-3';
+                    alertDiv.innerHTML = `
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Thiếu thông tin!</strong> Vui lòng chọn sản phẩm và nhập mã lot.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+
+                    // Insert alert sau form
+                    const form = document.getElementById('searchForm');
+                    form.parentNode.insertBefore(alertDiv, form.nextSibling);
+
+                    // Auto remove alert sau 5s
+                    setTimeout(() => {
+                        if (alertDiv.parentNode) {
+                            alertDiv.remove();
+                        }
+                    }, 5000);
+
+                    // Focus vào field trống đầu tiên
+                    if (!lotProductId) {
+                        document.getElementById('lot_product_id').focus();
+                    } else if (!lot) {
+                        document.getElementById('lot').focus();
+                    }
+
+                    return false;
+                }
+
+                // Show loading state
+                e.submitter.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Đang tìm...';
+                e.submitter.disabled = true;
+            }
+        });
+    </script>
+@endif
