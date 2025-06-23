@@ -82,35 +82,37 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-center align-middle">
-                                    @foreach ($storage as $groupKey => $lotItems)
+                                    @foreach ($storage as $groupKey => $items)
                                         @php
-                                            [$date, $employeeId] = explode('|', $groupKey);
-                                            $employee = $lotItems->first()->employee;
+                                            [$date, $employeeId, $productId] = explode('|', $groupKey);
+                                            $employee = $items->first()->employee;
+                                            $product = $items->first()->product;
                                         @endphp
+
                                         <tr class="table-secondary">
                                             <td colspan="9" class="text-start fw-bold">
-                                                Ngày Xuất: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} |
-                                                Nhân viên: {{ $employee->name }} ({{ $lotItems->count() }} sản phẩm)
+                                                🧾 Ngày Xuất: {{ \Carbon\Carbon::parse($date)->format('d/m/Y') }} |
+                                                Nhân viên: {{ $employee->name }} |
+                                                Sản phẩm: {{ $product->name }} ({{ $items->count() }} thùng)
                                             </td>
                                         </tr>
 
-                                        @foreach ($lotItems as $storageItem)
+                                        @foreach ($items as $item)
                                             <tr>
                                                 <th>{{ $loop->parent->iteration }}.{{ $loop->iteration }}</th>
-                                                <td>{{ $storageItem->product->name }}</td>
-                                                <td>{{ $storageItem->product->code }}</td>
-                                                <td>{{ $storageItem->employee->name }}</td>
-                                                <td>{{ $storageItem->employee->code }}</td>
-                                                <td>{{ $storageItem->lot }}</td>
-                                                <td>{{ $storageItem->bin }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($storageItem->created_at)->format('d-m') }}
-                                                </td>
-                                                <td>{{ \Carbon\Carbon::parse($storageItem->created_at)->format('H:i:s') }}
-                                                </td>
+                                                <td>{{ $item->product->name }}</td>
+                                                <td>{{ $item->product->code }}</td>
+                                                <td>{{ $item->employee->name }}</td>
+                                                <td>{{ $item->employee->code }}</td>
+                                                <td>{{ $item->lot }}</td>
+                                                <td>{{ $item->bin }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d-m') }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('H:i:s') }}</td>
                                             </tr>
                                         @endforeach
                                     @endforeach
                                 </tbody>
+
 
 
                             </table>

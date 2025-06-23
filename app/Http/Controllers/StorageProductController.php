@@ -31,8 +31,7 @@ class StorageProductController extends Controller
             ->orderByDesc('bin')
             ->get()
             ->groupBy(function ($item) {
-                // Nhóm theo ngày và mã nhân viên
-                return Carbon::parse($item->created_at)->format('Y-m-d').'|'.$item->employee_id;
+                return Carbon::parse($item->created_at)->format('Y-m-d').'|'.$item->employee_id.'|'.$item->product_id;
             });
 
         // Tháng để lọc thủ công (nếu dùng)
