@@ -210,11 +210,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // view check barcode for employee
-    Route::middleware(['authAdmin'])->prefix('/barcode/employee')->group(function () {
-        Route::get('/scan', [StampController::class, 'scan'])->name('admin.barcode.scan');
-        Route::post('/check', [StampController::class, 'checkBarCode'])->name('admin.barcode.check');
-        Route::get('/scanqr', [StampController::class, 'scanQr'])->name('admin.barcode.scanQr');
-        Route::post('/checkqr', [StampController::class, 'checkQr'])->name('admin.barcode.checkQr');
+    Route::middleware(['authAdmin'])->prefix('/scan')->group(function () {
+        Route::get('/index', [StampController::class, 'scan'])->name('admin.scan');
+        Route::post('/scan/barcode', [StampController::class, 'checkBarCode'])->name('admin.scan.barcode');
+        Route::post('/checkqr', [StampController::class, 'checkQr'])->name('admin.scan.qr');
     });
 
     // check PO

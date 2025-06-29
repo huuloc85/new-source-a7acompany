@@ -91,6 +91,7 @@ class AuthController extends Controller
                 'birthday_employees' => $birthdayEmployees,
                 'cleaning_duties' => $upcomingDuties,
                 'expires_at' => $expiresAt->toDateTimeString(),
+                'employee_id' => auth()->user()->id,
             ]);
         }
 
