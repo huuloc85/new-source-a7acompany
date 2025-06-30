@@ -39,64 +39,68 @@ class StorageProductController extends Controller
         $lotModalData = null;
 
         if ($request->filled('lot') && $request->filled('lot_product_id')) {
-            $input = strtoupper(trim($request->input('lot')));
-
-            // Thêm "A-" nếu chưa có
-            if (! str_starts_with($input, 'A-')) {
-                $input = 'A-'.$input;
+            $lotCode = strtoupper(trim($request->input('lot')));
+            if (! str_starts_with($lotCode, 'A-')) {
+                $lotCode = 'A-'.$lotCode;
             }
 
-            // Chuẩn hoá: A-05062025-2-18 => A-05062025-2-018
+            // Chuẩn hóa lot thành A-18062025-2-065
             $lotCode = preg_replace_callback('/^A-(\d{8})-(\d+)-(\d{1,3})$/', function ($matches) {
-                $datePart = $matches[1];        // 05062025
-                $batchPart = $matches[2];       // 2
-                $serialPart = str_pad($matches[3], 3, '0', STR_PAD_LEFT);  // 18 => 018
-
-                return "A-{$datePart}-{$batchPart}-{$serialPart}";
-            }, $input);
+                return "A-{$matches[1]}-{$matches[2]}-".str_pad($matches[3], 3, '0', STR_PAD_LEFT);
+            }, $lotCode);
 
             $productId = (int) $request->input('lot_product_id');
 
-            if (! preg_match('/^A-([0-9]{2})([0-9]{2})([0-9]{4})-([12])-([0-9]{3})$/', $lotCode, $matches)) {
+            if (! preg_match('/^A-(\d{2})(\d{2})(\d{4})-([12])-(\d{3})$/', $lotCode, $matches)) {
                 $lotModalData = ['error' => 'Mã lot không đúng định dạng.'];
             } else {
-                [$all, $day, $month, $year, $shift, $qtyStr] = $matches;
+                [$all, $day, $month, $year, $shift, $endSerial] = $matches;
 
-                $expected = (int) ltrim($qtyStr, '0') ?: 1; // số thùng mong đợi
-                $lotPrefix = "A-$day$month$year-$shift-";
+                $lotPrefix = "A-{$day}{$month}{$year}-{$shift}-";
+                $endNumber = (int) ltrim($endSerial, '0') ?: 1;
 
                 $product = Product::find($productId);
                 if (! $product) {
                     $lotModalData = ['error' => 'Không tìm thấy sản phẩm.'];
                 } else {
-                    // Lấy tất cả thùng trong cùng lot (dựa theo prefix)
-                    $existingNumbers = StorageProduct::where('product_id', $productId)
-                        ->where('lot', 'like', "{$lotPrefix}%")
-                        ->pluck('lot')
-                        ->map(fn ($lot) => (int) ltrim(str_replace($lotPrefix, '', $lot), '0') ?: 1)
-                        ->unique()
-                        ->sort()
-                        ->values();
+                    // Lấy danh sách các thùng thực tế đã có
+                    $existingLots = StorageProduct::where('product_id', $productId)
+                        ->where('lot', 'like', "$lotPrefix%")
+                        ->pluck('lot');
 
-                    $startNumber = $existingNumbers->min() ?? 1; // lấy thùng đầu tiên thực tế
-                    $expectedNumbers = range($startNumber, $startNumber + $expected - 1);
-                    $missingNumbers = array_diff($expectedNumbers, $existingNumbers->all());
+                    $existingNumbers = $existingLots->map(function ($lot) use ($lotPrefix) {
+                        return (int) ltrim(str_replace($lotPrefix, '', $lot), '0') ?: 1;
+                    })->unique()->sort()->values();
 
-                    $missingLots = array_map(
-                        fn ($num) => $lotPrefix.str_pad($num, 3, '0', STR_PAD_LEFT),
-                        $missingNumbers
-                    );
+                    // Lấy số bắt đầu là thùng nhỏ nhất thực tế, nếu không có thì bắt đầu từ 1
+                    $startNumber = $existingNumbers->min() ?? 1;
 
-                    $lotModalData = [
-                        'code' => $lotCode,
-                        'product' => $product->name,
-                        'date' => "$day/$month/$year",
-                        'expected' => $expected,
-                        'actual' => count($expectedNumbers) - count($missingNumbers),
-                        'missing' => count($missingNumbers),
-                        'missingLots' => $missingLots,
-                        'status' => count($missingNumbers) > 0 ? 'warning' : 'success',
-                    ];
+                    // Giới hạn endNumber không nhỏ hơn start
+                    if ($endNumber < $startNumber) {
+                        $lotModalData = ['error' => 'Số thùng kết thúc nhỏ hơn số đã có.'];
+                    } else {
+                        // Tính khoảng số thùng mong đợi
+                        $expectedNumbers = range($startNumber, $endNumber);
+                        $missingNumbers = array_diff($expectedNumbers, $existingNumbers->all());
+
+                        $missingLots = array_map(
+                            fn ($num) => $lotPrefix.str_pad($num, 3, '0', STR_PAD_LEFT),
+                            $missingNumbers
+                        );
+
+                        $lotModalData = [
+                            'code' => $lotCode,
+                            'product' => $product->name,
+                            'date' => "$day/$month/$year",
+                            'expected' => count($expectedNumbers),
+                            'startFrom' => $startNumber,
+                            'endAt' => $endNumber,
+                            'actual' => count($expectedNumbers) - count($missingNumbers),
+                            'missing' => count($missingNumbers),
+                            'missingLots' => $missingLots,
+                            'status' => count($missingNumbers) > 0 ? 'warning' : 'success',
+                        ];
+                    }
                 }
             }
         }
