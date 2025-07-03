@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SalaryController;
 use App\Http\Controllers\Api\ScheduleCategoryController;
 use App\Http\Controllers\API\ScheduleController;
+use App\Http\Controllers\Api\StampController;
 use App\Http\Controllers\Api\TotalQuantityController;
 use App\Http\Controllers\AttendanceRecordController;
 use Illuminate\Http\Request;
@@ -124,6 +125,10 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         // Route::post('/', [TotalQuantityController::class, 'store']);
         // Route::get('/{id}', [TotalQuantityController::class, 'show']);
         // Route::delete('/{id}', [TotalQuantityController::class, 'delete']);
+    });
+
+    Route::prefix('stamps')->group(function () {
+        Route::post('/savePrint', [StampController::class, 'savePrint'])->name('api.save-print');
     });
 
     Route::middleware(['auth:sanctum', 'authEmployees'])->group(function () {
