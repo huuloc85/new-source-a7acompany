@@ -22,18 +22,25 @@ class AttendanceController extends BaseController
 
             $records = QueryBuilder::for(AttendanceRecord::class)
                 ->allowedFilters([
+                    'datetime',
                     'date',
                     'time',
+                    'created_at',
+                    'updated_at',
                     'employee.code',
                     'employee.name',
                     'employee.category_celender_id',
                 ])
                 ->defaultSort('-datetime')
                 ->allowedSorts([
+                    'datetime',
                     'date',
-                    'employee.category_celender_id',
+                    'time',
+                    'created_at',
+                    'updated_at',
                     'employee.code',
                     'employee.name',
+                    'employee.category_celender_id',
                 ])
                 ->whereYear('date', Carbon::parse($currentMonth)->year)
                 ->whereMonth('date', Carbon::parse($currentMonth)->month)
