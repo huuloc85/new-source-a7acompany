@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\API\HistoryController;
 use App\Http\Controllers\Api\LogController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RoleController;
@@ -159,5 +160,11 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/send-stamp', [SendStampController::class, 'index'])->name('api.send-stamp');
         Route::post('/send-stamp', [SendStampController::class, 'handleAdd'])->name('api.handleAdd-send-stamp');
         Route::get('/send-stamp/status', [SendStampController::class, 'checkStampEmployee'])->name('api.checkstamp-employee');
+    });
+
+    Route::prefix('history')->group(function () {
+        Route::get('/', [HistoryController::class, 'index'])->name('api.history.index');
+        Route::delete('/{id}', [HistoryController::class, 'destroy'])->name('api.history.destroy');
+        Route::get('/view-log-all-quantity', [HistoryController::class, 'viewLogAllQuantity'])->name('api.history.view-log-all-quantity');
     });
 });

@@ -57,12 +57,10 @@ class StampController extends BaseController
                     'binStart' => count($binList) > 1 ? $binList : $validation['binStart'],
                 ],
             ], 201);
-
         } catch (\Throwable $e) {
             DB::rollBack();
 
             return HandleError::handle($e);
         }
-
     }
 }
