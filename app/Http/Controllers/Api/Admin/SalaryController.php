@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Helpers\HandleError;
 use App\Imports\A7A\SalaryOfficialA7AManagerImport;

@@ -1,17 +1,18 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\EmployeeController;
-use App\Http\Controllers\API\HistoryController;
-use App\Http\Controllers\Api\LogController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\SalaryController;
-use App\Http\Controllers\Api\ScheduleCategoryController;
-use App\Http\Controllers\API\ScheduleController;
-use App\Http\Controllers\Api\StampController;
-use App\Http\Controllers\Api\TotalQuantityController;
+use App\Http\Controllers\Api\Admin\AuthController;
+use App\Http\Controllers\Api\Admin\CheckStampController;
+use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\EmployeeController;
+use App\Http\Controllers\Api\Admin\HistoryController;
+use App\Http\Controllers\Api\Admin\LogController;
+use App\Http\Controllers\Api\Admin\ProductController;
+use App\Http\Controllers\Api\Admin\RoleController;
+use App\Http\Controllers\Api\Admin\SalaryController;
+use App\Http\Controllers\Api\Admin\ScheduleCategoryController;
+use App\Http\Controllers\Api\Admin\ScheduleController;
+use App\Http\Controllers\Api\Admin\StampController;
+use App\Http\Controllers\Api\Admin\TotalQuantityController;
 use App\Http\Controllers\AttendanceRecordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -167,4 +168,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::delete('/{id}', [HistoryController::class, 'destroy'])->name('api.history.destroy');
         Route::get('/view-log-all-quantity', [HistoryController::class, 'viewLogAllQuantity'])->name('api.history.view-log-all-quantity');
     });
+
+    Route::get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
 });
