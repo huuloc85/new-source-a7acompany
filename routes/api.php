@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DashboardController;
@@ -65,6 +66,21 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/', [EmployeeController::class, 'addEmployee']);
         Route::patch('/{id}', [EmployeeController::class, 'updateEmployee']);
         Route::delete('/{id}', [EmployeeController::class, 'removeEmployee']);
+    });
+
+    // Attendance Records (Quản Lý Chấm Công)
+    Route::prefix('attendances')->group(function () {
+        Route::prefix('history')->group(function () {
+            Route::get('/', [AttendanceController::class, 'history']);
+            // Route::get('/{id}', [AttendanceController::class, 'show']);
+            // Route::post('/', [AttendanceController::class, 'store']);
+            // Route::patch('/{id}', [AttendanceController::class, 'update']);
+            // Route::delete('/{id}', [AttendanceController::class, 'delete']);
+            // Route::post('/import', [AttendanceController::class, 'import']);
+            // Route::get('/export', [AttendanceController::class, 'export']);
+            // Route::get('/export/{id}', [AttendanceController::class, 'exportById']);
+        });
+
     });
 
     // Roles (Quản Lý Chức Vụ)
