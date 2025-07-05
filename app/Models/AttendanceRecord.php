@@ -11,11 +11,7 @@ class AttendanceRecord extends Model
 
     protected $table = 'attendencerecord'; // Tên bảng
 
-    public $timestamps = false;
-
     public $incrementing = false;
-
-    protected $primaryKey = null;
 
     public const paginate = 500;
 
