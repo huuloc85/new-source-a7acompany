@@ -73,7 +73,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::prefix('history')->group(function () {
             Route::get('/', [AttendanceHistoryController::class, 'index']);
             Route::get('/{id}', [AttendanceHistoryController::class, 'show']);
-            // Route::post('/', [AttendanceController::class, 'store']);
+            Route::post('/', [AttendanceHistoryController::class, 'store']);
             Route::patch('/{id}', [AttendanceHistoryController::class, 'update']);
             Route::delete('/{id}', [AttendanceHistoryController::class, 'delete']);
             // Route::post('/import', [AttendanceController::class, 'import']);
