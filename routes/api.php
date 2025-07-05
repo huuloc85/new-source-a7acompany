@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\AttendanceHistoryController;
+use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DashboardController;
