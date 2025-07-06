@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,7 +46,7 @@ class AttendanceRecord extends Model
         ];
     }
 
-    public function scopeDateBetween($query, $start = null, $end = null)
+    public function scopeDateBetween(Builder $query, $start = null, $end = null): Builder
     {
         if ($start && $end) {
             $query->whereBetween('date', [$start, $end]);
@@ -62,7 +63,7 @@ class AttendanceRecord extends Model
         return $query;
     }
 
-    public function scopeTimeBetween($query, $start = null, $end = null)
+    public function scopeTimeBetween(Builder $query, $start = null, $end = null): Builder
     {
         if ($start && $end) {
             $query->whereBetween('time', [$start, $end]);
@@ -79,7 +80,7 @@ class AttendanceRecord extends Model
         return $query;
     }
 
-    public function scopeDatetimeBetween($query, $start = null, $end = null)
+    public function scopeDatetimeBetween(Builder $query, $start = null, $end = null): Builder
     {
         if ($start && $end) {
             $query->whereBetween('datetime', [$start, $end]);
