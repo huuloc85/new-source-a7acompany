@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class AttendanceHistoryController extends BaseController
@@ -19,12 +20,6 @@ class AttendanceHistoryController extends BaseController
             $key = 'attendances:history:'.$requestHash;
 
             return Cache::tags(['attendances'])->remember($key, 3600, function () use ($request) {
-                $this->validate($request, [
-                    'month' => 'date_format:Y-m',
-                ]);
-
-                $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
-
                 $records = QueryBuilder::for(AttendanceRecord::class)
                     ->allowedFilters([
                         'datetime',
@@ -35,6 +30,9 @@ class AttendanceHistoryController extends BaseController
                         'employee.code',
                         'employee.name',
                         'employee.category_celender_id',
+                        AllowedFilter::scope('date_between'),
+                        AllowedFilter::scope('time_between'),
+                        AllowedFilter::scope('datetime_between'),
                     ])
                     ->defaultSort('-datetime')
                     ->allowedSorts([
@@ -46,10 +44,9 @@ class AttendanceHistoryController extends BaseController
                         'employee.code',
                         'employee.name',
                         'employee.category_celender_id',
-                    ])
-                    ->whereYear('date', Carbon::parse($currentMonth)->year)
-                    ->whereMonth('date', Carbon::parse($currentMonth)->month)
-                    ->with(['employee'])
+                    ]);
+
+                $records = $records->with(['employee'])
                     ->paginate($request->input('limit'));
 
                 return response()->json($records);

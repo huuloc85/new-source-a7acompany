@@ -44,4 +44,55 @@ class AttendanceRecord extends Model
             'Sunday' => 'Chủ Nhật',
         ];
     }
+
+    public function scopeDateBetween($query, $start = null, $end = null)
+    {
+        if ($start && $end) {
+            $query->whereBetween('date', [$start, $end]);
+        }
+
+        if ($start) {
+            $query->where('date', '>=', $start);
+        }
+
+        if ($end) {
+            $query->where('date', '<=', $end);
+        }
+
+        return $query;
+    }
+
+    public function scopeTimeBetween($query, $start = null, $end = null)
+    {
+        if ($start && $end) {
+            $query->whereBetween('time', [$start, $end]);
+        }
+
+        if ($start) {
+            $query->where('time', '>=', $start);
+        }
+
+        if ($end) {
+            $query->where('time', '<=', $end);
+        }
+
+        return $query;
+    }
+
+    public function scopeDatetimeBetween($query, $start = null, $end = null)
+    {
+        if ($start && $end) {
+            $query->whereBetween('datetime', [$start, $end]);
+        }
+
+        if ($start) {
+            $query->where('datetime', '>=', $start);
+        }
+
+        if ($end) {
+            $query->where('datetime', '<=', $end);
+        }
+
+        return $query;
+    }
 }
