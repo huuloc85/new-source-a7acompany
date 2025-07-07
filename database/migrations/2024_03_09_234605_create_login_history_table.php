@@ -13,17 +13,14 @@ return new class extends Migration
     {
         Schema::create('login_history', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('employee_id');
+            $table->foreignId('employee_id')->references('id')->on('employees');
             $table->string('employee_code')->nullable();
             $table->string('employee_name');
             $table->string('month_history');
             $table->integer('login_count')->default(0);
-            $table->date('date')->nullable();
             $table->string('activity_type')->nullable();
             $table->string('description')->nullable();
-
-            // Thiết lập khóa ngoại
-            $table->foreign('employee_id')->references('id')->on('employees');
+            $table->date('date')->nullable();
 
             $table->timestamps();
         });

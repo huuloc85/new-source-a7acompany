@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->references('id')->on('products');
             $table->foreignId('employee_id')->references('id')->on('employees');
-            $table->date('date');
             $table->string('shift');
+            $table->date('date');
             $table->string('status');
             $table->timestamps();
         });
