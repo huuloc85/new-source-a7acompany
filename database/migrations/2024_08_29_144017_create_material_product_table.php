@@ -18,7 +18,7 @@ class CreateMaterialProductTable extends Migration
             $table->foreignId('product_id')->references('id')->on('products');
             $table->foreignId('production_plans_id')->references('id')->on('production_plans');
             $table->integer('quantity');                        // Cột quantity
-            $table->integer('real_quantity');                   // Cột real_quantity
+            $table->integer('real_quantity')->nullable();                   // Cột real_quantity
             $table->timestamps();                               // Tự động tạo created_at và updated_at
         });
     }
