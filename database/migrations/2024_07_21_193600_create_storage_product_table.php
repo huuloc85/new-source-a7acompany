@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->references('id')->on('products');
             $table->foreignId('employee_id')->references('id')->on('employees');
+            $table->integer('bin');
             $table->string('lot');
             $table->timestamps();
         });
