@@ -12,7 +12,7 @@ class AttendanceRecord extends Model
 
     protected $table = 'attendencerecord'; // Tên bảng
 
-    public $incrementing = false;
+    // public $incrementing = false;
 
     public const paginate = 500;
 
