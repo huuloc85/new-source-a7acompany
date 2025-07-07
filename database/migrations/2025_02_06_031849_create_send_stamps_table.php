@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->references('id')->on('products');
             $table->foreignId('employee_id')->references('id')->on('employees');
-            $table->foreignId('manager_id')->references('id')->on('employees');
+            $table->unsignedBigInteger('manager_id')->nullable();
+            $table->foreign('manager_id')->references('id')->on('employees');
             $table->string('date');
             $table->integer('shift');
             $table->integer('binCount');
