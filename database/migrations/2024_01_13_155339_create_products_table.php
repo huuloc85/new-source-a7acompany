@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();                                       // ID sản phẩm
+            $table->integer('id')->autoIncrement();             // ID sản phẩm
             $table->string('code')->nullable();                 // Mã sản phẩm
             $table->string('name')->nullable();                 // Tên sản phẩm
             $table->integer('quantity')->nullable();            // Sản lượng

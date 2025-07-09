@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('attendencerecord', function (Blueprint $table) {
             $table->id();
-            $table->string('employee_code')->nullable();
+            $table->string('employee_code', 20)->nullable();
             $table->dateTime('datetime')->nullable();
             $table->date('date')->nullable();
             $table->time('time')->nullable();
