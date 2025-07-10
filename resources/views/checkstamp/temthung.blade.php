@@ -51,11 +51,11 @@
                                                             <div class="qrcode-img">
                                                                 VINH VINH PHAT ONE MEMBER CO., LTD
                                                                 <br />
-                                                                Add: 359 Ap Chien Luoc Street, Khu Pho 2, Binh Hung Hoa
-                                                                A Ward, Binh Tan District, Ho Chi Minh City
+                                                                Address : 359 Ap Chien Luoc Street, Warter 2, Binh Hung
+                                                                Hoa Ward, Ho Chi Minh City
                                                                 <br />
-                                                                Fac: 2861, National Highway 1, Hamlet 3, Binh Chanh
-                                                                Commune, Binh Chanh District, HCM City
+                                                                Factory : No. 2861, National Highway 1, Hamlet 3, Binh
+                                                                Chanh Commune, Ho Chi Minh City
                                                                 <br />
                                                                 Tel: 0283.620.4978 Fax: 0283.620.4978
                                                                 <br />
@@ -64,20 +64,22 @@
                                                             {{-- @endif --}}
                                                         </td>
                                                     </tr>
-                                                    <tr>
+                                                    {{--
+                                                        <tr>
                                                         <td class="text-start">
-                                                            Tên khách hàng
-                                                            <br />
-                                                            外メーカー名
+                                                        Tên khách hàng
+                                                        <br />
+                                                        外メーカー名
                                                         </td>
                                                         <td colspan="5" class="text-center">
-                                                            <p class="fw-bold mb-0">
-                                                                FURUKAWA AUTOMOTIVE PARTS
-                                                                <br />
-                                                                (VIET NAM) INC
-                                                            </p>
+                                                        <p class="fw-bold mb-0">
+                                                        FURUKAWA AUTOMOTIVE PARTS
+                                                        <br />
+                                                        (VIET NAM) INC
+                                                        </p>
                                                         </td>
-                                                    </tr>
+                                                        </tr>
+                                                    --}}
                                                     <tr>
                                                         <td class="text-start">
                                                             Tên sản phẩm
