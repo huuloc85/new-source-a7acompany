@@ -9,17 +9,17 @@ class TotalDailyQuantityPO extends Model
 {
     use HasFactory;
 
-    protected $table = 'totaldailyquantities_po';
+    protected $table = 'total_daily_quantities_po';
 
-    //fillable
+    // fillable
     protected $fillable = [
-        'product_id',                                          //ID của sản phẩm
-        'status',                                              //Trạng thái nhập (*)
-        'date',                                                //Ngày
-        'totalQuan',                                           //Tổng số lượng/ngày
+        'product_id',                                          // ID của sản phẩm
+        'status',                                              // Trạng thái nhập (*)
+        'date',                                                // Ngày
+        'totalQuan',                                           // Tổng số lượng/ngày
     ];
 
-    //relationship product
+    // relationship product
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');

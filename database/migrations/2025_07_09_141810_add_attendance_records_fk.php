@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('attendance_records')
+        DB::table('attendencerecord')
             ->where('updated_at', '0000-00-00 00:00:00')
             ->update(['updated_at' => now()]);
-        Schema::table('attendance_records', function (Blueprint $table) {
-            $table->foreign('employee_id')
+        Schema::table('attendencerecord', function (Blueprint $table) {
+            $table->foreign('employee_code')
                 ->references('id')->on('employees')
                 ->onDelete('cascade')->onUpdate('cascade');
         });
@@ -26,8 +26,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('attendance_records', function (Blueprint $table) {
-            $table->dropForeign(['employee_id']);
+        Schema::table('attendencerecord', function (Blueprint $table) {
+            $table->dropForeign(['employee_code']);
         });
     }
 };

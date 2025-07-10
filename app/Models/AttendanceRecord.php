@@ -11,27 +11,27 @@ class AttendanceRecord extends Model
 {
     use HasFactory;
 
-    protected $table = 'attendencerecord'; // Tên bảng
+    protected $table = 'attendance_records'; // Tên bảng
 
     // public $incrementing = false;
 
     public const paginate = 500;
 
     protected $fillable = [
-        'employee_code',
+        'employee_id',
         'datetime',
         'date',
         'time',
+        'employee_Name',
         'direction',
         'deviceName',
         'deviceSN',
-        'employee_Name',
         'cardNo',
     ];
 
     public function employee()
     {
-        return $this->belongsTo(Employee::class, 'employee_code', 'code');
+        return $this->belongsTo(Employee::class, 'employee_id', 'id');
     }
 
     public static function getDayOfWeekMapping()

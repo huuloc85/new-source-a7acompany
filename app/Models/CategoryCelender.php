@@ -9,7 +9,9 @@ class CategoryCelender extends Model
 {
     use HasFactory;
 
-    //paginate
+    protected $table = 'calendar_categories';
+
+    // paginate
     public const paginate = 10;
 
     public const listCate = [
@@ -28,19 +30,17 @@ class CategoryCelender extends Model
         6 => 'rotating_shift_mk',
     ];
 
-    protected $table = 'categories_celender';
-
     protected $fillable = [
         'name',
     ];
 
-    //relationship employees
+    // relationship employees
     public function employees()
     {
         return $this->hasMany(Employee::class);
     }
 
-    //search by role_name
+    // search by role_name
     public function scopeSearch($query)
     {
         if ($key = request()->key) {
@@ -50,7 +50,7 @@ class CategoryCelender extends Model
         return $query;
     }
 
-    //format date-time
+    // format date-time
     public function formatTimeDMY($date)
     {
         return date('H:m:s d/m/Y', strtotime($date));

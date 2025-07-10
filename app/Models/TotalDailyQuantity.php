@@ -9,21 +9,21 @@ class TotalDailyQuantity extends Model
 {
     use HasFactory;
 
-    //paginate
+    // paginate
     public const paginate = 10;
 
-    //table
-    protected $table = 'totaldailyquantities';
+    // table
+    protected $table = 'total_daily_quantities';
 
-    //fillable
+    // fillable
     protected $fillable = [
         'product_id',
-        'status',                                              //Trạng thái nhập (*)
-        'date',                                                //Ngày
-        'totalQuan',                                           //Tổng số lượng/ngày
+        'status',                                              // Trạng thái nhập (*)
+        'date',                                                // Ngày
+        'totalQuan',                                           // Tổng số lượng/ngày
     ];
 
-    //relationship product
+    // relationship product
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
