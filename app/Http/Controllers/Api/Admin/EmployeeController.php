@@ -20,6 +20,7 @@ use App\Models\SalaryOfficialVVP;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class EmployeeController extends BaseController
@@ -50,6 +51,38 @@ class EmployeeController extends BaseController
                     'created_at',
                     'updated_at',
                 )
+                ->allowedFields([
+                    'id',
+                    'name',
+                    'phone',
+                    'code',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'photo',
+                    'card_photo',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'category_celender_id',
+                    'created_at',
+                    'updated_at',
+                    'schedules.id',
+                    'schedules.title',
+                    'schedules.date',
+                    'scheduleDetails.date',
+                    'scheduleDetails.employee_id',
+                    'scheduleDetails.schedule_id',
+                    'scheduleDetails.is_wc_clean_men',
+                    'scheduleDetails.is_wc_clean_women',
+                    'scheduleDetails.is_wc_trash',
+                    'scheduleDetails.is_eat_room',
+                    'scheduleDetails.hnhc',
+                ])
                 ->allowedFilters([
                     'name',
                     'phone',
@@ -65,6 +98,17 @@ class EmployeeController extends BaseController
                     'company',
                     'role_id',
                     'category_celender_id',
+                    'schedules.title',
+                    'schedules.date',
+                    AllowedFilter::scope('schedules.date_between'),
+                    'scheduleDetails.date',
+                    'scheduleDetails.schedule_id',
+                    'scheduleDetails.is_wc_clean_men',
+                    'scheduleDetails.is_wc_clean_women',
+                    'scheduleDetails.is_wc_trash',
+                    'scheduleDetails.is_eat_room',
+                    'scheduleDetails.hnhc',
+                    AllowedFilter::scope('scheduleDetails.date_between'),
                 ])
                 ->defaultSort('-created_at')
                 ->allowedSorts([
@@ -80,7 +124,7 @@ class EmployeeController extends BaseController
                     'created_at',
                     'updated_at',
                 ])
-                ->allowedIncludes(['role', 'category_celender'])
+                ->allowedIncludes(['role', 'category_celender', 'schedules', 'scheduleDetails'])
                 ->whereNotIn('role_id', [15, 17]);
 
             $limit = $request->limit;

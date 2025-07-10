@@ -9,10 +9,12 @@ class Celender extends Model
 {
     use HasFactory;
 
-    //paginate
+    protected $table = 'celenders';
+
+    // paginate
     public const paginate = 10;
 
-    //fillable
+    // fillable
     protected $fillable = [
         'title',
         'date',
@@ -28,19 +30,19 @@ class Celender extends Model
         'Chủ Nhật' => 'sunday',
     ];
 
-    //relationship celenderDetailsHNHC
+    // relationship celenderDetailsHNHC
     public function celenderDetailsHNHC()
     {
         return $this->hasMany(CelenderDetailHNHC::class, 'celender_id', 'id');
     }
 
-    //relationship celenderDetailsHNHC
+    // relationship celenderDetailsHNHC
     public function celenderDetailsEatroom()
     {
         return $this->hasMany(CelenderDetailEatroom::class, 'celender_id', 'id');
     }
 
-    //relationship celenderDetailsHNHC
+    // relationship celenderDetailsHNHC
     public function celenderDetailsWC()
     {
         return $this->hasMany(CelenderDetailWC::class, 'celender_id', 'id');
@@ -56,7 +58,7 @@ class Celender extends Model
         return $this->hasMany(CelenderDetailWCCleanMen::class, 'celender_id', 'id');
     }
 
-    //search by name
+    // search by name
     public function scopeName($query, $request)
     {
         if ($request->has('key')) {
@@ -66,25 +68,25 @@ class Celender extends Model
         return $query;
     }
 
-    //format date-time
+    // format date-time
     public function formatTimeDMY($date)
     {
         return date('d/m/Y', strtotime($date));
     }
 
-    //format date
+    // format date
     public function formatTimeDate($date)
     {
         return date('d', strtotime($date));
     }
 
-    //format date-time
+    // format date-time
     public function formatTimeYMD($date)
     {
         return date('Y-m-d', strtotime($date));
     }
 
-    //return day of week
+    // return day of week
     public function dayOfWeek($date)
     {
         $dayofweek = $this->formatTimeDMY($date);
@@ -117,7 +119,7 @@ class Celender extends Model
         return $result;
     }
 
-    //check celender
+    // check celender
     public function checkCelender($date, $celender, $increases)
     {
         $dayofweek = $this->formatTimeDMY($date);
@@ -133,7 +135,7 @@ class Celender extends Model
         }
     }
 
-    //check tang ca
+    // check tang ca
     public function checkIncrease($date, $celender, $increases)
     {
         $check = false;

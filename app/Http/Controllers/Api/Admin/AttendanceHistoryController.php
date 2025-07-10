@@ -44,9 +44,10 @@ class AttendanceHistoryController extends BaseController
                         'employee.code',
                         'employee.name',
                         'employee.category_celender_id',
-                    ]);
-
-                $records = $records->with(['employee'])
+                    ])
+                    ->allowedIncludes([
+                        'employee',
+                    ])
                     ->paginate($request->input('limit'));
 
                 return response()->json($records);
@@ -150,6 +151,92 @@ class AttendanceHistoryController extends BaseController
         } catch (\Throwable $e) {
             DB::rollBack();
 
+            return HandleError::handle($e);
+        }
+    }
+
+    public function detail(Request $request)
+    {
+        try {
+            $requestHash = md5(json_encode($request->all()));
+            $key = 'attendances:history:'.$requestHash;
+
+            // return Cache::tags(['attendances'])->remember($key, 3600, function () use ($request) {
+            $records = QueryBuilder::for(AttendanceRecord::class)
+                ->allowedFilters([
+                    'employee_code',
+                    'datetime',
+                    'date',
+                    'time',
+                    'created_at',
+                    'updated_at',
+                    'employee.code',
+                    'employee.name',
+                    'employee.category_celender_id',
+                    AllowedFilter::scope('date_between'),
+                    AllowedFilter::scope('time_between'),
+                    AllowedFilter::scope('datetime_between'),
+                ])
+                ->allowedFields([
+                    'id',
+                    'employee_code',
+                    'datetime',
+                    'date',
+                    'time',
+                    'created_at',
+                    'updated_at',
+                    'employee.code',
+                    'employee.name',
+                    'employee.category_celender_id',
+                ])
+                ->defaultSort('-datetime')
+                ->allowedSorts([
+                    'datetime',
+                    'date',
+                    'time',
+                    'created_at',
+                    'updated_at',
+                    'employee.code',
+                    'employee.name',
+                    'employee.category_celender_id',
+                ])
+                ->allowedIncludes([
+                    'employee',
+                    'employee.schedules',
+                ])
+                ->paginate($request->input('limit'));
+
+            // $schedule = QueryBuilder::for(ScheduleDetail::class)
+            //     ->allowedFilters([
+            //         'employee_code',
+            //         'date',
+            //         'time',
+            //         'created_at',
+            //         'updated_at',
+            //     ])
+            //     ->allowedFields([
+            //         'id',
+            //         'employee_code',
+            //         'date',
+            //         'time',
+            //         'created_at',
+            //         'updated_at',
+            //     ])
+            //     ->defaultSort('-date')
+            //     ->allowedSorts([
+            //         'date',
+            //         'time',
+            //         'created_at',
+            //         'updated_at',
+            //     ])
+            //     ->allowedIncludes([
+            //         'employee',
+            //     ])
+            //     ->paginate($request->input('limit'));
+
+            return response()->json([$records]);
+            // });
+        } catch (\Throwable $e) {
             return HandleError::handle($e);
         }
     }

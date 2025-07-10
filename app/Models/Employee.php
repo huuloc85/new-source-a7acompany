@@ -21,6 +21,12 @@ class Employee extends Authenticatable
     // table
     protected $table = 'employees';
 
+    // primary key
+    protected $primaryKey = 'id';
+
+    // key type
+    protected $keyType = 'string';
+
     // fillable
     protected $fillable = [
         'name',
@@ -163,7 +169,7 @@ class Employee extends Authenticatable
 
     public function attendanceRecords()
     {
-        return $this->hasMany(AttendanceRecord::class, 'employee_code', 'code');
+        return $this->hasMany(AttendanceRecord::class, 'employee_code', 'id');
     }
 
     public function sendStamps()
@@ -263,12 +269,23 @@ class Employee extends Authenticatable
 
     public function loginHistory()
     {
-        return $this->hasMany(LoginHistory::class, 'employee_id', 'id', 'employee_code', 'employee_name');
+        return $this->hasMany(LoginHistory::class, 'employee_id', 'id');
     }
 
     // relationship with storage product
     public function storageProducts()
     {
         return $this->hasMany(StorageProduct::class, 'employee_id', 'id');
+    }
+
+    public function scheduleDetails()
+    {
+        return $this->hasMany(ScheduleDetail::class, 'employee_id', 'id');
+    }
+
+    public function schedules()
+    {
+        return $this->belongsToMany(Schedule::class, 'schedule_details', 'employee_id', 'schedule_id')
+            ->withPivot(['date', 'is_wc_clean_men', 'is_wc_clean_women', 'is_wc_trash', 'is_eat_room', 'hnhc']);
     }
 }

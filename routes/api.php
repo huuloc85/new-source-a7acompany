@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
+use App\Http\Controllers\Api\Admin\AttendanceRecordController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DashboardController;
@@ -12,9 +13,9 @@ use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\SalaryController;
 use App\Http\Controllers\Api\Admin\ScheduleCategoryController;
 use App\Http\Controllers\Api\Admin\ScheduleController;
+use App\Http\Controllers\Api\Admin\ScheduleDetailController;
 use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
-use App\Http\Controllers\AttendanceRecordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,17 @@ Route::post('/updateDataCC', [AttendanceRecordController::class, 'updateDataCC']
 // Đăng nhập
 Route::post('/login', [AuthController::class, 'authLogin']);
 Route::post('/logout', [AuthController::class, 'authLogout']);
+
+// clear cache
+app()->environment('local') && Route::get('/clear-cache', function () {
+    if (connection_aborted()) {
+        Log::info('Request aborted early.');
+    }
+
+    Artisan::call('cache:clear');
+
+    return response()->json(['message' => 'Cache cleared successfully']);
+});
 
 Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
     if (connection_aborted()) {
@@ -80,7 +92,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             // Route::get('/export', [AttendanceController::class, 'export']);
             // Route::get('/export/{id}', [AttendanceController::class, 'exportById']);
         });
-
+        Route::get('/details', [AttendanceRecordController::class, 'records']);
     });
 
     // Roles (Quản Lý Chức Vụ)
@@ -115,6 +127,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     });
 
     Route::prefix('schedules')->group(function () {
+        // Route::prefix('details')->group(function () {
+        //     Route::get('/', [ScheduleDetailController::class, 'index']);
+        //     Route::get('/{id}', [ScheduleDetailController::class, 'detail']);
+        //     Route::post('/', [ScheduleDetailController::class, 'store']);
+        //     Route::get('/{id}', [ScheduleDetailController::class, 'show']);
+        //     Route::patch('/{id}', [ScheduleDetailController::class, 'update']);
+        //     Route::delete('/{id}', [ScheduleDetailController::class, 'destroy']);
+        // });
         Route::get('/', [ScheduleController::class, 'index']);
         Route::post('/', [ScheduleController::class, 'create']);
         Route::get('/{id}', [ScheduleController::class, 'detail']);

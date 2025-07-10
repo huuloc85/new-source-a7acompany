@@ -18,7 +18,7 @@ class AttendanceRecord extends Model
     public const paginate = 500;
 
     protected $fillable = [
-        'employee_id',
+        'employee_code',
         'datetime',
         'date',
         'time',
@@ -31,7 +31,7 @@ class AttendanceRecord extends Model
 
     public function employee()
     {
-        return $this->belongsTo(Employee::class, 'employee_id', 'id');
+        return $this->belongsTo(Employee::class, 'employee_code', 'id');
     }
 
     public static function getDayOfWeekMapping()
