@@ -11,7 +11,7 @@ class AttendanceRecord extends Model
 {
     use HasFactory;
 
-    protected $table = 'attendance_records'; // Tên bảng
+    protected $table = 'attendencerecord'; // Tên bảng
 
     // public $incrementing = false;
 

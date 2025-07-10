@@ -12,9 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('send-mail-daily-quantity:cron')->dailyAt(1, '08:00')->withoutOverlapping();
-        $schedule->command('update-stock-quantity:cron')->monthlyOn(1, '08:00')->withoutOverlapping();
-        $schedule->command('sendstamp:delete-rejected')->ever()->withoutOverlapping();
+        // $schedule->command('send-mail-daily-quantity:cron')->dailyAt(1, '08:00')->withoutOverlapping();
+        // $schedule->command('update-stock-quantity:cron')->monthlyOn(1, '08:00')->withoutOverlapping();
+        // $schedule->command('sendstamp:delete-rejected')->ever()->withoutOverlapping();
+        $schedule->command('attendance:sync')->everyMinute()->withoutOverlapping();
     }
 
     /**
@@ -22,7 +23,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

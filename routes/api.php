@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
-use App\Http\Controllers\Api\Admin\AttendanceRecordController;
+use App\Http\Controllers\Api\AttendanceRecordController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DashboardController;
@@ -207,3 +207,4 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
     Route::get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
 });
+Route::get('/acs-events/today', [AttendanceRecordController::class, 'fetchTodayEvents']);
