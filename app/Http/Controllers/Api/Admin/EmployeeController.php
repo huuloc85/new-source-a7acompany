@@ -17,8 +17,10 @@ use App\Models\Employee;
 use App\Models\SalaryManager;
 use App\Models\SalaryOfficialA7A;
 use App\Models\SalaryOfficialVVP;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -218,6 +220,8 @@ class EmployeeController extends BaseController
                 'password' => bcrypt($validated['code']),
             ]);
 
+            $this->addAcs($employee);
+
             DB::commit();
 
             return response()->json([
@@ -229,6 +233,44 @@ class EmployeeController extends BaseController
 
             return HandleError::handle($e);
         }
+    }
+
+    public function addAcs($employee)
+    {
+        $deviceIp = config('acs.device_ip');
+        $username = config('acs.username');
+        $password = config('acs.password');
+
+        $url = "http://{$deviceIp}/ISAPI/AccessControl/UserInfo/Record?format=json";
+
+        $payload = [
+            'UserInfo' => [
+                'employeeNo' => $employee->code,
+                'name' => $employee->name,
+                'gender' => $employee->gender,
+                'userType' => 'normal',
+                'Valid' => [
+                    'enable' => true,
+                    'beginTime' => '2024-01-01T00:00:00',
+                    'endTime' => '2030-12-31T23:59:59',
+                    'timeType' => 'local',
+                ],
+                // "userVerifyMode" => "faceOrFpOrCardOrPw"
+            ],
+        ];
+
+        $response = Http::withDigestAuth($username, $password)
+            ->timeout(10)
+            ->post($url, $payload);
+
+        if (! $response->successful()) {
+            return response()->json([
+                'error' => 'Request failed',
+                'details' => $response->body(),
+            ], $response->status());
+        }
+
+        Log::info("ACS user [{$employee->code}] added successfully.");
     }
 
     public function updateEmployee(Request $request, $id)
