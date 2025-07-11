@@ -237,12 +237,11 @@
                                                                     <div class="qrcode-img">
                                                                         VINH VINH PHAT ONE MEMBER CO., LTD
                                                                         <br />
-                                                                        Add: 359 Ap Chien Luoc Street, Khu Pho 2, Binh
-                                                                        Hung Hoa A Ward, Binh Tan District, Ho Chi Minh
-                                                                        City
+                                                                        Address : 359 Ap Chien Luoc Street, Warter 2,
+                                                                        Binh Hung Hoa Ward, Ho Chi Minh City
                                                                         <br />
-                                                                        Fac: 2861, National Highway 1, Hamlet 3, Binh
-                                                                        Chanh Commune, Binh Chanh District, HCM City
+                                                                        Factory : No. 2861, National Highway 1, Hamlet
+                                                                        3, Binh Chanh Commune, Ho Chi Minh City
                                                                         <br />
                                                                         Tel: 0283.620.4978 Fax: 0283.620.4978
                                                                         <br />
@@ -251,20 +250,22 @@
                                                                     {{-- @endif --}}
                                                                 </td>
                                                             </tr>
-                                                            <tr>
+                                                            {{--
+                                                                <tr>
                                                                 <td class="text-start">
-                                                                    Tên khách hàng
-                                                                    <br />
-                                                                    外メーカー名
+                                                                Tên khách hàng
+                                                                <br />
+                                                                外メーカー名
                                                                 </td>
                                                                 <td colspan="5" class="text-center">
-                                                                    <p class="fw-bold mb-0">
-                                                                        FURUKAWA AUTOMOTIVE PARTS
-                                                                        <br />
-                                                                        (VIET NAM) INC
-                                                                    </p>
+                                                                <p class="fw-bold mb-0">
+                                                                FURUKAWA AUTOMOTIVE PARTS
+                                                                <br />
+                                                                (VIET NAM) INC
+                                                                </p>
                                                                 </td>
-                                                            </tr>
+                                                                </tr>
+                                                            --}}
                                                             <tr>
                                                                 <td class="text-start">
                                                                     Tên sản phẩm
@@ -437,23 +438,23 @@
     </div>
 
     <script>
-        var lastPrintTime = null; // Biến lưu thời gian lần in gần nhất
-        var isPrintShortcutActivated = false; // Biến theo dõi trạng thái nhấn Ctrl + P
+        var lastPrintTime = null // Biến lưu thời gian lần in gần nhất
+        var isPrintShortcutActivated = false // Biến theo dõi trạng thái nhấn Ctrl + P
 
         function selectProduct(event) {
-            var data = event.target.value.split('-', 2);
-            $('#product_code').val(data[0]);
-            $('#product_pcs').val(data[1]);
+            var data = event.target.value.split('-', 2)
+            $('#product_code').val(data[0])
+            $('#product_pcs').val(data[1])
         }
 
         function savePrint(callback) {
-            var url = $('#save-print').data('url');
-            var productCode = $('#product_code').val();
-            var date = $('#date').val();
-            var shift = $('#shift').val();
-            var binCount = $('#binCount').val();
-            var binStart = $('#binStart').val();
-            var type = $('#type').val();
+            var url = $('#save-print').data('url')
+            var productCode = $('#product_code').val()
+            var date = $('#date').val()
+            var shift = $('#shift').val()
+            var binCount = $('#binCount').val()
+            var binStart = $('#binStart').val()
+            var type = $('#type').val()
 
             if (productCode) {
                 $.ajax({
@@ -469,29 +470,29 @@
                         _token: '{{ csrf_token() }}',
                     },
                     success: function (response) {
-                        console.log(response.status);
-                        if (callback) callback(); // Gọi callback sau khi lưu thành công
+                        console.log(response.status)
+                        if (callback) callback() // Gọi callback sau khi lưu thành công
                     },
                     error: function (xhr, status, error) {
-                        console.error('Đã xảy ra lỗi khi gửi lưu lịch sử print:', error);
+                        console.error('Đã xảy ra lỗi khi gửi lưu lịch sử print:', error)
                     },
-                });
+                })
             }
         }
 
         function handlePrint() {
-            var currentTime = new Date().getTime();
+            var currentTime = new Date().getTime()
 
             if (lastPrintTime === null) {
-                lastPrintTime = currentTime;
+                lastPrintTime = currentTime
                 savePrint(function () {
                     setTimeout(function () {
-                        window.print();
-                        isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                    }, 100);
-                });
+                        window.print()
+                        isPrintShortcutActivated = false // Reset trạng thái sau khi in
+                    }, 100)
+                })
             } else {
-                var timeDiff = (currentTime - lastPrintTime) / 1000 / 60;
+                var timeDiff = (currentTime - lastPrintTime) / 1000 / 60
 
                 if (timeDiff <= 5) {
                     Swal.fire({
@@ -503,23 +504,23 @@
                         cancelButtonText: 'Không',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            lastPrintTime = currentTime;
+                            lastPrintTime = currentTime
                             savePrint(function () {
                                 setTimeout(function () {
-                                    window.print();
-                                    isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                                }, 100);
-                            });
+                                    window.print()
+                                    isPrintShortcutActivated = false // Reset trạng thái sau khi in
+                                }, 100)
+                            })
                         }
-                    });
+                    })
                 } else {
-                    lastPrintTime = currentTime;
+                    lastPrintTime = currentTime
                     savePrint(function () {
                         setTimeout(function () {
-                            window.print();
-                            isPrintShortcutActivated = false; // Reset trạng thái sau khi in
-                        }, 100);
-                    });
+                            window.print()
+                            isPrintShortcutActivated = false // Reset trạng thái sau khi in
+                        }, 100)
+                    })
                 }
             }
         }
@@ -528,35 +529,35 @@
             $(document).keydown(function (event) {
                 // Kích hoạt Ctrl + P để lưu lịch sử in
                 if (event.ctrlKey && event.key === 'p') {
-                    event.preventDefault(); // Ngăn hành động mặc định
-                    isPrintShortcutActivated = true; // Đánh dấu Ctrl + P đã được nhấn
-                    handlePrint(); // Gọi hàm in
+                    event.preventDefault() // Ngăn hành động mặc định
+                    isPrintShortcutActivated = true // Đánh dấu Ctrl + P đã được nhấn
+                    handlePrint() // Gọi hàm in
                 }
 
                 // Ngăn chặn Ctrl+Shift+P nếu Ctrl+P chưa được nhấn
                 if (event.ctrlKey && event.shiftKey && event.key === 'P') {
                     if (!isPrintShortcutActivated) {
-                        event.preventDefault();
+                        event.preventDefault()
                         Swal.fire({
                             title: 'Thông báo',
                             text: 'Vui lòng nhấn Ctrl + P trước khi sử dụng Ctrl + Shift + P.',
                             icon: 'info',
                             confirmButtonText: 'Đồng ý',
-                        });
+                        })
                     } else {
                         // Nếu Ctrl + P đã được nhấn, bạn có thể thực hiện hành động cho Ctrl + Shift + P ở đây
-                        console.log('Ctrl + Shift + P được nhấn!');
+                        console.log('Ctrl + Shift + P được nhấn!')
                         // Thực hiện hành động khác nếu cần
                         // Ví dụ: bạn có thể gọi một hàm khác ở đây
                         // handleShiftPrint();
                     }
                 }
-            });
+            })
 
             $('#save-print').click(function (event) {
-                event.preventDefault();
-                handlePrint(); // Gọi hàm in khi nhấn nút
-            });
-        });
+                event.preventDefault()
+                handlePrint() // Gọi hàm in khi nhấn nút
+            })
+        })
     </script>
 @endsection

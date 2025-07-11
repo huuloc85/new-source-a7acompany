@@ -239,6 +239,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('/update/{id}', [CelenderController::class, 'update'])->name('admin.celender.update');
         Route::get('/detail/{id}', [CelenderController::class, 'detail'])->name('admin.celender.detail');
         Route::delete('/delete/{id}', [CelenderController::class, 'delete'])->name('admin.celender.delete');
+        Route::post('/celender/{id}/update-detail', [CelenderController::class, 'updateDetail'])->name('admin.celender.update-detail');
     });
 
     // quản lý chức vụ

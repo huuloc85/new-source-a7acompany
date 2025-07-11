@@ -311,13 +311,19 @@ class AttendanceRecordController extends Controller
                 }
             } else {
                 // /lịch nghĩ nhưng đi làm
-                if ($date->day == 1) {
-                    // /get new category_id
-                    $prevMonth = $date = $date->subDay();
-                    $calendarId = Celender::whereMonth('date', Carbon::parse($prevMonth)->month)->pluck('id')->first();
+                $currentDate = Carbon::parse($record->date);
+                $calendarIdToUse = $calendarId;
+                if ($currentDate->day == 1) {
+                    $prevMonth = $currentDate->copy()->subMonth();
+                    $calendarIdToUse = Celender::whereMonth('date', $prevMonth->month)
+                        ->whereYear('date', $prevMonth->year)
+                        ->pluck('id')->first();
                 }
-                $date = $date->subDay();
-                $shiftBefore = CelenderDetailHNHC::where('celender_id', $calendarId)->where('employee_id', $record->employee->id)->pluck('day'.$date->day)->first();
+                $dateToCheck = $currentDate->copy()->subDay(); // Ngày trước đó
+                $shiftBefore = CelenderDetailHNHC::where('celender_id', $calendarIdToUse)
+                    ->where('employee_id', $record->employee->id)
+                    ->pluck('day'.$dateToCheck->day)
+                    ->first();
                 if ($shiftBefore == config('a7a.shift_1') || $shiftBefore == config('a7a.shift_1_extra_day')) {
                     $this->processRecordCa1($record, $timeFilter, $dayOfWeekMapping);
                 } elseif ($shiftBefore == config('a7a.shift_2') || $shiftBefore == config('a7a.shift_2_extra_night')) {
@@ -461,17 +467,17 @@ class AttendanceRecordController extends Controller
         $workStartTime = config('a7a.ca1_work_start_time');
         $workEndTime = $timeFilter === 'working_hours' ? config('a7a.ca1_work_end_time_wh') : config('a7a.ca1_work_end_time_qd');
 
-        if ($record->employee_code === '23030100') {
-            $dayOfWeek = Carbon::parse($record->date)->dayOfWeek; // 1 là Thứ Hai, 3 là Thứ Tư, 5 là Thứ Sáu
-            if (in_array($dayOfWeek, [1, 3, 5]) && $record->shift === 'Ca 1') {
-                $workStartTime = '07:00'; // Đặt giờ bắt đầu làm việc là 7:00 sáng
-                $workEndTime = Carbon::parse($workStartTime)->addHours(8)->format('H:i'); // Đặt giờ kết thúc để làm đủ 8 tiếng
+        // if ($record->employee_code === '23030100') {
+        //     $dayOfWeek = Carbon::parse($record->date)->dayOfWeek; // 1 là Thứ Hai, 3 là Thứ Tư, 5 là Thứ Sáu
+        //     if (in_array($dayOfWeek, [1, 3, 5]) && $record->shift === 'Ca 1') {
+        //         $workStartTime = '07:00'; // Đặt giờ bắt đầu làm việc là 7:00 sáng
+        //         $workEndTime = Carbon::parse($workStartTime)->addHours(8)->format('H:i'); // Đặt giờ kết thúc để làm đủ 8 tiếng
 
-                // Đảm bảo giờ làm việc không vượt quá 8 tiếng
-                $record->total_hours = min($record->total_hours, 8);
-                $record->overtime_hours = 0; // Không có giờ tăng ca
-            }
-        }
+        //         // Đảm bảo giờ làm việc không vượt quá 8 tiếng
+        //         $record->total_hours = min($record->total_hours, 8);
+        //         $record->overtime_hours = 0; // Không có giờ tăng ca
+        //     }
+        // }
 
         $breakTime = $this->calculateBreakTime($record, $timeFilter, $record->time_in, $record->time_out);
 

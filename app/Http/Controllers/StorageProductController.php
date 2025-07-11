@@ -12,69 +12,106 @@ class StorageProductController extends Controller
 {
     public function index(Request $request)
     {
-        // Lấy ngày mới nhất có trong bảng storage_products
-        $latestRecord = StorageProduct::latest('created_at')->first();
+        $availableDates = StorageProduct::selectRaw('DATE(created_at) as date')
+            ->distinct()
+            ->orderBy('date', 'desc')
+            ->pluck('date')
+            ->map(fn ($d) => Carbon::parse($d)->toDateString())
+            ->toArray();
 
-        // Nếu có dữ liệu, lấy tháng/năm từ bản ghi mới nhất
-        $month = $latestRecord ? $latestRecord->created_at->month : now()->month;
-        $year = $latestRecord ? $latestRecord->created_at->year : now()->year;
+        $filterDate = $request->input('filter_date', $availableDates[0] ?? now()->toDateString());
 
-        // Nếu người dùng có chọn tháng/năm thủ công thì ưu tiên
-        if ($request->filled('month')) {
-            $month = (int) $request->input('month');
-        }
+        $storage = StorageProduct::with(['product', 'employee'])
+            ->whereDate('created_at', $filterDate)
+            ->when($request->filled('product_id'), fn ($q) => $q->where('product_id', $request->input('product_id')))
+            ->when($request->filled('employee_id'), fn ($q) => $q->where('employee_id', $request->input('employee_id')))
+            ->get()
+            ->groupBy(function ($item) {
+                return Carbon::parse($item->created_at)->format('Y-m-d').'|'.$item->employee_id.'|'.$item->product_id;
+            });
 
-        // Khởi tạo query chính
-        $query = StorageProduct::with(['product', 'employee'])
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year);
-
-        // Lọc theo sản phẩm nếu có
-        if ($request->filled('product_id')) {
-            $query->where('product_id', $request->input('product_id'));
-        }
-
-        // Lọc theo nhân viên nếu có
-        if ($request->filled('employee_id')) {
-            $query->where('employee_id', $request->input('employee_id'));
-        }
-
-        // Lọc theo ngày (từ ngày đến ngày) nếu có
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('created_at', [
-                Carbon::parse($request->input('start_date'))->startOfDay(),
-                Carbon::parse($request->input('end_date'))->endOfDay(),
-            ]);
-        }
-
-        // Lấy danh sách dữ liệu sau khi lọc
-        $storage = $query->get();
-
-        // Lấy danh sách các tháng có dữ liệu
-        $months = StorageProduct::selectRaw('DISTINCT MONTH(created_at) as month')
-            ->orderBy('month')
-            ->pluck('month');
-
-        // Lấy danh sách sản phẩm theo dữ liệu có trong storage_products
         $productIds = StorageProduct::distinct()->pluck('product_id');
-        $products = Product::whereIn('id', $productIds)
-            ->orderBy('name')
-            ->get();
+        $products = Product::whereIn('id', $productIds)->orderBy('name')->get();
 
-        // Lấy danh sách nhân viên theo dữ liệu có trong storage_products
         $employeeIds = StorageProduct::distinct()->pluck('employee_id');
-        $employees = Employee::whereIn('id', $employeeIds)
-            ->orderBy('name')
-            ->get();
+        $employees = Employee::whereIn('id', $employeeIds)->orderBy('name')->get();
 
-        // Trả về view với tất cả dữ liệu
+        $lotModalData = null;
+
+        if ($request->filled('lot') && $request->filled('lot_product_id')) {
+            $lotCode = strtoupper(trim($request->input('lot')));
+            if (! str_starts_with($lotCode, 'A-')) {
+                $lotCode = 'A-'.$lotCode;
+            }
+
+            // Chuẩn hóa lot thành A-18062025-2-065
+            $lotCode = preg_replace_callback('/^A-(\d{8})-(\d+)-(\d{1,3})$/', function ($matches) {
+                return "A-{$matches[1]}-{$matches[2]}-".str_pad($matches[3], 3, '0', STR_PAD_LEFT);
+            }, $lotCode);
+
+            $productId = (int) $request->input('lot_product_id');
+
+            if (! preg_match('/^A-(\d{2})(\d{2})(\d{4})-([12])-(\d{3})$/', $lotCode, $matches)) {
+                $lotModalData = ['error' => 'Mã lot không đúng định dạng.'];
+            } else {
+                [$all, $day, $month, $year, $shift, $endSerial] = $matches;
+
+                $lotPrefix = "A-{$day}{$month}{$year}-{$shift}-";
+                $endNumber = (int) ltrim($endSerial, '0') ?: 1;
+
+                $product = Product::find($productId);
+                if (! $product) {
+                    $lotModalData = ['error' => 'Không tìm thấy sản phẩm.'];
+                } else {
+                    // Lấy danh sách các thùng thực tế đã có
+                    $existingLots = StorageProduct::where('product_id', $productId)
+                        ->where('lot', 'like', "$lotPrefix%")
+                        ->pluck('lot');
+
+                    $existingNumbers = $existingLots->map(function ($lot) use ($lotPrefix) {
+                        return (int) ltrim(str_replace($lotPrefix, '', $lot), '0') ?: 1;
+                    })->unique()->sort()->values();
+
+                    // Lấy số bắt đầu là thùng nhỏ nhất thực tế, nếu không có thì bắt đầu từ 1
+                    $startNumber = $existingNumbers->min() ?? 1;
+
+                    // Giới hạn endNumber không nhỏ hơn start
+                    if ($endNumber < $startNumber) {
+                        $lotModalData = ['error' => 'Số thùng kết thúc nhỏ hơn số đã có.'];
+                    } else {
+                        // Tính khoảng số thùng mong đợi
+                        $expectedNumbers = range($startNumber, $endNumber);
+                        $missingNumbers = array_diff($expectedNumbers, $existingNumbers->all());
+
+                        $missingLots = array_map(
+                            fn ($num) => $lotPrefix.str_pad($num, 3, '0', STR_PAD_LEFT),
+                            $missingNumbers
+                        );
+
+                        $lotModalData = [
+                            'code' => $lotCode,
+                            'product' => $product->name,
+                            'date' => "$day/$month/$year",
+                            'expected' => count($expectedNumbers),
+                            'startFrom' => $startNumber,
+                            'endAt' => $endNumber,
+                            'actual' => count($expectedNumbers) - count($missingNumbers),
+                            'missing' => count($missingNumbers),
+                            'missingLots' => $missingLots,
+                            'status' => count($missingNumbers) > 0 ? 'warning' : 'success',
+                        ];
+                    }
+                }
+            }
+        }
+
         return view('storage.product', compact(
             'storage',
             'products',
             'employees',
-            'months',
-            'month',
-            'year'
+            'availableDates',
+            'filterDate',
+            'lotModalData'
         ));
     }
 }
