@@ -207,3 +207,4 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
     Route::get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
 });
+Route::get('/acs-events/today', [AttendanceRecordController::class, 'fetchTodayEvents']);
