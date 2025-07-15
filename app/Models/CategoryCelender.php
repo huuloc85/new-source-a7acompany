@@ -32,6 +32,7 @@ class CategoryCelender extends Model
 
     protected $fillable = [
         'name',
+        'group', // type: number
     ];
 
     // relationship employees

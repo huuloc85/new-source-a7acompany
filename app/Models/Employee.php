@@ -29,10 +29,10 @@ class Employee extends Authenticatable
 
     // fillable
     protected $fillable = [
+        'id',
         'name',
         'email',
         'phone',
-        'code',
         'address',
         'home_town',
         'gender',
@@ -44,7 +44,7 @@ class Employee extends Authenticatable
         'date_joining',
         'role_id',
         'company',
-        'category_celender_id',
+        'calendar_category_id',
         'password',
     ];
 
@@ -106,12 +106,6 @@ class Employee extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    // relationship categories_celender
-    public function category_celender()
-    {
-        return $this->belongsTo(CategoryCelender::class);
-    }
-
     // relationship salaryOfficial
     public function SalaryOfficialsA7A()
     {
@@ -165,11 +159,6 @@ class Employee extends Authenticatable
     public function checkEmployees()
     {
         return $this->hasMany(CheckEmployee::class, 'employee_id', 'id');
-    }
-
-    public function attendanceRecords()
-    {
-        return $this->hasMany(AttendanceRecord::class, 'employee_code', 'id');
     }
 
     public function sendStamps()
@@ -267,15 +256,25 @@ class Employee extends Authenticatable
         return $query;
     }
 
+    // relationships 1-n
+    public function calendarCategory()
+    {
+        return $this->belongsTo(CategoryCelender::class);
+    }
+
     public function loginHistory()
     {
         return $this->hasMany(LoginHistory::class, 'employee_id', 'id');
     }
 
-    // relationship with storage product
     public function storageProducts()
     {
         return $this->hasMany(StorageProduct::class, 'employee_id', 'id');
+    }
+
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class, 'employee_code', 'id');
     }
 
     public function scheduleDetails()

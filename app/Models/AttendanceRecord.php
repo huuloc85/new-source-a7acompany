@@ -22,11 +22,6 @@ class AttendanceRecord extends Model
         'datetime',
         'date',
         'time',
-        'employee_Name',
-        'direction',
-        'deviceName',
-        'deviceSN',
-        'cardNo',
     ];
 
     public function employee()

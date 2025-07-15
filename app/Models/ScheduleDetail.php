@@ -16,8 +16,6 @@ class ScheduleDetail extends Pivot
 
     protected $table = 'schedule_details';
 
-    public $incrementing = false;
-
     protected $primaryKey = ['date', 'schedule_id', 'employee_id'];
 
     protected $fillable = [
@@ -37,6 +35,16 @@ class ScheduleDetail extends Pivot
             ->useLogName($this->table)
             ->logAll()
             ->dontSubmitEmptyLogs();
+    }
+
+    // Relationships
+    public function attendanceRecords()
+    {
+        return $this->hasMany(
+            AttendanceRecord::class,
+            'date',
+            'date'
+        );
     }
 
     public function schedule()

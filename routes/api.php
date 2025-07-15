@@ -92,7 +92,8 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             // Route::get('/export', [AttendanceController::class, 'export']);
             // Route::get('/export/{id}', [AttendanceController::class, 'exportById']);
         });
-        Route::get('/details', [AttendanceRecordController::class, 'records']);
+        Route::get('/', [AttendanceHistoryController::class, 'detail']);
+
     });
 
     // Roles (Quản Lý Chức Vụ)

@@ -36,7 +36,6 @@ class EmployeeController extends BaseController
                     'id',
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -49,7 +48,7 @@ class EmployeeController extends BaseController
                     'date_joining',
                     'company',
                     'role_id',
-                    'category_celender_id',
+                    'calendar_category_id',
                     'created_at',
                     'updated_at',
                 )
@@ -57,7 +56,6 @@ class EmployeeController extends BaseController
                     'id',
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -70,7 +68,7 @@ class EmployeeController extends BaseController
                     'date_joining',
                     'company',
                     'role_id',
-                    'category_celender_id',
+                    'calendar_category_id',
                     'created_at',
                     'updated_at',
                     'schedules.id',
@@ -88,7 +86,6 @@ class EmployeeController extends BaseController
                 ->allowedFilters([
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -99,7 +96,7 @@ class EmployeeController extends BaseController
                     'date_joining',
                     'company',
                     'role_id',
-                    'category_celender_id',
+                    'calendar_category_id',
                     'schedules.title',
                     'schedules.date',
                     AllowedFilter::scope('schedules.date_between'),
@@ -116,7 +113,6 @@ class EmployeeController extends BaseController
                 ->allowedSorts([
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -126,7 +122,7 @@ class EmployeeController extends BaseController
                     'created_at',
                     'updated_at',
                 ])
-                ->allowedIncludes(['role', 'category_celender', 'schedules', 'scheduleDetails'])
+                ->allowedIncludes(['role', 'calendarCategory', 'schedules', 'scheduleDetails', 'attendanceRecords'])
                 ->whereNotIn('role_id', [15, 17]);
 
             $limit = $request->limit;
@@ -149,7 +145,6 @@ class EmployeeController extends BaseController
                     'id',
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -162,13 +157,13 @@ class EmployeeController extends BaseController
                     'date_joining',
                     'company',
                     'role_id',
-                    'category_celender_id',
+                    'calendar_category_id',
                     'created_at',
                     'updated_at',
                 )
                 ->with([
                     'role:id,role_name',
-                    'category_celender:id,name',
+                    'calendarCategory:id,name',
                 ])
                 ->where('id', $id)
                 ->whereNotIn('role_id', [15, 17])
@@ -185,9 +180,9 @@ class EmployeeController extends BaseController
         DB::beginTransaction();
         try {
             $validated = $request->validate([
+                'id' => 'required|string|unique:employees,id',
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string|regex:/^0[0-9]{9}$/|unique:employees,phone',
-                'code' => 'required|string|unique:employees,code',
                 'email' => 'nullable|email|unique:employees,email',
                 'CCCD' => 'required|string|regex:/^[0-9]+$/|unique:employees,cccd',
                 'address' => 'required|string',
@@ -198,7 +193,7 @@ class EmployeeController extends BaseController
                 'company' => 'required|in:vvp,a7a',
                 'date_joining' => 'required|date|after:2000-01-01',
                 'role_id' => 'required|exists:roles,id',
-                'category_celender_id' => 'required|exists:categories_celender,id',
+                'calendar_category_id' => 'required|exists:calendar_categories,id',
                 'photo' => 'required|image|mimes:jpeg,png,jpg',
                 'card_photo' => 'required|image|mimes:jpeg,png,jpg',
             ]);
@@ -217,10 +212,10 @@ class EmployeeController extends BaseController
 
             $employee = Employee::create([
                 ...$validated,
-                'password' => bcrypt($validated['code']),
+                'password' => bcrypt($validated['id']),
             ]);
 
-            $this->addAcs($employee);
+            // $this->addAcs($employee);
 
             DB::commit();
 
@@ -245,7 +240,7 @@ class EmployeeController extends BaseController
 
         $payload = [
             'UserInfo' => [
-                'employeeNo' => $employee->code,
+                'employeeNo' => $employee->id,
                 'name' => $employee->name,
                 'gender' => $employee->gender,
                 'userType' => 'normal',
@@ -270,7 +265,7 @@ class EmployeeController extends BaseController
             ], $response->status());
         }
 
-        Log::info("ACS user [{$employee->code}] added successfully.");
+        Log::info("ACS user [{$employee->id}] added successfully.");
     }
 
     public function updateEmployee(Request $request, $id)
@@ -282,7 +277,6 @@ class EmployeeController extends BaseController
                     'id',
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -295,7 +289,7 @@ class EmployeeController extends BaseController
                     'date_joining',
                     'company',
                     'role_id',
-                    'category_celender_id',
+                    'calendar_category_id',
                     'created_at',
                     'updated_at',
                 )
@@ -303,9 +297,9 @@ class EmployeeController extends BaseController
                 ->findOrFail($id);
 
             $validated = $request->validate([
+                // 'id' => 'sometimes|string|unique:employees,id,' . $id,
                 'name' => 'sometimes|string|max:255',
                 'phone' => 'sometimes|string|regex:/^0[0-9]{9}$/|unique:employees,phone,'.$id,
-                'code' => 'sometimes|string|unique:employees,code,'.$id,
                 'email' => 'nullable|email|unique:employees,email,'.$id,
                 'CCCD' => 'sometimes|string|regex:/^[0-9]+$/|unique:employees,cccd,'.$id,
                 'address' => 'sometimes|string',
@@ -316,7 +310,7 @@ class EmployeeController extends BaseController
                 'company' => 'sometimes|in:vvp,a7a',
                 'date_joining' => 'sometimes|date|after:2000-01-01',
                 'role_id' => 'sometimes|exists:roles,id',
-                'category_celender_id' => 'sometimes|exists:categories_celender,id',
+                'calendar_category_id' => 'sometimes|exists:calendar_categories,id',
                 'photo' => 'sometimes|image|mimes:jpeg,png,jpg',
                 'card_photo' => 'sometimes|image|mimes:jpeg,png,jpg',
             ]);
@@ -389,7 +383,6 @@ class EmployeeController extends BaseController
                     'id',
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -402,7 +395,7 @@ class EmployeeController extends BaseController
                     'date_joining',
                     'company',
                     'role_id',
-                    'category_celender_id',
+                    'calendar_category_id',
                     'deleted_at',
                     'created_at',
                     'updated_at',
@@ -410,7 +403,6 @@ class EmployeeController extends BaseController
                 ->allowedFilters([
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -421,13 +413,12 @@ class EmployeeController extends BaseController
                     'date_joining',
                     'company',
                     'role_id',
-                    'category_celender_id',
+                    'calendar_category_id',
                 ])
                 ->defaultSort('-created_at')
                 ->allowedSorts([
                     'name',
                     'phone',
-                    'code',
                     'email',
                     'address',
                     'home_town',
@@ -438,7 +429,7 @@ class EmployeeController extends BaseController
                     'updated_at',
                     'deleted_at',
                 ])
-                ->allowedIncludes(['role', 'category_celender'])
+                ->allowedIncludes(['role', 'calendarCategories'])
                 ->whereNotIn('role_id', [15, 17]);
 
             $limit = $request->limit;

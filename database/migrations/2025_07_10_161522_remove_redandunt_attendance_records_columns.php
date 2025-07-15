@@ -53,7 +53,7 @@ return new class extends Migration
             $table->string('deviceName')->nullable();
             $table->string('deviceSN')->nullable();
             $table->string('employee_name')->nullable();
-            $table->string('card_No')->nullable();
+            $table->string('cardNo')->nullable();
         });
     }
 };
