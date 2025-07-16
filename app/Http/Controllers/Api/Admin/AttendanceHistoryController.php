@@ -168,11 +168,15 @@ class AttendanceHistoryController extends BaseController
                     $join->on('schedule_details.employee_id', '=', 'employees.id')
                         ->whereNull('employees.deleted_at');
                 })
+                ->leftJoin('calendar_categories', function ($join) {
+                    $join->on('employees.calendar_category_id', '=', 'calendar_categories.id');
+                })
                 ->select([
                     'schedule_details.employee_id',
                     'employees.name',
                     'schedule_details.schedule_id',
                     'employees.calendar_category_id',
+                    'calendar_categories.name as calendar_category_name',
                     'schedule_details.is_wc_clean_men',
                     'schedule_details.is_wc_clean_women',
                     'schedule_details.is_wc_trash',
@@ -183,20 +187,40 @@ class AttendanceHistoryController extends BaseController
                     'attendance_records.time',
                 ]);
 
+            $arrayDate = explode(',', $request->input('filter.date_between'));
+
+            if (count($arrayDate) !== 2) {
+                $query->whereBetween('schedule_details.date', [
+                    Carbon::now()->startOfMonth(),
+                    Carbon::now(),
+                ]);
+            }
+
             $records = QueryBuilder::for($query)
                 ->allowedFilters([
                     'employee_id',
                     'date',
+                    'employees.name',
                     AllowedFilter::callback('date_between', function ($query, $value) {
                         if (is_array($value) && count($value) === 2) {
+                            $start = Carbon::parse($value[0])->subDay();
+                            $end = Carbon::parse($value[1]) > Carbon::now() ? Carbon::now()->addDay() : Carbon::parse($value[1])->addDay();
                             $query->whereBetween('schedule_details.date', [
-                                Carbon::parse($value[0])->subDay(),
-                                Carbon::parse($value[1])->addDay(),
+                                $start,
+                                $end,
                             ]);
                         }
                     }),
+                    'employees.calendar_category_id',
                 ])
-                ->defaultSort('-date')
+                ->defaultSort('date')
+                ->allowedSorts([
+                    'employee_id',
+                    'name',
+                    'date',
+                    'calendar_category_id',
+                    'calendar_category_name',
+                ])
                 ->get();
 
             $grouped = $records->groupBy(['employee_id', 'name', 'date']);
@@ -210,6 +234,7 @@ class AttendanceHistoryController extends BaseController
                         })->map(function ($item) {
                             return [
                                 'datetime' => $item->datetime,
+                                'date' => $item->date,
                                 'time' => $item->time,
                             ];
                         })->values();
@@ -223,6 +248,7 @@ class AttendanceHistoryController extends BaseController
                             'name' => $name,
                             'date' => $date,
                             'calendar_category_id' => $items->first()->calendar_category_id,
+                            'calendar_category_name' => $items->first()->calendar_category_name,
                             'schedule_id' => $items->first()->schedule_id,
                             'is_wc_clean_men' => $items->first()->is_wc_clean_men,
                             'is_wc_clean_women' => $items->first()->is_wc_clean_women,
@@ -241,6 +267,7 @@ class AttendanceHistoryController extends BaseController
                                             })->map(function ($item) {
                                                 return [
                                                     'datetime' => $item->datetime,
+                                                    'date' => $item->date,
                                                     'time' => $item->time,
                                                 ];
                                             })->toArray(),
@@ -259,6 +286,7 @@ class AttendanceHistoryController extends BaseController
                                             })->map(function ($item) {
                                                 return [
                                                     'datetime' => $item->datetime,
+                                                    'date' => $item->date,
                                                     'time' => $item->time,
                                                 ];
                                             })->toArray()
@@ -268,13 +296,14 @@ class AttendanceHistoryController extends BaseController
 
                                 return $result;
                             })(),
+                            // make time in from hnhc is  LN is from 7h30 - 19h30
+
                         ];
                     }
                 }
             }
 
-            $arrayDate = explode(',', $request->input('filter.date_between'));
-            if ($arrayDate) {
+            if ($arrayDate && count($arrayDate) === 2) {
                 $start = Carbon::parse($arrayDate[0])->startOfDay();
                 $end = Carbon::parse($arrayDate[1])->endOfDay();
                 $result = array_filter($result, function ($item) use ($start, $end) {
