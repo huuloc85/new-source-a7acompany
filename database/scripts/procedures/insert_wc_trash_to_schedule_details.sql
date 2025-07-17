@@ -1,85 +1,34 @@
-Drop PROCEDURE IF EXISTS insert_wc_trash_to_schedule_details;
 
-CREATE PROCEDURE insert_wc_trash_to_schedule_details(IN in_employee_id bigint, IN in_schedule_id bigint)
+drop procedure if exists insert_wc_trash_to_schedule_details;
+CREATE PROCEDURE insert_wc_trash_to_schedule_details()
 BEGIN
-  DECLARE base_date DATE;
-  DECLARE task_day1 VARCHAR(10);
-  DECLARE task_day2 VARCHAR(10);
-  DECLARE task_day3 VARCHAR(10);
-  DECLARE task_day4 VARCHAR(10);
-  DECLARE task_day5 VARCHAR(10);
+    DECLARE i INT DEFAULT 1;
 
-  -- Get base date
-  SELECT `date` INTO base_date FROM celenders WHERE id = in_schedule_id;
+    WHILE i <= 5
+        DO
+            SET @sql = CONCAT('
+                INSERT INTO schedule_details (employee_id, schedule_id, date, is_wc_trash, created_at, updated_at)
+                select employee_id,
+                       celender_id,
+                       DATE_ADD(c.date, INTERVAL ((7 - DAYOFWEEK(c.date) + 1) % 7 + ',i -1,' * 7)-1 DAY),
+                       if(day',i,' IS NOT NULL AND day',i,' != \'\', 1, 0),
+                       NOW(),
+                       NOW()
+                from celender_detail_wc_clean_men wc_men
+                         left join celenders c on wc_men.celender_id = c.id
+                where YEAR(c.date) =
+                      YEAR(DATE_ADD(c.date, INTERVAL ((7 - DAYOFWEEK(c.date) + 1) % 7 + ',i-1,' * 7)-1 DAY))
+                  AND MONTH(c.date) =
+                      MONTH(DATE_ADD(c.date, INTERVAL ((7 - DAYOFWEEK(c.date) + 1) % 7 + ',i-1,' * 7)-1 DAY))
+                ON DUPLICATE KEY UPDATE is_wc_clean_men = VALUES(is_wc_clean_men),
+                                        updated_at      = NOW();
+            '
+                       );
 
-  -- Day 1
-  SELECT day1 INTO task_day1 FROM celender_detail_wc WHERE employee_id = in_employee_id AND celender_id = in_schedule_id;
-  INSERT INTO schedule_details (
-    employee_id, schedule_id, date,
-    is_wc_trash, created_at, updated_at
-  )
-  VALUES (
-    in_employee_id, in_schedule_id, DATE_ADD(base_date, INTERVAL ((7 - DAYOFWEEK(base_date) + 1) % 7 + 0 * 7)-1  DAY),
-    IF(task_day1 IS NOT NULL AND task_day1 != '', 1, 0), NOW(), NOW()
-  )
-  ON DUPLICATE KEY UPDATE
-    is_wc_trash = VALUES(is_wc_trash),
-    updated_at = VALUES(updated_at);
+            PREPARE stmt FROM @sql;
+            EXECUTE stmt;
+            DEALLOCATE PREPARE stmt;
 
-  -- Day 2
-  SELECT day2 INTO task_day2 FROM celender_detail_wc WHERE employee_id = in_employee_id AND celender_id = in_schedule_id;
-  INSERT INTO schedule_details (
-    employee_id, schedule_id, date,
-    is_wc_trash, created_at, updated_at
-  )
-  VALUES (
-    in_employee_id, in_schedule_id, DATE_ADD(base_date, INTERVAL ((7 - DAYOFWEEK(base_date) + 1) % 7 + 1 * 7)-1 DAY),
-    IF(task_day2 IS NOT NULL AND task_day2 != '', 1, 0), NOW(), NOW()
-  )
-  ON DUPLICATE KEY UPDATE
-    is_wc_trash = VALUES(is_wc_trash),
-    updated_at = VALUES(updated_at);
-
-  -- Day 3
-  SELECT day3 INTO task_day3 FROM celender_detail_wc WHERE employee_id = in_employee_id AND celender_id = in_schedule_id;
-  INSERT INTO schedule_details (
-    employee_id, schedule_id, date,
-    is_wc_trash, created_at, updated_at
-  )
-  VALUES (
-    in_employee_id, in_schedule_id, DATE_ADD(base_date, INTERVAL ((7 - DAYOFWEEK(base_date) + 1) % 7 + 2 * 7)-1 DAY),
-    IF(task_day3 IS NOT NULL AND task_day3 != '', 1, 0), NOW(), NOW()
-  )
-  ON DUPLICATE KEY UPDATE
-    is_wc_trash = VALUES(is_wc_trash),
-    updated_at = VALUES(updated_at);
-
-  -- Day 4
-  SELECT day4 INTO task_day4 FROM celender_detail_wc WHERE employee_id = in_employee_id AND celender_id = in_schedule_id;
-  INSERT INTO schedule_details (
-    employee_id, schedule_id, date,
-    is_wc_trash, created_at, updated_at
-  )
-  VALUES (
-    in_employee_id, in_schedule_id, DATE_ADD(base_date, INTERVAL ((7 - DAYOFWEEK(base_date) + 1) % 7 + 3 * 7)-1 DAY),
-    IF(task_day4 IS NOT NULL AND task_day4 != '', 1, 0), NOW(), NOW()
-  )
-  ON DUPLICATE KEY UPDATE
-    is_wc_trash = VALUES(is_wc_trash),
-    updated_at = VALUES(updated_at);
-
-  -- Day 5
-  SELECT day5 INTO task_day5 FROM celender_detail_wc WHERE employee_id = in_employee_id AND celender_id = in_schedule_id;
-  INSERT INTO schedule_details (
-    employee_id, schedule_id, date,
-    is_wc_trash, created_at, updated_at
-  )
-  VALUES (
-    in_employee_id, in_schedule_id, DATE_ADD(base_date, INTERVAL ((7 - DAYOFWEEK(base_date) + 1) % 7 + 4 * 7)-1 DAY),
-    IF(task_day5 IS NOT NULL AND task_day5 != '', 1, 0), NOW(), NOW()
-  )
-  ON DUPLICATE KEY UPDATE
-    is_wc_trash = VALUES(is_wc_trash),
-    updated_at = VALUES(updated_at);
+            SET i = i + 1;
+        END WHILE;
 END;
-
