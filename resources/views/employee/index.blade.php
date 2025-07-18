@@ -141,10 +141,10 @@
                                             {{ $employee->company ?? 'Chưa có công ty' }}
                                         </td>
                                         <td>
-                                            {{ $employee->code }}
+                                            {{ $employee->id }}
                                         </td>
                                         <td>
-                                            {{ $employee->category_celender->name }}
+                                            {{ $employee->calendarCategory->name }}
                                         </td>
                                         <td>
                                             <a
@@ -226,30 +226,30 @@
 @section('scripts')
     <script>
         $(document).ready(function () {
-            $('[data-bs-toggle="tooltip"]').tooltip();
-        });
+            $('[data-bs-toggle="tooltip"]').tooltip()
+        })
 
         document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('search');
-            const table = document.querySelector('#datatable');
-            const rows = table.querySelectorAll('tbody tr');
+            const searchInput = document.getElementById('search')
+            const table = document.querySelector('#datatable')
+            const rows = table.querySelectorAll('tbody tr')
 
             searchInput.addEventListener('input', function () {
-                const searchTerm = searchInput.value.toLowerCase();
+                const searchTerm = searchInput.value.toLowerCase()
 
                 rows.forEach((row) => {
-                    const cells = row.querySelectorAll('td');
-                    let found = false;
+                    const cells = row.querySelectorAll('td')
+                    let found = false
 
                     cells.forEach((cell) => {
                         if (cell.textContent.toLowerCase().includes(searchTerm)) {
-                            found = true;
+                            found = true
                         }
-                    });
+                    })
 
-                    row.style.display = found ? '' : 'none';
-                });
-            });
-        });
+                    row.style.display = found ? '' : 'none'
+                })
+            })
+        })
     </script>
 @endsection

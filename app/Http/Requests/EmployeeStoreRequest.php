@@ -33,7 +33,10 @@ class EmployeeStoreRequest extends FormRequest
         return [
             'name' => ['required', 'min:5', 'max:100'],
             // 'email' => [Rule::unique('employees')],
-            'phone' => ['required', 'numeric', Rule::unique('employees'),
+            'phone' => [
+                'required',
+                'numeric',
+                Rule::unique('employees'),
                 function ($attribute, $value, Closure $fail) {
                     $pattern = '/^0[0-9]*$/';
                     if (! preg_match($pattern, $value)) {
@@ -41,7 +44,7 @@ class EmployeeStoreRequest extends FormRequest
                     }
                 },
             ],
-            'code' => ['required', Rule::unique('employees')],
+            'id' => ['required', Rule::unique('employees')],
             'address' => ['required'],
             'home_town' => ['required'],
             'gender' => ['required', 'in:Nam,Nữ,Khác'],
@@ -52,7 +55,7 @@ class EmployeeStoreRequest extends FormRequest
             'marital_status' => ['required'],
             'date_joining' => ['required'],
             'role_id' => ['required', 'in:'.implode(',', $roles_id)],
-            'category_celender_id' => ['required', 'in:'.implode(',', $categories_id)],
+            'calendar_category_id' => ['required', 'in:'.implode(',', $categories_id)],
         ];
     }
 
@@ -99,8 +102,8 @@ class EmployeeStoreRequest extends FormRequest
             'role_id.required' => 'Chức vụ không được để trống!',
             'role_id.in' => 'Chức vụ không tồn tại!',
 
-            'category_celender_id.required' => 'Danh mục không được để trống!',
-            'category_celender_id.in' => 'Danh mục không tồn tại!',
+            'calendar_category_id.required' => 'Danh mục không được để trống!',
+            'calendar_category_id.in' => 'Danh mục không tồn tại!',
         ];
     }
 }

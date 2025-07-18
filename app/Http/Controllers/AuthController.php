@@ -198,7 +198,7 @@ class AuthController extends Controller
         $employee = Employee::find(Auth()->user()->id);
         $employee->name = trim($request->name);
         $employee->phone = trim($request->phone);
-        $employee->code = trim($request->code);
+        $employee->id = trim($request->code);
         $employee->email = trim($request->email);
         $employee->birthday = trim($request->birthday);
         $employee->address = trim($request->address);
@@ -259,7 +259,7 @@ class AuthController extends Controller
     {
         try {
             $employee = Employee::find($id);
-            $code = $employee->code;
+            $code = $employee->id;
             $role = $employee->role->role_name;
             if ($role == 'admin') {
                 $employee->password = bcrypt('admin');

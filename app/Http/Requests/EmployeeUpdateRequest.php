@@ -33,7 +33,10 @@ class EmployeeUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'min:5', 'max:100'],
             // 'email' => [Rule::unique('employees')->ignore($this->id)],
-            'phone' => ['required', 'numeric', Rule::unique('employees')->ignore($this->id),
+            'phone' => [
+                'required',
+                'numeric',
+                Rule::unique('employees')->ignore($this->id),
                 function ($attribute, $value, Closure $fail) {
                     $pattern = '/^0[0-9]*$/';
                     if (! preg_match($pattern, $value)) {
@@ -41,7 +44,7 @@ class EmployeeUpdateRequest extends FormRequest
                     }
                 },
             ],
-            'code' => ['required', Rule::unique('employees')->ignore($this->id)],
+            'id' => ['required', Rule::unique('employees')->ignore($this->id)],
             'address' => ['required'],
             'home_town' => ['required'],
             'gender' => ['required', 'in:Nam,Nữ,Khác'],
@@ -52,7 +55,7 @@ class EmployeeUpdateRequest extends FormRequest
             'marital_status' => ['required'],
             'date_joining' => ['required'],
             'role_id' => ['required', 'in:'.implode(',', $roles_id)],
-            'category_celender_id' => ['required', 'in:'.implode(',', $categories_id)],
+            'calendar_category_id' => ['required', 'in:'.implode(',', $categories_id)],
         ];
     }
 
@@ -69,8 +72,8 @@ class EmployeeUpdateRequest extends FormRequest
             'phone.required' => 'Số điện thoại không được để trống!',
             'phone.numeric' => 'Số điện thoại không đúng định dạng!',
 
-            'code.required' => 'Mã nhân viên không được để trống!',
-            'code.unique' => 'Mã nhân viên đã được sử dụng',
+            'id.required' => 'Mã nhân viên không được để trống!',
+            'id.unique' => 'Mã nhân viên đã được sử dụng',
 
             'address.required' => 'Địa chỉ không được để trống!',
 
@@ -97,8 +100,8 @@ class EmployeeUpdateRequest extends FormRequest
             'role_id.required' => 'Chức vụ không được để trống!',
             'role_id.in' => 'Chức vụ không tồn tại!',
 
-            'category_celender_id.required' => 'Danh mục không được để trống!',
-            'category_celender_id.in' => 'Danh mục không tồn tại!',
+            'calendar_category_id.required' => 'Danh mục không được để trống!',
+            'calendar_category_id.in' => 'Danh mục không tồn tại!',
         ];
     }
 }

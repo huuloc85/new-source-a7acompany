@@ -111,10 +111,10 @@
                                                     {{-- Hàng Nhật - Hàng Chợ --}}
                                                     @if (isset($celenderDetailsHNHC))
                                                         @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
-                                                            @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                            @if ($celenderDetailHNHC->employee->calendar_category_id == $category->id)
                                                                 <tr style="height: 2.75rem">
                                                                     <td>
-                                                                        {{ $celenderDetailHNHC->employee->code }}
+                                                                        {{ $celenderDetailHNHC->employee->id }}
                                                                     </td>
                                                                     <td class="text-start">
                                                                         {{ $celenderDetailHNHC->employee->name }}
@@ -150,7 +150,7 @@
                                                     {{-- Hàng Nhật - Hàng Chợ --}}
                                                     @if (isset($celenderDetailsHNHC))
                                                         @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
-                                                            @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                            @if ($celenderDetailHNHC->employee->calendar_category_id == $category->id)
                                                                 @php
                                                                     $rowId = 'row-'.$celenderDetailHNHC->employee_id;
                                                                 @endphp
@@ -292,10 +292,10 @@
                                                         </tr>
                                                         @if (isset($celenderDetailsHNHC))
                                                             @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
-                                                                @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                                @if ($celenderDetailHNHC->employee->calendar_category_id == $category->id)
                                                                     <tr style="height: 2.75rem">
                                                                         <td>
-                                                                            {{ $celenderDetailHNHC->employee->code }}
+                                                                            {{ $celenderDetailHNHC->employee->id }}
                                                                         </td>
                                                                         <td class="text-start">
                                                                             {{ $celenderDetailHNHC->employee->name }}
@@ -312,7 +312,7 @@
                                                     @foreach ($celenderDetailsEatroom as $key => $celenderDetailEatroom)
                                                         <tr style="height: 2.75rem">
                                                             <td>
-                                                                {{ $celenderDetailEatroom->employee->code }}
+                                                                {{ $celenderDetailEatroom->employee->id }}
                                                             </td>
                                                             <td class="text-start">
                                                                 {{ $celenderDetailEatroom->employee->name }}
@@ -326,7 +326,7 @@
                                                     @foreach ($celenderDetailsWC as $key => $celenderDetailWC)
                                                         <tr style="height: 2.75rem">
                                                             <td>
-                                                                {{ $celenderDetailWC->employee->code }}
+                                                                {{ $celenderDetailWC->employee->id }}
                                                             </td>
                                                             <td class="text-start">
                                                                 {{ $celenderDetailWC->employee->name }}
@@ -340,7 +340,7 @@
                                                     @foreach ($celenderDetailsWCCleanWomen as $key => $womenWC)
                                                         <tr style="height: 2.75rem">
                                                             <td>
-                                                                {{ $womenWC->employee->code }}
+                                                                {{ $womenWC->employee->id }}
                                                             </td>
                                                             <td class="text-start">
                                                                 {{ $womenWC->employee->name }}
@@ -354,7 +354,7 @@
                                                     @foreach ($celenderDetailsWCCleanMen as $key => $menWC)
                                                         <tr style="height: 2.75rem">
                                                             <td>
-                                                                {{ $menWC->employee->code }}
+                                                                {{ $menWC->employee->id }}
                                                             </td>
                                                             <td class="text-start">
                                                                 {{ $menWC->employee->name }}
@@ -402,7 +402,7 @@
                                                         </tr>
                                                         @if (isset($celenderDetailsHNHC))
                                                             @foreach ($celenderDetailsHNHC as $key => $celenderDetailHNHC)
-                                                                @if ($celenderDetailHNHC->employee->category_celender_id == $category->id)
+                                                                @if ($celenderDetailHNHC->employee->calendar_category_id == $category->id)
                                                                     <tr style="height: 2.75rem">
                                                                         @foreach ($dates as $key => $date)
                                                                             @php

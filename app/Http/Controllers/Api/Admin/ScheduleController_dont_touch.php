@@ -29,17 +29,31 @@ class ScheduleController_dont_touch extends BaseController
         try {
             $schedules = QueryBuilder::for(Schedule::class)
                 ->allowedFields([
-                    'id', 'title', 'date', 'created_at', 'updated_at',
-                    'employees.id', 'employees.code', 'employees.name', 'employees.category_celender_id',
+                    'id',
+                    'title',
+                    'date',
+                    'created_at',
+                    'updated_at',
+                    'employees.id',
+                    'employees.code',
+                    'employees.name',
+                    'employees.calendar_category_id',
                 ])
                 ->allowedFilters([
-                    'title', 'date', AllowedFilter::scope('date_between'),
-                    'employees.code', 'employees.name',
+                    'title',
+                    'date',
+                    AllowedFilter::scope('date_between'),
+                    'employees.code',
+                    'employees.name',
                 ])
                 ->defaultSort('-date')
                 ->allowedSorts([
-                    'title', 'date', 'created_at', 'updated_at',
-                    'employees.code', 'employees.name',
+                    'title',
+                    'date',
+                    'created_at',
+                    'updated_at',
+                    'employees.code',
+                    'employees.name',
                 ])
                 ->allowedIncludes(['employees', 'scheduleDetails'])
                 ->paginate($request->input('limit'));
@@ -59,13 +73,15 @@ class ScheduleController_dont_touch extends BaseController
             }
             if (! empty($request->employee_id)) {
                 foreach ($request->employee_id as $employee_id) {
-                    foreach ([
-                        'hnhc' => CelenderDetailHNHC::class,
-                        'eatroom' => CelenderDetailEatroom::class,
-                        'wc' => CelenderDetailWC::class,
-                        'wccleanwomen' => CelenderDetailWCCleanWomen::class,
-                        'wccleanmen' => CelenderDetailWCCleanMen::class,
-                    ] as $suffix => $model) {
+                    foreach (
+                        [
+                            'hnhc' => CelenderDetailHNHC::class,
+                            'eatroom' => CelenderDetailEatroom::class,
+                            'wc' => CelenderDetailWC::class,
+                            'wccleanwomen' => CelenderDetailWCCleanWomen::class,
+                            'wccleanmen' => CelenderDetailWCCleanMen::class,
+                        ] as $suffix => $model
+                    ) {
                         $key = $employee_id.'-'.$suffix;
                         if (! empty($request->$key)) {
                             $detail = $model::where('celender_id', $id)->where('employee_id', $employee_id)->first();
@@ -131,13 +147,15 @@ class ScheduleController_dont_touch extends BaseController
             if (! $celender) {
                 return response()->json(['status' => false, 'message' => 'Không tìm thấy lịch làm việc'], 404);
             }
-            foreach ([
-                CelenderDetailHNHC::class,
-                CelenderDetailEatroom::class,
-                CelenderDetailWC::class,
-                CelenderDetailWCCleanWomen::class,
-                CelenderDetailWCCleanMen::class,
-            ] as $model) {
+            foreach (
+                [
+                    CelenderDetailHNHC::class,
+                    CelenderDetailEatroom::class,
+                    CelenderDetailWC::class,
+                    CelenderDetailWCCleanWomen::class,
+                    CelenderDetailWCCleanMen::class,
+                ] as $model
+            ) {
                 $model::where('celender_id', $id)->delete();
             }
             $celender->delete();

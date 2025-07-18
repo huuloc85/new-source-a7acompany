@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Admin\ScheduleDetailController;
 use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
@@ -51,13 +52,12 @@ app()->environment('local') && Route::get('/clear-cache', function () {
     return response()->json(['message' => 'Cache cleared successfully']);
 });
 
-Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+Route::middleware(['auth:sanctum', 'check.token.expiration', 'admin'])->group(function () {
     if (connection_aborted()) {
         Log::info('Request aborted early.');
 
         return;
     }
-
     Route::post('/auth/check', [AuthController::class, 'authCheck']);
 
     // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
@@ -93,7 +93,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             // Route::get('/export/{id}', [AttendanceController::class, 'exportById']);
         });
         Route::get('/', [AttendanceHistoryController::class, 'detail']);
-
     });
 
     // Roles (Quản Lý Chức Vụ)
@@ -170,36 +169,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/savePrint', [StampController::class, 'savePrint'])->name('api.save-print');
     });
 
-    Route::middleware(['auth:sanctum', 'authEmployees'])->group(function () {
-        Route::get('/calendar', [EmployeeController::class, 'calendar'])->name('api.employee.calendar');
-        Route::get('/calendar/{id}', [EmployeeController::class, 'calendarDetail'])->name('api.employee.calendar-detail');
-
-        Route::get('/salary', [EmployeeController::class, 'salary'])->name('api.employee.salary');
-        Route::get('/salary/{id}', [EmployeeController::class, 'salaryDetail'])->name('api.employee.salary-detail');
-
-        Route::get('/update-quantity', [ProductController::class, 'updateQuantity'])->name('api.product.update-quantity');
-        Route::post('/update-quantity', [ProductController::class, 'handleUpdateQuantity'])->name('api.product.handle-update-quantity');
-
-        Route::get('/history-update', [ProductController::class, 'historyUpdate'])->name('api.product.history-update');
-
-        Route::get('/update-error', [ProductController::class, 'showUpdateError'])->name('api.product.update-error');
-        Route::post('/update-error', [ProductController::class, 'handleUpdateError'])->name('api.product.handle-update-error');
-        Route::get('/history-update-error', [ProductController::class, 'historyUpdateError'])->name('api.product.history-update-error');
-
-        Route::get('/check-employee-todo', [CheckEmployeeController::class, 'checkEmployeeTodo'])->name('api.employee.check-employee-todo');
-        Route::post('/check-employee-todo', [CheckEmployeeController::class, 'handleCheckEmployeeTodo'])->name('api.employee.handle.check-employee-todo');
-        Route::get('/check-employee-todo/history', [CheckEmployeeController::class, 'historyEmployeeCheck'])->name('api.employee-history-check');
-        Route::delete('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'deleteHistory'])->name('api.employee.delete-employee-todo');
-        Route::post('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'updateEmployee'])->name('api.employee.update-employee-todo');
-
-        Route::get('/attendance', [AttendanceRecordController::class, 'employeeViewRecords'])->name('api.employee.attendance');
-        Route::get('/attendance-calculate', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('api.employee.attendance-calculate');
-
-        Route::get('/send-stamp', [SendStampController::class, 'index'])->name('api.send-stamp');
-        Route::post('/send-stamp', [SendStampController::class, 'handleAdd'])->name('api.handleAdd-send-stamp');
-        Route::get('/send-stamp/status', [SendStampController::class, 'checkStampEmployee'])->name('api.checkstamp-employee');
-    });
-
     Route::prefix('history')->group(function () {
         Route::get('/', [HistoryController::class, 'index'])->name('api.history.index');
         Route::delete('/{id}', [HistoryController::class, 'destroy'])->name('api.history.destroy');
@@ -208,4 +177,5 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
     Route::get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
 });
+// Attendance Records (Chấm Công)
 Route::get('/acs-events/today', [AttendanceRecordController::class, 'fetchTodayEvents']);

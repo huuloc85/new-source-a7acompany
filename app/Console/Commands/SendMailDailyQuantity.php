@@ -37,7 +37,7 @@ class SendMailDailyQuantity extends Command
     {
         $selectedDate = Carbon::yesterday();
         $employees = Employee::whereNotIn('role_id', [15, 16, 17])
-            ->where('category_celender_id', '!=', 4)->where('deleted_at', null)
+            ->where('calendar_category_id', '!=', 4)->where('deleted_at', null)
             ->get();
 
         $calendarIds = Celender::whereYear('date', $selectedDate->year)

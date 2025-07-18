@@ -41,7 +41,7 @@ class AttendanceRecordController extends Controller
             ->orderBy('date', 'asc');
         if ($request->filled('category')) {
             $query->whereHas('employee', function ($q) use ($request) {
-                $q->where('category_celender_id', $request->input('category'));
+                $q->where('calendar_category_id', $request->input('category'));
             });
         }
 
@@ -229,7 +229,7 @@ class AttendanceRecordController extends Controller
         if (config('a7a.list_category')[$timeFilter]) {
             $categoryId = CategoryCelender::listCate[$timeFilter];
             $query->whereHas('employee', function ($query) use ($categoryId) {
-                $query->where('category_celender_id', $categoryId);
+                $query->where('calendar_category_id', $categoryId);
             });
 
             // Điều kiện thời gian cho `Ca 1` nếu `timeFilter` thuộc `list_category_ca1`
@@ -264,8 +264,8 @@ class AttendanceRecordController extends Controller
     // Code chức năng tính công (Admin)
     private function processRecord($record, $timeFilter, $dayOfWeekMapping, $calendarId, $key)
     {
-        if ($timeFilter == null && $record->employee->category_celender_id != null) {
-            $timeFilter = CategoryCelender::listCateforEmployee[$record->employee->category_celender_id];
+        if ($timeFilter == null && $record->employee->calendar_category_id != null) {
+            $timeFilter = CategoryCelender::listCateforEmployee[$record->employee->calendar_category_id];
         }
         $date = Carbon::parse($record->date);
         $record->day_of_week = $dayOfWeekMapping[$date->format('l')];
@@ -545,7 +545,7 @@ class AttendanceRecordController extends Controller
         //     $record->overtime_hours;
         // }
 
-        if ($record->employee->category_celender_id == [2, 4]) {
+        if ($record->employee->calendar_category_id == [2, 4]) {
             $record->overtime_hours = min($record->total_hours - $administrativeHours);
         }
 
@@ -701,7 +701,7 @@ class AttendanceRecordController extends Controller
     private function calculateOvertime($record, $shift2 = false)
     {
         $totalHours = $record->total_hours;
-        $categoryId = $record->employee->category_celender_id;
+        $categoryId = $record->employee->calendar_category_id;
         // Xác định thời gian bắt đầu dựa vào ca
         $timeStartWork = $shift2 ? Carbon::parse(config('a7a.ca2_work_start_time')) : Carbon::parse(config('a7a.ca1_work_start_time'));
         $overtimeStart = Carbon::parse(config('a7a.over_time_start_qd'));
@@ -772,7 +772,7 @@ class AttendanceRecordController extends Controller
     public function employeeViewCaculateRecords(Request $request)
     {
         $employeeCode = auth()->user()->code;
-        $categoryId = auth()->user()->category_celender_id;
+        $categoryId = auth()->user()->calendar_category_id;
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
         $calendarId = Celender::whereMonth('date', Carbon::parse($currentMonth)->month)->whereYear('date', Carbon::parse($currentMonth)->year)->pluck('id')->first();
         $dayOfWeekMapping = AttendanceRecord::getDayOfWeekMapping();
@@ -882,7 +882,7 @@ class AttendanceRecordController extends Controller
                 'PCTCTC' => 0,
             ];
             foreach ($records as $key => $record) {
-                if ($employee->code == $record->employee_code) {
+                if ($employee->id == $record->employee_code) {
                     $attendance[] = $record;
                 }
                 if (Carbon::parse($record->date)->month == $startDate->month && Carbon::parse($record->date)->year == $startDate->year) {
@@ -894,7 +894,7 @@ class AttendanceRecordController extends Controller
                 $this->processRecord($record, null, AttendanceRecord::getDayOfWeekMapping(), $calendarId, $key);
 
                 // Tính tổng giờ cho nhân viên này
-                if ($employee->code == $record->employee_code) {
+                if ($employee->id == $record->employee_code) {
                     $employeeTotalHours['totalHourMonth'] += (float) $record->total_hours;
                     $employeeTotalHours['totalHourTC'] += (float) $record->overtime_hours;
                     if ($record->shift === 'Ca 1') {

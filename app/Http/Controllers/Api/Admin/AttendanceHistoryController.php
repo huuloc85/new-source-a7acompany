@@ -30,7 +30,7 @@ class AttendanceHistoryController extends BaseController
                         'updated_at',
                         'employee.code',
                         'employee.name',
-                        'employee.category_celender_id',
+                        'employee.calendar_category_id',
                         AllowedFilter::scope('date_between'),
                         AllowedFilter::scope('time_between'),
                         AllowedFilter::scope('datetime_between'),

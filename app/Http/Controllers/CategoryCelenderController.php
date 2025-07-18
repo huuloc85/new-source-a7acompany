@@ -21,13 +21,13 @@ class CategoryCelenderController extends Controller
         return view('category.index', compact('categories', 'total'));
     }
 
-    //view add
+    // view add
     public function add()
     {
         return view('category.add');
     }
 
-    //store new role
+    // store new role
     public function store(CategoryStoreRequest $request)
     {
         $category = new CategoryCelender;
@@ -45,7 +45,7 @@ class CategoryCelenderController extends Controller
         }
     }
 
-    //view edit
+    // view edit
     public function edit($id)
     {
         $category = CategoryCelender::find($id);
@@ -53,7 +53,7 @@ class CategoryCelenderController extends Controller
         return view('category.edit', compact('category'));
     }
 
-    //update role
+    // update role
     public function update(CategoryUpdateRequest $request, $id)
     {
         $category = CategoryCelender::find($id);
@@ -71,12 +71,12 @@ class CategoryCelenderController extends Controller
         }
     }
 
-    //delete role
+    // delete role
     public function delete($id)
     {
         $category = CategoryCelender::findOrFail($id);
         try {
-            $employee = Employee::where('category_celender_id', $id)->first();
+            $employee = Employee::where('calendar_category_id', $id)->first();
             if ($employee) {
                 toast('Có nhân viên thuộc danh mục này!', 'error', 'top-right');
 

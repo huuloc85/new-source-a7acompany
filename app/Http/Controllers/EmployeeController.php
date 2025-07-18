@@ -22,6 +22,7 @@ use App\Models\SalaryOfficialVVP;
 use App\Models\SalaryParttime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
@@ -35,7 +36,7 @@ class EmployeeController extends Controller
             $employees->NameRole($request);
         }
 
-        if (! empty($request->category_celender_id)) {
+        if (! empty($request->calendar_category_id)) {
             $employees->NameCate($request);
         }
 
@@ -55,8 +56,8 @@ class EmployeeController extends Controller
             $employees->CCCD($request);
         }
 
-        if (! empty($request->code)) {
-            $employees->Code($request);
+        if (! empty($request->id)) {
+            $employees->id($request);
         }
 
         if (! empty($request->name)) {
@@ -102,10 +103,12 @@ class EmployeeController extends Controller
     // store new employee
     public function store(EmployeeStoreRequest $request)
     {
+        Log::info('Bắt đầu tạo nhân sự mới.', ['data' => $request->all()]);
+
         $employee = new Employee;
         $employee->name = trim($request->name);
         $employee->phone = trim($request->phone);
-        $employee->code = trim($request->code);
+        $employee->id = trim($request->id);
         $employee->email = trim($request->email);
         $employee->birthday = trim($request->birthday);
         $employee->address = trim($request->address);
@@ -113,48 +116,57 @@ class EmployeeController extends Controller
         $employee->CCCD = trim($request->CCCD);
         $employee->role_id = trim($request->role_id);
         $employee->company = trim($request->company);
-        $employee->category_celender_id = trim($request->category_celender_id);
+        $employee->calendar_category_id = trim($request->calendar_category_id);
         $employee->gender = trim($request->gender);
         $employee->marital_status = $request->marital_status;
         $employee->date_joining = trim($request->date_joining);
-        $employee->password = bcrypt($request->code);
+        $employee->password = bcrypt($request->id);
+
         $file = $request->photo;
         $file_card = $request->card_photo;
 
-        // ảnh
+        // Ảnh chân dung
         if ($request->hasFile('photo')) {
             $fileExtension = $file->getClientOriginalName();
-            $fileName = time(); // Tạo tên file dựa trên thời gian
-            $newFileName = $fileName.'.'.$fileExtension; // Tên file mới
-            // Lưu file vào thư mục storage/app/public/image với tên mới
+            $fileName = time();
+            $newFileName = $fileName.'.'.$fileExtension;
             $request->file('photo')->storeAs('public/employee', $newFileName);
-            // Gán trường image của đối tượng task với tên mới
             $employee->photo = $newFileName;
+
+            Log::info('Ảnh nhân sự đã được lưu.', ['file' => $newFileName]);
         }
 
-        // ảnh thẻ
+        // Ảnh thẻ
         if ($request->hasFile('card_photo')) {
             $fileExtensionCard = $file_card->getClientOriginalName();
-            $fileNameCard = time(); // Tạo tên file dựa trên thời gian
-            $newFileNameCard = $fileNameCard.'.'.$fileExtensionCard; // Tên file mới
-            // Lưu file vào thư mục storage/app/public/image với tên mới
+            $fileNameCard = time();
+            $newFileNameCard = $fileNameCard.'.'.$fileExtensionCard;
             $request->file('card_photo')->storeAs('public/employee/card', $newFileNameCard);
-            // Gán trường image của đối tượng task với tên mới
             $employee->card_photo = $newFileNameCard;
+
+            Log::info('Ảnh thẻ nhân sự đã được lưu.', ['file' => $newFileNameCard]);
         }
 
         try {
-            // dd($employee);
             $employee->save();
+            Log::info('Nhân sự được lưu thành công.', ['employee_id' => $employee->id]);
+
             toast('Thêm nhân sự mới thành công!', 'success', 'top-right');
 
             return redirect()->route('admin.employee.home');
         } catch (\Exception $th) {
-            toast('Thêm nhân sự mới không thành công!', 'error', 'top-right');
+            Log::error('Lỗi khi lưu nhân sự.', [
+                'error' => $th->getMessage(),
+                'line' => $th->getLine(),
+                'file' => $th->getFile(),
+            ]);
+
             $image = 'public/employee/'.$employee->photo;
             $imageCart = 'public/employee/card/'.$employee->card_photo;
             Storage::delete($image);
             Storage::delete($imageCart);
+
+            toast('Thêm nhân sự mới không thành công!', 'error', 'top-right');
 
             return redirect()->back();
         }
@@ -178,7 +190,7 @@ class EmployeeController extends Controller
         $employee = Employee::find($id);
         $employee->name = trim($request->name);
         $employee->phone = trim($request->phone);
-        $employee->code = trim($request->code);
+        $employee->id = trim($request->id);
         $employee->email = trim($request->email);
         $employee->birthday = trim($request->birthday);
         $employee->address = trim($request->address);
@@ -186,7 +198,7 @@ class EmployeeController extends Controller
         $employee->CCCD = trim($request->CCCD);
         $employee->role_id = trim($request->role_id);
         $employee->company = trim($request->company);
-        $employee->category_celender_id = trim($request->category_celender_id);
+        $employee->calendar_category_id = trim($request->calendar_category_id);
         $employee->gender = trim($request->gender);
         $employee->marital_status = $request->marital_status;
         $employee->date_joining = trim($request->date_joining);
@@ -299,7 +311,7 @@ class EmployeeController extends Controller
             $employees->NameRole($request);
         }
 
-        if (! empty($request->category_celender_id)) {
+        if (! empty($request->calendar_category_id)) {
             $employees->NameCate($request);
         }
 
@@ -319,8 +331,8 @@ class EmployeeController extends Controller
             $employees->CCCD($request);
         }
 
-        if (! empty($request->code)) {
-            $employees->Code($request);
+        if (! empty($request->id)) {
+            $employees->id($request);
         }
 
         if (! empty($request->name)) {

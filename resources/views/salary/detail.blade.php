@@ -175,7 +175,7 @@
                                                                         {{ $loop->iteration }}
                                                                     </th>
                                                                     <td>
-                                                                        {{ $category->employee->code }}
+                                                                        {{ $category->employee->id }}
                                                                     </td>
                                                                     <td class="text-start">
                                                                         {{ $category->employee->name }}
@@ -270,7 +270,7 @@
                                                                         {{ $loop->iteration }}
                                                                     </th>
                                                                     <td>
-                                                                        {{ $salary->employee->code }}
+                                                                        {{ $salary->employee->id }}
                                                                     </td>
                                                                     <td>
                                                                         {{ $salary->employee->name }}
@@ -422,7 +422,7 @@
                                                                         {{ $loop->iteration }}
                                                                     </td>
                                                                     <td>
-                                                                        {{ $salary_detail->employee->code }}
+                                                                        {{ $salary_detail->employee->id }}
                                                                     </td>
                                                                     <td>
                                                                         {{ $salary_detail->employee->name }}
@@ -761,7 +761,7 @@
                                                                         {{ $loop->iteration }}
                                                                     </td>
                                                                     <td>
-                                                                        {{ $attendance->employee->code }}
+                                                                        {{ $attendance->employee->id }}
                                                                     </td>
                                                                     <td>
                                                                         {{ $attendance->employee->name }}

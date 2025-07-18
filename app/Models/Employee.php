@@ -179,11 +179,13 @@ class Employee extends Authenticatable
     // search by role
     public function scopeNameCate($query, $request)
     {
-        if ($request->has('category_celender_id')) {
-            return $query->whereHas('category_celender', function ($query) use ($request) {
-                $query->where('category_celender_id', $request->category_celender_id);
+        if ($request->has('calendar_category_id')) {
+            return $query->whereHas('calendarCategory', function ($query) use ($request) {
+                $query->where('id', $request->calendar_category_id);
             });
         }
+
+        return $query;
     }
 
     // search by name
@@ -226,11 +228,11 @@ class Employee extends Authenticatable
         return $query;
     }
 
-    // search by code
-    public function scopeCode($query, $request)
+    // search by id
+    public function scopeid($query, $request)
     {
-        if ($request->has('code')) {
-            return $query->where('code', 'like', '%'.$request->code.'%');
+        if ($request->has('id')) {
+            return $query->where('id', 'like', '%'.$request->id.'%');
         }
 
         return $query;
@@ -274,7 +276,7 @@ class Employee extends Authenticatable
 
     public function attendanceRecords()
     {
-        return $this->hasMany(AttendanceRecord::class, 'employee_code', 'id');
+        return $this->hasMany(AttendanceRecord::class, 'employee_id', 'id');
     }
 
     public function scheduleDetails()

@@ -117,7 +117,7 @@ class ScheduleCategoryController extends BaseController
             ], 404);
         }
 
-        $employee = Employee::where('category_celender_id', $id)->first();
+        $employee = Employee::where('calendar_category_id', $id)->first();
         if ($employee) {
             return response()->json(
                 [

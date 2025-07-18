@@ -230,7 +230,7 @@
                                                 <td>{{ $item->product->name }}</td>
                                                 <td>{{ $item->product->code }}</td>
                                                 <td>{{ $item->employee->name }}</td>
-                                                <td>{{ $item->employee->code }}</td>
+                                                <td>{{ $item->employee->id }}</td>
                                                 <td>{{ $item->lot }}</td>
                                                 <td>{{ $item->bin }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d-m') }}</td>
@@ -266,7 +266,7 @@
                                             <p class="mb-1"><strong>Code:</strong> {{ $item->product->code }}</p>
                                             <p class="mb-1"><strong>Nhân Viên Nhập:</strong> {{ $item->employee->name }}
                                             </p>
-                                            <p class="mb-1"><strong>Mã Nhân Viên:</strong> {{ $item->employee->code }}
+                                            <p class="mb-1"><strong>Mã Nhân Viên:</strong> {{ $item->employee->id }}
                                             </p>
                                             <p class="mb-1"><strong>Số Lot:</strong> {{ $item->lot }}</p>
                                             <p class="mb-1"><strong>Thùng Số:</strong> {{ $item->bin }}</p>

@@ -42,12 +42,12 @@ class LogActivity
         }
         $date = Carbon::now()->format('Y-m-d');
         $currentMonthYear = Carbon::now()->format('Y-m');
-        //check xem nhân viên đó có làm ca hay không
+        // check xem nhân viên đó có làm ca hay không
         if ($user->code != '19010400') {
-            if ($user->category_celender_id != 2) {
+            if ($user->calendar_category_id != 2) {
                 $currentDateTime = Carbon::now();
                 $hour = $currentDateTime->hour;
-                //kiểm tra xem giờ hiện tại < 8h sáng -> giảm 1 ngày
+                // kiểm tra xem giờ hiện tại < 8h sáng -> giảm 1 ngày
                 if ($hour < 8) {
                     $date = Carbon::now()->subDay()->format('Y-m-d');
                 }
