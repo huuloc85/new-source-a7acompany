@@ -11,13 +11,14 @@ class Role extends Model
     use HasFactory;
     use SoftDeletes;
 
-    // paginate
     public const paginate = 10;
 
-    // table
     protected $table = 'roles';
 
-    // filds
+    protected $primaryKey = 'id';
+
+    protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'role_name',
