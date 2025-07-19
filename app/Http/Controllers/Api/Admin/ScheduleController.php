@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Helpers\HandleError;
 use App\Helpers\LogActivity;
-use App\Helpers\LogHelper;
 use App\Imports\Celender\CelenderManagerImport;
 use App\Models\CategoryCelender;
 use App\Models\Celender;
@@ -13,31 +13,37 @@ use App\Models\CelenderDetailWC;
 use App\Models\CelenderDetailWCCleanMen;
 use App\Models\CelenderDetailWCCleanWomen;
 use App\Models\Employee;
-use App\Utils\SearchFilter;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ScheduleController extends BaseController
 {
     public function index(Request $request)
     {
         try {
-            $schedules = Celender::query()->select('id', 'title', 'date');
-
-            SearchFilter::apply(
-                $schedules,
-                $request,
-                [
-                    'title' => 'string',
-                    'date' => 'date',
-                ],
-                [
+            $schedules = QueryBuilder::for(Schedule::class)
+                ->allowedFilters([
                     'title',
                     'date',
-                ]
-            );
+                    'created_at',
+                    'updated_at',
+                ])
+                ->allowedFields([
+                    'id',
+                    'title',
+                    'date',
+                    'created_at',
+                    'updated_at',
+                ])
+                ->defaultSort('-date')
+                ->allowedSorts([
+                    'title',
+                    'date',
+                ]);
 
             $limit = $request->limit;
             if (! is_null($limit) && $limit == 0) {
@@ -45,16 +51,21 @@ class ScheduleController extends BaseController
             }
             $schedules = $schedules->paginate($limit ?? 10);
 
-            return response()->json($schedules, 200);
-        } catch (\Exception $e) {
-            Log::error('Error getting schedules: '.$e->getMessage().' at line '.$e->getLine());
+            return response()->json($schedules);
 
-            return response()->json([
-                'error' => [
-                    'code' => 500,
-                    'message' => 'An error occurred while fetching schedules.',
-                ],
-            ], 500);
+        } catch (\Throwable $th) {
+            return HandleError::handle($th);
+        }
+    }
+
+    public function show(Request $request, $id)
+    {
+        try {
+            $schedule = Schedule::findOrFail($id);
+
+            return response()->json($schedule);
+        } catch (\Throwable $th) {
+            return HandleError::handle($th);
         }
     }
 
@@ -62,6 +73,12 @@ class ScheduleController extends BaseController
     {
         DB::beginTransaction();
         try {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'date' => 'required|date',
+                'fileImport' => 'nullable|file|mimes:xlsx',
+            ]);
+
             $countCategoryCelender = CategoryCelender::count();
 
             if ($countCategoryCelender <= 0) {
@@ -105,131 +122,10 @@ class ScheduleController extends BaseController
                 'message' => 'Thêm lịch làm việc mới thành công!',
                 'data' => $celender,
             ], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $th) {
             DB::rollBack();
-            LogHelper::saveLog('Import-Celender', $e->getMessage(), $e->getLine());
-            Log::error('Errors: '.$e->getMessage().' getLine: '.$e->getLine());
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Thêm lịch làm việc mới không thành công!',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function show(Request $request, $id)
-    {
-        DB::beginTransaction();
-        try {
-            $celender = Celender::find($id);
-
-            if (! $celender) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Không tìm thấy lịch làm việc',
-                ], 404);
-            }
-
-            if (! empty($request->employee_id) && count($request->employee_id) != 0) {
-                foreach ($request->employee_id as $employee_id) {
-                    // HNHC
-                    $key = $employee_id.'-hnhc';
-                    if ($request->$key && count($request->$key) != 0) {
-                        $celenderDetailHNHC = CelenderDetailHNHC::where('celender_id', $id)
-                            ->where('employee_id', $employee_id)
-                            ->first();
-
-                        if ($celenderDetailHNHC) {
-                            foreach ($request->$key as $keyCelender => $celender) {
-                                $fillName = 'day'.($keyCelender + 1);
-                                $celenderDetailHNHC->$fillName = $celender;
-                            }
-                            $celenderDetailHNHC->save();
-                        }
-                    }
-
-                    // Eatroom
-                    $key = $employee_id.'-eatroom';
-                    if ($request->$key && count($request->$key) != 0) {
-                        $celenderDetailEatroom = CelenderDetailEatroom::where('celender_id', $id)
-                            ->where('employee_id', $employee_id)
-                            ->first();
-
-                        if ($celenderDetailEatroom) {
-                            foreach ($request->$key as $keyCelender => $celender) {
-                                $fillName = 'day'.($keyCelender + 1);
-                                $celenderDetailEatroom->$fillName = $celender;
-                            }
-                            $celenderDetailEatroom->save();
-                        }
-                    }
-
-                    // WC vứt rác
-                    $key = $employee_id.'-wc';
-                    if ($request->$key && count($request->$key) != 0) {
-                        $celenderDetailWC = CelenderDetailWC::where('celender_id', $id)
-                            ->where('employee_id', $employee_id)
-                            ->first();
-
-                        if ($celenderDetailWC) {
-                            foreach ($request->$key as $keyCelender => $celender) {
-                                $fillName = 'day'.($keyCelender + 1);
-                                $celenderDetailWC->$fillName = $celender;
-                            }
-                            $celenderDetailWC->save();
-                        }
-                    }
-
-                    // WC trực nữ
-                    $key = $employee_id.'-wccleanwomen';
-                    if ($request->$key && count($request->$key) != 0) {
-                        $celenderDetailWCCleanWomen = CelenderDetailWCCleanWomen::where('celender_id', $id)
-                            ->where('employee_id', $employee_id)
-                            ->first();
-
-                        if ($celenderDetailWCCleanWomen) {
-                            foreach ($request->$key as $keyCelender => $celender) {
-                                $fillName = 'day'.($keyCelender + 1);
-                                $celenderDetailWCCleanWomen->$fillName = $celender;
-                            }
-                            $celenderDetailWCCleanWomen->save();
-                        }
-                    }
-
-                    // WC trực nam
-                    $key = $employee_id.'-wccleanmen';
-                    if ($request->$key && count($request->$key) != 0) {
-                        $celenderDetailWCCleanMen = CelenderDetailWCCleanMen::where('celender_id', $id)
-                            ->where('employee_id', $employee_id)
-                            ->first();
-
-                        if ($celenderDetailWCCleanMen) {
-                            foreach ($request->$key as $keyCelender => $celender) {
-                                $fillName = 'day'.($keyCelender + 1);
-                                $celenderDetailWCCleanMen->$fillName = $celender;
-                            }
-                            $celenderDetailWCCleanMen->save();
-                        }
-                    }
-                }
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Cập nhật lịch làm việc thành công!',
-            ], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Errors: '.$e->getMessage().' getLine: '.$e->getLine());
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Cập nhật lịch làm việc không thành công!',
-                'error' => $e->getMessage(),
-            ], 500);
+            return HandleError::handle($th);
         }
     }
 

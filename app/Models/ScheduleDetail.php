@@ -47,12 +47,12 @@ class ScheduleDetail extends Pivot
         );
     }
 
-    public function schedule()
+    public function schedules()
     {
         return $this->belongsTo(Schedule::class, 'schedule_id');
     }
 
-    public function employee()
+    public function employees()
     {
         return $this->belongsTo(Employee::class, 'employee_id');
     }

@@ -36,10 +36,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/updateDataCC', [AttendanceRecordController::class, 'updateDataCC'])->name('updateDataCC');
+Route::get('/acs-events/today', [AttendanceRecordController::class, 'fetchTodayEvents']);
 
 // Đăng nhập
-Route::post('/login', [AuthController::class, 'authLogin']);
-Route::post('/logout', [AuthController::class, 'authLogout']);
+Route::post('/login', [AuthController::class, 'authLogin'])->name('auth.login');
+Route::post('/logout', [AuthController::class, 'authLogout'])->name('auth.logout');
 
 // clear cache
 app()->environment('local') && Route::get('/clear-cache', function () {
@@ -127,17 +128,17 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'admin'])->group(fu
     });
 
     Route::prefix('schedules')->group(function () {
-        // Route::prefix('details')->group(function () {
-        //     Route::get('/', [ScheduleDetailController::class, 'index']);
-        //     Route::get('/{id}', [ScheduleDetailController::class, 'detail']);
-        //     Route::post('/', [ScheduleDetailController::class, 'store']);
-        //     Route::get('/{id}', [ScheduleDetailController::class, 'show']);
-        //     Route::patch('/{id}', [ScheduleDetailController::class, 'update']);
-        //     Route::delete('/{id}', [ScheduleDetailController::class, 'destroy']);
-        // });
+        Route::prefix('detail')->group(function () {
+            Route::get('/', [ScheduleDetailController::class, 'index']);
+            //     Route::get('/{id}', [ScheduleDetailController::class, 'detail']);
+            //     Route::post('/', [ScheduleDetailController::class, 'store']);
+            //     Route::get('/{id}', [ScheduleDetailController::class, 'show']);
+            //     Route::patch('/{id}', [ScheduleDetailController::class, 'update']);
+            //     Route::delete('/{id}', [ScheduleDetailController::class, 'destroy']);
+        });
         Route::get('/', [ScheduleController::class, 'index']);
         Route::post('/', [ScheduleController::class, 'create']);
-        Route::get('/{id}', [ScheduleController::class, 'detail']);
+        Route::get('/{id}', [ScheduleController::class, 'show']);
         Route::delete('/{id}', [ScheduleController::class, 'delete']);
     });
 
