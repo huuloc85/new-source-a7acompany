@@ -501,7 +501,7 @@
                 cancelButtonText: 'Chưa đổi mạng',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.open('http://192.168.1.6/doc/index.html#/eventSearch?t=1731739764211', '_blank');
+                    window.open('http://192.168.1.200/doc/index.html#/eventSearch?t=1731739764211', '_blank');
                 }
             });
         });

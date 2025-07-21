@@ -151,6 +151,17 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-2">
+                            <label for="filter_month" class="form-label">Tháng</label>
+                            <select name="filter_month" id="filter_month" class="form-select" onchange="this.form.submit()">
+                                @foreach ($availableMonths as $month)
+                                    <option value="{{ $month }}"
+                                        {{ request('filter_month') == $month ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::parse($month . '-01')->format('m/Y') }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
                         <div class="col-md-2">
                             <label for="filter_date" class="form-label">Ngày</label>
@@ -280,7 +291,8 @@
                                         <div class="card-body p-3">
                                             <p class="mb-1"><strong>STT:</strong>
                                                 {{ $loop->parent->iteration }}.{{ $loop->iteration }}</p>
-                                            <p class="mb-1"><strong>Tên Sản Phẩm:</strong> {{ $item->product->name }}</p>
+                                            <p class="mb-1"><strong>Tên Sản Phẩm:</strong> {{ $item->product->name }}
+                                            </p>
                                             <p class="mb-1"><strong>Code:</strong> {{ $item->product->code }}</p>
                                             <p class="mb-1"><strong>Nhân Viên Nhập:</strong> {{ $item->employee->name }}
                                             </p>
