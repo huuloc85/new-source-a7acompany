@@ -38,7 +38,7 @@ class ProductController extends BaseController
             $validated = $request->validate([
                 'limit' => 'nullable|integer|min:0',
                 'page' => 'nullable|integer|min:1',
-                'month' => 'nullable|date_format:m-Y',
+                'month' => 'nullable|date_format:Y-m',
                 'status' => 'nullable|integer|min:1|max:7',
             ]);
 
@@ -80,7 +80,7 @@ class ProductController extends BaseController
                 ->allowedIncludes([
                     AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status) {
                         if ($currentMonth) {
-                            $query->where('month', $currentMonth);
+                            $query->where('month', Carbon::parse($currentMonth)->format('m-Y'));
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -88,7 +88,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse('01-'.$currentMonth)->format('Y-m-').'%');
+                            $query->where('date', 'like', $currentMonth.'-%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -96,7 +96,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse('01-'.$currentMonth)->format('Y-m-').'%');
+                            $query->where('date', 'like', $currentMonth.'-%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -104,7 +104,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse('01-'.$currentMonth)->format('Y-m-').'%');
+                            $query->where('date', 'like', $currentMonth.'-%');
                         }
                     }),
                 ]);
