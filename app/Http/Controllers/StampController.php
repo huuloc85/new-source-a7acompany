@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BarcodeScanned;
+use App\Events\QrScanned;
 use App\Models\Product;
 use App\Models\SendStamp;
 use App\Models\StorageProduct;
@@ -125,84 +127,136 @@ class StampController extends Controller
     // view scan
     public function scan(Request $request)
     {
-        return view('barcode.scan');
+        $products = Product::select('id', 'name', 'code')->get();
+
+        return view('barcode.scan', compact('products'));
     }
 
-    public function scanQr(Request $request)
-    {
-        return view('barcode.qr-code');
-    }
-
-    // handle check barcode when scan success
-    public function checkBarCode(Request $request)
-    {
-        $employeeId = auth()->user()->id;
-        $data = explode('a', $request->barcode);
-        $result = [
-            'status' => 500,
-        ];
-
-        if ($data && count($data) > 1) {
-            $productId = $data[0];
-            $ltoString = $data[1];
-            $date = substr($data[1], 0, 8);
-            $shift = substr($data[1], 8, 1);
-            $bin = substr($data[1], 9);
-            $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
-
-            $product = Product::find($productId);
-
-            if ($product) {
-                $checkLot = StorageProduct::where('lot', $lot)->first();
-
-                if ($checkLot == null) {
-                    $storageProduct = new StorageProduct;
-                    $storageProduct->product_id = $productId;
-                    $storageProduct->lot = $lot;
-                    $storageProduct->employee_id = $employeeId;
-                    $storageProduct->bin = $bin;
-                    $storageProduct->save();
-
-                    $result['status'] = 200;
-                    $result['lot'] = $lot;
-
-                    return response()->json($result, 200);
-                }
-
-                $result['status'] = 400;
-
-                return response()->json($result, 200);
-            } else {
-                $result['status'] = 404;
-
-                return response()->json($result, 200);
-            }
-        }
-
-        return response()->json($result, 200);
-    }
-
-    // handle check qr code when scan success
+    // handle check qr code
     public function checkQr(Request $request)
     {
         $qrCode = $request->input('qr_code');
 
         if (! $qrCode) {
-            return response()->json(['status' => 400, 'message' => 'Không nhận được mã QR']);
+            $data = [
+                'status' => 400,
+            ];
+
+            broadcast(new QrScanned($data));
+
+            return response()->json($data, 400);
         }
 
         $product = Product::where('code', $qrCode)->first();
 
         if (! $product) {
-            return response()->json(['status' => 404, 'message' => 'Không tìm thấy sản phẩm']);
+            $data = [
+                'status' => 404,
+            ];
+
+            broadcast(new QrScanned($data));
+
+            return response()->json($data, 404);
         }
+
+        $data = [
+            'status' => 200,
+            'id' => $product->id,
+            'name' => $product->name,
+        ];
+
+        broadcast(new QrScanned($data));
 
         return response()->json([
             'status' => 200,
             'product_id' => $product->id,
             'product_name' => $product->name,
-        ]);
+        ], 200);
     }
+
+    public function checkBarCode(Request $request)
+    {
+        $employeeId = auth()->user()->id;
+        $barcode = $request->barcode;
+        $data = explode('a', $barcode);
+
+        if (! $barcode || count($data) < 2) {
+            broadcast(new BarcodeScanned([
+                'id' => null,
+                'name' => 'Không hợp lệ',
+                'status' => 422,
+            ]));
+
+            return response()->json([
+                'status' => 422,
+                'product_id' => null,
+                'product_name' => null,
+            ], 422);
+        }
+
+        $productId = $data[0];
+        $date = substr($data[1], 0, 8);
+        $shift = substr($data[1], 8, 1);
+        $bin = substr($data[1], 9);
+        $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
+
+        $product = Product::find($productId);
+
+        if (! $product) {
+            broadcast(new BarcodeScanned([
+                'id' => $productId,
+                'name' => 'Không rõ',
+                'status' => 404,
+            ]));
+
+            return response()->json([
+                'status' => 404,
+                'product_id' => $productId,
+                'product_name' => null,
+            ], 404);
+        }
+
+        $checkLot = StorageProduct::where('lot', $lot)->first();
+
+        if ($checkLot) {
+            broadcast(new BarcodeScanned([
+                'id' => $productId,
+                'name' => $product->name,
+                'status' => 409,
+                'lot' => $lot,
+            ]));
+
+            return response()->json([
+                'status' => 409,
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+            ], 409);
+        }
+
+        // Lưu sản phẩm mới
+        $storageProduct = new StorageProduct;
+        $storageProduct->product_id = $productId;
+        $storageProduct->lot = $lot;
+        $storageProduct->employee_id = $employeeId;
+        $storageProduct->bin = $bin;
+        $storageProduct->save();
+
+        broadcast(new BarcodeScanned([
+            'id' => $productId,
+            'name' => $product->name,
+            'status' => 200,
+            'lot' => $lot,
+        ]));
+
+        return response()->json([
+            'status' => 200,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'lot' => $lot,
+        ], 200);
+    }
+
+    // handle check qr code when scan success
 
     public function savePrint(Request $request)
     {

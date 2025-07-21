@@ -334,11 +334,11 @@
                                                     @foreach ($listDate as $key => $date)
                                                         <td
                                                             class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
-                                                            {{ number_format($product->totalQuanDateCa1[$date]) }}
+                                                            {{ number_format($product->totalQuanDateCa1[$date] ?? 0) }}
                                                         </td>
                                                         <td
                                                             class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
-                                                            {{ number_format($product->totalQuanDateCa2[$date]) }}
+                                                            {{ number_format($product->totalQuanDateCa2[$date] ?? 0) }}
                                                         </td>
                                                     @endforeach
                                                 </tr>
@@ -407,7 +407,7 @@
 
                                                         <td
                                                             class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
-                                                            {{ number_format((float) $product->totalQuanDateError[$date]) }}
+                                                            {{ number_format((float) ($product->totalQuanDateError[$date] ?? 0)) }}
                                                         </td>
                                                     @endforeach
                                                 </tr>

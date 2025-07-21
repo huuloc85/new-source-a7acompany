@@ -126,78 +126,162 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header p-4">
+        <div class="card-header">
             <h4 class="card-title">Danh Sách Sản Phẩm</h4>
         </div>
         <div class="card-body">
-            <div class="d-flex flex-wrap justify-content-between gap-3">
-                <div class="flex flex-wrap align-items-center gap-3">
-                    <a
-                        href="{{ route('admin.product.add') }}"
-                        class="btn btn-primary rounded mb-2"
-                        title="Thêm Sản Phẩm"
-                        data-bs-toggle="tooltip">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                    <a
-                        href="{{ route('admin.product.update-moq') }}"
-                        class="btn btn-primary rounded mb-2"
-                        title="Thêm Sản Lượng MOQ Tồn Đầu Kỳ Tồn 200%"
-                        data-bs-toggle="tooltip">
-                        <i class="fas fa-box"></i>
-                    </a>
-                    <a
-                        href="{{ route('admin.product.add-quantity-admin') }}"
-                        class="btn btn-primary rounded mb-2"
-                        title="Thêm Sản Lượng Sản Xuất"
-                        data-bs-toggle="tooltip">
-                        <i class="fas fa-industry"></i>
-                    </a>
-                    <a
-                        href="{{ route('admin.product.getTrash') }}"
-                        class="btn btn-warning trash rounded mb-2"
-                        title="Thùng Rác"
-                        data-bs-toggle="tooltip">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                    <form action="{{ route('admin.export.product') }}" method="get" class="d-inline">
-                        @csrf
-                        <input type="hidden" name="month" value="{{ $monthNearly }}" />
-                        <button type="submit" class="btn btn-success mb-2" title="Xuất Excel" data-bs-toggle="tooltip">
-                            <i class="fas fa-file-export me-2"></i>
-                            <span>Export</span>
-                        </button>
-                    </form>
+            <div class="row">
+                <!-- Left: Thao tác -->
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body p-3">
+                            <h6 class="card-title mb-3 text-primary">
+                                <i class="fas fa-cogs me-2"></i>
+                                Thao tác
+                            </h6>
+                            <div class="row g-2">
+                                <!-- Desktop View -->
+                                <div class="d-none d-md-flex flex-wrap gap-2">
+                                    <a href="{{ route('admin.product.add') }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Thêm Sản Phẩm
+                                    </a>
+                                    <a href="{{ route('admin.product.update-moq') }}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-box me-2"></i>
+                                        Cập nhật MOQ
+                                    </a>
+                                    <a
+                                        href="{{ route('admin.product.add-quantity-admin') }}"
+                                        class="btn btn-success btn-sm">
+                                        <i class="fas fa-industry me-2"></i>
+                                        Thêm Sản Lượng
+                                    </a>
+                                    <a href="{{ route('admin.product.getTrash') }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-trash me-2"></i>
+                                        Thùng Rác
+                                    </a>
+                                    <form action="{{ route('admin.export.product') }}" method="get" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="month" value="{{ $monthNearly }}" />
+                                        <button type="submit" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-file-export me-2"></i>
+                                            Xuất Excel
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Mobile View -->
+                                <div class="d-md-none">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <a
+                                                href="{{ route('admin.product.add') }}"
+                                                class="btn btn-primary btn-sm w-100">
+                                                <i class="fas fa-plus d-block mb-1"></i>
+                                                <small>Thêm SP</small>
+                                            </a>
+                                        </div>
+                                        <div class="col-6">
+                                            <a
+                                                href="{{ route('admin.product.update-moq') }}"
+                                                class="btn btn-info btn-sm w-100">
+                                                <i class="fas fa-box d-block mb-1"></i>
+                                                <small>MOQ</small>
+                                            </a>
+                                        </div>
+                                        <div class="col-6">
+                                            <a
+                                                href="{{ route('admin.product.add-quantity-admin') }}"
+                                                class="btn btn-success btn-sm w-100">
+                                                <i class="fas fa-industry d-block mb-1"></i>
+                                                <small>Sản Lượng</small>
+                                            </a>
+                                        </div>
+                                        <div class="col-6">
+                                            <a
+                                                href="{{ route('admin.product.getTrash') }}"
+                                                class="btn btn-warning btn-sm w-100">
+                                                <i class="fas fa-trash d-block mb-1"></i>
+                                                <small>Thùng Rác</small>
+                                            </a>
+                                        </div>
+                                        <div class="col-12">
+                                            <form action="{{ route('admin.export.product') }}" method="get">
+                                                @csrf
+                                                <input type="hidden" name="month" value="{{ $monthNearly }}" />
+                                                <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                                                    <i class="fas fa-file-export me-2"></i>
+                                                    Xuất Excel
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center gap-3">
-                    <form method="get" class="d-flex gap-3" id="searchForm">
-                        @csrf
-                        <input type="hidden" name="page" value="{{ $page }}" />
-                        <select class="form-select" name="month" id="monthSelect" onchange="this.form.submit()">
-                            @foreach ($listMonth as $month)
-                                <option {{ $month == $monthNearly ? 'selected' : '' }} value="{{ $month }}">
-                                    {{ $month }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <select class="form-select" name="orderBy" id="orderBySelect" onchange="this.form.submit()">
-                            <option value="asc" {{ request('orderBy') == 'asc' ? 'selected' : '' }}>Đầu Tiên</option>
-                            <option value="desc" {{ request('orderBy') == 'desc' ? 'selected' : '' }}>
-                                Cuối Cùng
-                            </option>
-                        </select>
-                    </form>
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#searchModal"
-                        title="Tìm kiếm nâng cao">
-                        <i class="fas fa-filter"></i>
-                    </button>
-                    @include('product.search-advance', ['href' => 'admin.product.home'])
+
+                <!-- Right: Filter -->
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body p-3">
+                            <h6 class="card-title mb-3 text-primary">
+                                <i class="fas fa-filter me-2"></i>
+                                Lọc & Tìm kiếm
+                            </h6>
+
+                            <form method="get" id="searchForm">
+                                @csrf
+                                <input type="hidden" name="page" value="{{ $page }}" />
+
+                                <div class="mb-3">
+                                    <label class="form-label text-sm fw-medium">Tháng:</label>
+                                    <select
+                                        class="form-select form-select-sm"
+                                        name="month"
+                                        onchange="this.form.submit()">
+                                        @foreach ($listMonth as $month)
+                                            <option
+                                                {{ $month == $monthNearly ? 'selected' : '' }}
+                                                value="{{ $month }}">
+                                                {{ $month }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-sm fw-medium">Sắp xếp:</label>
+                                    <select
+                                        class="form-select form-select-sm"
+                                        name="orderBy"
+                                        onchange="this.form.submit()">
+                                        <option value="asc" {{ request('orderBy') == 'asc' ? 'selected' : '' }}>
+                                            Cũ nhất trước
+                                        </option>
+                                        <option value="desc" {{ request('orderBy') == 'desc' ? 'selected' : '' }}>
+                                            Mới nhất trước
+                                        </option>
+                                    </select>
+                                </div>
+                            </form>
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm w-100"
+                                data-bs-toggle="modal"
+                                data-bs-target="#searchModal">
+                                <i class="fas fa-search me-2"></i>
+                                Tìm kiếm nâng cao
+                            </button>
+
+                            @include('product.search-advance', ['href' => 'admin.product.home'])
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="py-2 fs-5">
                 Tổng Sản Phẩm:
                 <strong>{{ count($products) }}</strong>
@@ -632,7 +716,9 @@
                                                 <tr>
                                                     @foreach ($listDate as $key => $date)
                                                         @php
-                                                            $formattedDate = \Carbon\Carbon::parse($date)->startOfDay();
+                                                            $formattedDate = \Carbon\Carbon::parse(
+                                                                $date,
+                                                            )->startOfDay();
 
                                                             // Lấy tất cả các dailyQuantities cho ngày cụ thể
                                                             $dailyQuantitiesOfTheDay = $product
@@ -673,7 +759,9 @@
                                                                 if ($created_at->between($startCa1, $endCa1)) {
                                                                     // Nếu thời gian thuộc khoảng 07:30 - 21:00 => Ca 1
                                                                     $totalQuanDateCa1 += $dailyQuantity->quantity;
-                                                                } elseif ($created_at->between($startCa2, $endCa2)) {
+                                                                } elseif (
+                                                                    $created_at->between($startCa2, $endCa2)
+                                                                ) {
                                                                     // Nếu thời gian thuộc khoảng 20:30 - 09:00 hôm sau => Ca 2
                                                                     $totalQuanDateCa2 += $dailyQuantity->quantity;
                                                                 }
