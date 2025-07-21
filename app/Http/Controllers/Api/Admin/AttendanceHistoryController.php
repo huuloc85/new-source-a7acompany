@@ -47,7 +47,7 @@ class AttendanceHistoryController extends BaseController
                         'employee.calendar_category_id',
                     ])
                     ->allowedIncludes([
-                        'employee',
+                        'employees',
                     ])
                     ->paginate($request->input('limit'));
 

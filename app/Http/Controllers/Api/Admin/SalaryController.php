@@ -200,7 +200,7 @@ class SalaryController extends BaseController
                 $companyData = SalaryOfficialVVP::query()->where('salaries_manager_id', $id)
                     ->with([
                         'employee.role:id,role_name',
-                        'employee:id,code,name,role_id',
+                        'employee:id,name,role_id',
                     ]);
 
                 $categoryData = $companyData->get($categoryFields);
@@ -230,7 +230,7 @@ class SalaryController extends BaseController
                 $companyData = SalaryOfficialA7A::query()->where('salaries_manager_id', $id)
                     ->with([
                         'employee.role:id,role_name',
-                        'employee:id,code,name,role_id',
+                        'employee:id,name,role_id',
                     ]);
 
                 $categoryData = $companyData->get($categoryFields);
