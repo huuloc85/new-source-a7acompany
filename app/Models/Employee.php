@@ -68,6 +68,14 @@ class Employee extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function hasPermission($key)
+    {
+        return $this->role
+            ->permissions()
+            ->where('key', $key)
+            ->exists();
+    }
+
     public function getEmployeeTotalHoursAttribute()
     {
         return $this->employeeTotalHours;

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CheckAdmin
+class CheckWarehouse
 {
     /**
      * Handle an incoming request.
@@ -16,11 +16,19 @@ class CheckAdmin
     public function handle(Request $request, Closure $next): JsonResponse
     {
         $user = auth()->user();
-        // Chỉ cho phép nếu role_name là 'Admin'
-        if (! $user || ! isset($user->role) || trim($user->role->role_name) !== 'Admin') {
-            return response()->json(['message' => 'Bạn không có quyền truy cập chức năng này.'], 403);
+
+        $allowedRoles = [
+            'Admin',
+            'Kho',
+            'Super Admin',
+        ];
+
+        if ($user && in_array($user->role->role_name, $allowedRoles)) {
+            return $next($request);
         }
 
-        return $next($request);
+        return response()->json([
+            'message' => 'Bạn không có quyền truy cập!',
+        ], 403);
     }
 }

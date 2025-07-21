@@ -4,10 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckEmployee
+class CheckWarehouse
 {
     /**
      * Handle an incoming request.
@@ -16,15 +15,11 @@ class CheckEmployee
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (
-            Auth::user()->role->role_name == 'Admin' ||
-            Auth::user()->role->role_name == 'Super Admin'
-        ) {
-            toast('Bạn không có quyền truy cập!', 'error', 'top-right');
-
-            return redirect()->route('admin.home');
+        if (Auth()->user()->role->role_name == 'Admin' || Auth()->user()->role->role_name == 'Kho' || Auth()->user()->role->role_name == 'Super Admin') {
+            return $next($request);
         }
+        toast('Bạn không có quyền truy cập!', 'error', 'top-right');
 
-        return $next($request);
+        return redirect()->route('admin.home');
     }
 }

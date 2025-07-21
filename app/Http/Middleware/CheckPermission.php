@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Http\Middleware\API;
+namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckManager
+class CheckPermission
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+    // app/Http/Middleware/CheckPermission.php
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
-        // Chỉ cho phép nếu role_name là 'Manager'
-        if (! $user || ! isset($user->role) || trim($user->role->role_name) !== 'Manager') {
-            return response()->json(['message' => 'Bạn không có quyền truy cập chức năng này.'], 403);
+        $user = Auth()->user();
+        if ($user->role->role_name !== 'Super Admin') {
+            toast('Bạn không có quyền truy cập!', 'error', 'top-right');
+
+            return redirect()->route('admin.home');
         }
 
         return $next($request);

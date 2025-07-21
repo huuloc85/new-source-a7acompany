@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CheckQcQa
+class CheckLeader
 {
     /**
      * Handle an incoming request.
@@ -18,10 +18,11 @@ class CheckQcQa
         $user = auth()->user();
 
         $allowedRoles = [
-            'Admin',
-            'QA-QC',
-            'QC',
             'Super Admin',
+            'Admin',
+            'Tổ trưởng ngoại quan',
+            'Tổ phó sản xuất',
+            'Tổ trưởng sản xuất',
         ];
 
         if ($user && in_array($user->role->role_name, $allowedRoles)) {

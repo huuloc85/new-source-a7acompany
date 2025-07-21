@@ -12,14 +12,15 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\LoginHistoryController;
 use App\Http\Controllers\MaterialProductController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductionPlanController;
+use App\Http\Controllers\RBACController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\SendStampController;
 use App\Http\Controllers\StampController;
 use App\Http\Controllers\StorageProductController;
-use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,7 +38,21 @@ Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'handleLogin'])->name('handleLogin');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::prefix('admin')->middleware(['auth'])->group(function () {
+Route::prefix('rbac')->middleware('permission')->group(function () {
+    Route::get('/', [RBACController::class, 'index'])->name('rbac.index');
+    Route::post('/save', [RBACController::class, 'save'])->name('rbac.save');
+});
+
+Route::prefix('permissions')->middleware('permission')->group(function () {
+    Route::get('/', [PermissionController::class, 'index'])->name('permissions.index');
+    Route::get('/create', [PermissionController::class, 'create'])->name('permissions.create');
+    Route::post('/', [PermissionController::class, 'store'])->name('permissions.store');
+    Route::get('/{permission}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
+    Route::put('/{permission}', [PermissionController::class, 'update'])->name('permissions.update');
+    Route::delete('/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+});
+
+Route::prefix('/admin')->middleware(['auth'])->group(function () {
     Route::get('/home', [DashBoardController::class, 'index'])->name('admin.home');
     Route::get('/profile', [AuthController::class, 'profile'])->name('admin.profile');
     Route::post('/change-profile', [AuthController::class, 'changeProfile'])->name('admin.change-profile');
@@ -45,45 +60,16 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword'])->name('admin.change-password');
     Route::post('/reset-password/{id}', [AuthController::class, 'resetPassword'])->name('admin.reset-password');
 
-    // show lịch làm việc + bảng lương cho nhân sự
-    Route::middleware(['authEmployees'])->prefix('/employee-show')->group(function () {
-        Route::get('/celender', [EmployeeController::class, 'celender'])->name('admin.employee-show.celender');
-        Route::get('/celender/{id}', [EmployeeController::class, 'celenderDetail'])->name('admin.employee-show.celender-detail');
-        Route::get('/salary', [EmployeeController::class, 'salary'])->name('admin.employee-show.salary');
-        Route::get('/salary/{id}', [EmployeeController::class, 'salaryDetail'])->name('admin.employee-show.salary-detail');
-        Route::get('/update-quantity', [ProductController::class, 'updateQuantity'])->name('admin.product.update-quantity');
-        Route::post('/update-quantity', [ProductController::class, 'handleUpdateQuantity'])->name('admin.product.handle-update-quantity');
-        Route::get('/history-update', [ProductController::class, 'historyUpdate'])->name('admin.product.history-update');
-        Route::get('/update-error', [ProductController::class, 'showUpdateError'])->name('admin.product.update-error');
-        Route::post('/update-error', [ProductController::class, 'handleUpdateError'])->name('admin.product.handle-update-error');
-        Route::get('/history-update-error', [ProductController::class, 'historyUpdateError'])->name('admin.product.history-update-error');
-        Route::get('/history-update', [ProductController::class, 'historyUpdate'])->name('admin.product.history-update');
-        // Check Employee của Nhân Viên
-        Route::get('/check-employee-todo', [CheckEmployeeController::class, 'checkEmployeeTodo'])->name('admin.employee.check-employee-todo');
-        Route::post('/check-employee-todo', [CheckEmployeeController::class, 'handleCheckEmployeeTodo'])->name('admin.employee.handle.check-employee-todo');
-        Route::get('/check-employee-todo/history', [CheckEmployeeController::class, 'historyEmployeeCheck'])->name('admin.employee-history-check');
-        Route::delete('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'deleteHistory'])->name('admin.employee.delete-employee-todo');
-        Route::post('/check-employee-todo/history/{id}', [CheckEmployeeController::class, 'updateEmployee'])->name('admin.employee.update-employee-todo');
-        // View của nhân viên Xem Chấm Công
-        Route::get('/attendence', [AttendanceRecordController::class, 'employeeViewRecords'])->name('admin.employee.attendence');
-        Route::get('/attendence-caculate', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('admin.employee.attendence_caculate_records');
-        // Route của Nhân viên gửi request In Tem
-        Route::get('/send-stamp/index', [SendStampController::class, 'index'])->name('admin.send-stamp');
-        Route::post('/send-stamp/index', [SendStampController::class, 'handleAdd'])->name('admin.handleAdd-send-stamp');
-        Route::get('/send-stamp/check-status', [SendStampController::class, 'checkStampEmployee'])->name('admin.checkstamp-employee');
-        //
-    });
-
     // chức năng của Admin CheckEmployee
     Route::middleware(['authAdmin'])->prefix('/check-employee')->group(function () {
-        Route::get('/admin-view-employee-todo', [CheckEmployeeController::class, 'index'])->name('admin.checkemployee.view-employee-todo');
-        Route::delete('/admin-view-employee-todo/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
-        Route::post('/admin-check-employee-todo/edit/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
+        Route::get('/', [CheckEmployeeController::class, 'index'])->name('admin.checkemployee.view-employee-todo');
+        Route::delete('/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
+        Route::post('/update/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');
     });
 
     // chức năng của In Tem Của Admin
     Route::middleware(['authAdmin'])->prefix('/check-stamp')->group(function () {
-        Route::get('/index', [SendStampController::class, 'checkStamp'])->name('admin.checkstamp');
+        Route::get('', [SendStampController::class, 'checkStamp'])->name('admin.checkstamp');
         Route::get('/print/{id}', [SendStampController::class, 'print'])->name('admin.send-stamp.print');
         Route::post('/save-print', [SendStampController::class, 'savePrint'])->name('admin.stamp.save.print');
         Route::post('/reject-print/{id}', [SendStampController::class, 'rejectPrint'])->name('admin.stamp.reject.print');
@@ -91,7 +77,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     // Kế hoạch sản xuất
     Route::middleware(['authAdmin'])->prefix('/product-plan')->group(function () {
-        Route::get('/index', [ProductionPlanController::class, 'index'])->name('admin.product-plan.index');
+        Route::get('/', [ProductionPlanController::class, 'index'])->name('admin.product-plan.index');
         Route::get('/add', [ProductionPlanController::class, 'addProductPlan'])->name('admin.product-plan.add');
         Route::post('/add', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
         Route::post('/update', [ProductionPlanController::class, 'updateProductPlan'])->name('admin.product-plan.update');
@@ -103,25 +89,18 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     // Kế hoạch Nguyên Liệu
     Route::middleware(['authAdmin'])->prefix('/material')->group(function () {
-        Route::get('/index', [MaterialProductController::class, 'index'])->name('admin.material.index');
-        Route::get('/add', [MaterialProductController::class, 'add'])->name('admin.material.index.add');
-        // Route::post('/add', [ProductionPlanController::class, 'storeProductPlan'])->name('admin.product-plan.store');
-        // Route::post('/update', [ProductionPlanController::class, 'updateProductPlan'])->name('admin.product-plan.update');
-        // Route::delete('/delete/{id}', [ProductionPlanController::class, 'deleteProductPlan'])->name('admin.product-plan.delete');
-        // Route::get('/export', [ProductionPlanController::class, 'export'])->name('admin.product-plan.export');
-        // Route::get('/editConfig', [ProductionPlanController::class, 'configProductPlan'])->name('admin.product-plan.config');
-        // Route::post('/updateConfig', [ProductionPlanController::class, 'handleConfigProductPlan'])->name('admin.product-plan.handleConfig');
+        Route::get('/', [MaterialProductController::class, 'index'])->name('admin.material.index');
+        Route::get('/add', [MaterialProductController::class, 'add'])->name('admin.material.add');
     });
 
     // Bảng Chấm Công
-    Route::middleware(['authAdmin'])->prefix('/attendence')->group(function () {
-        Route::get('/index', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
+    Route::middleware(['authAdmin'])->prefix('/attendance')->group(function () {
+        Route::get('/', [AttendanceRecordController::class, 'index'])->name('admin.attendence.index');
         Route::get('/records', [AttendanceRecordController::class, 'records'])->name('admin.attendence.records');
         Route::post('/records', [AttendanceRecordController::class, 'handleAddRecords'])->name('admin.attendence.handleRecords');
-        Route::put('/admin/attendence/{employee_code}/{datetime}', [AttendanceRecordController::class, 'update'])->name('admin.attendence.update');
-        Route::delete('records/{employee_code}/{datetime}', [AttendanceRecordController::class, 'destroy'])->name('admin.attendence.destroy');
+        Route::put('/{employee_code}/{datetime}', [AttendanceRecordController::class, 'update'])->name('admin.attendence.update');
+        Route::delete('/{employee_code}/{datetime}', [AttendanceRecordController::class, 'destroy'])->name('admin.attendence.destroy');
         Route::get('/export', [AttendanceRecordController::class, 'export'])->name('admin.attendance.export');
-        Route::get('/test-export', [AttendanceRecordController::class, 'testExport'])->name('test.export');
     });
 
     // quản lý chức vụ
@@ -132,12 +111,15 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::get('/edit/{id}', [RoleController::class, 'edit'])->name('admin.role.edit');
         Route::post('/update/{id}', [RoleController::class, 'update'])->name('admin.role.update');
         Route::delete('/delete/{id}', [RoleController::class, 'delete'])->name('admin.role.delete');
-
-        // log
-        Route::get('/log', [LogController::class, 'index'])->name('admin.log');
-        Route::delete('/log/{id}', [LogController::class, 'delete'])->name('admin.log.delete');
-        Route::post('/log/delete/all', [LogController::class, 'deleteAll'])->name('admin.log.delete.all');
     });
+
+    // log
+    Route::middleware(['authAdmin'])->prefix('/log')->group(function () {
+        Route::get('/', [LogController::class, 'index'])->name('admin.log');
+        Route::delete('//{id}', [LogController::class, 'delete'])->name('admin.log.delete');
+        Route::post('/delete/all', [LogController::class, 'deleteAll'])->name('admin.log.delete.all');
+    });
+
     // history
     Route::middleware(['authAdmin'])->prefix('/history')->group(function () {
         Route::get('/', [LoginHistoryController::class, 'index'])->name('admin.history.home');
@@ -196,30 +178,30 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // barcode
-    Route::middleware(['authAdmin'])->prefix('/barcode')->group(function () {
+    Route::middleware(['check.qa.qc'])->prefix('/carton')->group(function () {
         Route::get('/', [StampController::class, 'index'])->name('admin.product.barcode');
         Route::post('/register', [StampController::class, 'barcode'])->name('admin.barcode.register');
         Route::post('/save-print', [StampController::class, 'savePrint'])->name('admin.barcode.save.print');
     });
 
     // packing-stamp
-    Route::middleware(['authAdmin'])->prefix('/packing')->group(function () {
+    Route::middleware(['check.qa.qc'])->prefix('/packing')->group(function () {
         Route::get('/', [StampController::class, 'packingStamp'])->name('admin.product.packing');
         Route::post('/register', [StampController::class, 'StorePackingStamp'])->name('admin.packing.register');
         Route::post('/save-printPacking', [StampController::class, 'savePrintPacking'])->name('admin.barcode.save.print.packing');
     });
 
     // view check barcode for employee
-    Route::middleware(['authAdmin'])->prefix('/barcode/employee')->group(function () {
-        Route::get('/scan', [StampController::class, 'scan'])->name('admin.barcode.scan');
-        Route::post('/check', [StampController::class, 'checkBarCode'])->name('admin.barcode.check');
-        Route::get('/scanqr', [StampController::class, 'scanQr'])->name('admin.barcode.scanQr');
-        Route::post('/checkqr', [StampController::class, 'checkQr'])->name('admin.barcode.checkQr');
+    Route::middleware(['check.warehouse'])->prefix('/scan')->group(function () {
+        Route::get('/barcode', [StampController::class, 'scan'])->name('admin.barcode.scan');
+        Route::post('/barcode', [StampController::class, 'checkBarCode'])->name('admin.barcode.check');
+        Route::get('/qr', [StampController::class, 'scanQr'])->name('admin.barcode.scanQr');
+        Route::post('/qr', [StampController::class, 'checkQr'])->name('admin.barcode.checkQr');
     });
 
     // check PO
     Route::middleware(['authAdmin'])->prefix('/checkpo')->group(function () {
-        Route::get('/index', [CheckPoController::class, 'index'])->name('admin.checkpo.index');
+        Route::get('/', [CheckPoController::class, 'index'])->name('admin.checkpo.index');
         Route::post('/handle-add-po-export', [CheckPoController::class, 'handleAddPoExport'])->name('admin.checkpo.handle-add-po-export');
         Route::post('/handle-add-quantity-inventory', [CheckPoController::class, 'handleAddStockQuantityInventory'])->name('admin.checkpo.handle-add-quantity-inventory');
         Route::post('/handle-add-po-import', [CheckPoController::class, 'handleAddPoImport'])->name('admin.checkpo.handle-add-po-import');
@@ -231,7 +213,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // lịch làm việc
-    Route::middleware(['authAdmin'])->prefix('/celender')->group(function () {
+    Route::middleware(['check.leader'])->prefix('/calendar')->group(function () {
         Route::get('/', [CelenderController::class, 'index'])->name('admin.celender.home');
         Route::post('/add', [CelenderController::class, 'add'])->name('admin.celender.add');
         Route::post('/store/{id}', [CelenderController::class, 'store'])->name('admin.celender.store');
@@ -239,7 +221,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
         Route::post('/update/{id}', [CelenderController::class, 'update'])->name('admin.celender.update');
         Route::get('/detail/{id}', [CelenderController::class, 'detail'])->name('admin.celender.detail');
         Route::delete('/delete/{id}', [CelenderController::class, 'delete'])->name('admin.celender.delete');
-        Route::post('/celender/{id}/update-detail', [CelenderController::class, 'updateDetail'])->name('admin.celender.update-detail');
+        Route::post('/{id}/update-detail', [CelenderController::class, 'updateDetail'])->name('admin.celender.update-detail');
     });
 
     // quản lý chức vụ
@@ -253,7 +235,35 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 
     // quản lý kho
-    Route::middleware(['authAdmin'])->prefix('storage')->group(function () {
+    Route::middleware(['check.warehouse'])->prefix('storage')->group(function () {
         Route::get('index', [StorageProductController::class, 'index'])->name('admin.storage.index');
     });
+});
+
+// show lịch làm việc + bảng lương cho nhân sự
+Route::middleware(['authEmployees'])->prefix('/employee')->group(function () {
+    Route::get('/calendar', [EmployeeController::class, 'celender'])->name('admin.employee-show.celender');
+    Route::get('/calendar/{id}', [EmployeeController::class, 'celenderDetail'])->name('admin.employee-show.celender-detail');
+    Route::get('/salary', [EmployeeController::class, 'salary'])->name('admin.employee-show.salary');
+    Route::get('/salary/{id}', [EmployeeController::class, 'salaryDetail'])->name('admin.employee-show.salary-detail');
+    Route::get('/update-quantity', [ProductController::class, 'updateQuantity'])->name('admin.product.update-quantity');
+    Route::post('/update-quantity', [ProductController::class, 'handleUpdateQuantity'])->name('admin.product.handle-update-quantity');
+    Route::get('/history-update', [ProductController::class, 'historyUpdate'])->name('admin.product.history-update');
+    Route::get('/update-error', [ProductController::class, 'showUpdateError'])->name('admin.product.update-error');
+    Route::post('/update-error', [ProductController::class, 'handleUpdateError'])->name('admin.product.handle-update-error');
+    Route::get('/history-update-error', [ProductController::class, 'historyUpdateError'])->name('admin.product.history-update-error');
+    Route::get('/history-update', [ProductController::class, 'historyUpdate'])->name('admin.product.history-update');
+    // Check Employee của Nhân Viên
+    Route::get('/todo', [CheckEmployeeController::class, 'checkEmployeeTodo'])->name('admin.employee.check-employee-todo');
+    Route::post('/todo', [CheckEmployeeController::class, 'handleCheckEmployeeTodo'])->name('admin.employee.handle.check-employee-todo');
+    Route::get('/todo/history', [CheckEmployeeController::class, 'historyEmployeeCheck'])->name('admin.employee-history-check');
+    Route::delete('/todo/history/{id}', [CheckEmployeeController::class, 'deleteHistory'])->name('admin.employee.delete-employee-todo');
+    Route::post('/todo/history/{id}', [CheckEmployeeController::class, 'updateEmployee'])->name('admin.employee.update-employee-todo');
+    // View của nhân viên Xem Chấm Công
+    Route::get('/attendance', [AttendanceRecordController::class, 'employeeViewRecords'])->name('admin.employee.attendence');
+    Route::get('/attendance-records', [AttendanceRecordController::class, 'employeeViewCaculateRecords'])->name('admin.employee.attendence_caculate_records');
+    // Route của Nhân viên gửi request In Tem
+    Route::get('/send-stamp', [SendStampController::class, 'index'])->name('admin.send-stamp');
+    Route::post('/send-stamp', [SendStampController::class, 'handleAdd'])->name('admin.handleAdd-send-stamp');
+    Route::get('/send-stamp/check-status', [SendStampController::class, 'checkStampEmployee'])->name('admin.checkstamp-employee');
 });

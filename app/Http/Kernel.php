@@ -69,6 +69,9 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'check.token.expiration' => \App\Http\Middleware\CheckTokenExpiration::class,
-        'check.QcQa' => \App\Http\Middleware\CheckQcQa::class,
+        'permission' => \App\Http\Middleware\CheckPermission::class,
+        'check.qa.qc' => \App\Http\Middleware\CheckQaQC::class,
+        'check.warehouse' => \App\Http\Middleware\CheckWarehouse::class,
+        'check.leader' => \App\Http\Middleware\CheckLeader::class,
     ];
 }

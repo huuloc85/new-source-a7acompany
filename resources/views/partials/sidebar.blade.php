@@ -33,7 +33,7 @@
 @php
     $roleId = Auth()->user()->role_id;
     $phone = Auth()->user()->phone;
-    $isAdmin = Auth()->user()->role->role_name == 'admin';
+    $isAdmin = Auth()->user()->role->role_name == 'Admin';
     $isQA = in_array($roleId, [8, 13]);
     $isStorage = $roleId == 4;
     // Ngoại quan + sản suất
@@ -286,19 +286,13 @@
 @endphp
 
 <aside class="sidebar sidebar-default navs-rounded-all sidebar-base no-print">
-    <div
-        class="sidebar-header d-flex align-items-center justify-content-center flex-column"
-    >
-        <a
-            href="{{ route('admin.home') }}"
-            class="navbar-brand text-center d-flex flex-column align-items-center"
-        >
+    <div class="sidebar-header d-flex align-items-center justify-content-center flex-column">
+        <a href="{{ route('admin.home') }}" class="navbar-brand text-center d-flex flex-column align-items-center">
             <img
                 src="{{ asset('assets/img/logos/VVP.png') }}"
                 alt=""
                 width="70%"
-                title="VINH VINH PHAT ONE MEMBER CO.LTD"
-            />
+                title="VINH VINH PHAT ONE MEMBER CO.LTD" />
             <div class="logo-text">VINH VINH PHAT ONE MEMBER CO. LTD</div>
         </a>
         <div
@@ -306,29 +300,21 @@
             data-toggle="sidebar"
             data-active="true"
             style="margin: 150px -7px 0 0"
-            title="Toggle Sidebar"
-        >
+            title="Toggle Sidebar">
             <i class="icon" style="width: 30px; height: 30px">
-                <svg
-                    width="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg width="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M4.25 12.2744L19.25 12.2744"
                         stroke="currentColor"
                         stroke-width="1.5"
                         stroke-linecap="round"
-                        stroke-linejoin="round"
-                    ></path>
+                        stroke-linejoin="round"></path>
                     <path
                         d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976"
                         stroke="currentColor"
                         stroke-width="1.5"
                         stroke-linecap="round"
-                        stroke-linejoin="round"
-                    ></path>
+                        stroke-linejoin="round"></path>
                 </svg>
             </i>
         </div>
@@ -342,12 +328,8 @@
                             <a
                                 href="{{ route($navItem['path']) }}"
                                 class="nav-link {{ $isActive($navItem['path']) }}"
-                                title="{{ $navItem['label'] }}"
-                            >
-                                <i
-                                    class="{{ $navItem['icon'] }}"
-                                    style="width: 1.5rem"
-                                ></i>
+                                title="{{ $navItem['label'] }}">
+                                <i class="{{ $navItem['icon'] }}" style="width: 1.5rem"></i>
                                 <span class="ms-3 flex-grow-1">
                                     {{ $navItem['label'] }}
                                 </span>
@@ -361,12 +343,8 @@
                                 role="button"
                                 data-toggle="dropdown"
                                 aria-expanded="false"
-                                title="{{ $navItem['label'] }}"
-                            >
-                                <i
-                                    class="{{ $navItem['icon'] }}"
-                                    style="width: 1.5rem"
-                                ></i>
+                                title="{{ $navItem['label'] }}">
+                                <i class="{{ $navItem['icon'] }}" style="width: 1.5rem"></i>
                                 <span class="ms-3 flex-grow-1">
                                     {{ $navItem['label'] }}
                                 </span>
@@ -376,12 +354,8 @@
                                     <a
                                         class="dropdown-item {{ $isActive($child['path']) }}"
                                         href="{{ route($child['path']) }}"
-                                        title="{{ $child['label'] }}"
-                                    >
-                                        <i
-                                            class="{{ $child['icon'] }}"
-                                            style="width: 1.5rem"
-                                        ></i>
+                                        title="{{ $child['label'] }}">
+                                        <i class="{{ $child['icon'] }}" style="width: 1.5rem"></i>
                                         <span class="flex-grow-1">
                                             {{ $child['label'] }}
                                         </span>
@@ -396,16 +370,10 @@
             </ul>
         </div>
     </div>
-    <div
-        class="sidebar-footer left-1 mb-3"
-        style="position: absolute; bottom: 0; width: 100%"
-    >
+    <div class="sidebar-footer left-1 mb-3" style="position: absolute; bottom: 0; width: 100%">
         <div class="nav-item text-center">
             <a class="nav-link" href="{{ route('logout') }}">
-                <i
-                    class="fas fa-right-from-bracket fa-lg"
-                    style="width: 1.5rem"
-                ></i>
+                <i class="fas fa-right-from-bracket fa-lg" style="width: 1.5rem"></i>
                 <span class="nav-link-text ms-1">Đăng xuất</span>
             </a>
         </div>

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckAdmin
+class CheckLeader
 {
     /**
      * Handle an incoming request.
@@ -15,7 +15,7 @@ class CheckAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth()->user()->role->role_name == 'Admin' || Auth()->user()->role->role_name == 'Super Admin') {
+        if (Auth()->user()->role->role_name == 'Super Admin' || Auth()->user()->role->role_name == 'Admin' || Auth()->user()->role->role_name == 'Tổ trưởng ngoại quan' || Auth()->user()->role->role_name == 'Tổ phó sản xuất' || Auth()->user()->role->role_name == 'Tổ trưởng sản xuất') {
             return $next($request);
         }
         toast('Bạn không có quyền truy cập!', 'error', 'top-right');
