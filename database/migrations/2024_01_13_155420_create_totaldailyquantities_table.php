@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('totaldailyquantities', function (Blueprint $table) {
-            $table->id();                                                                       //ID của số liệu hàng ngày
-            $table->foreignId('product_id')->references('id')->on('products');                  //ID của sản phẩm
-            $table->integer('status')->nullable();                                              //Trạng thái nhập (*)
-            $table->date('date')->nullable();                                                   //Ngày
-            $table->integer('totalQuan')->nullable();                                           //Tổng số lượng/ngày
+            $table->id();                                                                       // ID của số liệu hàng ngày
+            $table->integer('product_id');
+            $table->foreign('product_id')->references('id')->on('products');                  // ID của sản phẩm
+            $table->integer('status')->nullable();                                              // Trạng thái nhập (*)
+            $table->date('date')->nullable();                                                   // Ngày
+            $table->integer('totalQuan')->nullable();                                           // Tổng số lượng/ngày
             $table->timestamps();
         });
     }

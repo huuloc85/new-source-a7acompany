@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('totalmonthquantities', function (Blueprint $table) {
-            $table->id();                                                                       //ID của số liệu hàng ngày
-            $table->foreignId('product_id')->references('id')->on('products');                  //ID của sản phẩm
-            $table->integer('status')->nullable();                                              //Trạng thái nhập (*)
-            $table->string('month')->nullable();                                                //Tháng lưu theo dạng string tháng-năm (03-2024)
-            $table->integer('totalQuan')->nullable();                                           //Tổng số lượng/ngày
+            $table->id();                                                                       // ID của số liệu hàng ngày
+            $table->integer('product_id');
+            $table->foreign('product_id')->references('id')->on('products');                  // ID của sản phẩm
+            $table->integer('status')->nullable();                                              // Trạng thái nhập (*)
+            $table->string('month')->nullable();                                                // Tháng lưu theo dạng string tháng-năm (03-2024)
+            $table->integer('totalQuan')->nullable();                                           // Tổng số lượng/ngày
             $table->timestamps();
         });
     }

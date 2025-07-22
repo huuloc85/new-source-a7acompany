@@ -15,7 +15,8 @@ class CreateMaterialProductTable extends Migration
     {
         Schema::create('material_product', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->references('id')->on('products');
+            $table->integer('product_id');
+            $table->foreign('product_id')->references('id')->on('products');
             $table->foreignId('production_plans_id')->references('id')->on('production_plans');
             $table->integer('quantity');                        // Cột quantity
             $table->integer('real_quantity')->nullable();                   // Cột real_quantity

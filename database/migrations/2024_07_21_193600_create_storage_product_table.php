@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('storage_product', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->references('id')->on('products');
+            $table->integer('product_id');
+            $table->foreign('product_id')->references('id')->on('products');
             $table->foreignId('employee_id')->references('id')->on('employees');
             $table->integer('bin');
             $table->string('lot');
