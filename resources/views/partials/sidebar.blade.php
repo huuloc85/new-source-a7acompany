@@ -33,7 +33,7 @@
 @php
     $roleId = Auth()->user()->role_id;
     $phone = Auth()->user()->phone;
-    $isAdmin = Auth()->user()->role->role_name == 'Admin';
+    $isAdmin = Auth()->user()->role->role_name == 'Super Admin';
     $isQA = in_array($roleId, [8, 13]);
     $isStorage = $roleId == 4;
     // Ngoại quan + sản suất

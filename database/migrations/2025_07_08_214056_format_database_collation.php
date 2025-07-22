@@ -9,7 +9,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $tables = DB::select('SELECT table_name FROM information_schema.tables WHERE table_schema = ?', [config('database.connections.mysql.database')]);
+        $tables = DB::select('SELECT TABLE_NAME as table_name FROM information_schema.tables WHERE table_schema = ?', [config('database.connections.mysql.database')]);
         foreach ($tables as $table) {
             DB::statement('ALTER TABLE `'.$table->table_name.'` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;');
         }

@@ -53,7 +53,7 @@ app()->environment('local') && Route::get('/clear-cache', function () {
     return response()->json(['message' => 'Cache cleared successfully']);
 });
 
-Route::middleware(['auth:sanctum', 'check.token.expiration', 'admin'])->group(function () {
+Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->group(function () {
     if (connection_aborted()) {
         Log::info('Request aborted early.');
 
