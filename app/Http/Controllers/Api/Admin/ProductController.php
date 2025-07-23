@@ -88,7 +88,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', $currentMonth.'-%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -96,7 +96,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', $currentMonth.'-%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -104,7 +104,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', $currentMonth.'-%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                         }
                     }),
                 ]);
