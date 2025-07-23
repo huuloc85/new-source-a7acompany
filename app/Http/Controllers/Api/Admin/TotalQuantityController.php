@@ -99,7 +99,7 @@ class TotalQuantityController extends BaseController
         DB::beginTransaction();
         try {
             $validate = $request->validate([
-                'month' => 'required|string',
+                'month' => 'required|date_format:m-Y',
                 'status' => 'required|numeric|min:0|max:8',
                 'products' => 'nullable|array',
                 'products.*.quantity' => 'required|integer',

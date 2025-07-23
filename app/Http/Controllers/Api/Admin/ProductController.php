@@ -8,9 +8,9 @@ use App\Models\CheckEmployee;
 use App\Models\Product;
 use App\Models\TotalMonthQuantity;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -348,6 +348,7 @@ class ProductController extends BaseController
 
     public function updateQuantity()
     {
+        DB::beginTransaction();
         try {
             $userId = auth()->user()->id;
 
@@ -392,11 +393,15 @@ class ProductController extends BaseController
                 })
                 ->values(); // Reset chỉ số mảng
 
+            DB::commit();
+
             return response()->json([
                 'calendar_detail' => $calendarDetail,
                 'quantities' => $addQuantity,
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
                 'error' => 'Hãy bổ sung lịch làm việc để cập nhật sản lượng!',
                 'details' => $e->getMessage(),
