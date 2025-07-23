@@ -30,103 +30,103 @@ class ProductController extends BaseController
 
     public function getProducts(Request $request)
     {
-        $requestHash = md5(json_encode($request->all()));
-        $key = 'products:list:'.$requestHash;
-
-        // return Cache::tags(['products'])->remember($key, 3600, function () use ($request) {
         try {
-            $validated = $request->validate([
-                'limit' => 'nullable|integer|min:0',
-                'page' => 'nullable|integer|min:1',
-                'month' => 'nullable|date_format:Y-m',
-                'status' => 'nullable|integer|min:1|max:7',
-            ]);
+            $requestHash = md5(json_encode($request->all()));
+            $key = 'products:list:'.$requestHash;
 
-            $currentMonth = $validated['month'] ?? null;
-            $status = $validated['status'] ?? null;
-
-            $products = QueryBuilder::for(Product::class)
-                ->allowedFields(
-                    'id',
-                    'code',
-                    'name',
-                    'moldSize',
-                    'CAV',
-                    'cycle',
-                    'binCode',
-                    'quanEntityBin',
-                    'FAPV',
-                    'FASV',
-                    'FAVV',
-                )
-                ->allowedSorts([
-                    'id',
-                    'code',
-                    'name',
-                    'moldSize',
-                    'binCode',
-                    'created_at',
-                    'updated_at',
-                ])
-                ->allowedFilters([
-                    'id',
-                    'code',
-                    'name',
-                    'moldSize',
-                    'binCode',
-                    'created_at',
-                    'updated_at',
-                ])
-                ->allowedIncludes([
-                    AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status) {
-                        if ($currentMonth) {
-                            $query->where('month', Carbon::parse($currentMonth)->format('m-Y'));
-                        }
-                        if ($status) {
-                            $query->where('status', $status);
-                        }
-                    }),
-                    AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status) {
-                        if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
-                        }
-                        if ($status) {
-                            $query->where('status', $status);
-                        }
-                    }),
-                    AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status) {
-                        if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
-                        }
-                        if ($status) {
-                            $query->where('status', $status);
-                        }
-                    }),
-                    AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth) {
-                        if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
-                        }
-                    }),
+            return Cache::tags(['products'])->remember($key, 3600, function () use ($request) {
+                $validated = $request->validate([
+                    'limit' => 'nullable|integer|min:0',
+                    'page' => 'nullable|integer|min:1',
+                    'month' => 'nullable|date_format:Y-m',
+                    'status' => 'nullable|integer|min:1|max:7',
                 ]);
 
-            // Logic to get products
-            $limit = $validated['limit'] ?? 10;
-            if (! is_null($limit) && $limit == 0) {
-                $limit = $products->count();
-            }
-            $products = $products->paginate($limit);
+                $currentMonth = $validated['month'] ?? null;
+                $status = $validated['status'] ?? null;
 
-            return response()->json($products);
+                $products = QueryBuilder::for(Product::class)
+                    ->allowedFields(
+                        'id',
+                        'code',
+                        'name',
+                        'moldSize',
+                        'CAV',
+                        'cycle',
+                        'binCode',
+                        'quanEntityBin',
+                        'FAPV',
+                        'FASV',
+                        'FAVV',
+                    )
+                    ->allowedSorts([
+                        'id',
+                        'code',
+                        'name',
+                        'moldSize',
+                        'binCode',
+                        'created_at',
+                        'updated_at',
+                    ])
+                    ->allowedFilters([
+                        'id',
+                        'code',
+                        'name',
+                        'moldSize',
+                        'binCode',
+                        'created_at',
+                        'updated_at',
+                    ])
+                    ->allowedIncludes([
+                        AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status) {
+                            if ($currentMonth) {
+                                $query->where('month', Carbon::parse($currentMonth)->format('m-Y'));
+                            }
+                            if ($status) {
+                                $query->where('status', $status);
+                            }
+                        }),
+                        AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status) {
+                            if ($currentMonth) {
+                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            }
+                            if ($status) {
+                                $query->where('status', $status);
+                            }
+                        }),
+                        AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status) {
+                            if ($currentMonth) {
+                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            }
+                            if ($status) {
+                                $query->where('status', $status);
+                            }
+                        }),
+                        AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth) {
+                            if ($currentMonth) {
+                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            }
+                        }),
+                    ]);
+
+                // Logic to get products
+                $limit = $validated['limit'] ?? 10;
+                if (! is_null($limit) && $limit == 0) {
+                    $limit = $products->count();
+                }
+                $products = $products->paginate($limit);
+
+                return response()->json($products);
+            });
         } catch (\Throwable $e) {
             return HandleError::handle($e);
         }
-        // });
     }
 
     public function getProduct($id)
     {
-        return Cache::tags(['products'])->remember('products:detail:'.$id, 3600, function () use ($id) {
-            try {
+        try {
+            return Cache::tags(['products'])->remember('products:detail:'.$id, 3600, function () use ($id) {
                 $product = Product::findOrFail($id);
 
                 $companies = [];
@@ -142,10 +142,10 @@ class ProductController extends BaseController
                 $product->companies = $companies;
 
                 return response()->json($product);
-            } catch (\Throwable $e) {
-                return HandleError::handle($e);
-            }
-        });
+            });
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
     }
 
     public function addProduct(Request $request)
