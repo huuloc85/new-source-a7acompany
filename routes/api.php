@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
 use App\Http\Controllers\Api\Admin\AttendanceRecordController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CheckStampController;
+use App\Http\Controllers\Api\Admin\DailyScheduleController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\EmployeeController;
 use App\Http\Controllers\Api\Admin\HistoryController;
@@ -168,6 +169,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
 
     Route::prefix('stamps')->group(function () {
         Route::post('/savePrint', [StampController::class, 'savePrint'])->name('api.save-print');
+    });
+
+    Route::prefix('daily-schedules')->group(function () {
+        Route::get('/', [DailyScheduleController::class, 'index']);
+        // Route::post('/', [DailyScheduleController::class, 'store']);
+        Route::get('/{id}', [DailyScheduleController::class, 'show']);
+        Route::patch('/{id}', [DailyScheduleController::class, 'update']);
+        Route::delete('/{id}', [DailyScheduleController::class, 'destroy']);
     });
 
     Route::prefix('history')->group(function () {
