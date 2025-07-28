@@ -168,7 +168,10 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
     });
 
     Route::prefix('stamps')->group(function () {
-        Route::post('/savePrint', [StampController::class, 'savePrint'])->name('api.save-print');
+        Route::put('/savePrint', [StampController::class, 'savePrint'])->name('api.save-print');
+        Route::get('/history', [StampController::class, 'getStampHistory'])->name('api.stamp.history');
+        Route::get('/history/{id}', [StampController::class, 'getStampHistoryById'])->name('api.stamp.history.id');
+        Route::post('/reject/{id}', [StampController::class, 'rejectPrint'])->name('api.stamp.reject');
     });
 
     Route::prefix('daily-schedules')->group(function () {
