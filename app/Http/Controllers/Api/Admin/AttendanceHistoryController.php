@@ -168,7 +168,7 @@ class AttendanceHistoryController extends BaseController
                         $join->on('schedule_details.date', '=', 'attendance_records.date')
                             ->on('schedule_details.employee_id', '=', 'attendance_records.employee_code');
                     })
-                    ->leftJoin('employees', function ($join) {
+                    ->rightJoin('employees', function ($join) {
                         $join->on('schedule_details.employee_id', '=', 'employees.id')
                             ->whereNull('employees.deleted_at');
                     })
@@ -189,6 +189,7 @@ class AttendanceHistoryController extends BaseController
                         'schedule_details.date',
                         'attendance_records.datetime',
                         'attendance_records.time',
+                        'employees.company',
                     ]);
 
                 $arrayDate = explode(',', $request->input('filter.date_between'));
@@ -205,6 +206,7 @@ class AttendanceHistoryController extends BaseController
                         'employee_id',
                         'date',
                         'employees.name',
+                        'employees.company',
                         AllowedFilter::callback('date_between', function ($query, $value) {
                             if (is_array($value) && count($value) === 2) {
                                 $start = Carbon::parse($value[0])->subDay();
@@ -259,6 +261,7 @@ class AttendanceHistoryController extends BaseController
                                 'is_wc_trash' => $items->first()->is_wc_trash,
                                 'is_eat_room' => $items->first()->is_eat_room,
                                 'hnhc' => $items->first()->hnhc,
+                                'company' => $items->first()->company,
                                 'dates' => (function () use ($yesterday, $dates, $tomorrow, $date) {
                                     $result = $dates->toArray();
 
@@ -319,6 +322,9 @@ class AttendanceHistoryController extends BaseController
 
                 $page = request()->input('page', 1);
                 $perPage = request()->input('limit', 15);
+                if ($perPage == 0) {
+                    $perPage = max(1, count($result));
+                }
                 $offset = ($page - 1) * $perPage;
                 $paginated = array_slice($result, $offset, $perPage);
                 $paginator = new \Illuminate\Pagination\LengthAwarePaginator(

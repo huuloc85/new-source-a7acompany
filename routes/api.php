@@ -36,7 +36,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/updateDataCC', [AttendanceRecordController::class, 'updateDataCC'])->name('updateDataCC');
+Route::post('/updateDataCC', [App\Http\Controllers\AttendanceRecordController::class, 'updateDataCC'])->name('updateDataCC');
+
+// Attendance Records (Chấm Công)
 Route::get('/acs-events/today', [AttendanceRecordController::class, 'fetchTodayEvents']);
 
 // Đăng nhập
@@ -91,7 +93,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
             Route::patch('/{id}', [AttendanceHistoryController::class, 'update']);
             Route::delete('/{id}', [AttendanceHistoryController::class, 'delete']);
             // Route::post('/import', [AttendanceController::class, 'import']);
-            // Route::get('/export', [AttendanceController::class, 'export']);
             // Route::get('/export/{id}', [AttendanceController::class, 'exportById']);
         });
         Route::get('/', [AttendanceHistoryController::class, 'detail']);
@@ -190,5 +191,3 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
 
     Route::get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
 });
-// Attendance Records (Chấm Công)
-Route::get('/acs-events/today', [AttendanceRecordController::class, 'fetchTodayEvents']);
