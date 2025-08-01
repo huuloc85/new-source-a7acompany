@@ -14,6 +14,211 @@
     </style>
 @endsection
 
+@php
+    $roleId = Auth()->user()->role_id;
+
+    $isManager = Auth()->user()->role->role_name == 'admin';
+    $phone = Auth()->user()->phone;
+    $isQA = in_array($roleId, [8, 13]);
+    $isStorage = $roleId == 4;
+    // Ngoại quan + sản suất
+    $isReqRole = in_array($roleId, [9, 14, 18, 19]);
+
+    $isEmployee = ! $isManager && ! $isQA && ! $isStorage && ! $isReqRole;
+
+    $managerWidgets = [
+        [
+            'title' => 'Tổng nhân viên',
+            'icon' => 'fas fa-users fa-2x',
+            'link' => route('admin.employee.home'),
+            'data' => $totalEmployee,
+        ],
+        [
+            'title' => 'Bảng Lịch Sử Chấm Công',
+            'icon' => 'fas fa-clock fa-2x',
+            'link' => route('admin.attendence.index'),
+            'data' => $totalRecord,
+        ],
+        [
+            'title' => 'Bảng Tính Toán Chấm Công',
+            'icon' => 'fas fa-calculator fa-2x',
+            'link' => route('admin.attendence.records'),
+            'data' => $today->format('m-Y'),
+        ],
+        [
+            'title' => 'Tổng chức vụ',
+            'icon' => 'fas fa-user-tag fa-2x',
+            'link' => route('admin.role.home'),
+            'data' => $totalRole,
+        ],
+        [
+            'title' => 'Kế hoạch sản xuất',
+            'icon' => 'fas fa-clipboard-list fa-2x',
+            'link' => route('admin.product-plan.index'),
+            'data' => $totalPlan,
+        ],
+        [
+            'title' => 'Danh sách NV làm việc trong ngày',
+            'icon' => 'fas fa-user-check fa-2x',
+            'link' => route('admin.checkemployee.view-employee-todo'),
+            'data' => $totalCheckEmployee,
+        ],
+        [
+            'title' => 'Tổng lịch làm việc',
+            'icon' => 'far fa-calendar-alt fa-2x',
+            'link' => route('admin.celender.home'),
+            'data' => $totalCelender,
+        ],
+        [
+            'title' => 'Tổng sản phẩm',
+            'icon' => 'fas fa-boxes fa-2x',
+            'link' => route('admin.product.home'),
+            'data' => $totalProduct,
+        ],
+        [
+            'title' => 'Tổng lịch sử',
+            'icon' => 'fas fa-history fa-2x',
+            'link' => route('admin.history.home'),
+            'data' => $totalHistory,
+        ],
+        [
+            'title' => 'Danh sách PO',
+            'icon' => 'fas fa-file-invoice-dollar fa-2x',
+            'link' => route('admin.checkpo.index'),
+            'data' => $today->format('m-Y'),
+        ],
+        [
+            'title' => 'Danh Sách Tem Cần In',
+            'icon' => 'fas fa-print fa-2x',
+            'link' => route('admin.checkstamp'),
+            'data' => $today->format('d-m'),
+        ],
+        [
+            'title' => 'Kho Xuất Hàng',
+            'icon' => 'fas fa-box fa-2x',
+            'link' => route('admin.storage.index'),
+            'data' => 'Tháng '.$today->format('m'),
+        ],
+    ];
+    if (in_array($phone, ['ctyvinhvinhphat1', 'ctyvinhvinhphat2', 'ctyvinhvinhphat5'])) {
+        array_unshift($managerWidgets, [
+            'title' => 'Tổng bảng lương',
+            'icon' => 'fas fa-money-check-alt fa-2x',
+            'link' => route('admin.salary.home'),
+            'data' => $totalSalary,
+        ]);
+    }
+
+    $employeeWidgets = [
+        [
+            'title' => 'Bảng lịch sử chấm công',
+            'icon' => 'fas fa-clipboard-user fa-2x',
+            'link' => route('admin.employee.attendence'),
+        ],
+        [
+            'title' => 'Bảng tính công',
+            'icon' => 'fas fa-calculator fa-2x',
+            'link' => route('admin.employee.attendence_caculate_records'),
+        ],
+        [
+            'title' => 'Lịch làm việc',
+            'icon' => 'fas fa-calendar-day fa-2x',
+            'link' => route('admin.employee-show.celender'),
+        ],
+        [
+            'title' => 'Bảng lương',
+            'icon' => 'fas fa-money-check-alt fa-2x',
+            'link' => route('admin.employee-show.salary'),
+        ],
+    ];
+
+    if (in_array($roleId, [14, 18, 19])) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Lịch làm việc nhân viên',
+            'icon' => 'fas fa-calendar-alt fa-2x',
+            'link' => route('admin.celender.home'),
+        ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Lịch Hoạt Động Trong Ngày',
+            'icon' => 'fas fa-chart-line fa-2x',
+            'link' => route('admin.checkemployee.view-employee-todo'),
+        ]);
+    }
+    if ($isStorage) {
+        array_unshift($employeeWidgets, [
+            'title' => 'Quét Sản Phẩm',
+            'icon' => 'fas fa-camera fa-2x',
+            'link' => route('admin.scan'),
+        ]);
+        // array_unshift($employeeWidgets, [
+        //     'title' => 'Quét QR Code',
+        //     'icon' => 'fas fa-qrcode fa-2x',
+        //     'link' => route('admin.barcode.scanQr'),
+        // ]);
+        array_unshift($employeeWidgets, [
+            'title' => 'Kho Đã Xuất Hàng',
+            'icon' => 'fas fa-box-open fa-2x',
+            'link' => route('admin.storage.index'),
+        ]);
+    }
+
+    if (in_array('select_active_product', $permissions)) {
+        $widgets[] = [
+            'title' => $permissionTitles['select_active_product'] ?? 'Tên mặc định',
+            'icon' => 'fas fa-box-open fa-2x',
+            'link' => route('admin.employee.check-employee-todo'),
+        ];
+    }
+
+    if (in_array('view_daily_import_history', $permissions)) {
+        $widgets[] = [
+            'title' => $permissionTitles['view_daily_import_history'] ?? 'Tên mặc định',
+            'icon' => 'fas fa-truck-loading fa-2x',
+            'link' => route('admin.employee-history-check'),
+        ];
+    }
+
+    if (in_array('request_label_printing', $permissions)) {
+        $widgets[] = [
+            'title' => $permissionTitles['request_label_printing'] ?? 'Tên mặc định',
+            'icon' => 'fas fa-print fa-2x',
+            'link' => route('admin.send-stamp'),
+        ];
+    }
+
+    if (in_array('create_carton_label', $permissions)) {
+        $widgets[] = [
+            'title' => $permissionTitles['create_carton_label'] ?? 'Tên mặc định',
+            'icon' => 'fas fa-box fa-2x',
+            'link' => route('admin.product.barcode'),
+        ];
+    }
+
+    if (in_array('create_bag_label', $permissions)) {
+        $widgets[] = [
+            'title' => $permissionTitles['create_bag_label'] ?? 'Tên mặc định',
+            'icon' => 'fas fa-shopping-bag fa-2x',
+            'link' => route('admin.product.packing'),
+        ];
+    }
+
+    if (in_array('view_account_info', $permissions)) {
+        $widgets[] = [
+            'title' => $permissionTitles['view_account_info'] ?? 'Tên mặc định',
+            'icon' => 'fas fa-user-circle fa-2x',
+            'link' => route('admin.product.packing'),
+        ];
+    }
+
+    if (in_array('logout', $permissions)) {
+        $widgets[] = [
+            'title' => $permissionTitles['logout'] ?? 'Tên mặc định',
+            'icon' => 'fas fa-sign-out-alt fa-2x',
+            'link' => route('admin.product.packing'),
+        ];
+    }
+@endphp
+
 @section('content')
     @if (session('birthday_check'))
         @include('modal.birthday')
@@ -23,392 +228,221 @@
         @include('modal.on-duty')
     @endif
 
-    @php
-        $permissions = Auth::user()->role->permissions->pluck('key')->toArray();
-        $permissionTitles = Auth::user()->role->permissions->pluck('name', 'key')->toArray();
-
-        $widgets = [];
-
-        // admin
-        if (in_array('view_total_employees', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_total_employees'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-users fa-2x',
-                'link' => route('admin.employee.home'),
-                'data' => $totalEmployee ?? 0,
-            ];
-        }
-
-        if (in_array('view_attendance_history', $permissions)) {
-            $widgets[] = [
-                'title' => 'Bảng Lịch Sử Chấm Công',
-                'icon' => 'fas fa-clock fa-2x',
-                'link' => route('admin.attendence.index'),
-                'data' => $totalRecord ?? 0,
-            ];
-        }
-
-        if (in_array('view_attendance_calculation', $permissions)) {
-            $widgets[] = [
-                'title' => 'Bảng Tính Toán Chấm Công',
-                'icon' => 'fas fa-calculator fa-2x',
-                'link' => route('admin.attendence.records'),
-                'data' => $today->format('m-Y'),
-            ];
-        }
-
-        if (in_array('view_total_positions', $permissions)) {
-            $widgets[] = [
-                'title' => 'Tổng chức vụ',
-                'icon' => 'fas fa-user-tag fa-2x',
-                'link' => route('admin.role.home'),
-                'data' => $totalRole ?? 0,
-            ];
-        }
-
-        if (in_array('view_production_plan', $permissions)) {
-            $widgets[] = [
-                'title' => 'Kế hoạch sản xuất',
-                'icon' => 'fas fa-clipboard-list fa-2x',
-                'link' => route('admin.product-plan.index'),
-                'data' => $totalPlan ?? 0,
-            ];
-        }
-
-        if (in_array('view_today_employees', $permissions)) {
-            $widgets[] = [
-                'title' => 'Danh sách NV làm việc trong ngày',
-                'icon' => 'fas fa-user-check fa-2x',
-                'link' => route('admin.checkemployee.view-employee-todo'),
-                'data' => $totalCheckEmployee ?? 0,
-            ];
-        }
-
-        if (in_array('view_total_schedule', $permissions)) {
-            $widgets[] = [
-                'title' => 'Tổng lịch làm việc',
-                'icon' => 'far fa-calendar-alt fa-2x',
-                'link' => route('admin.celender.home'),
-                'data' => $totalCelender ?? 0,
-            ];
-        }
-
-        if (in_array('view_total_products', $permissions)) {
-            $widgets[] = [
-                'title' => 'Tổng sản phẩm',
-                'icon' => 'fas fa-boxes fa-2x',
-                'link' => route('admin.product.home'),
-                'data' => $totalProduct ?? 0,
-            ];
-        }
-
-        if (in_array('view_total_history', $permissions)) {
-            $widgets[] = [
-                'title' => 'Tổng lịch sử',
-                'icon' => 'fas fa-history fa-2x',
-                'link' => route('admin.history.home'),
-                'data' => $totalHistory ?? 0,
-            ];
-        }
-
-        if (in_array('view_po_list', $permissions)) {
-            $widgets[] = [
-                'title' => 'Danh sách PO',
-                'icon' => 'fas fa-file-invoice-dollar fa-2x',
-                'link' => route('admin.checkpo.index'),
-                'data' => $today->format('m-Y'),
-            ];
-        }
-
-        if (in_array('view_labels_to_print', $permissions)) {
-            $widgets[] = [
-                'title' => 'Danh Sách Tem Cần In',
-                'icon' => 'fas fa-print fa-2x',
-                'link' => route('admin.checkstamp'),
-                'data' => $today->format('d-m'),
-            ];
-        }
-
-        if (in_array('view_export_warehouse', $permissions)) {
-            $widgets[] = [
-                'title' => 'Kho Xuất Hàng',
-                'icon' => 'fas fa-box fa-2x',
-                'link' => route('admin.storage.index'),
-                'data' => 'Tháng '.$today->format('m'),
-            ];
-        }
-
-        if (in_array('view_total_salary', $permissions)) {
-            $widgets[] = [
-                'title' => 'Tổng bảng lương',
-                'icon' => 'fas fa-money-check-alt fa-2x',
-                'link' => route('admin.salary.home'),
-                'data' => $totalSalary ?? 0,
-            ];
-        }
-        // employee
-        if (in_array('view_attendance_sheet_history', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_attendance_sheet_history'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-clock fa-2x',
-                'link' => route('admin.employee.attendence'),
-            ];
-        }
-
-        if (in_array('view_work_time_calc_sheet', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_work_time_calc_sheet'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-calculator fa-2x',
-                'link' => route('admin.employee.attendence_caculate_records'),
-            ];
-        }
-
-        if (in_array('view_work_schedule', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_work_schedule'] ?? 'Tên mặc định',
-                'icon' => 'far fa-calendar-alt fa-2x',
-                'link' => route('admin.employee-show.celender'),
-            ];
-        }
-
-        if (in_array('view_salary_sheet', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_salary_sheet'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-money-bill-wave fa-2x',
-                'link' => route('admin.employee-show.salary'),
-            ];
-        }
-
-        if (in_array('view_employee_schedule', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_employee_schedule'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-user-clock fa-2x',
-                'link' => route('admin.celender.home'),
-            ];
-        }
-
-        if (in_array('view_daily_activities', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_daily_activities'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-tasks fa-2x',
-                'link' => route('admin.checkemployee.view-employee-todo'),
-            ];
-        }
-
-        if (in_array('scan_barcode', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['scan_barcode'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-barcode fa-2x',
-                'link' => route('admin.barcode.scan'),
-            ];
-        }
-
-        if (in_array('scan_qrcode', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['scan_qrcode'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-qrcode fa-2x',
-                'link' => route('admin.barcode.scanQr'),
-            ];
-        }
-
-        if (in_array('view_exported_warehouse', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_exported_warehouse'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-warehouse fa-2x',
-                'link' => route('admin.storage.index'),
-            ];
-        }
-
-        if (in_array('select_active_product', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['select_active_product'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-box-open fa-2x',
-                'link' => route('admin.employee.check-employee-todo'),
-            ];
-        }
-
-        if (in_array('view_daily_import_history', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_daily_import_history'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-truck-loading fa-2x',
-                'link' => route('admin.employee-history-check'),
-            ];
-        }
-
-        if (in_array('request_label_printing', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['request_label_printing'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-print fa-2x',
-                'link' => route('admin.send-stamp'),
-            ];
-        }
-
-        if (in_array('create_carton_label', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['create_carton_label'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-box fa-2x',
-                'link' => route('admin.product.barcode'),
-            ];
-        }
-
-        if (in_array('create_bag_label', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['create_bag_label'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-shopping-bag fa-2x',
-                'link' => route('admin.product.packing'),
-            ];
-        }
-
-        if (in_array('view_account_info', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['view_account_info'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-user-circle fa-2x',
-                'link' => route('admin.product.packing'),
-            ];
-        }
-
-        if (in_array('logout', $permissions)) {
-            $widgets[] = [
-                'title' => $permissionTitles['logout'] ?? 'Tên mặc định',
-                'icon' => 'fas fa-sign-out-alt fa-2x',
-                'link' => route('admin.product.packing'),
-            ];
-        }
-    @endphp
-
-    {{-- WIDGETS --}}
-    <div class="row">
-        @foreach ($widgets as $widget)
-            <div class="col-12 col-md-6 col-lg-4 col-xxl-3">
-                <a
-                    class="card bg-body-tertiary border-transparent shadow text-decoration-none"
-                    href="{{ $widget['link'] }}"
-                    role="button">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col overflow-hidden">
-                                <div class="text-lg fw-normal text-body-secondary mb-1 titleWidget">
-                                    {{ $widget['title'] }}
-                                </div>
-                                @if (! empty($widget['data']))
-                                    <div class="fs-4 fw-semibold">
-                                        {{ $widget['data'] }}
+    @if ($isManager)
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    @foreach ($managerWidgets as $key => $widget)
+                        <div class="col-12 col-md-6 col-lg-4 col-xxl-3">
+                            <a
+                                class="card bg-body-tertiary border-transparent shadow text-decoration-none"
+                                href="{{ $widget['link'] }}"
+                                role="button">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col overflow-hidden">
+                                            <div class="text-xs fw-normal text-body-secondary mb-1 titleWidget">
+                                                {{ $widget['title'] }}
+                                            </div>
+                                            <div class="fs-4 fw-semibold">
+                                                {{ $widget['data'] }}
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <div class="avatar avatar-lg bg-body text-black">
+                                                <i class="{{ $widget['icon'] }}"></i>
+                                            </div>
+                                        </div>
                                     </div>
-                                @endif
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8 col-12">
+                        <div class="card">
+                            <div class="card-header pb-0">
+                                <div class="row">
+                                    <div class="col-lg-6 col-7">
+                                        <h6>Danh sách 10 bảng lương gần nhất</h6>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-auto">
-                                <div class="avatar avatar-lg bg-body text-black">
-                                    <i class="{{ $widget['icon'] }}"></i>
+                            <div class="card-body px-0 pb-2">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0 table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    STT
+                                                </th>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                    Tiêu đề
+                                                </th>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                    Tổng(VND)
+                                                </th>
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Ngày bắt đầu
+                                                </th>
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Ngày kết thúc
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($salaryManagers as $key => $salaryManager)
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex px-3 py-1">
+                                                            {{ $loop->iteration }}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs font-weight-bold mb-0 px-3">
+                                                            <a
+                                                                href="{{ route('admin.salary.detail', $salaryManager->id) }}">
+                                                                {{ $salaryManager->title }}
+                                                            </a>
+                                                        </p>
+                                                    </td>
+                                                    <td class="align-middle text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ number_format($salaryManager->total, 2) }}
+                                                        </p>
+                                                    </td>
+                                                    <td class="align-middle text-center text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $salaryManager->formatTimeDMY($salaryManager->start_date) }}
+                                                        </p>
+                                                    </td>
+                                                    <td class="align-middle text-center text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $salaryManager->formatTimeDMY($salaryManager->end_date) }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+
+                                            @if ($totalSalary == 0)
+                                                <tr>
+                                                    <td colspan="4" class="text-center pt-4">
+                                                        Hiện tại chưa có bảng lương nào.
+                                                        <br />
+                                                        Vui lòng
+                                                        <a class="href" href="{{ route('admin.salary.getimport') }}">
+                                                            Thêm bảng lương
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </a>
-            </div>
-        @endforeach
-    </div>
-
-    {{-- BẢNG LƯƠNG --}}
-    @if (in_array('view_total_salary', $permissions))
-        <div class="row mt-4">
-            <div class="col-lg-8 col-12">
-                <div class="card">
-                    <div class="card-header pb-0">
-                        <h6>Danh sách 10 bảng lương gần nhất</h6>
-                    </div>
-                    <div class="card-body px-0 pb-2">
-                        <div class="table-responsive">
-                            <table class="table align-items-center mb-0 table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Tiêu đề</th>
-                                        <th>Tổng (VND)</th>
-                                        <th class="text-center">Ngày bắt đầu</th>
-                                        <th class="text-center">Ngày kết thúc</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($salaryManagers as $salaryManager)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>
-                                                <a href="{{ route('admin.salary.detail', $salaryManager->id) }}">
-                                                    {{ $salaryManager->title }}
-                                                </a>
-                                            </td>
-                                            <td>{{ number_format($salaryManager->total, 2) }}</td>
-                                            <td class="text-center">
-                                                {{ $salaryManager->formatTimeDMY($salaryManager->start_date) }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ $salaryManager->formatTimeDMY($salaryManager->end_date) }}
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center pt-4">
-                                                Hiện tại chưa có bảng lương nào.
-                                                <br />
-                                                <a href="{{ route('admin.salary.getimport') }}">Thêm bảng lương</a>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- LỊCH LÀM VIỆC --}}
-            @if (in_array('view_total_schedule', $permissions))
-                <div class="col-lg-4 col-12">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h6>Danh sách 10 lịch làm việc gần nhất</h6>
-                        </div>
-                        <div class="card-body px-0">
-                            <div class="table-responsive">
-                                <table class="table align-items-center mb-0 table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>STT</th>
-                                            <th>Tiêu đề</th>
-                                            <th class="text-center">Ngày bắt đầu</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($celenders as $celender)
+                    <div class="col-lg-4 col-12">
+                        <div class="card">
+                            <div class="card-header pb-0">
+                                <h6>Danh sách 10 lịch làm việc gần nhất</h6>
+                            </div>
+                            <div class="card-body px-0">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center mb-0 table-hover">
+                                        <thead>
                                             <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>
-                                                    <a href="{{ route('admin.celender.detail', $celender->id) }}">
-                                                        {{ $celender->title }}
-                                                    </a>
-                                                </td>
-                                                <td class="text-center">
-                                                    {{ $celender->formatTimeDMY($celender->date) }}
-                                                </td>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    STT
+                                                </th>
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                    Tiêu đề
+                                                </th>
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Ngày bắt đầu
+                                                </th>
                                             </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="3" class="text-center pt-4">
-                                                    Chưa có lịch làm việc nào.
-                                                    <br />
-                                                    <a href="{{ route('admin.celender.home') }}">
-                                                        Đi đến danh sách lịch làm việc
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($celenders as $key => $celender)
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex px-3 py-1">
+                                                            {{ $loop->iteration }}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <p class="text-xs font-weight-bold mb-0 px-3">
+                                                            <a
+                                                                href="{{ route('admin.celender.detail', $celender->id) }}">
+                                                                {{ $celender->title }}
+                                                            </a>
+                                                        </p>
+                                                    </td>
+                                                    <td class="align-middle text-center text-sm">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $celender->formatTimeDMY($celender->date) }}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+
+                                            @if ($totalCelender == 0)
+                                                <tr>
+                                                    <td colspan="4" class="text-center pt-4">
+                                                        Chưa có lịch làm việc nào.
+                                                        <br />
+                                                        Đi đến
+                                                        <a href="{{ route('admin.celender.home') }}">
+                                                            danh sách lịch làm việc.
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+            </div>
+        </div>
+    @else
+        <div class="row">
+            @foreach ($employeeWidgets as $key => $widget)
+                <div class="col-12 col-md-6 col-lg-4 col-xxl-3">
+                    <a
+                        class="card bg-body-tertiary border-transparent shadow text-decoration-none"
+                        href="{{ $widget['link'] }}"
+                        role="button">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <p class="fw-semibold align-items-center text-capitalize">
+                                        {{ $widget['title'] }}
+                                    </p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="avatar avatar-lg bg-body text-black">
+                                        <i class="{{ $widget['icon'] }}"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endforeach
         </div>
     @endif
 @endsection

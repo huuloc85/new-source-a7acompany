@@ -489,7 +489,7 @@
 @section('scripts')
     <script>
         document.getElementById('attendance-search-button').addEventListener('click', function (e) {
-            e.preventDefault(); // Ngăn không cho tự động chuyển hướng
+            e.preventDefault() // Ngăn không cho tự động chuyển hướng
             Swal.fire({
                 title: 'Bạn đã đổi qua mạng Vinh Vinh Phát chưa?',
                 text: 'Vui lòng kiểm tra và xác nhận trước khi tiếp tục.',
@@ -501,128 +501,128 @@
                 cancelButtonText: 'Chưa đổi mạng',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.open('http://192.168.1.6/doc/index.html#/eventSearch?t=1731739764211', '_blank');
+                    window.open('http://192.168.1.200/doc/index.html#/eventSearch?t=1731739764211', '_blank')
                 }
-            });
-        });
+            })
+        })
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('search');
-            const filterCheckbox = document.getElementById('filter_absent');
-            const attendanceTable = document.getElementById('attendanceTable');
-            const rows = attendanceTable.querySelectorAll('tbody tr');
+            const searchInput = document.getElementById('search')
+            const filterCheckbox = document.getElementById('filter_absent')
+            const attendanceTable = document.getElementById('attendanceTable')
+            const rows = attendanceTable.querySelectorAll('tbody tr')
 
             function filterRows() {
-                const searchTerm = searchInput.value.toLowerCase();
-                const showAbsentOnly = filterCheckbox.checked;
+                const searchTerm = searchInput.value.toLowerCase()
+                const showAbsentOnly = filterCheckbox.checked
 
                 rows.forEach((row) => {
-                    const cells = row.querySelectorAll('td');
-                    let found = false;
+                    const cells = row.querySelectorAll('td')
+                    let found = false
 
                     // Kiểm tra từ khóa tìm kiếm
                     cells.forEach((cell) => {
                         if (cell.textContent.toLowerCase().includes(searchTerm)) {
-                            found = true;
+                            found = true
                         }
-                    });
+                    })
 
-                    const timeInCell = row.cells[5]; // Giờ Vào
-                    const timeOutCell = row.cells[6]; // Giờ Ra
+                    const timeInCell = row.cells[5] // Giờ Vào
+                    const timeOutCell = row.cells[6] // Giờ Ra
                     const isAbsent =
                         timeInCell.textContent.includes('Chưa chấm công vào') ||
-                        timeOutCell.textContent.includes('Chưa chấm công ra');
+                        timeOutCell.textContent.includes('Chưa chấm công ra')
 
                     // Điều kiện hiển thị hàng
                     if ((searchTerm === '' || found) && (!showAbsentOnly || isAbsent)) {
-                        row.style.display = '';
+                        row.style.display = ''
                     } else {
-                        row.style.display = 'none';
+                        row.style.display = 'none'
                     }
-                });
+                })
             }
 
             // Lắng nghe sự kiện nhập trên ô tìm kiếm
-            searchInput.addEventListener('input', filterRows);
+            searchInput.addEventListener('input', filterRows)
 
             // Lắng nghe sự kiện thay đổi trên checkbox
-            filterCheckbox.addEventListener('change', filterRows);
-        });
+            filterCheckbox.addEventListener('change', filterRows)
+        })
         document.getElementById('export-button').addEventListener('click', function () {
             // Hiển thị overlay loading
-            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-overlay').style.display = 'flex'
 
             // Lấy giá trị ngày bắt đầu và kết thúc
-            const startDateInput = document.getElementById('start_date').value;
-            const endDateInput = document.getElementById('end_date').value;
+            const startDateInput = document.getElementById('start_date').value
+            const endDateInput = document.getElementById('end_date').value
 
             // Chuyển đổi sang định dạng d-m-Y
             const formatDate = (dateString) => {
-                const date = new Date(dateString);
-                const day = String(date.getDate()).padStart(2, '0'); // Lấy ngày và thêm số 0 nếu cần
-                const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
-                const year = date.getFullYear();
-                return `${day}-${month}-${year}`; // Định dạng d-m-Y
-            };
+                const date = new Date(dateString)
+                const day = String(date.getDate()).padStart(2, '0') // Lấy ngày và thêm số 0 nếu cần
+                const month = String(date.getMonth() + 1).padStart(2, '0') // Tháng bắt đầu từ 0
+                const year = date.getFullYear()
+                return `${day}-${month}-${year}` // Định dạng d-m-Y
+            }
 
-            const formattedStartDate = formatDate(startDateInput);
-            const formattedEndDate = formatDate(endDateInput);
+            const formattedStartDate = formatDate(startDateInput)
+            const formattedEndDate = formatDate(endDateInput)
 
             // Thực hiện yêu cầu AJAX
             fetch('{{ route('admin.attendance.export') }}?start_date=' + startDateInput + '&end_date=' + endDateInput)
                 .then((response) => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error('Network response was not ok')
                     }
-                    return response.blob(); // Chuyển đổi phản hồi thành blob
+                    return response.blob() // Chuyển đổi phản hồi thành blob
                 })
                 .then((blob) => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
+                    const url = window.URL.createObjectURL(blob)
+                    const link = document.createElement('a')
+                    link.href = url
                     // Tạo tên tệp dựa trên formattedStartDate và formattedEndDate
-                    const fileName = 'Bảng Tính Công Từ ' + formattedStartDate + ' Đến ' + formattedEndDate + '.xlsx';
-                    link.setAttribute('download', fileName); // Tên tệp đã chỉnh sửa
-                    document.body.appendChild(link);
-                    link.click(); // Tự động tải xuống
-                    document.body.removeChild(link); // Xóa link sau khi tải xong
+                    const fileName = 'Bảng Tính Công Từ ' + formattedStartDate + ' Đến ' + formattedEndDate + '.xlsx'
+                    link.setAttribute('download', fileName) // Tên tệp đã chỉnh sửa
+                    document.body.appendChild(link)
+                    link.click() // Tự động tải xuống
+                    document.body.removeChild(link) // Xóa link sau khi tải xong
 
                     // Ẩn overlay loading
-                    document.getElementById('loading-overlay').style.display = 'none';
+                    document.getElementById('loading-overlay').style.display = 'none'
                 })
                 .catch((error) => {
-                    document.getElementById('loading-overlay').style.display = 'none';
-                    alert('Có lỗi xảy ra khi xuất dữ liệu');
-                    console.error(error);
-                });
-        });
+                    document.getElementById('loading-overlay').style.display = 'none'
+                    alert('Có lỗi xảy ra khi xuất dữ liệu')
+                    console.error(error)
+                })
+        })
         document.addEventListener('DOMContentLoaded', () => {
-            const daySelect = document.getElementById('day');
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentDay = {{ $currentDay }}; // Ngày hiện tại từ server-side
-            const selectedDay = parseInt(urlParams.get('day'));
-            const showModal = urlParams.get('showModal') === 'true';
+            const daySelect = document.getElementById('day')
+            const urlParams = new URLSearchParams(window.location.search)
+            const currentDay = {{ $currentDay }} // Ngày hiện tại từ server-side
+            const selectedDay = parseInt(urlParams.get('day'))
+            const showModal = urlParams.get('showModal') === 'true'
 
             // Xử lý sự kiện khi người dùng chọn ngày
             daySelect?.addEventListener('change', (e) => {
-                const selectedValue = parseInt(e.target.value);
-                const params = new URLSearchParams();
+                const selectedValue = parseInt(e.target.value)
+                const params = new URLSearchParams()
 
                 // Chỉ cập nhật URL khi ngày được chọn khác với ngày hiện tại
                 if (selectedValue && selectedValue !== currentDay) {
-                    params.set('day', selectedValue);
-                    params.set('showModal', 'true');
+                    params.set('day', selectedValue)
+                    params.set('showModal', 'true')
                 }
 
                 // Điều hướng đến URL mới với các tham số
-                window.location.search = params.toString();
-            });
+                window.location.search = params.toString()
+            })
 
             // Tự động mở modal nếu ngày được chọn khác ngày hiện tại và có showModal
             if (showModal && selectedDay !== currentDay) {
-                new bootstrap.Modal(document.getElementById('todayEmployeesModal')).show();
+                new bootstrap.Modal(document.getElementById('todayEmployeesModal')).show()
             }
-        });
+        })
     </script>
 @endsection

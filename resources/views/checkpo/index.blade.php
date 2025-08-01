@@ -334,11 +334,11 @@
                                                     @foreach ($listDate as $key => $date)
                                                         <td
                                                             class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
-                                                            {{ number_format($product->totalQuanDateCa1[$date]) }}
+                                                            {{ number_format($product->totalQuanDateCa1[$date] ?? 0) }}
                                                         </td>
                                                         <td
                                                             class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
-                                                            {{ number_format($product->totalQuanDateCa2[$date]) }}
+                                                            {{ number_format($product->totalQuanDateCa2[$date] ?? 0) }}
                                                         </td>
                                                     @endforeach
                                                 </tr>
@@ -407,7 +407,7 @@
 
                                                         <td
                                                             class="<?= $key % 2 == 0 ? "bg-info-subtle" : "bg-secondary-subtle" ?>">
-                                                            {{ number_format((float) $product->totalQuanDateError[$date]) }}
+                                                            {{ number_format((float) ($product->totalQuanDateError[$date] ?? 0)) }}
                                                         </td>
                                                     @endforeach
                                                 </tr>
@@ -426,155 +426,155 @@
 
 @section('scriptsx')
     <script>
-        var activeWeek0 = false;
-        var activeWeek1 = false;
-        var activeWeek2 = false;
-        var activeWeek3 = false;
-        var activeWeek4 = false;
-        var activeDaily = false;
-        var activeError = false;
-        checkLocalStorage();
+        var activeWeek0 = false
+        var activeWeek1 = false
+        var activeWeek2 = false
+        var activeWeek3 = false
+        var activeWeek4 = false
+        var activeDaily = false
+        var activeError = false
+        checkLocalStorage()
 
         function checkLocalStorage() {
-            let productTab = getLocalStorage('poTab');
+            let productTab = getLocalStorage('poTab')
             if (productTab && productTab != null) {
                 switch (productTab) {
                     case 'week-0':
-                        activeWeek = true;
-                        resetTab();
-                        handleActive('week-0-tab-btn', 'week-0');
-                        break;
+                        activeWeek = true
+                        resetTab()
+                        handleActive('week-0-tab-btn', 'week-0')
+                        break
                     case 'week-1':
-                        activeWeek = true;
-                        resetTab();
-                        handleActive('week-1-tab-btn', 'week-1');
-                        break;
+                        activeWeek = true
+                        resetTab()
+                        handleActive('week-1-tab-btn', 'week-1')
+                        break
                     case 'week-2':
-                        activeWeek = true;
-                        resetTab();
-                        handleActive('week-2-tab-btn', 'week-2');
-                        break;
+                        activeWeek = true
+                        resetTab()
+                        handleActive('week-2-tab-btn', 'week-2')
+                        break
                     case 'week-3':
-                        activeWeek = true;
-                        resetTab();
-                        handleActive('week-3-tab-btn', 'week-3');
-                        break;
+                        activeWeek = true
+                        resetTab()
+                        handleActive('week-3-tab-btn', 'week-3')
+                        break
                     case 'week-4':
-                        activeWeek = true;
-                        resetTab();
-                        handleActive('week-4-tab-btn', 'week-4');
-                        break;
+                        activeWeek = true
+                        resetTab()
+                        handleActive('week-4-tab-btn', 'week-4')
+                        break
                     case 'daily':
-                        activeDaily = true;
-                        resetTab();
-                        handleActive('daily-tab-btn', 'daily-tab');
-                        break;
+                        activeDaily = true
+                        resetTab()
+                        handleActive('daily-tab-btn', 'daily-tab')
+                        break
                     case 'error':
-                        activeError = true;
-                        resetTab();
-                        handleActive('error-tab-btn', 'error-tab');
-                        break;
+                        activeError = true
+                        resetTab()
+                        handleActive('error-tab-btn', 'error-tab')
+                        break
                 }
             }
         }
 
         // Xử lý sự kiện click cho các tab tuần
         $('#daily-tab-btn').click(function () {
-            resetClick();
-            activeDaily = true;
-            addLocalStorage('daily');
-        });
+            resetClick()
+            activeDaily = true
+            addLocalStorage('daily')
+        })
         $('#week-0-tab-btn').click(function () {
-            resetClick();
-            activeWeek0 = true;
-            addLocalStorage('week-0');
-        });
+            resetClick()
+            activeWeek0 = true
+            addLocalStorage('week-0')
+        })
         $('#week-1-tab-btn').click(function () {
-            resetClick();
-            activeWeek1 = true;
-            addLocalStorage('week-1');
-        });
+            resetClick()
+            activeWeek1 = true
+            addLocalStorage('week-1')
+        })
         $('#week-2-tab-btn').click(function () {
-            resetClick();
-            activeWeek2 = true;
-            addLocalStorage('week-2');
-        });
+            resetClick()
+            activeWeek2 = true
+            addLocalStorage('week-2')
+        })
         $('#week-3-tab-btn').click(function () {
-            resetClick();
-            activeWeek3 = true;
-            addLocalStorage('week-3');
-        });
+            resetClick()
+            activeWeek3 = true
+            addLocalStorage('week-3')
+        })
         $('#week-4-tab-btn').click(function () {
-            resetClick();
-            activeWeek4 = true;
-            addLocalStorage('week-4');
-        });
+            resetClick()
+            activeWeek4 = true
+            addLocalStorage('week-4')
+        })
         $('#error-tab-btn').click(function () {
-            resetClick();
-            activeError = true;
-            addLocalStorage('error');
-        });
+            resetClick()
+            activeError = true
+            addLocalStorage('error')
+        })
 
         function resetClick() {
-            activeDaily = false;
-            activeError = false;
-            activeWeek0 = false;
-            activeWeek1 = false;
-            activeWeek2 = false;
-            activeWeek3 = false;
-            activeWeek4 = false;
+            activeDaily = false
+            activeError = false
+            activeWeek0 = false
+            activeWeek1 = false
+            activeWeek2 = false
+            activeWeek3 = false
+            activeWeek4 = false
         }
 
         function handleActive(attribute, attribute_tab) {
-            var el = document.getElementById(attribute);
+            var el = document.getElementById(attribute)
             if (el) {
                 if (!el.classList.contains('active')) {
-                    el.classList.add('active');
+                    el.classList.add('active')
                 }
                 if (!el.classList.contains('show')) {
-                    el.classList.add('show');
+                    el.classList.add('show')
                 }
             }
 
-            var elTab = document.getElementById(attribute_tab);
+            var elTab = document.getElementById(attribute_tab)
             if (elTab) {
                 if (!elTab.classList.contains('active')) {
-                    elTab.classList.add('active');
+                    elTab.classList.add('active')
                 }
                 if (!elTab.classList.contains('show')) {
-                    elTab.classList.add('show');
+                    elTab.classList.add('show')
                 }
             }
         }
 
         function resetTab() {
-            var listTab = document.getElementsByClassName('po-tab');
+            var listTab = document.getElementsByClassName('po-tab')
             if (listTab && listTab.length > 0) {
                 for (let i = 0; i < listTab.length; i++) {
                     if (listTab[i].classList.contains('show')) {
-                        listTab[i].classList.remove('show');
+                        listTab[i].classList.remove('show')
                     }
                     if (listTab[i].classList.contains('active')) {
-                        listTab[i].classList.remove('active');
+                        listTab[i].classList.remove('active')
                     }
                 }
             }
         }
 
         function addLocalStorage(key) {
-            localStorage.setItem('poTab', key);
+            localStorage.setItem('poTab', key)
         }
 
         function getLocalStorage(key) {
-            return localStorage.getItem(key);
+            return localStorage.getItem(key)
         }
 
         $(function () {
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="tooltip"]').tooltip()
 
             $('.tooltip-btn').on('click', function () {
-                $(this).tooltip('hide');
-            });
-        });
+                $(this).tooltip('hide')
+            })
+        })
     </script>
 @endsection

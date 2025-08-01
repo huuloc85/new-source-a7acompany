@@ -120,7 +120,7 @@
                                                 {{ $checkEmployee->employee->name }}
                                             </td>
                                             <td class="text-center align-middle" data-label="Mã Nhân Viên">
-                                                {{ $checkEmployee->employee->id }}
+                                                {{ $checkEmployee->employee->code }}
                                             </td>
                                             <td class="text-center align-middle" data-label="Tên Sản Phẩm">
                                                 {{ $checkEmployee->product->name }}
