@@ -125,7 +125,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form method="GET" class="row g-3 align-items-end" id="searchForm">
+                    <form method="GET" class="row g-3 align-items-end mb-4" id="searchForm">
                         <div class="col-md-2">
                             <label for="product_id" class="form-label">Sản Phẩm</label>
                             <select name="product_id" id="product_id" class="form-select" onchange="this.form.submit()">
@@ -147,17 +147,6 @@
                                     <option value="{{ $employee->id }}"
                                         {{ request('employee_id') == $employee->id ? 'selected' : '' }}>
                                         {{ $employee->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="filter_month" class="form-label">Tháng</label>
-                            <select name="filter_month" id="filter_month" class="form-select" onchange="this.form.submit()">
-                                @foreach ($availableMonths as $month)
-                                    <option value="{{ $month }}"
-                                        {{ request('filter_month') == $month ? 'selected' : '' }}>
-                                        {{ \Carbon\Carbon::parse($month . '-01')->format('m/Y') }}
                                     </option>
                                 @endforeach
                             </select>
@@ -203,24 +192,6 @@
                     </form>
 
                     @if (!$storage->isEmpty())
-                        <div class="mb-3 d-flex flex-wrap gap-2 justify-content-start">
-                            <button id="sortButton" onclick="sortGroupsByLot()"
-                                class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center"
-                                title="Sắp xếp theo Lot">
-                                <i class="bi bi-sort-down"></i>
-                                <span id="sortButtonText" class="ms-1">Sắp xếp</span>
-                                <span id="sortButtonSpinner" class="spinner-border spinner-border-sm ms-2 d-none"
-                                    role="status" aria-hidden="true"></span>
-                            </button>
-
-                            <button id="resetButton" onclick="resetTable()"
-                                class="btn btn-outline-secondary btn-sm px-3 d-none d-flex align-items-center"
-                                title="Khôi phục thứ tự ban đầu">
-                                <i class="bi bi-arrow-counterclockwise"></i>
-                                <span class="ms-1">Khôi phục</span>
-                            </button>
-                        </div>
-
                         {{-- BẢNG CHO DESKTOP --}}
                         <div class="table-responsive d-none d-md-block">
                             <table class="table table-hover">
@@ -291,8 +262,7 @@
                                         <div class="card-body p-3">
                                             <p class="mb-1"><strong>STT:</strong>
                                                 {{ $loop->parent->iteration }}.{{ $loop->iteration }}</p>
-                                            <p class="mb-1"><strong>Tên Sản Phẩm:</strong> {{ $item->product->name }}
-                                            </p>
+                                            <p class="mb-1"><strong>Tên Sản Phẩm:</strong> {{ $item->product->name }}</p>
                                             <p class="mb-1"><strong>Code:</strong> {{ $item->product->code }}</p>
                                             <p class="mb-1"><strong>Nhân Viên Nhập:</strong> {{ $item->employee->name }}
                                             </p>
@@ -315,169 +285,6 @@
                             Không có sản phẩm trong kho xuất hàng
                         </div>
                     @endif
-                    <script>
-                        let originalHTMLDesktop = null;
-                        let originalHTMLMobile = null;
-
-                        function extractLotKey(lot) {
-                            const match = lot.match(/([A-Z]?)-(\d{8})-(\d+)-(\d+)/);
-                            if (!match) return '';
-                            const [, , date, shift, bin] = match;
-                            return `${date}-${shift.padStart(2, '0')}-${bin.padStart(3, '0')}`;
-                        }
-
-                        function sortGroupsByLot() {
-                            const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-
-                            const button = document.getElementById('sortButton');
-                            const text = document.getElementById('sortButtonText');
-                            const spinner = document.getElementById('sortButtonSpinner');
-                            const resetBtn = document.getElementById('resetButton');
-
-                            text.textContent = "Đang sắp xếp...";
-                            spinner.classList.remove('d-none');
-                            button.disabled = true;
-
-                            setTimeout(() => {
-                                if (isDesktop) {
-                                    sortTableDesktop();
-                                } else {
-                                    sortCardMobile();
-                                }
-
-                                text.textContent = "Đã sắp xếp theo Lot";
-                                spinner.classList.add('d-none');
-                                button.disabled = false;
-                                resetBtn.classList.remove('d-none');
-
-                            }, 100);
-                        }
-
-                        function sortTableDesktop() {
-                            const table = document.querySelector('.table-responsive table');
-                            const tbody = table?.querySelector('tbody');
-                            if (!tbody) return;
-
-                            if (!originalHTMLDesktop) {
-                                originalHTMLDesktop = tbody.innerHTML;
-                            }
-
-                            const allRows = Array.from(tbody.querySelectorAll('tr'));
-                            let groups = [],
-                                currentGroup = null;
-
-                            for (let row of allRows) {
-                                if (row.classList.contains('table-secondary')) {
-                                    currentGroup = {
-                                        header: row,
-                                        items: []
-                                    };
-                                    groups.push(currentGroup);
-                                } else if (currentGroup) {
-                                    currentGroup.items.push(row);
-                                }
-                            }
-
-                            groups.forEach(group => {
-                                group.items.sort((a, b) => {
-                                    const lotA = extractLotKey(a.children[5]?.textContent.trim() || '');
-                                    const lotB = extractLotKey(b.children[5]?.textContent.trim() || '');
-                                    return lotA.localeCompare(lotB);
-                                });
-                            });
-
-                            tbody.innerHTML = '';
-                            groups.forEach((group, groupIndex) => {
-                                tbody.appendChild(group.header);
-                                group.items.forEach((row, idx) => {
-                                    const sttCell = row.querySelector('th');
-                                    if (sttCell) {
-                                        sttCell.textContent = `${groupIndex + 1}.${idx + 1}`;
-                                    }
-                                    tbody.appendChild(row);
-                                });
-                            });
-                        }
-
-                        function sortCardMobile() {
-                            const mobileWrapper = document.querySelector('.d-md-none');
-                            if (!mobileWrapper) return;
-
-                            if (!originalHTMLMobile) {
-                                originalHTMLMobile = mobileWrapper.innerHTML;
-                            }
-
-                            const cardGroups = [];
-                            const children = Array.from(mobileWrapper.children);
-                            let currentHeader = null;
-                            let currentCards = [];
-
-                            children.forEach(el => {
-                                if (el.classList.contains('fw-bold')) {
-                                    if (currentHeader && currentCards.length > 0) {
-                                        cardGroups.push({
-                                            header: currentHeader,
-                                            cards: currentCards
-                                        });
-                                    }
-                                    currentHeader = el;
-                                    currentCards = [];
-                                } else if (el.classList.contains('card')) {
-                                    currentCards.push(el);
-                                }
-                            });
-
-                            if (currentHeader && currentCards.length > 0) {
-                                cardGroups.push({
-                                    header: currentHeader,
-                                    cards: currentCards
-                                });
-                            }
-
-                            cardGroups.forEach(group => {
-                                group.cards.sort((a, b) => {
-                                    const lotA = extractLotKey(
-                                        a.querySelector('p:nth-child(6)')?.textContent.split(':').pop().trim() || ''
-                                    );
-                                    const lotB = extractLotKey(
-                                        b.querySelector('p:nth-child(6)')?.textContent.split(':').pop().trim() || ''
-                                    );
-                                    return lotA.localeCompare(lotB);
-                                });
-                            });
-
-                            mobileWrapper.innerHTML = '';
-                            cardGroups.forEach((group, idx) => {
-                                mobileWrapper.appendChild(group.header);
-                                group.cards.forEach((card, j) => {
-                                    const stt = card.querySelector('p strong')?.parentNode;
-                                    if (stt) stt.innerHTML = `<strong>STT:</strong> ${idx + 1}.${j + 1}`;
-                                    mobileWrapper.appendChild(card);
-                                });
-                            });
-                        }
-
-                        function resetTable() {
-                            const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-
-                            if (isDesktop) {
-                                const tbody = document.querySelector('.table-responsive table tbody');
-                                if (originalHTMLDesktop && tbody) {
-                                    tbody.innerHTML = originalHTMLDesktop;
-                                }
-                            } else {
-                                const wrapper = document.querySelector('.d-md-none');
-                                if (originalHTMLMobile && wrapper) {
-                                    wrapper.innerHTML = originalHTMLMobile;
-                                }
-                            }
-
-                            document.getElementById('sortButtonText').textContent = "Sắp xếp theo ngày-ca-bin (Lot)";
-                            document.getElementById('resetButton').classList.add('d-none');
-                        }
-                    </script>
-
-
                 </div>
             </div>
         </div>

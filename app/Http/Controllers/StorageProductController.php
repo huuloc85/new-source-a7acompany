@@ -12,103 +12,30 @@ class StorageProductController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Lấy ngày mới nhất từ dữ liệu để làm mặc định
-        $latestDate = StorageProduct::selectRaw('DATE(created_at) as date')
+        $availableDates = StorageProduct::selectRaw('DATE(created_at) as date')
+            ->distinct()
             ->orderBy('date', 'desc')
-            ->first()?->date;
-
-        $defaultDate = $latestDate ? Carbon::parse($latestDate)->toDateString() : now()->toDateString();
-
-        // 2. Xác định ngày filter - ưu tiên ngày mới nhất nếu không có filter
-        $filterDate = $request->input('filter_date', $defaultDate);
-
-        // 3. Xác định tháng filter dựa trên ngày đã chọn
-        $filterMonth = $request->input('filter_month');
-        if (! $filterMonth && $filterDate) {
-            $filterMonth = Carbon::parse($filterDate)->format('Y-m');
-        }
-
-        // 4. Lấy tất cả các tháng có sẵn từ dữ liệu
-        $availableMonths = StorageProduct::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month')
-            ->distinct()
-            ->orderBy('month', 'desc')
-            ->pluck('month')
-            ->toArray();
-
-        // 5. Lấy các ngày có sẵn dựa trên tháng đã chọn
-        $availableDatesQuery = StorageProduct::selectRaw('DATE(created_at) as date')
-            ->distinct()
-            ->orderBy('date', 'desc');
-
-        if ($filterMonth) {
-            $availableDatesQuery->whereRaw('DATE_FORMAT(created_at, "%Y-%m") = ?', [$filterMonth]);
-        }
-
-        $availableDates = $availableDatesQuery->pluck('date')
+            ->pluck('date')
             ->map(fn ($d) => Carbon::parse($d)->toDateString())
             ->toArray();
 
-        // 6. Validate filterDate có trong availableDates không
-        if (! in_array($filterDate, $availableDates)) {
-            $filterDate = $availableDates[0] ?? $defaultDate;
-        }
+        $filterDate = $request->input('filter_date', $availableDates[0] ?? now()->toDateString());
 
-        // 7. Lấy danh sách sản phẩm có sẵn - ưu tiên theo ngày, fallback theo tháng
-        $productQuery = StorageProduct::distinct();
-
-        // Luôn ưu tiên filter theo ngày nếu có filterDate
-        if ($filterDate) {
-            $productQuery->whereDate('created_at', $filterDate);
-        } elseif ($filterMonth) {
-            $productQuery->whereRaw('DATE_FORMAT(created_at, "%Y-%m") = ?', [$filterMonth]);
-        }
-
-        $productIds = $productQuery->pluck('product_id');
-        $products = Product::whereIn('id', $productIds)->orderBy('name')->get();
-
-        // 8. Lấy danh sách nhân viên có sẵn - ưu tiên theo ngày + product filter
-        $employeeQuery = StorageProduct::distinct();
-
-        // Luôn ưu tiên filter theo ngày nếu có filterDate
-        if ($filterDate) {
-            $employeeQuery->whereDate('created_at', $filterDate);
-        } elseif ($filterMonth) {
-            $employeeQuery->whereRaw('DATE_FORMAT(created_at, "%Y-%m") = ?', [$filterMonth]);
-        }
-
-        // Apply product filter for employees if selected
-        if ($request->filled('product_id')) {
-            $employeeQuery->where('product_id', $request->input('product_id'));
-        }
-
-        $employeeIds = $employeeQuery->pluck('employee_id');
-        $employees = Employee::whereIn('id', $employeeIds)->orderBy('name')->get();
-
-        // 9. Query dữ liệu storage cuối cùng - ưu tiên theo ngày
-        $storageQuery = StorageProduct::with(['product', 'employee']);
-
-        // Luôn ưu tiên filter theo ngày nếu có filterDate
-        if ($filterDate) {
-            $storageQuery->whereDate('created_at', $filterDate);
-        } elseif ($filterMonth) {
-            $storageQuery->whereRaw('DATE_FORMAT(created_at, "%Y-%m") = ?', [$filterMonth]);
-        }
-
-        // Apply other filters
-        if ($request->filled('product_id')) {
-            $storageQuery->where('product_id', $request->input('product_id'));
-        }
-
-        if ($request->filled('employee_id')) {
-            $storageQuery->where('employee_id', $request->input('employee_id'));
-        }
-
-        $storage = $storageQuery->get()
+        $storage = StorageProduct::with(['product', 'employee'])
+            ->whereDate('created_at', $filterDate)
+            ->when($request->filled('product_id'), fn ($q) => $q->where('product_id', $request->input('product_id')))
+            ->when($request->filled('employee_id'), fn ($q) => $q->where('employee_id', $request->input('employee_id')))
+            ->get()
             ->groupBy(function ($item) {
                 return Carbon::parse($item->created_at)->format('Y-m-d').'|'.$item->employee_id.'|'.$item->product_id;
             });
 
-        // 8. Xử lý logic lot modal (giữ nguyên như code cũ)
+        $productIds = StorageProduct::distinct()->pluck('product_id');
+        $products = Product::whereIn('id', $productIds)->orderBy('name')->get();
+
+        $employeeIds = StorageProduct::distinct()->pluck('employee_id');
+        $employees = Employee::whereIn('id', $employeeIds)->orderBy('name')->get();
+
         $lotModalData = null;
 
         if ($request->filled('lot') && $request->filled('lot_product_id')) {
@@ -182,9 +109,7 @@ class StorageProductController extends Controller
             'storage',
             'products',
             'employees',
-            'availableMonths',
             'availableDates',
-            'filterMonth',
             'filterDate',
             'lotModalData'
         ));

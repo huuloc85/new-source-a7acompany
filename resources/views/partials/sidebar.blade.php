@@ -254,15 +254,15 @@
             'icon' => 'fas fa-box fa-lg',
             'path' => 'admin.storage.index',
         ],
-        // [
-        //     'label' => 'Quét QR code',
-        //     'icon' => 'fas fa-qrcode fa-lg',
-        //     'path' => 'admin.barcode.scanQr',
-        // ],
         [
-            'label' => 'Quét Sản Phẩm',
-            'icon' => 'fas fa-camera fa-lg',
-            'path' => 'admin.scan',
+            'label' => 'Quét QR code',
+            'icon' => 'fas fa-qrcode fa-lg',
+            'path' => 'admin.barcode.scanQr',
+        ],
+        [
+            'label' => 'Quét Barcode',
+            'icon' => 'fas fa-barcode fa-lg',
+            'path' => 'admin.barcode.scan',
         ],
     ];
 
