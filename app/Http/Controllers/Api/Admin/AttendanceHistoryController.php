@@ -28,9 +28,9 @@ class AttendanceHistoryController extends BaseController
                         'time',
                         'created_at',
                         'updated_at',
-                        'employee.code',
-                        'employee.name',
-                        'employee.calendar_category_id',
+                        'employees.id',
+                        'employees.name',
+                        'employees.calendar_category_id',
                         AllowedFilter::scope('date_between'),
                         AllowedFilter::scope('time_between'),
                         AllowedFilter::scope('datetime_between'),
@@ -42,9 +42,9 @@ class AttendanceHistoryController extends BaseController
                         'time',
                         'created_at',
                         'updated_at',
-                        'employee.code',
-                        'employee.name',
-                        'employee.calendar_category_id',
+                        'employees.id',
+                        'employees.name',
+                        'employees.calendar_category_id',
                     ])
                     ->allowedIncludes([
                         'employees',
@@ -64,7 +64,7 @@ class AttendanceHistoryController extends BaseController
             $key = 'attendances:history:show:'.$id;
 
             return Cache::tags(['attendances'])->remember($key, 3600, function () use ($id) {
-                $record = AttendanceRecord::with(['employee'])->findOrFail($id);
+                $record = AttendanceRecord::with(['employees'])->findOrFail($id);
 
                 return response()->json($record);
             });
@@ -114,7 +114,7 @@ class AttendanceHistoryController extends BaseController
         try {
             $record = AttendanceRecord::findOrFail($id);
             $this->validate($request, [
-                'employee_code' => 'sometimes|exists:employees,code',
+                'employee_code' => 'sometimes|exists:employees,id',
                 'datetime' => 'required|date_format:Y-m-d H:i:s',
                 'date' => 'sometimes|date',
                 'time' => 'sometimes|date_format:H:i:s',
