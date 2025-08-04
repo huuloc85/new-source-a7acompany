@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Admin\ScheduleController;
 use App\Http\Controllers\Api\Admin\ScheduleDetailController;
 use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
+use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -190,4 +191,12 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
     });
 
     Route::get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
+});
+
+// EMPLOYEE ROUTES
+Route::middleware(['auth:sanctum', 'check.token.expiration', 'authEmployees'])->group(function () {
+    Route::prefix('employee/schedules')->group(function () {
+        Route::get('/', [ScheduleController::class, 'index']);
+        Route::get('/{id}', [EmpScheduleDetailController::class, 'show']);
+    });
 });
