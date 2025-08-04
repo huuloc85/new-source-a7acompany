@@ -84,6 +84,7 @@ class EmployeeController extends BaseController
                     'scheduleDetails.hnhc',
                 ])
                 ->allowedFilters([
+                    'id',
                     'name',
                     'phone',
                     'email',
