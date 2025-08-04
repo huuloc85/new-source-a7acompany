@@ -85,6 +85,7 @@ class AuthController extends BaseController
         $tokenResult->accessToken->save();
 
         return response()->json([
+            'id' => $user->id,
             'role_id' => $user->role_id,
             'role_name' => $user->role->role_name,
             'name' => $user->name,
