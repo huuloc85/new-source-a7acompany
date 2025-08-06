@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Admin\ScheduleController;
 use App\Http\Controllers\Api\Admin\ScheduleDetailController;
 use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
+use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -194,9 +195,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
 });
 
 // EMPLOYEE ROUTES
-Route::middleware(['auth:sanctum', 'check.token.expiration', 'authEmployees'])->group(function () {
-    Route::prefix('employee/schedules')->group(function () {
+Route::middleware(['auth:sanctum', 'check.token.expiration', 'authEmployees'])->prefix('employee')->group(function () {
+    Route::prefix('schedules')->group(function () {
         Route::get('/', [ScheduleController::class, 'index']);
         Route::get('/{id}', [EmpScheduleDetailController::class, 'show']);
+    });
+
+    Route::prefix('salaries')->group(function () {
+        Route::get('/', [EmpSalaryController::class, 'empSalaries']);
+        Route::get('/{id}', [EmpSalaryController::class, 'empSalary']);
     });
 });
