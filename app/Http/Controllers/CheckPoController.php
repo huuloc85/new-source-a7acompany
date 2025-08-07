@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\Checkpo\ExportMultiSheetsPo;
+use App\Exports\CheckPo\ExportMultiSheetsPo;
 use App\Models\DailyQuantity;
 use App\Models\DailyQuantityPO;
 use App\Models\Product;
