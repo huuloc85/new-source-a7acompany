@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\Checkpo;
+namespace App\Exports\CheckPo;
 
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
