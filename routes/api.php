@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Admin\ScheduleController;
 use App\Http\Controllers\Api\Admin\ScheduleDetailController;
 use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
+use App\Http\Controllers\Api\Employee\EmpAttendance;
 use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use Illuminate\Http\Request;
@@ -205,4 +206,12 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authEmployees'])->
         Route::get('/', [EmpSalaryController::class, 'empSalaries']);
         Route::get('/{id}', [EmpSalaryController::class, 'empSalary']);
     });
+
+    Route::prefix('attendances')->group(function () {
+        Route::get('/history', [EmpAttendance::class, 'history']);
+        Route::get('/', [EmpAttendance::class, 'index']);
+        // Route::get('/{id}', [EmpAttendance::class, 'show']);
+        // Route::patch('/{id}', [EmpAttendance::class, 'update']);
+    });
+
 });
