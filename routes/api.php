@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Admin\ScheduleDetailController;
 use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
 use App\Http\Controllers\Api\Employee\EmpAttendance;
+use App\Http\Controllers\Api\Employee\EmpDailyActivity;
 use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use Illuminate\Http\Request;
@@ -212,6 +213,12 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authEmployees'])->
         Route::get('/', [EmpAttendance::class, 'index']);
         // Route::get('/{id}', [EmpAttendance::class, 'show']);
         // Route::patch('/{id}', [EmpAttendance::class, 'update']);
+    });
+    Route::prefix('daily-activities')->group(function () {
+        Route::get('/', [EmpDailyActivity::class, 'index']);
+        Route::get('/{id}', [EmpDailyActivity::class, 'show']);
+        Route::patch('/{id}', [EmpDailyActivity::class, 'update']);
+        Route::delete('/{id}', [EmpDailyActivity::class, 'destroy']);
     });
 
 });
