@@ -60,7 +60,7 @@ app()->environment('local') && Route::get('/clear-cache', function () {
     return response()->json(['message' => 'Cache cleared successfully']);
 });
 
-Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->group(function () {
+Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
     if (connection_aborted()) {
         Log::info('Request aborted early.');
 
@@ -69,7 +69,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
     Route::post('/auth/check', [AuthController::class, 'authCheck']);
 
     // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
-    Route::prefix('admin')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/me', [AuthController::class, 'authMe']);
         Route::get('/profile', [AuthController::class, 'authProfile']);
@@ -78,7 +78,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
     });
 
     // Employees (Quản Lý Nhân Sự)
-    Route::prefix('employees')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('employees')->group(function () {
         Route::get('/trash', [EmployeeController::class, 'getTrashEmployees']);
         Route::post('/restore/{id}', [EmployeeController::class, 'restoreEmployee']);
         Route::get('/', [EmployeeController::class, 'getEmployees']);
@@ -89,7 +89,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
     });
 
     // Attendance Records (Quản Lý Chấm Công)
-    Route::prefix('attendances')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('attendances')->group(function () {
         Route::prefix('history')->group(function () {
             Route::get('/', [AttendanceHistoryController::class, 'index']);
             Route::get('/{id}', [AttendanceHistoryController::class, 'show']);
@@ -103,7 +103,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
     });
 
     // Roles (Quản Lý Chức Vụ)
-    Route::prefix('roles')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('roles')->group(function () {
         Route::get('/', [RoleController::class, 'getRoles']);
         Route::get('/{id}', [RoleController::class, 'getRole']);
         Route::post('/', [RoleController::class, 'addRole']);
@@ -112,20 +112,20 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
     });
 
     // Logs (Quản Lý Logs)
-    Route::prefix('logs')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('logs')->group(function () {
         Route::get('/', [LogController::class, 'index']);
         Route::delete('/{id}', [LogController::class, 'delete']);
         Route::post('/delete-all', [LogController::class, 'deleteAll']);
     });
 
-    Route::prefix('salaries')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('salaries')->group(function () {
         Route::get('/', [SalaryController::class, 'getSalaries']);
         Route::post('/', [SalaryController::class, 'addSalary']);
         Route::get('/{id}', [SalaryController::class, 'getSalary']);
         Route::delete('/{id}', [SalaryController::class, 'deleteSalary']);
     });
 
-    Route::prefix('schedule-categories')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('schedule-categories')->group(function () {
         Route::get('/', [ScheduleCategoryController::class, 'index']);   // Lấy danh sách danh mục
         Route::post('/', [ScheduleCategoryController::class, 'store']);  // Thêm mới danh mục
         Route::get('/{id}', [ScheduleCategoryController::class, 'show']);  // Lấy chi tiết danh mục
@@ -133,7 +133,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
         Route::delete('/{id}', [ScheduleCategoryController::class, 'delete']); // Xóa danh mục
     });
 
-    Route::prefix('schedules')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('schedules')->group(function () {
         Route::prefix('detail')->group(function () {
             Route::get('/', [ScheduleDetailController::class, 'index']);
             //     Route::get('/{id}', [ScheduleDetailController::class, 'detail']);
@@ -150,16 +150,16 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
 
     Route::prefix('products')->group(function () {
         Route::get('/month-list', [ProductController::class, 'getMonthList']);
-        Route::get('/trash', [ProductController::class, 'getTrashProducts']);
-        Route::post('/restore/{id}', [ProductController::class, 'restoreProduct']);
+        Route::middleware(['authAdmin'])->get('/trash', [ProductController::class, 'getTrashProducts']);
+        Route::middleware(['authAdmin'])->post('/restore/{id}', [ProductController::class, 'restoreProduct']);
         Route::get('/', [ProductController::class, 'getProducts']);
-        Route::post('/', [ProductController::class, 'addProduct']);
+        Route::middleware(['authAdmin'])->post('/', [ProductController::class, 'addProduct']);
         Route::get('/{id}', [ProductController::class, 'getProduct']);
-        Route::patch('/{id}', [ProductController::class, 'updateProduct']);
-        Route::delete('/{id}', [ProductController::class, 'deleteProduct']);
+        Route::middleware(['authAdmin'])->patch('/{id}', [ProductController::class, 'updateProduct']);
+        Route::middleware(['authAdmin'])->delete('/{id}', [ProductController::class, 'deleteProduct']);
     });
 
-    Route::prefix('quantities')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('quantities')->group(function () {
         Route::post('/addList', [TotalQuantityController::class, 'addProductsQuantity']);
         Route::prefix('monthly')->group(function () {
             Route::patch('/updateList', [TotalQuantityController::class, 'updateMonthQuantities']);
@@ -172,14 +172,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
         // Route::delete('/{id}', [TotalQuantityController::class, 'delete']);
     });
 
-    Route::prefix('stamps')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('stamps')->group(function () {
         Route::put('/savePrint', [StampController::class, 'savePrint'])->name('api.save-print');
         Route::get('/history', [StampController::class, 'getStampHistory'])->name('api.stamp.history');
         Route::get('/history/{id}', [StampController::class, 'getStampHistoryById'])->name('api.stamp.history.id');
         Route::post('/reject/{id}', [StampController::class, 'rejectPrint'])->name('api.stamp.reject');
     });
 
-    Route::prefix('daily-schedules')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('daily-schedules')->group(function () {
         Route::get('/', [DailyScheduleController::class, 'index']);
         // Route::post('/', [DailyScheduleController::class, 'store']);
         Route::get('/{id}', [DailyScheduleController::class, 'show']);
@@ -187,38 +187,38 @@ Route::middleware(['auth:sanctum', 'check.token.expiration', 'authAdmin'])->grou
         Route::delete('/{id}', [DailyScheduleController::class, 'destroy']);
     });
 
-    Route::prefix('history')->group(function () {
+    Route::middleware(['authAdmin'])->prefix('history')->group(function () {
         Route::get('/', [HistoryController::class, 'index'])->name('api.history.index');
         Route::delete('/{id}', [HistoryController::class, 'destroy'])->name('api.history.destroy');
         Route::get('/view-log-all-quantity', [HistoryController::class, 'viewLogAllQuantity'])->name('api.history.view-log-all-quantity');
     });
 
-    Route::get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
-});
+    Route::middleware(['authAdmin'])->get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
 
-// EMPLOYEE ROUTES
-Route::middleware(['auth:sanctum', 'check.token.expiration', 'authEmployees'])->prefix('employee')->group(function () {
-    Route::prefix('schedules')->group(function () {
-        Route::get('/', [ScheduleController::class, 'index']);
-        Route::get('/{id}', [EmpScheduleDetailController::class, 'show']);
-    });
+    // EMPLOYEE ROUTES
+    Route::middleware(['authEmployees'])->prefix('employee')->group(function () {
+        Route::prefix('schedules')->group(function () {
+            Route::get('/', [ScheduleController::class, 'index']);
+            Route::get('/{id}', [EmpScheduleDetailController::class, 'show']);
+        });
 
-    Route::prefix('salaries')->group(function () {
-        Route::get('/', [EmpSalaryController::class, 'empSalaries']);
-        Route::get('/{id}', [EmpSalaryController::class, 'empSalary']);
-    });
+        Route::prefix('salaries')->group(function () {
+            Route::get('/', [EmpSalaryController::class, 'empSalaries']);
+            Route::get('/{id}', [EmpSalaryController::class, 'empSalary']);
+        });
 
-    Route::prefix('attendances')->group(function () {
-        Route::get('/history', [EmpAttendance::class, 'history']);
-        Route::get('/', [EmpAttendance::class, 'index']);
-        // Route::get('/{id}', [EmpAttendance::class, 'show']);
-        // Route::patch('/{id}', [EmpAttendance::class, 'update']);
-    });
-    Route::prefix('daily-activities')->group(function () {
-        Route::get('/', [EmpDailyActivity::class, 'index']);
-        Route::get('/{id}', [EmpDailyActivity::class, 'show']);
-        Route::patch('/{id}', [EmpDailyActivity::class, 'update']);
-        Route::delete('/{id}', [EmpDailyActivity::class, 'destroy']);
-    });
+        Route::prefix('attendances')->group(function () {
+            Route::get('/history', [EmpAttendance::class, 'history']);
+            Route::get('/', [EmpAttendance::class, 'index']);
+            // Route::get('/{id}', [EmpAttendance::class, 'show']);
+            // Route::patch('/{id}', [EmpAttendance::class, 'update']);
+        });
+        Route::prefix('daily-activities')->group(function () {
+            Route::get('/', [EmpDailyActivity::class, 'index']);
+            Route::get('/{id}', [EmpDailyActivity::class, 'show']);
+            Route::patch('/{id}', [EmpDailyActivity::class, 'update']);
+            Route::delete('/{id}', [EmpDailyActivity::class, 'destroy']);
+        });
 
+    });
 });
