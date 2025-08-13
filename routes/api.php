@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Employee\EmpAttendance;
 use App\Http\Controllers\Api\Employee\EmpDailyActivity;
 use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
+use App\Http\Controllers\api\employee\EmpTodo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -213,6 +214,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             // Route::get('/{id}', [EmpAttendance::class, 'show']);
             // Route::patch('/{id}', [EmpAttendance::class, 'update']);
         });
+
         Route::prefix('daily-activities')->group(function () {
             Route::get('/', [EmpDailyActivity::class, 'index']);
             Route::get('/{id}', [EmpDailyActivity::class, 'show']);
@@ -220,5 +222,15 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             Route::delete('/{id}', [EmpDailyActivity::class, 'destroy']);
         });
 
+        Route::prefix('todos')->group(function () {
+            Route::prefix('quantity')->group(function () {
+                Route::put('/', [EmpTodo::class, 'handleUpdateQuantity']);
+                Route::put('/error', [EmpTodo::class, 'handleUpdateError']);
+            });
+            Route::get('/', [EmpTodo::class, 'index']);
+            Route::post('/', [EmpTodo::class, 'store']);
+            Route::get('/history', [EmpTodo::class, 'history']);
+
+        });
     });
 });
