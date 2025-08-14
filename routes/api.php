@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\Employee\EmpAttendanceController;
 use App\Http\Controllers\Api\Employee\EmpDailyActivity;
 use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
+use App\Http\Controllers\api\employee\EmpStampController;
 use App\Http\Controllers\api\employee\EmpTodoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -230,7 +231,11 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             Route::get('/', [EmpTodoController::class, 'index']);
             Route::post('/', [EmpTodoController::class, 'store']);
             Route::get('/history', [EmpTodoController::class, 'history']);
+        });
 
+        Route::prefix('stamps')->group(function () {
+            Route::post('/request', [EmpStampController::class, 'requestStamp']);
+            Route::get('/history', [EmpStampController::class, 'getStampHistory']);
         });
     });
 });
