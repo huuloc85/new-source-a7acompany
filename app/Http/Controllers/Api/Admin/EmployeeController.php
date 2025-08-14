@@ -430,7 +430,7 @@ class EmployeeController extends BaseController
                     'updated_at',
                     'deleted_at',
                 ])
-                ->allowedIncludes(['role', 'calendarCategories'])
+                ->allowedIncludes(['role', 'calendarCategory'])
                 ->whereNotIn('role_id', [15, 17]);
 
             $limit = $request->limit;
