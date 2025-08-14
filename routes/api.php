@@ -17,11 +17,11 @@ use App\Http\Controllers\Api\Admin\ScheduleController;
 use App\Http\Controllers\Api\Admin\ScheduleDetailController;
 use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
-use App\Http\Controllers\Api\Employee\EmpAttendance;
+use App\Http\Controllers\Api\Employee\EmpAttendanceController;
 use App\Http\Controllers\Api\Employee\EmpDailyActivity;
 use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
-use App\Http\Controllers\api\employee\EmpTodo;
+use App\Http\Controllers\api\employee\EmpTodoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -209,8 +209,8 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         });
 
         Route::prefix('attendances')->group(function () {
-            Route::get('/history', [EmpAttendance::class, 'history']);
-            Route::get('/', [EmpAttendance::class, 'index']);
+            Route::get('/history', [EmpAttendanceController::class, 'history']);
+            Route::get('/', [EmpAttendanceController::class, 'index']);
             // Route::get('/{id}', [EmpAttendance::class, 'show']);
             // Route::patch('/{id}', [EmpAttendance::class, 'update']);
         });
@@ -224,12 +224,12 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
         Route::prefix('todos')->group(function () {
             Route::prefix('quantity')->group(function () {
-                Route::put('/', [EmpTodo::class, 'handleUpdateQuantity']);
-                Route::put('/error', [EmpTodo::class, 'handleUpdateError']);
+                Route::put('/', [EmpTodoController::class, 'handleUpdateQuantity']);
+                Route::put('/error', [EmpTodoController::class, 'handleUpdateError']);
             });
-            Route::get('/', [EmpTodo::class, 'index']);
-            Route::post('/', [EmpTodo::class, 'store']);
-            Route::get('/history', [EmpTodo::class, 'history']);
+            Route::get('/', [EmpTodoController::class, 'index']);
+            Route::post('/', [EmpTodoController::class, 'store']);
+            Route::get('/history', [EmpTodoController::class, 'history']);
 
         });
     });

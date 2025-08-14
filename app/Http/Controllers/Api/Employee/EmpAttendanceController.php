@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
-class EmpAttendance extends Controller
+class EmpAttendanceController extends Controller
 {
     public function index(Request $request)
     {

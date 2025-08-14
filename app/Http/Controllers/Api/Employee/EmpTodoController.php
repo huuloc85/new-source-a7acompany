@@ -16,9 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class EmpTodo extends Controller
+class EmpTodoController extends Controller
 {
-    // FIXME: fix this
     public function index(Request $request)
     {
         try {
