@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Filters\NameOrCodeFilter;
 use App\Helpers\HandleError;
 use App\Models\CelenderDetailHNHC;
 use App\Models\CheckEmployee;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -75,7 +77,7 @@ class ProductController extends BaseController
                         'moldSize',
                         'binCode',
                         'created_at',
-                        'updated_at',
+                        AllowedFilter::custom('search', new NameOrCodeFilter),
                     ])
                     ->allowedIncludes([
                         AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status) {
@@ -310,6 +312,7 @@ class ProductController extends BaseController
                         'binCode',
                         'created_at',
                         'updated_at',
+                        AllowedFilter::custom('search', new NameOrCodeFilter),
                     ]);
 
                 $limit = $validated['limit'] ?? 10;
