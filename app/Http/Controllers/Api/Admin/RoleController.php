@@ -15,11 +15,12 @@ class RoleController extends BaseController
     {
         try {
             $roles = QueryBuilder::for(Role::class)
+                ->whereNot('role_name', 'like', '%admin%')
+                ->whereNotIn('id', [15, 16, 17])
                 ->select('id', 'role_name', 'created_at', 'updated_at')
                 ->allowedFilters('role_name', 'created_at', 'updated_at')
                 ->defaultSort('-id')
-                ->allowedSorts(['id', 'role_name', 'created_at', 'updated_at'])
-                ->whereNotIn('id', [15, 16, 17]);
+                ->allowedSorts(['id', 'role_name', 'created_at', 'updated_at']);
 
             $limit = $request->limit;
             if (! is_null($limit) && $limit == 0) {
