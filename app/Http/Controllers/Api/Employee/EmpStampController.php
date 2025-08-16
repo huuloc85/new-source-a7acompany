@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\api\employee;
 
+use App\Events\StampNotificationEvent;
 use App\Helpers\HandleError;
 use App\Http\Controllers\Controller;
 use App\Models\SendStamp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -26,18 +28,26 @@ class EmpStampController extends Controller
                 'stamps.*.binCount' => 'required|integer|min:1',
                 'stamps.*.binStart' => 'required|integer|min:1',
             ]);
-
+            $stamps = [];
             foreach ($validate['stamps'] as $stamp) {
-                SendStamp::create([
+                $stamps[] = SendStamp::create([
                     'employee_id' => $user->id,
                     'type' => $stamp['type'],
                     'product_id' => $stamp['productId'],
-                    'date' => $stamp['date'],
+                    'date' => Carbon::parse($stamp['date'])->toDateString(),
                     'shift' => $stamp['shift'],
                     'binCount' => $stamp['binCount'],
                     'binStart' => $stamp['binStart'],
                     'status' => 'pending',
                 ]);
+            }
+
+            $roles = [15, 8, 21];
+
+            foreach ($stamps as $stamp) {
+                foreach ($roles as $role) {
+                    event(new StampNotificationEvent($stamp, $role));
+                }
             }
             DB::commit();
 
