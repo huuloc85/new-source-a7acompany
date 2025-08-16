@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\employee;
+namespace App\Http\Controllers\Api\Employee;
 
 use App\Helpers\HandleError;
 use App\Helpers\LogActivity;

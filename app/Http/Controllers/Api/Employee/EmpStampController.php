@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\employee;
+namespace App\Http\Controllers\Api\Employee;
 
 use App\Events\StampNotificationEvent;
 use App\Helpers\HandleError;
