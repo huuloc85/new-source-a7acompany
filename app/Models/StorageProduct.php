@@ -19,6 +19,8 @@ class StorageProduct extends Model
     protected $fillable = [
         'product_id',
         'lot',
+        'employee_id',
+        'bin',
     ];
 
     // relationship product

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DailyScheduleController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\EmployeeController;
+use App\Http\Controllers\Api\Admin\EmpScanController;
 use App\Http\Controllers\Api\Admin\HistoryController;
 use App\Http\Controllers\Api\Admin\LogController;
 use App\Http\Controllers\Api\Admin\ProductController;
@@ -236,6 +237,11 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::prefix('stamps')->group(function () {
             Route::post('/request', [EmpStampController::class, 'requestStamp']);
             Route::get('/history', [EmpStampController::class, 'getStampHistory']);
+        });
+
+        Route::prefix('scan')->group(function () {
+            Route::post('/check', [EmpScanController::class, 'checkBarCode']);
+            Route::get('/storage', [EmpScanController::class, 'StorageProduct']);
         });
     });
 });
