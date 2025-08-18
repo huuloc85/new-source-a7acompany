@@ -243,10 +243,11 @@ class EmpScanController extends BaseController
                         $expectedNumbers = range($startNumber, $endNumber);
                         $missingNumbers = array_diff($expectedNumbers, $existingNumbers->all());
 
-                        $missingLots = array_map(
+                        // Fix: Convert missing numbers to array and reset keys
+                        $missingLots = array_values(array_map(
                             fn ($num) => $lotPrefix.str_pad($num, 3, '0', STR_PAD_LEFT),
                             $missingNumbers
-                        );
+                        ));
 
                         $lotModalData = [
                             'code' => $lotCode,
