@@ -63,6 +63,40 @@ class EmpScanController extends BaseController
         }
     }
 
+    /**
+     * Handles the retrieval and filtering of storage product data for the admin API.
+     *
+     * This method provides a comprehensive API endpoint for querying storage product records,
+     * supporting filtering by date, month, product, and employee. It also returns available
+     * filter options for months, dates, products, and employees, as well as detailed lot
+     * information if requested.
+     *
+     * Workflow:
+     * 1. Determines the latest available date in the storage product data to use as the default filter.
+     * 2. Applies date and month filters based on request input, defaulting to the latest date/month if not provided.
+     * 3. Retrieves all available months and dates for filtering.
+     * 4. Validates the selected filter date against available dates.
+     * 5. Retrieves available products and employees based on the current filters.
+     * 6. Queries the main storage product data, applying all relevant filters.
+     * 7. If lot and lot_product_id are provided, processes and validates the lot code,
+     *    checks for missing lots, and returns detailed lot modal data.
+     *
+     * Returns a JSON response containing:
+     * - Filtered storage product data, grouped by date, employee, and product.
+     * - Lists of available products and employees for the current filters.
+     * - Lists of available months and dates for filtering.
+     * - The currently selected filter month and date.
+     * - Detailed lot modal data if requested, including missing lots and status.
+     *
+     * @param  \Illuminate\Http\Request  $request  The incoming HTTP request containing filter parameters.
+     *                                             - filter_date: (optional) The specific date to filter storage products.
+     *                                             - filter_month: (optional) The specific month to filter storage products.
+     *                                             - product_id: (optional) Filter by product ID.
+     *                                             - employee_id: (optional) Filter by employee ID.
+     *                                             - lot: (optional) Lot code for lot modal data.
+     *                                             - lot_product_id: (optional) Product ID for lot modal data.
+     * @return \Illuminate\Http\JsonResponse JSON response with storage data, filter options, and lot modal data.
+     */
     public function StorageProduct(Request $request)
     {
         // 1. Lấy ngày mới nhất từ dữ liệu để làm mặc định
@@ -171,13 +205,13 @@ class EmpScanController extends BaseController
             }
 
             // Chuẩn hóa lot thành A-18062025-2-065
-            $lotCode = preg_replace_callback('/^A-(\d{8})-(\d+)-(\d{1,3})$/', function ($matches) {
+            $lotCode = preg_replace_callback('/^A-(\d{8})-(\d+)-(\d+)$/', function ($matches) {
                 return "A-{$matches[1]}-{$matches[2]}-".str_pad($matches[3], 3, '0', STR_PAD_LEFT);
             }, $lotCode);
 
             $productId = (int) $request->input('lot_product_id');
 
-            if (! preg_match('/^A-(\d{2})(\d{2})(\d{4})-([12])-(\d{3})$/', $lotCode, $matches)) {
+            if (! preg_match('/^A-(\d{2})(\d{2})(\d{4})-([12])-(\d+)$/', $lotCode, $matches)) {
                 $lotModalData = ['error' => 'Mã lot không đúng định dạng.'];
             } else {
                 [$all, $day, $month, $year, $shift, $endSerial] = $matches;
