@@ -18,11 +18,15 @@ class CheckEmployee
         $user = auth()->user();
 
         $forbiddenRoles = [
-            'Admin',
-            'Super Admin',
+            'admin',
+            'super admin',
         ];
 
-        if ($user && in_array($user->role->role_name, $forbiddenRoles)) {
+        if (
+            $user &&
+            isset($user->role) &&
+            in_array(strtolower(trim($user->role->role_name)), $forbiddenRoles, true)
+        ) {
             return response()->json([
                 'message' => 'Bạn không có quyền truy cập!',
             ], 403);

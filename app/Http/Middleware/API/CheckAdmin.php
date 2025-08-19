@@ -17,7 +17,10 @@ class CheckAdmin
     {
         $user = auth()->user();
         // Chỉ cho phép nếu role_name là 'Admin'
-        if (! $user || ! isset($user->role) || trim($user->role->role_name) !== 'Admin') {
+        if (
+            ! $user || ! isset($user->role) ||
+            (strtolower(trim($user->role->role_name)) !== 'admin' && strtolower(trim($user->role->role_name)) !== 'super admin')
+        ) {
             return response()->json(['message' => 'Bạn không có quyền truy cập chức năng này.'], 403);
         }
 

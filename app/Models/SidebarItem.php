@@ -16,6 +16,6 @@ class SidebarItem extends Model
 
     public function permission()
     {
-        return $this->belongsTo(Permission::class);
+        return $this->belongsTo(Permission::class, 'permission_id', 'id');
     }
 }

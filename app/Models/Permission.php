@@ -26,6 +26,6 @@ class Permission extends Model
     // 1 Permission có N SidebarItem
     public function sidebarItems()
     {
-        return $this->hasMany(SidebarItem::class);
+        return $this->hasMany(SidebarItem::class, 'permission_id', 'id');
     }
 }

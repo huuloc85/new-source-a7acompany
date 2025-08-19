@@ -15,10 +15,13 @@ class RBACController extends Controller
         $permissions = Permission::all();
 
         $selectedRoleIds = (array) $request->input('role_ids', []);
+
         if (empty($selectedRoleIds)) {
-            $superAdminId = Role::where('role_name', 'Super Admin')->value('id');
-            if ($superAdminId) {
-                $selectedRoleIds = [$superAdminId];
+            $superAdmin = Role::with('permissions')->where('role_name', 'Super Admin')->first();
+
+            // Nếu Super Admin tồn tại và KHÔNG có permissions thì mới chọn mặc định
+            if ($superAdmin && $superAdmin->permissions->isEmpty()) {
+                $selectedRoleIds = [$superAdmin->id];
             }
         }
 

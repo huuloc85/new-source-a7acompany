@@ -16,8 +16,13 @@ class CheckPermission
     // app/Http/Middleware/CheckPermission.php
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth()->user();
-        if ($user->role->role_name !== 'Super Admin') {
+        $user = auth()->user();
+
+        if (
+            ! $user ||
+            ! isset($user->role) ||
+            strtolower(trim($user->role->role_name)) !== 'super admin'
+        ) {
             toast('Bạn không có quyền truy cập!', 'error', 'top-right');
 
             return redirect()->route('admin.home');

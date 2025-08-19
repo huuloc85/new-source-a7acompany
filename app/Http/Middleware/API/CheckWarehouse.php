@@ -17,13 +17,18 @@ class CheckWarehouse
     {
         $user = auth()->user();
 
+        // Danh sách role hợp lệ, viết thường hết
         $allowedRoles = [
-            'Admin',
-            'Kho',
-            'Super Admin',
+            'admin',
+            'kho',
+            'super admin',
         ];
 
-        if ($user && in_array($user->role->role_name, $allowedRoles)) {
+        if (
+            $user &&
+            isset($user->role) &&
+            in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true)
+        ) {
             return $next($request);
         }
 

@@ -212,13 +212,17 @@
                 @if (! empty($selectedRoles))
                     {{-- Gom quyền theo display_area --}}
                     @php
-                        $permissionsSidebar = collect($permissions)->filter(function ($p) {
-                            return in_array($p->display_area, ['sidebar', 'both']);
-                        });
+                        $permissionsSidebar = collect($permissions)
+                            ->filter(function ($p) {
+                                return in_array($p->display_area, ['sidebar', 'both']);
+                            })
+                            ->sortBy('type'); // sắp xếp tăng dần theo type
 
-                        $permissionsHome = collect($permissions)->filter(function ($p) {
-                            return in_array($p->display_area, ['home', 'both']);
-                        });
+                        $permissionsHome = collect($permissions)
+                            ->filter(function ($p) {
+                                return in_array($p->display_area, ['home', 'both']);
+                            })
+                            ->sortBy('type'); // sắp xếp tăng dần theo type
                     @endphp
 
                     {{-- Form POST lưu quyền --}}

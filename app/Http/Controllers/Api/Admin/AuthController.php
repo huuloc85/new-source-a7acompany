@@ -83,8 +83,14 @@ class AuthController extends BaseController
         // Lưu expires_at vào token
         $tokenResult->accessToken->expires_at = $expiresAt;
         $tokenResult->accessToken->save();
-        $permissions = Auth::user()->role->permissions->pluck('key')->toArray();
-        $permissionTitles = Auth::user()->role->permissions->pluck('name', 'key')->toArray();
+        $permissions = Auth::user()
+            ->role
+            ->permissions()
+            ->select(['permissions.id', 'permissions.key', 'permissions.name', 'permissions.type', 'permissions.display_area'])
+            ->with(['sidebarItems' => function ($q) {
+                $q->select(['id', 'permission_id', 'key', 'title', 'icon', 'path']);
+            }])
+            ->get();
 
         return response()->json([
             'role_id' => $user->role_id,
@@ -96,7 +102,6 @@ class AuthController extends BaseController
             'cleaning_duties' => $upcomingDuties,
             'token' => $tokenResult->plainTextToken,
             'permissions' => $permissions,
-            'permission_titles' => $permissionTitles,
         ])->cookie('auth_token', $tokenResult->plainTextToken, $expiresInMins, null, null, false, true);
     }
 

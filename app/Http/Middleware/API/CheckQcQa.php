@@ -18,13 +18,17 @@ class CheckQcQa
         $user = auth()->user();
 
         $allowedRoles = [
-            'Admin',
-            'QA-QC',
-            'QC',
-            'Super Admin',
+            'admin',
+            'qa-qc',
+            'qc',
+            'super admin',
         ];
 
-        if ($user && in_array($user->role->role_name, $allowedRoles)) {
+        if (
+            $user &&
+            isset($user->role) &&
+            in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true)
+        ) {
             return $next($request);
         }
 

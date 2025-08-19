@@ -12,7 +12,6 @@ class Employee extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    use HasRoles;
     use Notifiable;
     use SoftDeletes;
 

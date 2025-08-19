@@ -73,5 +73,11 @@ class Kernel extends HttpKernel
         'check.qa.qc' => \App\Http\Middleware\CheckQaQC::class,
         'check.warehouse' => \App\Http\Middleware\CheckWarehouse::class,
         'check.leader' => \App\Http\Middleware\CheckLeader::class,
+        // API
+        'api.authAdmin' => \App\Http\Middleware\API\CheckAdmin::class,
+        'api.authEmployees' => \App\Http\Middleware\API\CheckEmployee::class,
+        'api.check.leader' => \App\Http\Middleware\API\CheckLeader::class,
+        'api.check.qa.qc' => \App\Http\Middleware\API\CheckQcQa::class,
+        'api.check.warehouse' => \App\Http\Middleware\API\CheckWarehouse::class,
     ];
 }
