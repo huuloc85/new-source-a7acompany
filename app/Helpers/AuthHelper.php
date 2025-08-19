@@ -8,66 +8,75 @@ use Illuminate\Support\Facades\Session;
 
 class AuthHelper
 {
-    public static function authSession()
+    public function authSession()
     {
-        $session = new \App\Models\User;
         if (Session::has('auth_user')) {
-            $session = Session::get('auth_user');
-        } else {
-            $user = Auth::user();
-            Session::put('auth_user', $user);
-            $session = Session::get('auth_user');
+            return Session::get('auth_user');
         }
 
-        return $session;
+        $user = Auth::user();
+        Session::put('auth_user', $user);
+
+        return $user;
     }
 
-    public static function checkMenuRoleAndPermission($menu)
+    public function checkMenuRoleAndPermission($menu)
     {
-        if (Auth::check()) {
-            if ($menu->data('role') == null && auth()->user()->hasRole('admin')) {
+        if (! Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        // Check if menu has no role restriction and user is admin
+        if ($menu->data('role') === null && $user->role->role_name === 'admin') {
+            return true;
+        }
+
+        // If no role and permission restrictions, allow access
+        if ($menu->data('permission') === null && $menu->data('role') === null) {
+            return true;
+        }
+
+        // Check role restrictions
+        if ($menu->data('role') !== null) {
+            $requiredRoles = explode(',', $menu->data('role'));
+            if (in_array($user->role->role_name, $requiredRoles)) {
                 return true;
             }
+        }
 
-            if ($menu->data('permission') == null && $menu->data('role') == null) {
-                return true;
-            }
-
-            if ($menu->data('role') != null) {
-                if (auth()->user()->hasAnyRole(explode(',', $menu->data('role')))) {
-                    return true;
-                }
-            }
-
-            if ($menu->data('permission') != null) {
-                if (auth()->user()->can($menu->data('permission'))) {
-                    return true;
-                }
-            }
+        // Check permission restrictions
+        if ($menu->data('permission') !== null) {
+            // gọi static method
+            return static::hasPermission(
+                $user->role->permissions()->pluck('key')->toArray(),
+                $menu->data('permission')
+            );
         }
 
         return false;
     }
 
-    public static function checkRolePermission($role, $permission)
+    // Đổi sang static để gọi tĩnh hợp lệ ở mọi nơi
+    public static function hasPermission(array $permissions, string $requiredPermission): bool
+    {
+        return in_array($requiredPermission, $permissions, true);
+    }
+
+    public function checkRolePermission($role, $permission)
     {
         try {
-            if ($role->hasPermissionTo($permission)) {
-                return true;
-            }
-
-            return false;
+            return $role->permissions()->where('key', $permission)->exists();
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public static function demoUserPermission()
+    public function demoUserPermission()
     {
-        if (Auth::user()->hasRole('demo_admin')) {
-            return true;
-        } else {
-            return false;
-        }
+        $user = Auth::user();
+
+        return $user && $user->role->role_name === 'demo_admin';
     }
 }

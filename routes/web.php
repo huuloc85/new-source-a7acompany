@@ -50,6 +50,11 @@ Route::prefix('permissions')->middleware('permission')->group(function () {
     Route::get('/{permission}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
     Route::put('/{permission}', [PermissionController::class, 'update'])->name('permissions.update');
     Route::delete('/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+
+    // Sidebar item routes
+    Route::post('/sidebar-items', [PermissionController::class, 'storeSidebarItem'])->name('sidebar-items.store');
+    Route::patch('/sidebar-items/{sidebarItem}', [PermissionController::class, 'updateSidebarItem'])->name('sidebar-items.update');
+    Route::delete('/sidebar-items/{sidebarItem}', [PermissionController::class, 'destroySidebarItem'])->name('sidebar-items.destroy');
 });
 
 Route::prefix('/admin')->middleware(['auth'])->group(function () {

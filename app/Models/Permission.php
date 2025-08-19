@@ -12,15 +12,20 @@ class Permission extends Model
     protected $table = 'permissions';
 
     protected $fillable = [
-        'key',      // ví dụ: 'view_users'
-        'name',     // hiển thị: 'Xem danh sách người dùng'
+        'key',          // ví dụ: 'view_users'
+        'name',         // hiển thị: 'Xem danh sách người dùng'
+        'type',         // admin / employee / both
+        'display_area', // home / sidebar / both
     ];
 
-    /**
-     * Các role được gán permission này
-     */
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_permission', 'permission_id', 'role_id');
+    }
+
+    // 1 Permission có N SidebarItem
+    public function sidebarItems()
+    {
+        return $this->hasMany(SidebarItem::class);
     }
 }

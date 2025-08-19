@@ -24,8 +24,13 @@
     @endif
 
     @php
-        $permissions = Auth::user()->role->permissions->pluck('key')->toArray();
-        $permissionTitles = Auth::user()->role->permissions->pluck('name', 'key')->toArray();
+        // Lấy user & permissions thuộc display_area = 'home'
+        $user = Auth::user();
+        $homePerms = $user?->role?->permissions?->where('display_area', 'home') ?? collect();
+
+        // Mảng key & title chỉ của các permission thuộc 'home'
+        $permissions = $homePerms->pluck('key')->toArray();
+        $permissionTitles = $homePerms->pluck('name', 'key')->toArray();
 
         $widgets = [];
 
@@ -132,7 +137,7 @@
         if (in_array('view_export_warehouse', $permissions)) {
             $widgets[] = [
                 'title' => 'Kho Xuất Hàng',
-                'icon' => 'fas fa-box fa-2x',
+                'icon' => 'fas fa-box fa-2x', // Đã sửa 'icon  ' thành 'icon'
                 'link' => route('admin.storage.index'),
                 'data' => 'Tháng '.$today->format('m'),
             ];
@@ -146,6 +151,7 @@
                 'data' => $totalSalary ?? 0,
             ];
         }
+
         // employee
         if (in_array('view_attendance_sheet_history', $permissions)) {
             $widgets[] = [
@@ -287,9 +293,9 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col overflow-hidden">
-                                <div class="text-lg fw-normal text-body-secondary mb-1 titleWidget">
+                                <p class="fw-semibold align-items-center text-capitalize mb-1 titleWidget">
                                     {{ $widget['title'] }}
-                                </div>
+                                </p>
                                 @if (! empty($widget['data']))
                                     <div class="fs-4 fw-semibold">
                                         {{ $widget['data'] }}
@@ -298,7 +304,7 @@
                             </div>
                             <div class="col-auto">
                                 <div class="avatar avatar-lg bg-body text-black">
-                                    <i class="{{ $widget['icon'] }}"></i>
+                                    <i class="{{ $widget['icon'] ?? 'fas fa-question fa-2x' }}"></i>
                                 </div>
                             </div>
                         </div>

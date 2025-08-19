@@ -13,10 +13,16 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
+            $table->string('key'); // bỏ ->unique()
             $table->string('name');
-            $table->string('type'); // Optional description field
+
+            $table->enum('type', ['admin', 'employee', 'both'])->default('admin');
+            $table->enum('display_area', ['home', 'sidebar', 'both'])->default('both');
+
             $table->timestamps();
+
+            // unique theo cặp
+            $table->unique(['key', 'display_area'], 'permissions_key_display_area_unique');
         });
     }
 

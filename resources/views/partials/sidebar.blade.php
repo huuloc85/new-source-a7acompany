@@ -31,258 +31,143 @@
 </style>
 
 @php
-    $roleId = Auth()->user()->role_id;
-    $phone = Auth()->user()->phone;
-    $isAdmin = Auth()->user()->role->role_name == 'Super Admin';
-    $isQA = in_array($roleId, [8, 13]);
-    $isStorage = $roleId == 4;
-    // Ngoại quan + sản suất
-    $isReqRole = in_array($roleId, [9, 14, 18, 19]);
+    use App\Models\Permission;
+    use App\Models\SidebarItem;
+    use Illuminate\Support\Facades\Auth;
 
-    $isEmployee = ! $isAdmin && ! $isQA && ! $isStorage && ! $isReqRole;
+    /**
+     * 1) CONFIG theo permission key (CHA)
+     *    - [icon, route]; route = null => GROUP; route != null => ITEM đơn
+     *    - KHÔNG hardcode label: label sẽ lấy từ Permission.name
+     */
+    $menuConfig = [
+        // ---- ADMIN (items đơn)
+        'view_dashboard' => ['fas fa-home fa-lg', 'admin.home'],
+        'view_products' => ['fas fa-boxes fa-lg', 'admin.product.home'],
+        // 'view_planning'          => ['fas fa-calendar-alt fa-lg',    'admin.product-plan.index'],
+        // 'view_storage'           => ['fas fa-box fa-lg',              'admin.storage.index'],
+        'view_today_employees' => ['fas fa-calendar-day fa-lg', 'admin.checkemployee.view-employee-todo'],
+        'view_po_list' => ['fas fa-check-square fa-lg', 'admin.checkpo.index'],
+        'view_history' => ['fas fa-history fa-lg', 'admin.history.home'],
+        'view_schedule' => ['fas fa-calendar-alt fa-lg', 'admin.celender.home'],
+        'view_schedule_categories' => ['fas fa-briefcase fa-lg', 'admin.category.home'],
 
-    $navConfig = [
-        [
-            'label' => 'Trang chủ',
-            'icon' => 'fas fa-home fa-lg',
-            'path' => 'admin.home',
-        ],
+        // ---- ADMIN (groups)
+        'view_employee_management' => ['fas fa-users-cog fa-lg', null],
+        'view_label_management' => ['fas fa-print fa-lg', null],
+        'view_attendance' => ['fas fa-calendar-check fa-lg', null],
+
+        // ---- EMPLOYEE (items đơn)
+        'view_employee_schedule' => ['fas fa-calendar-alt fa-lg', 'admin.employee-show.celender'],
+        'view_salary' => ['fas fa-money-check-alt fa-lg', 'admin.employee-show.salary'],
+        'view_activity_history' => ['fas fa-history fa-lg', 'admin.employee-history-check'],
+        'request_label' => ['fas fa-envelopes-bulk fa-lg', 'admin.send-stamp'],
+        'storage_export_product' => ['fas fa-box fa-lg', 'admin.storage.index'],
+        'scan' => ['fas fa-boxes fa-lg', 'admin.barcode.scan'],
+        'view_account_info' => ['fas fa-user fa-lg', 'admin.profile'],
+        // ---- EMPLOYEE (items groups)
+        'employees_view_attendance' => ['fas fa-calendar-check fa-lg', null],
+        'employees_select_products' => ['fas fa-cart-plus', null],
+        'employees_view_label' => ['fas fa-print fa-lg', null],
+        'view_label_management' => ['fas fa-print fa-lg', null],
     ];
 
-    $navAdmin = [
-        [
-            'label' => 'Nhân Sự',
-            'icon' => 'fas fa-user-group fa-lg',
-            'children' => [
-                [
-                    'label' => 'Danh sách',
-                    'icon' => 'fas fa-list-alt fa-lg',
-                    'path' => 'admin.employee.home',
-                ],
-                [
-                    'label' => 'Chức vụ',
-                    'icon' => 'fas fa-user-tie fa-lg',
-                    'path' => 'admin.role.home',
-                ],
-            ],
-        ],
-        [
-            'label' => 'Sản Phẩm',
-            'icon' => 'fas fa-boxes fa-lg',
-            'path' => 'admin.product.home',
-        ],
-        [
-            'label' => 'Kế hoạch',
-            'icon' => 'fas fa-calendar-alt fa-lg',
-            'children' => [
-                [
-                    'label' => 'Kế hoạch sản xuất',
-                    'icon' => 'fas fa-chart-bar fa-lg',
-                    'path' => 'admin.product-plan.index',
-                ],
-                [
-                    'label' => 'Kế hoạch nguyên liệu',
-                    'icon' => 'fas fa-box fa-lg',
-                    'path' => 'admin.material.index',
-                ],
-            ],
-        ],
-        [
-            'label' => 'Kho Xuất Hàng',
-            'icon' => 'fas fa-box fa-lg',
-            'path' => 'admin.storage.index',
-        ],
-        [
-            'label' => 'Lịch hoạt động / ngày',
-            'icon' => 'fas fa-calendar-day fa-lg',
-            'path' => 'admin.checkemployee.view-employee-todo',
-        ],
-        [
-            'label' => 'Tạo Tem',
-            'icon' => 'fas fa-print fa-lg',
-            'children' => [
-                [
-                    'label' => 'Tạo Tem Thùng',
-                    'icon' => 'fas fa-box fa-lg',
-                    'path' => 'admin.product.barcode',
-                ],
-                [
-                    'label' => 'Tạo Tem Bịch',
-                    'icon' => 'fas fa-sheet-plastic fa-lg',
-                    'path' => 'admin.product.packing',
-                ],
-                [
-                    'label' => 'Lịch Sử In Tem',
-                    'icon' => 'fas fa-print fa-lg',
-                    'path' => 'admin.checkstamp',
-                ],
-            ],
-        ],
-        [
-            'label' => 'Chấm Công',
-            'icon' => 'fas fa-calendar-check fa-lg',
-            'children' => [
-                [
-                    'label' => 'Lịch Sử Chấm Công',
-                    'icon' => 'fas fa-history fa-lg',
-                    'path' => 'admin.attendence.index',
-                ],
-                [
-                    'label' => 'Bảng Tính Công',
-                    'icon' => 'fas fa-file-invoice fa-lg',
-                    'path' => 'admin.attendence.records',
-                ],
-            ],
-        ],
-        [
-            'label' => 'Kiểm tra PO',
-            'icon' => 'fas fa-check-square fa-lg',
-            'path' => 'admin.checkpo.index',
-        ],
-        [
-            'label' => 'Lịch sử',
-            'icon' => 'fas fa-history fa-lg',
-            'path' => 'admin.history.home',
-        ],
-        [
-            'label' => 'Lịch làm việc',
-            'icon' => 'fas fa-calendar-alt fa-lg',
-            'path' => 'admin.celender.home',
-        ],
-        [
-            'label' => 'Danh mục lịch làm việc',
-            'icon' => 'fas fa-briefcase fa-lg',
-            'path' => 'admin.category.home',
-        ],
-    ];
-    if (in_array($phone, ['ctyvinhvinhphat2', 'ctyvinhvinhphat5', 'ctyvinhvinhphat1'])) {
-        array_push($navAdmin, [
-            'label' => 'Bảng lương',
-            'icon' => 'fas fa-money-check-alt fa-lg',
-            'path' => 'admin.salary.home',
-        ]);
-    }
-    $navEmployee = [
-        [
-            'label' => 'Lịch làm việc',
-            'icon' => 'fas fa-calendar-alt fa-lg',
-            'path' => 'admin.employee-show.celender',
-        ],
-        [
-            'label' => 'Bảng lương',
-            'icon' => 'fas fa-money-check-alt fa-lg',
-            'path' => 'admin.employee-show.salary',
-        ],
-        [
-            'label' => 'Chấm công',
-            'icon' => 'fas fa-calendar-check fa-lg',
-            'children' => [
-                [
-                    'label' => 'Lịch Sử Chấm Công',
-                    'icon' => 'fas fa-history fa-lg',
-                    'path' => 'admin.employee.attendence',
-                ],
-                [
-                    'label' => 'Bảng Tính Công',
-                    'icon' => 'fas fa-file-invoice fa-lg',
-                    'path' => 'admin.employee.attendence_caculate_records',
-                ],
-            ],
-        ],
-    ];
+    /**
+     * 2) Lấy PERMISSIONS theo role
+     */
+    $user = Auth::user();
+    $roleId = $user->role_id ?? null;
 
-    $navQA = [
-        [
-            'label' => 'Tạo Tem',
-            'icon' => 'fas fa-print fa-lg',
-            'children' => [
-                [
-                    'label' => 'Tạo Tem Thùng',
-                    'icon' => 'fas fa-box fa-lg',
-                    'path' => 'admin.product.barcode',
-                ],
-                [
-                    'label' => 'Tạo Tem Bịch',
-                    'icon' => 'fas fa-sheet-plastic fa-lg',
-                    'path' => 'admin.product.packing',
-                ],
-                [
-                    'label' => 'Lịch Sử In Tem',
-                    'icon' => 'fas fa-print fa-lg',
-                    'path' => 'admin.checkstamp',
-                ],
-            ],
-        ],
-    ];
+    // Lấy tất cả permissions của role trong sidebar
+    $rolePerms = Permission::query()
+        ->select('permissions.*')
+        ->join('role_permission', 'role_permission.permission_id', '=', 'permissions.id')
+        ->where('role_permission.role_id', $roleId)
+        ->whereIn('permissions.display_area', ['sidebar', 'both'])
+        ->get();
 
-    $navNotQA = [
-        [
-            'label' => 'Chọn Sản Phẩm',
-            'icon' => 'fas fa-boxes fa-lg',
-            'path' => 'admin.employee.check-employee-todo',
-        ],
-        [
-            'label' => 'Lịch Sử Hoạt Động',
-            'icon' => 'fas fa-history fa-lg',
-            'path' => 'admin.employee-history-check',
-        ],
-    ];
+    $permIds = $rolePerms->pluck('id'); // ids permission cha
+    $permKeys = $rolePerms->pluck('key'); // collection keys (nếu view cần)
+    $permissionTitles = $rolePerms->pluck('name', 'key')->toArray(); // key -> title (label hiển thị)
 
-    $navReqRole = [
-        [
-            'label' => 'Yêu Cầu In Tem',
-            'icon' => 'fas fa-envelopes-bulk fa-lg',
-            'path' => 'admin.send-stamp',
-        ],
-    ];
-    if (in_array($roleId, [14, 18, 19])) {
-        array_push($navReqRole, [
-            'label' => 'Lịch làm việc nhân viên',
-            'icon' => 'fas fa-calendar-alt fa-lg',
-            'path' => 'admin.celender.home',
-        ]);
-        array_push($navReqRole, [
-            'label' => 'Lịch hoạt động / ngày',
-            'icon' => 'fas fa-calendar-day fa-lg',
-            'path' => 'admin.checkemployee.view-employee-todo',
-        ]);
-    }
+    /**
+     * 3) Lấy CHILDREN từ sidebar_items theo các permission cha
+     *    => Đồng thời tạo $sidebarKeys để filter children theo key
+     */
+    $sidebarItems = SidebarItem::query()->whereIn('permission_id', $permIds)->get();
+    $itemsByPermission = $sidebarItems->groupBy('permission_id');
+    $sidebarKeys = $sidebarItems->pluck('key')->filter()->unique()->values()->toArray();
 
-    $navStorage = [
-        [
-            'label' => 'Kho Đã Xuất Hàng',
-            'icon' => 'fas fa-box fa-lg',
-            'path' => 'admin.storage.index',
-        ],
-        [
-            'label' => 'Quét QR code',
-            'icon' => 'fas fa-qrcode fa-lg',
-            'path' => 'admin.barcode.scanQr',
-        ],
-        [
-            'label' => 'Quét Barcode',
-            'icon' => 'fas fa-barcode fa-lg',
-            'path' => 'admin.barcode.scan',
-        ],
-    ];
-
-    $navProfile = [
-        [
-            'label' => 'Thông Tin Tài Khoản',
-            'icon' => 'fas fa-user fa-lg',
-            'path' => 'admin.profile',
-        ],
-    ];
-
-    $isAdmin && array_push($navConfig, ...$navAdmin);
-    $isQA && array_push($navConfig, ...$navEmployee, ...$navQA, ...$navProfile);
-    $isStorage && array_push($navConfig, ...$navEmployee, ...$navStorage, ...$navProfile);
-    $isReqRole && array_push($navConfig, ...$navEmployee, ...$navNotQA, ...$navReqRole, ...$navProfile);
-    $isEmployee && array_push($navConfig, ...$navEmployee, ...$navNotQA, ...$navProfile);
-
-    $isActive = function ($path) {
-        return request()->routeIs($path) ? 'active' : '';
+    /**
+     * 4) Helper: isActive cho route
+     */
+    $isActive = function (?string $routeName): string {
+        return $routeName && request()->routeIs($routeName) ? 'active' : '';
     };
+
+    /**
+     * 5) Build NAV theo thứ tự $rolePerms
+     *    - Label luôn lấy từ permission title (name)
+     *    - GROUP nếu có children; nếu không mà có route thì là ITEM đơn
+     */
+    $navConfig = [];
+
+    foreach ($rolePerms as $perm) {
+        // lấy icon + route từ cấu hình, fallback icon mặc định
+        [$iconCfg, $routeCfg] = $menuConfig[$perm->key] ?? ['fas fa-folder fa-lg', null];
+
+        $labelParent = $permissionTitles[$perm->key] ?? $perm->key; // label từ Permission.name
+        $iconParent = $iconCfg ?: 'fas fa-folder fa-lg';
+
+        $children = $itemsByPermission->get($perm->id, collect());
+
+        if ($children->isNotEmpty()) {
+            // GROUP: map children từ DB, rồi filter theo $sidebarKeys (logic #2)
+            $childNodes = $children
+                ->map(function ($it) {
+                    return [
+                        'label' => $it->title, // tiêu đề child từ DB
+                        'icon' => $it->icon ?: 'fas fa-circle', // icon child từ DB (fallback)
+                        'path' => $it->path, // route child
+                        'key' => $it->key, // key child
+                    ];
+                })
+                ->filter(function ($node) use ($sidebarKeys) {
+                    return ! empty($node['path']) && ! empty($node['key']) && in_array($node['key'], $sidebarKeys, true); // chỉ giữ child có key hợp lệ
+                })
+                ->values()
+                ->all();
+
+            if (! empty($childNodes)) {
+                $navConfig[] = [
+                    'label' => $labelParent,
+                    'icon' => $iconParent,
+                    'children' => $childNodes,
+                    'perm_key' => $perm->key,
+                ];
+            } elseif (! empty($routeCfg)) {
+                // không còn child hợp lệ: fallback thành item đơn nếu có route
+                $navConfig[] = [
+                    'label' => $labelParent,
+                    'icon' => $iconParent,
+                    'path' => $routeCfg,
+                    'key' => $perm->key,
+                ];
+            }
+        } else {
+            // ITEM đơn nếu có route
+            if (! empty($routeCfg)) {
+                $navConfig[] = [
+                    'label' => $labelParent,
+                    'icon' => $iconParent,
+                    'path' => $routeCfg,
+                    'key' => $perm->key,
+                ];
+            }
+        }
+    }
+    $superActive = request()->routeIs('rbac.index') || request()->routeIs('permissions.index');
+    $isSuperAdmin = $user && ($user->role->role_name ?? null) === 'Super Admin';
 @endphp
 
 <aside class="sidebar sidebar-default navs-rounded-all sidebar-base no-print">
@@ -319,45 +204,112 @@
             </i>
         </div>
     </div>
+
     <div class="sidebar-body pt-0 data-scrollbar">
-        <div class="sidebar-list" id="sidebar">
-            <ul class="navbar-nav iq-main-menu" id="sidebar">
-                @foreach ($navConfig as $keyNav => $navItem)
-                    @if (empty($navItem['children']))
+        <div class="sidebar-list">
+            <ul class="navbar-nav iq-main-menu" id="sidebar-nav">
+                @if ($isSuperAdmin)
+                    <li class="nav-item dropdown">
+                        <a
+                            class="nav-link dropdown-toggle {{ $superActive ? 'active' : '' }}"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            title="Phân quyền">
+                            <i class="fas fa-user-shield fa-lg" style="width: 1.5rem"></i>
+                            <span class="ms-3 flex-grow-1">{{ \Illuminate\Support\Str::title('Phân quyền') }}</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a
+                                class="dropdown-item {{ request()->routeIs('rbac.index') ? 'active' : '' }}"
+                                href="{{ route('rbac.index') }}"
+                                title="Trang phân quyền">
+                                <i class="fas fa-users-cog" style="width: 1.5rem"></i>
+                                <span class="flex-grow-1">
+                                    {{ \Illuminate\Support\Str::title('Trang phân quyền') }}
+                                </span>
+                            </a>
+                            <a
+                                class="dropdown-item {{ request()->routeIs('permissions.index') ? 'active' : '' }}"
+                                href="{{ route('permissions.index') }}"
+                                title="Trang tạo quyền">
+                                <i class="fas fa-key" style="width: 1.5rem"></i>
+                                <span class="flex-grow-1">
+                                    {{ \Illuminate\Support\Str::title('Trang tạo quyền') }}
+                                </span>
+                            </a>
+                        </div>
+                    </li>
+                @endif
+
+                @foreach ($navConfig as $nav)
+                    @php
+                        $hasChildren = ! empty($nav['children'] ?? []);
+                    @endphp
+
+                    {{-- ITEM ĐƠN --}}
+
+                    @if (! $hasChildren)
                         <li class="nav-item">
                             <a
-                                href="{{ route($navItem['path']) }}"
-                                class="nav-link {{ $isActive($navItem['path']) }}"
-                                title="{{ $navItem['label'] }}">
-                                <i class="{{ $navItem['icon'] }}" style="width: 1.5rem"></i>
+                                href="{{ route($nav['path']) }}"
+                                class="nav-link {{ $isActive($nav['path']) }}"
+                                title="{{ \Illuminate\Support\Str::title($nav['label']) }}">
+                                <i class="{{ $nav['icon'] ?? 'fas fa-circle' }}" style="width: 1.5rem"></i>
                                 <span class="ms-3 flex-grow-1">
-                                    {{ $navItem['label'] }}
+                                    {{ \Illuminate\Support\Str::title($nav['label']) }}
                                 </span>
                             </a>
                         </li>
                     @else
+                        @php
+                            $visibleChildren = array_values(
+                                array_filter(
+                                    $nav['children'],
+                                    fn ($child) => ! empty($child['path']) && ! empty($child['key']),
+                                ),
+                            );
+                            if (count($visibleChildren) === 0) {
+                                continue;
+                            }
+
+                            $parentActive = false;
+                            foreach ($visibleChildren as $ch) {
+                                if (! empty($ch['path']) && request()->routeIs($ch['path'])) {
+                                    $parentActive = true;
+                                    break;
+                                }
+                            }
+                            if (! $parentActive && ! empty($nav['path'] ?? null)) {
+                                $parentActive = request()->routeIs($nav['path']);
+                            }
+                        @endphp
+
                         <li class="nav-item dropdown">
                             <a
-                                class="nav-link dropdown-toggle {{ collect($navItem['children'])->pluck('path')->contains(fn ($path) => $isActive($path)) ? 'active' : '' }}"
+                                class="nav-link dropdown-toggle {{ $parentActive ? 'active' : '' }}"
                                 href="#"
                                 role="button"
-                                data-toggle="dropdown"
+                                data-bs-toggle="dropdown"
                                 aria-expanded="false"
-                                title="{{ $navItem['label'] }}">
-                                <i class="{{ $navItem['icon'] }}" style="width: 1.5rem"></i>
+                                title="{{ \Illuminate\Support\Str::title($nav['label']) }}">
+                                <i class="{{ $nav['icon'] ?? 'fas fa-folder fa-lg' }}" style="width: 1.5rem"></i>
                                 <span class="ms-3 flex-grow-1">
-                                    {{ $navItem['label'] }}
+                                    {{ \Illuminate\Support\Str::title($nav['label']) }}
                                 </span>
                             </a>
                             <div class="dropdown-menu">
-                                @foreach ($navItem['children'] as $keyChild => $child)
+                                @foreach ($visibleChildren as $child)
                                     <a
                                         class="dropdown-item {{ $isActive($child['path']) }}"
                                         href="{{ route($child['path']) }}"
-                                        title="{{ $child['label'] }}">
-                                        <i class="{{ $child['icon'] }}" style="width: 1.5rem"></i>
+                                        title="{{ \Illuminate\Support\Str::title($child['label']) }}">
+                                        <i
+                                            class="{{ $child['icon'] ?? 'fas fa-angle-right' }}"
+                                            style="width: 1.5rem"></i>
                                         <span class="flex-grow-1">
-                                            {{ $child['label'] }}
+                                            {{ \Illuminate\Support\Str::title($child['label']) }}
                                         </span>
                                     </a>
                                 @endforeach
@@ -370,11 +322,12 @@
             </ul>
         </div>
     </div>
+
     <div class="sidebar-footer left-1 mb-3" style="position: absolute; bottom: 0; width: 100%">
         <div class="nav-item text-center">
             <a class="nav-link" href="{{ route('logout') }}">
                 <i class="fas fa-right-from-bracket fa-lg" style="width: 1.5rem"></i>
-                <span class="nav-link-text ms-1">Đăng xuất</span>
+                <span class="nav-link-text ms-1">{{ \Illuminate\Support\Str::title('Đăng xuất') }}</span>
             </a>
         </div>
     </div>

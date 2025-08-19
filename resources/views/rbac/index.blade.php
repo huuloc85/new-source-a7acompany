@@ -1,30 +1,108 @@
 @extends('layouts.'.$layout)
 
 @section('content')
-    <div class="container">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2 class="mb-0">
-                    <i class="fas fa-users-cog me-2"></i>
-                    Quản Lý Phân Quyền Đa Vai Trò
-                </h2>
+    <div class="container-fluid px-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-gradient text-white py-3" style="background-color: #4e73df">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Quản Lý Phân Quyền Đa Vai Trò
+                    </h4>
+                </div>
             </div>
             <div class="card-body">
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
+                    <div
+                        class="alert alert-success alert-dismissible fade show border-0 rounded-3 shadow-sm"
+                        role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>{{ session('success') }}</strong>
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
 
+                @if (! empty($selectedRoles))
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                                            <i class="fas fa-shield-alt text-primary fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 text-primary fw-semibold">Tổng số quyền hạn</h6>
+                                            <h3 class="mb-0 fw-bold">{{ count($permissions) }}</h3>
+                                        </div>
+                                    </div>
+                                    <div class="vr"></div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
+                                            <i class="fas fa-users text-success fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 text-success fw-semibold">Vai trò đã chọn</h6>
+                                            <h3 class="mb-0 fw-bold">{{ count($selectedRoles) }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <!-- Nút mở 2 modal riêng -->
+                                    <button
+                                        type="button"
+                                        class="btn btn-light btn-lg border-2 fw-semibold"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#permissionsSidebarModal">
+                                        <i class="fas fa-list-check me-2"></i>
+                                        Quyền (Sidebar)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-light btn-lg border-2 fw-semibold"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#permissionsHomeModal">
+                                        <i class="fas fa-list-check me-2"></i>
+                                        Quyền (Home)
+                                    </button>
+                                    <!-- Nút lưu submit form POST bên dưới -->
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-lg fw-semibold px-4"
+                                        id="btnSavePermissions">
+                                        <i class="fas fa-save me-2"></i>
+                                        Lưu Phân Quyền
+                                    </button>
+                                    <a
+                                        href="{{ route('permissions.index') }}"
+                                        class="btn btn-dark btn-lg fw-semibold px-4"
+                                        style="background: linear-gradient(45deg, #6f42c1, #563d7c); border: none">
+                                        <i class="fas fa-user-shield me-2"></i>
+                                        Trang Phân Quyền
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Form chọn multiple roles --}}
-                <div class="row mb-4">
+                <div class="row g-4 mb-4">
                     <div class="col-md-8">
-                        <div class="card border-primary h-100">
-                            <div class="card-header bg-primary text-white">
-                                <i class="fas fa-user-friends me-2"></i>
-                                Chọn Vai Trò Quản Lý
-                                <small class="ms-2">(Có thể chọn nhiều vai trò)</small>
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0 text-primary">
+                                        <i class="fas fa-user-tag me-2"></i>
+                                        Chọn Vai Trò Quản Lý
+                                    </h5>
+                                    <span class="badge bg-primary-subtle text-primary">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Có thể chọn nhiều vai trò
+                                    </span>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <form method="GET" action="{{ route('rbac.index') }}" id="roleForm">
@@ -50,33 +128,38 @@
                                                     Tự động cập nhật khi thay đổi
                                                 </span>
                                             </div>
-                                            <div class="row">
-                                                @foreach ($roles as $index => $role)
-                                                    <div class="col-md-6 mb-2">
+                                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3">
+                                                @foreach ($roles as $role)
+                                                    <div class="col">
                                                         <div
-                                                            class="role-item {{ in_array($role->id, $selectedRoleIds) ? 'selected' : '' }}">
-                                                            <div class="form-check">
+                                                            class="role-item position-relative {{ in_array($role->id, $selectedRoleIds) ? 'selected' : '' }}">
+                                                            <div class="form-check p-0">
                                                                 <input
-                                                                    class="form-check-input role-checkbox"
+                                                                    class="role-checkbox visually-hidden"
                                                                     type="checkbox"
                                                                     name="role_ids[]"
                                                                     value="{{ $role->id }}"
                                                                     id="role_{{ $role->id }}"
                                                                     {{ in_array($role->id, $selectedRoleIds) ? 'checked' : '' }} />
                                                                 <label
-                                                                    class="form-check-label w-100"
+                                                                    class="role-label w-100 mb-0"
                                                                     for="role_{{ $role->id }}">
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="role-icon me-2">
-                                                                            <i class="fas fa-user-tag"></i>
+                                                                    <div class="role-content">
+                                                                        <div class="role-icon-wrapper mb-2">
+                                                                            <div class="role-icon">
+                                                                                <i class="fas fa-user-tag"></i>
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="flex-grow-1">
-                                                                            <strong class="role-name">
+                                                                        <div class="role-info text-center">
+                                                                            <h6 class="role-name mb-1">
                                                                                 {{ $role->role_name }}
-                                                                            </strong>
-                                                                            <small class="text-muted d-block">
+                                                                            </h6>
+                                                                            <span class="role-id">
                                                                                 ID: {{ $role->id }}
-                                                                            </small>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div class="role-status">
+                                                                            <i class="fas fa-check-circle"></i>
                                                                         </div>
                                                                     </div>
                                                                 </label>
@@ -94,28 +177,32 @@
 
                     @if (! empty($selectedRoles))
                         <div class="col-md-4">
-                            <div class="card border-success h-100">
-                                <div class="card-header bg-success text-white">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Vai Trò Đã Chọn
-                                    <span class="badge bg-white text-success ms-2">{{ count($selectedRoles) }}</span>
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0 text-success">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            Vai Trò Đã Chọn
+                                        </h5>
+                                        <span class="badge bg-success-subtle text-success">
+                                            {{ count($selectedRoles) }} vai trò
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="selected-roles-list">
-                                        @foreach ($selectedRoles as $role)
-                                            <div class="selected-role-item mb-2">
-                                                <div class="d-flex align-items-center p-2 bg-light rounded">
-                                                    <div class="rounded-circle bg-success text-white p-1 me-2">
-                                                        <i class="fas fa-user fa-sm"></i>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <strong class="d-block">{{ $role->role_name }}</strong>
-                                                        <small class="text-muted">ID: {{ $role->id }}</small>
-                                                    </div>
+                                    @foreach ($selectedRoles as $role)
+                                        <div class="selected-role-item mb-2">
+                                            <div class="d-flex align-items-center p-2 bg-light rounded">
+                                                <div class="rounded-circle bg-success text-white p-1 me-2">
+                                                    <i class="fas fa-user fa-sm"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <strong>{{ $role->role_name }}</strong>
+                                                    <small class="text-muted">ID: {{ $role->id }}</small>
                                                 </div>
                                             </div>
-                                        @endforeach
-                                    </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -123,209 +210,413 @@
                 </div>
 
                 @if (! empty($selectedRoles))
-                    <form method="POST" action="{{ route('rbac.save') }}">
+                    {{-- Gom quyền theo display_area --}}
+                    @php
+                        $permissionsSidebar = collect($permissions)->filter(function ($p) {
+                            return in_array($p->display_area, ['sidebar', 'both']);
+                        });
+
+                        $permissionsHome = collect($permissions)->filter(function ($p) {
+                            return in_array($p->display_area, ['home', 'both']);
+                        });
+                    @endphp
+
+                    {{-- Form POST lưu quyền --}}
+                    <form method="POST" action="{{ route('rbac.save') }}" id="permissionsSaveForm">
                         @csrf
                         @foreach ($selectedRoleIds as $roleId)
                             <input type="hidden" name="role_ids[]" value="{{ $roleId }}" />
                         @endforeach
 
-                        {{-- Nút Lưu ở trên --}}
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="permission-summary">
-                                <span class="badge bg-info fs-6">
-                                    <i class="fas fa-shield-alt me-1"></i>
-                                    Tổng cộng: {{ count($permissions) }} quyền hạn
-                                </span>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save me-2"></i>
-                                Lưu Phân Quyền
-                            </button>
-                        </div>
+                        <!-- Modal: Quyền (SIDEBAR) -->
+                        <div
+                            class="modal fade"
+                            id="permissionsSidebarModal"
+                            tabindex="-1"
+                            aria-labelledby="permissionsSidebarLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-light">
+                                        <h5 class="modal-title" id="permissionsSidebarLabel">
+                                            <i class="fas fa-list-check me-2"></i>
+                                            Danh sách quyền (Sidebar)
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
 
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-list-check me-2"></i>
-                                        Danh sách quyền hạn
-                                    </h5>
-                                    <div>
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-primary btn-sm"
-                                            id="selectAllPermissions">
-                                            <i class="fas fa-check-double me-1"></i>
-                                            Chọn tất cả
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-secondary btn-sm ms-2"
-                                            id="deselectAllPermissions">
-                                            <i class="fas fa-times me-1"></i>
-                                            Bỏ chọn tất cả
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-info btn-sm ms-2"
-                                            id="toggleRoleView">
-                                            <i class="fas fa-eye me-1"></i>
-                                            Xem theo vai trò
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                {{-- Role-specific permission view --}}
-                                <div id="roleSpecificView" style="display: none">
-                                    <div class="mb-3">
-                                        <small class="text-muted">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Xem quyền hạn hiện tại của từng vai trò đã chọn
-                                        </small>
-                                    </div>
-                                    @foreach ($selectedRoles as $role)
-                                        <div class="role-permissions-section mb-4">
-                                            <div class="role-header p-2 bg-light rounded">
-                                                <h6 class="mb-0">
-                                                    <i class="fas fa-user-tag me-2"></i>
-                                                    {{ $role->role_name }}
-                                                    <span class="badge bg-primary ms-2">
-                                                        {{ count(array_intersect($allRolePermissions[$role->id] ?? [], array_column($permissions->toArray(), 'id'))) }}
-                                                        / {{ count($permissions) }}
+                                    <div class="modal-body p-0">
+                                        <div class="p-3 bg-light border-bottom">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-primary me-2">
+                                                        {{ $permissionsSidebar->count() }} quyền
                                                     </span>
-                                                </h6>
+                                                    <small class="text-muted">
+                                                        Chọn quyền hạn cho các vai trò đã chọn
+                                                    </small>
+                                                </div>
+                                                <div>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary btn-sm"
+                                                        data-bulk="select"
+                                                        data-scope="#permissionsSidebarModal">
+                                                        <i class="fas fa-check-double me-1"></i>
+                                                        Chọn tất cả
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-secondary btn-sm ms-2"
+                                                        data-bulk="deselect"
+                                                        data-scope="#permissionsSidebarModal">
+                                                        <i class="fas fa-times me-1"></i>
+                                                        Bỏ chọn tất cả
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    @endforeach
-                                </div>
 
-                                {{-- Main permission table --}}
-                                <div id="mainPermissionView">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover table-bordered">
-                                            <thead class="table-primary">
-                                                <tr>
-                                                    <th style="width: 35%">
-                                                        <i class="fas fa-cog me-2"></i>
-                                                        Chức năng
-                                                    </th>
-                                                    <th style="width: 25%">
-                                                        <i class="fas fa-key me-2"></i>
-                                                        Key
-                                                    </th>
-                                                    <th style="width: 10%">
-                                                        <i class="fas fa-tag me-2"></i>
-                                                        Type
-                                                    </th>
-                                                    <th style="width: 15%" class="text-center">
-                                                        <i class="fas fa-toggle-on me-2"></i>
-                                                        Trạng thái
-                                                    </th>
-                                                    <th style="width: 15%" class="text-center">
-                                                        <i class="fas fa-users me-2"></i>
-                                                        Vai trò có quyền
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($permissions as $permission)
-                                                    @php
-                                                        $rolesWithPermission = collect($selectedRoles)->filter(
-                                                            function ($role) use ($permission, $allRolePermissions) {
-                                                                return in_array(
-                                                                    $permission->id,
-                                                                    $allRolePermissions[$role->id] ?? [],
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr class="bg-light">
+                                                            <th class="border-0 rounded-start">
+                                                                <span class="text-dark fw-semibold">Chức năng</span>
+                                                            </th>
+                                                            <th class="border-0">
+                                                                <span class="text-dark fw-semibold">Key</span>
+                                                            </th>
+
+                                                            {{-- THÊM CỘT SIDEBAR --}}
+                                                            <th class="border-0 text-center">
+                                                                <span class="text-dark fw-semibold">Sidebar</span>
+                                                            </th>
+
+                                                            <th class="border-0 text-center">
+                                                                <span class="text-dark fw-semibold">Loại</span>
+                                                            </th>
+                                                            <th class="border-0 text-center">
+                                                                <span class="text-dark fw-semibold">Hiển thị</span>
+                                                            </th>
+                                                            <th class="border-0 text-center">
+                                                                <span class="text-dark fw-semibold">Trạng thái</span>
+                                                            </th>
+                                                            <th class="border-0 rounded-end text-center">
+                                                                <span class="text-dark fw-semibold">
+                                                                    Vai trò có quyền
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody>
+                                                        @foreach ($permissionsSidebar as $permission)
+                                                            @php
+                                                                $rolesWithPermission = collect($selectedRoles)->filter(
+                                                                    fn ($role) => in_array(
+                                                                        $permission->id,
+                                                                        $allRolePermissions[$role->id] ?? [],
+                                                                    ),
                                                                 );
-                                                            },
-                                                        );
-                                                        $isCommonPermission =
-                                                            $rolesWithPermission->count() == count($selectedRoles);
-                                                        $hasPartialPermission =
-                                                            $rolesWithPermission->count() > 0 &&
-                                                            $rolesWithPermission->count() < count($selectedRoles);
-                                                    @endphp
+                                                                $isCommonPermission =
+                                                                    $rolesWithPermission->count() ==
+                                                                    count($selectedRoles);
+                                                                $hasPartialPermission =
+                                                                    $rolesWithPermission->count() > 0 &&
+                                                                    ! $isCommonPermission;
 
-                                                    <tr
-                                                        class="permission-row {{ $isCommonPermission ? 'table-success' : ($hasPartialPermission ? 'table-warning' : '') }}">
-                                                        <td class="align-middle">
-                                                            <strong>{{ $permission->name }}</strong>
-                                                        </td>
-                                                        <td class="align-middle">
-                                                            <code class="text-primary">
-                                                                {{ $permission->key ?? 'Chưa có key' }}
-                                                            </code>
-                                                        </td>
-                                                        <td class="align-middle">
-                                                            <span class="badge bg-secondary">
-                                                                {{ $permission->type ?? 'N/A' }}
-                                                            </span>
-                                                        </td>
-                                                        <td class="text-center align-middle">
-                                                            <div
-                                                                class="form-check form-switch d-flex justify-content-center">
-                                                                <input
-                                                                    class="form-check-input permission-checkbox"
-                                                                    type="checkbox"
-                                                                    name="permissions[]"
-                                                                    value="{{ $permission->id }}"
-                                                                    role="switch"
-                                                                    {{ $isCommonPermission ? 'checked' : '' }}
-                                                                    {{ $hasPartialPermission ? 'class=indeterminate' : '' }} />
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-center align-middle">
-                                                            @if ($rolesWithPermission->count() > 0)
-                                                                <span class="badge bg-info">
-                                                                    {{ $rolesWithPermission->count() }}/{{ count($selectedRoles) }}
-                                                                </span>
-                                                                <div class="mt-1">
-                                                                    @foreach ($rolesWithPermission as $role)
-                                                                        <span class="badge bg-secondary badge-sm me-1">
-                                                                            {{ $role->role_name }}
+                                                                // Lấy danh sách sidebar items theo permission hiện tại (AN TOÀN)
+                                                                /** @var \Illuminate\Support\Collection $sidebarItems */
+                                                                $sidebarItems = $sidebarItemsByPermission->get(
+                                                                    $permission->id,
+                                                                    collect(),
+                                                                );
+                                                            @endphp
+
+                                                            <tr
+                                                                class="{{ $isCommonPermission ? 'table-success' : ($hasPartialPermission ? 'table-warning' : '') }}">
+                                                                <td>{{ $permission->name }}</td>
+                                                                <td>
+                                                                    <code class="text-primary">
+                                                                        {{ $permission->key }}
+                                                                    </code>
+                                                                </td>
+
+                                                                {{-- CỘT DROPDOWN SIDEBAR --}}
+                                                                <td class="text-center" style="min-width: 220px">
+                                                                    @if ($permission->display_area !== 'home' && $sidebarItems->isNotEmpty())
+                                                                        <select
+                                                                            class="form-select form-select-sm"
+                                                                            name="sidebar_item_ids[{{ $permission->id }}]">
+                                                                            @foreach ($sidebarItems as $si)
+                                                                                <option value="{{ $si->id }}">
+                                                                                    {{ $si->key ?? 'Sidebar #'.$si->id }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @else
+                                                                        <select
+                                                                            class="form-select form-select-sm"
+                                                                            disabled>
+                                                                            <option>Không có mục Sidebar</option>
+                                                                        </select>
+                                                                    @endif
+                                                                </td>
+
+                                                                {{-- Các cột còn lại giữ nguyên --}}
+                                                                <td class="text-center">
+                                                                    @if ($permission->type === 'admin')
+                                                                        <span class="badge bg-primary">Admin</span>
+                                                                    @elseif ($permission->type === 'employee')
+                                                                        <span class="badge bg-success">Employee</span>
+                                                                    @else
+                                                                        <span class="badge bg-secondary">Both</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if ($permission->display_area === 'home')
+                                                                        <span class="badge bg-info text-dark">
+                                                                            Home
                                                                         </span>
-                                                                    @endforeach
-                                                                </div>
-                                                            @else
-                                                                <span class="badge bg-light text-dark">
-                                                                    0/{{ count($selectedRoles) }}
-                                                                </span>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                                    @elseif ($permission->display_area === 'sidebar')
+                                                                        <span class="badge bg-warning text-dark">
+                                                                            Sidebar
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="badge bg-dark">Both</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <input
+                                                                        class="form-check-input permission-checkbox"
+                                                                        type="checkbox"
+                                                                        name="permissions[]"
+                                                                        value="{{ $permission->id }}"
+                                                                        {{ $isCommonPermission ? 'checked' : '' }} />
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if ($rolesWithPermission->count() > 0)
+                                                                        <span class="badge bg-info">
+                                                                            {{ $rolesWithPermission->count() }}/{{ count($selectedRoles) }}
+                                                                        </span>
+                                                                        <div class="mt-1">
+                                                                            @foreach ($rolesWithPermission as $role)
+                                                                                <span
+                                                                                    class="badge bg-secondary badge-sm me-1">
+                                                                                    {{ $role->role_name }}
+                                                                                </span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @else
+                                                                        <span class="badge bg-light text-dark">
+                                                                            0/{{ count($selectedRoles) }}
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer bg-light">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="fas fa-times me-2"></i>
+                                            Đóng
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>
+                                            Lưu thay đổi
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Nút Lưu ở dưới --}}
-                        <div class="card-footer bg-light">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="permission-actions">
-                                    <small class="text-muted">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Thay đổi sẽ được áp dụng cho tất cả {{ count($selectedRoles) }} vai trò đã chọn
-                                    </small>
+                        <!-- Modal: Quyền (HOME) -->
+                        <div
+                            class="modal fade"
+                            id="permissionsHomeModal"
+                            tabindex="-1"
+                            aria-labelledby="permissionsHomeLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-light">
+                                        <h5 class="modal-title" id="permissionsHomeLabel">
+                                            <i class="fas fa-list-check me-2"></i>
+                                            Danh sách quyền (Home)
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-0">
+                                        <div class="p-3 bg-light border-bottom">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-primary me-2">
+                                                        {{ $permissionsHome->count() }} quyền
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        Chọn quyền hạn cho các vai trò đã chọn
+                                                    </small>
+                                                </div>
+                                                <div>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary btn-sm"
+                                                        data-bulk="select"
+                                                        data-scope="#permissionsHomeModal">
+                                                        <i class="fas fa-check-double me-1"></i>
+                                                        Chọn tất cả
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-secondary btn-sm ms-2"
+                                                        data-bulk="deselect"
+                                                        data-scope="#permissionsHomeModal">
+                                                        <i class="fas fa-times me-1"></i>
+                                                        Bỏ chọn tất cả
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr class="bg-light">
+                                                            <th class="border-0 rounded-start">
+                                                                <span class="text-dark fw-semibold">Chức năng</span>
+                                                            </th>
+                                                            <th class="border-0">
+                                                                <span class="text-dark fw-semibold">Key</span>
+                                                            </th>
+                                                            <th class="border-0 text-center">
+                                                                <span class="text-dark fw-semibold">Loại</span>
+                                                            </th>
+                                                            <th class="border-0 text-center">
+                                                                <span class="text-dark fw-semibold">Hiển thị</span>
+                                                            </th>
+                                                            <th class="border-0 text-center">
+                                                                <span class="text-dark fw-semibold">Trạng thái</span>
+                                                            </th>
+                                                            <th class="border-0 rounded-end text-center">
+                                                                <span class="text-dark fw-semibold">
+                                                                    Vai trò có quyền
+                                                                </span>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($permissionsHome as $permission)
+                                                            @php
+                                                                $rolesWithPermission = collect($selectedRoles)->filter(
+                                                                    fn ($role) => in_array(
+                                                                        $permission->id,
+                                                                        $allRolePermissions[$role->id] ?? [],
+                                                                    ),
+                                                                );
+                                                                $isCommonPermission =
+                                                                    $rolesWithPermission->count() ==
+                                                                    count($selectedRoles);
+                                                                $hasPartialPermission =
+                                                                    $rolesWithPermission->count() > 0 &&
+                                                                    ! $isCommonPermission;
+                                                            @endphp
+
+                                                            <tr
+                                                                class="{{ $isCommonPermission ? 'table-success' : ($hasPartialPermission ? 'table-warning' : '') }}">
+                                                                <td>{{ $permission->name }}</td>
+                                                                <td>
+                                                                    <code class="text-primary">
+                                                                        {{ $permission->key }}
+                                                                    </code>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if ($permission->type === 'admin')
+                                                                        <span class="badge bg-primary">Admin</span>
+                                                                    @elseif ($permission->type === 'employee')
+                                                                        <span class="badge bg-success">Employee</span>
+                                                                    @else
+                                                                        <span class="badge bg-secondary">Both</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if ($permission->display_area === 'home')
+                                                                        <span class="badge bg-info text-dark">
+                                                                            Home
+                                                                        </span>
+                                                                    @elseif ($permission->display_area === 'sidebar')
+                                                                        <span class="badge bg-warning text-dark">
+                                                                            Sidebar
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="badge bg-dark">Both</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <input
+                                                                        class="form-check-input permission-checkbox"
+                                                                        type="checkbox"
+                                                                        name="permissions[]"
+                                                                        value="{{ $permission->id }}"
+                                                                        {{ $isCommonPermission ? 'checked' : '' }} />
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    @if ($rolesWithPermission->count() > 0)
+                                                                        <span class="badge bg-info">
+                                                                            {{ $rolesWithPermission->count() }}/{{ count($selectedRoles) }}
+                                                                        </span>
+                                                                        <div class="mt-1">
+                                                                            @foreach ($rolesWithPermission as $role)
+                                                                                <span
+                                                                                    class="badge bg-secondary badge-sm me-1">
+                                                                                    {{ $role->role_name }}
+                                                                                </span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @else
+                                                                        <span class="badge bg-light text-dark">
+                                                                            0/{{ count($selectedRoles) }}
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer bg-light">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="fas fa-times me-2"></i>
+                                            Đóng
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>
+                                            Lưu thay đổi
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-save me-2"></i>
-                                    Lưu Phân Quyền Cho
-                                </button>
                             </div>
                         </div>
                     </form>
                 @else
                     <div class="text-center py-5">
-                        <div class="mb-3">
-                            <i class="fas fa-user-plus fa-3x text-muted"></i>
-                        </div>
-                        <h5 class="text-muted">Vui lòng chọn ít nhất một vai trò để bắt đầu quản lý quyền hạn</h5>
-                        <p class="text-muted">
-                            Bạn có thể chọn nhiều vai trò cùng lúc để quản lý quyền hạn một cách hiệu quả
-                        </p>
+                        <h5 class="text-muted">Vui lòng chọn ít nhất một vai trò</h5>
                     </div>
                 @endif
             </div>
@@ -335,25 +626,99 @@
 
 <style>
     .role-item {
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        padding: 10px;
-        transition: all 0.3s ease;
+        border: 1px solid #eaecf4;
+        border-radius: 10px;
+        padding: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
-        position: relative;
+        background-color: #fff;
+        overflow: hidden;
     }
 
     .role-item:hover {
-        border-color: #0d6efd;
-        background-color: rgba(13, 110, 253, 0.05);
+        border-color: #4e73df;
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(78, 115, 223, 0.08);
+    }
+
+    .role-label {
+        cursor: pointer;
+        display: block;
+    }
+
+    .role-content {
+        position: relative;
+        text-align: center;
+    }
+
+    .role-icon-wrapper {
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    .role-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.875rem;
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .role-info {
+        margin-top: 0.5rem;
+    }
+
+    .role-name {
+        color: #2d3748;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.2;
+    }
+
+    .role-id {
+        color: #718096;
+        font-size: 0.8rem;
+        display: block;
+    }
+
+    .role-status {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 24px;
+        height: 24px;
+        background: #1cc88a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.75rem;
+        transform: scale(0);
+        transition: transform 0.3s ease;
     }
 
     .role-item.selected {
-        border-color: #198754;
-        background-color: rgba(25, 135, 84, 0.1);
-        box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.2);
+        border-color: #1cc88a;
+        background-color: #f0fff7;
+        box-shadow: 0 0 0 1px rgba(28, 200, 138, 0.25);
+    }
+
+    .role-item.selected .role-status {
+        transform: scale(1);
+    }
+
+    .role-item.selected .role-icon {
+        background: linear-gradient(135deg, #1cc88a 0%, #169a6b 100%);
+        box-shadow: 0 4px 12px rgba(28, 200, 138, 0.2);
     }
 
     /* Loading indicator */
@@ -361,13 +726,13 @@
         content: '';
         position: absolute;
         top: 50%;
-        right: 10px;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #0d6efd;
+        right: 15px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(78, 115, 223, 0.1);
+        border-top: 2px solid #4e73df;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        animation: spin 0.8s linear infinite;
         transform: translateY(-50%);
     }
 
@@ -387,29 +752,43 @@
     }
 
     .role-icon {
-        width: 30px;
-        height: 30px;
-        background: linear-gradient(45deg, #0d6efd, #6610f2);
-        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #4e73df, #224abe);
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 12px;
+        font-size: 14px;
+        transition: transform 0.2s ease;
     }
 
-    .selected-role-item .rounded-circle {
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .role-item:hover .role-icon {
+        transform: scale(1.05);
+    }
+
+    .selected-role-item {
+        background: #fff;
+        border-radius: 10px;
+        transition: transform 0.2s ease;
+    }
+
+    .selected-role-item:hover {
+        transform: translateY(-1px);
     }
 
     .form-check-input.permission-checkbox {
-        width: 2.5em;
-        height: 1.25em;
+        width: 18px;
+        height: 18px;
         cursor: pointer;
+        border-color: #e9ecef;
+        transition: all 0.2s ease;
+    }
+
+    .form-check-input.permission-checkbox:checked {
+        background-color: #4e73df;
+        border-color: #4e73df;
     }
 
     .table > :not(caption) > * > * {
@@ -450,6 +829,52 @@
     .indeterminate {
         opacity: 0.5;
     }
+
+    /* Modal styling */
+    .modal-xl {
+        max-width: 95%;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 15px;
+    }
+
+    .modal-header {
+        border-radius: 15px 15px 0 0;
+    }
+
+    .modal-footer {
+        border-radius: 0 0 15px 15px;
+    }
+
+    /* Custom scrollbar for modal */
+    .modal-body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .modal-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .modal-body::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    .modal-body::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* Animation for modal */
+    .modal.fade .modal-dialog {
+        transition: transform 0.3s ease-out;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: none;
+    }
 </style>
 
 <script>
@@ -459,15 +884,19 @@
         const deselectAllRolesBtn = document.getElementById('deselectAllRoles')
         const roleCheckboxes = document.querySelectorAll('.role-checkbox')
 
-        // Permission selection handlers
-        const selectAllPermissionsBtn = document.getElementById('selectAllPermissions')
-        const deselectAllPermissionsBtn = document.getElementById('deselectAllPermissions')
-        const permissionCheckboxes = document.querySelectorAll('.permission-checkbox')
-
-        // View toggle
+        // View toggle (nếu có phần tử)
         const toggleRoleViewBtn = document.getElementById('toggleRoleView')
         const roleSpecificView = document.getElementById('roleSpecificView')
         const mainPermissionView = document.getElementById('mainPermissionView')
+
+        // Nút lưu gửi form POST
+        const btnSavePermissions = document.getElementById('btnSavePermissions')
+        if (btnSavePermissions) {
+            btnSavePermissions.addEventListener('click', function () {
+                const form = document.getElementById('permissionsSaveForm')
+                if (form) form.submit()
+            })
+        }
 
         // Role selection events
         if (selectAllRolesBtn) {
@@ -476,7 +905,6 @@
                     checkbox.checked = true
                     updateRoleItemSelection(checkbox)
                 })
-                // Tự động submit form sau khi chọn tất cả
                 setTimeout(() => {
                     document.getElementById('roleForm').submit()
                 }, 300)
@@ -489,27 +917,9 @@
                     checkbox.checked = false
                     updateRoleItemSelection(checkbox)
                 })
-                // Tự động submit form sau khi bỏ chọn tất cả
                 setTimeout(() => {
                     document.getElementById('roleForm').submit()
                 }, 300)
-            })
-        }
-
-        // Permission selection events
-        if (selectAllPermissionsBtn) {
-            selectAllPermissionsBtn.addEventListener('click', function () {
-                permissionCheckboxes.forEach((checkbox) => {
-                    checkbox.checked = true
-                })
-            })
-        }
-
-        if (deselectAllPermissionsBtn) {
-            deselectAllPermissionsBtn.addEventListener('click', function () {
-                permissionCheckboxes.forEach((checkbox) => {
-                    checkbox.checked = false
-                })
             })
         }
 
@@ -517,20 +927,16 @@
         roleCheckboxes.forEach((checkbox) => {
             checkbox.addEventListener('change', function () {
                 updateRoleItemSelection(this)
-
-                // Tự động submit form khi có thay đổi
                 clearTimeout(window.roleFormTimeout)
                 window.roleFormTimeout = setTimeout(() => {
                     document.getElementById('roleForm').submit()
-                }, 500) // Delay 500ms để tránh submit quá nhiều lần
+                }, 500)
             })
-
-            // Initialize selection state
             updateRoleItemSelection(checkbox)
         })
 
         // View toggle handler
-        if (toggleRoleViewBtn) {
+        if (toggleRoleViewBtn && roleSpecificView && mainPermissionView) {
             let isRoleViewVisible = false
             toggleRoleViewBtn.addEventListener('click', function () {
                 isRoleViewVisible = !isRoleViewVisible
@@ -541,13 +947,14 @@
                 } else {
                     roleSpecificView.style.display = 'none'
                     mainPermissionView.style.display = 'block'
-                    this.innerHTML = '<i class="fas fa-eye me-1"></i>Xem theo vai trò'
+                    this.innerHTML = '<i class="fas a-eye me-1"></i>Xem theo vai trò'
                 }
             })
         }
 
         function updateRoleItemSelection(checkbox) {
             const roleItem = checkbox.closest('.role-item')
+            if (!roleItem) return
             if (checkbox.checked) {
                 roleItem.classList.add('selected')
             } else {
@@ -555,26 +962,54 @@
             }
         }
 
-        // Show loading state when form is submitting
         function showLoadingState() {
             roleCheckboxes.forEach((checkbox) => {
                 const roleItem = checkbox.closest('.role-item')
-                roleItem.classList.add('loading')
+                if (roleItem) roleItem.classList.add('loading')
             })
-
-            // Disable buttons during loading
             if (selectAllRolesBtn) selectAllRolesBtn.disabled = true
             if (deselectAllRolesBtn) deselectAllRolesBtn.disabled = true
         }
 
-        // Add loading state to form submission
         document.getElementById('roleForm').addEventListener('submit', function () {
             showLoadingState()
         })
 
-        // Handle indeterminate state for permissions
+        // Bulk check/uncheck trong phạm vi từng modal (Sidebar/Home)
+        document.querySelectorAll('[data-bulk]').forEach((btn) => {
+            btn.addEventListener('click', function () {
+                const scopeSel = this.getAttribute('data-scope')
+                const modalEl = document.querySelector(scopeSel)
+                if (!modalEl) return
+                const checkboxes = modalEl.querySelectorAll('.permission-checkbox')
+                const action = this.getAttribute('data-bulk') // "select" | "deselect"
+                checkboxes.forEach((cb) => (cb.checked = action === 'select'))
+            })
+        })
+
+        // Xử lý indeterminate nếu có
         document.querySelectorAll('.permission-checkbox.indeterminate').forEach((checkbox) => {
             checkbox.indeterminate = true
+        })
+
+        // Modal handling (giữ nguyên)
+        const permissionsSidebarModal = document.getElementById('permissionsSidebarModal')
+        const permissionsHomeModal = document.getElementById('permissionsHomeModal')
+
+        ;[permissionsSidebarModal, permissionsHomeModal].forEach((modal) => {
+            if (!modal) return
+            modal.addEventListener('show.bs.modal', function () {
+                /* optional */
+            })
+            modal.addEventListener('shown.bs.modal', function () {
+                /* optional focus */
+            })
+            const content = modal.querySelector('.modal-content')
+            if (content) {
+                content.addEventListener('click', function (e) {
+                    e.stopPropagation()
+                })
+            }
         })
     })
 </script>
