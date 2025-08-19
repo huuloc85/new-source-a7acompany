@@ -128,7 +128,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::delete('/{id}', [SalaryController::class, 'deleteSalary']);
     });
 
-    Route::middleware(['api.check.leader'])->prefix('schedule-categories')->group(function () {
+    Route::middleware(['api.authAdmin'])->prefix('schedule-categories')->group(function () {
         Route::get('/', [ScheduleCategoryController::class, 'index']);   // Lấy danh sách danh mục
         Route::post('/', [ScheduleCategoryController::class, 'store']);  // Thêm mới danh mục
         Route::get('/{id}', [ScheduleCategoryController::class, 'show']);  // Lấy chi tiết danh mục
@@ -136,7 +136,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::delete('/{id}', [ScheduleCategoryController::class, 'delete']); // Xóa danh mục
     });
 
-    Route::middleware(['api.authAdmin'])->prefix('schedules')->group(function () {
+    Route::middleware(['api.check.leader'])->prefix('schedules')->group(function () {
         Route::prefix('detail')->group(function () {
             Route::get('/', [ScheduleDetailController::class, 'index']);
             //     Route::get('/{id}', [ScheduleDetailController::class, 'detail']);
@@ -182,7 +182,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/reject/{id}', [StampController::class, 'rejectPrint'])->name('api.stamp.reject');
     });
 
-    Route::middleware(['api.authAdmin'])->prefix('daily-schedules')->group(function () {
+    Route::middleware(['api.check.leader'])->prefix('daily-schedules')->group(function () {
         Route::get('/', [DailyScheduleController::class, 'index']);
         // Route::post('/', [DailyScheduleController::class, 'store']);
         Route::get('/{id}', [DailyScheduleController::class, 'show']);

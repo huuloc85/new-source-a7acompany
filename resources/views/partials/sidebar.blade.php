@@ -70,6 +70,10 @@
         'employees_select_products' => ['fas fa-cart-plus', null],
         'employees_view_label' => ['fas fa-print fa-lg', null],
         'view_label_management' => ['fas fa-print fa-lg', null],
+
+        // both
+        'view_team_schedule' => ['fas fa-print fa-lg', 'admin.celender.home'],
+        'view_today_activity' => ['fas fa-print fa-lg', 'admin.checkemployee.view-employee-todo'],
     ];
 
     /**

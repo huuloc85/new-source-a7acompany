@@ -66,7 +66,7 @@ Route::prefix('/admin')->middleware(['auth'])->group(function () {
     Route::post('/reset-password/{id}', [AuthController::class, 'resetPassword'])->name('admin.reset-password');
 
     // chức năng của Admin CheckEmployee
-    Route::middleware(['authAdmin'])->prefix('/check-employee')->group(function () {
+    Route::middleware(['check.leader'])->prefix('/check-employee')->group(function () {
         Route::get('/', [CheckEmployeeController::class, 'index'])->name('admin.checkemployee.view-employee-todo');
         Route::delete('/{id}', [CheckEmployeeController::class, 'deleteCheckEmployee'])->name('admin.checkemployee.delete');
         Route::post('/update/{id}', [CheckEmployeeController::class, 'updateEmployeeforAdmin'])->name('admin.checkemployee.update-employee-todo');

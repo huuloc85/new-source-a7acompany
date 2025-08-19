@@ -128,7 +128,7 @@
                                             {{ \Carbon\Carbon::parse($record->datetime)->format('H:i:s') }}
                                         </td>
                                         <td class="text-center" scope="row">
-                                            {{ $record->employee ? $record->employee->category_celender->name : 'Không xác định' }}
+                                            {{ $record->employee ? $record->employee->calendarCategory->name : 'Không xác định' }}
                                         </td>
                                         <td class="text-center" scope="row">
                                             <!-- Update Button -->

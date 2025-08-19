@@ -81,7 +81,7 @@ class CheckEmployeeController extends Controller
             $column = 'day'.$date;
             $calendarDetail = $calendar->$column;
             $calendarDetail = $this->translateCalendar($calendarDetail);
-            $status = Status::getStatusValue(auth()->user()->category_celender->name);
+            $status = Status::getStatusValue(auth()->user()->calendarCategory->name);
 
             return view('checkemployee.check-employee-todo', compact('products', 'calendarDetail', 'status'));
         } catch (\Exception $e) {
