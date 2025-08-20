@@ -6,6 +6,7 @@ use App\Helpers\HandleError;
 use App\Http\Controllers\Controller;
 use App\Models\DailyQuantity;
 use App\Models\DailyQuantityPO;
+use App\Models\Product;
 use App\Models\TotalDailyQuantity;
 use App\Models\TotalDailyQuantityPO;
 use App\Models\TotalMonthQuantity;
@@ -162,6 +163,62 @@ class CheckPoController extends Controller
                 'message' => 'Cập nhật số lượng thành công!',
                 'count' => $results->count(),
                 'data' => $results,
+            ], 200);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return HandleError::handle($th);
+        }
+    }
+
+    public function addStockQuantityInventory(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validate = $request->validate([
+                'month' => 'required|date_format:Y-m',
+                'products' => 'required|array',
+                'products.*.productId' => 'required|integer|exists:products,id',
+                'products.*.quantity' => 'required|integer',
+            ]);
+
+            $month = $validate['month'];
+            $status = 4;
+
+            $results = collect($validate['products'])->map(function ($product) use ($month, $status) {
+                $productId = $product['productId'];
+                $quantity = $product['quantity'];
+                $productModel = Product::find($productId);
+                if ($productModel) {
+                    $totalMonth = TotalMonthQuantity::where('product_id', $productId)
+                        ->where('month', $month)
+                        ->where('status', $status)
+                        ->first();
+                    if ($totalMonth) {
+                        $totalMonth->totalQuan = $quantity;
+                        $totalMonth->save();
+                    } else {
+                        $totalMonth = TotalMonthQuantity::create([
+                            'product_id' => $productId,
+                            'month' => $month,
+                            'status' => $status,
+                            'totalQuan' => $quantity,
+                        ]);
+                    }
+
+                    return $totalMonth;
+                }
+
+                return null;
+            })->filter();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Cập nhật số lượng thành công!',
+                'count' => $results->count(),
+                'data' => $results->values(),
             ], 200);
 
         } catch (\Throwable $th) {

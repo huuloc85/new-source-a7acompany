@@ -254,6 +254,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         // Route::get('/{id}', [CheckPoController::class, 'show']);
         Route::post('/export', [CheckPoController::class, 'addPoExport']);
         Route::post('/import', [CheckPoController::class, 'addPoImport']);
+        Route::post('/inventory', [CheckPoController::class, 'addStockQuantityInventory']);
         Route::patch('/{id}', [CheckPoController::class, 'update']);
         Route::delete('/{id}', [CheckPoController::class, 'destroy']);
     });
