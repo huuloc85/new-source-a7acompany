@@ -4,14 +4,18 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Filters\NameOrCodeFilter;
 use App\Helpers\HandleError;
+use App\Helpers\LogActivity;
 use App\Models\CelenderDetailHNHC;
 use App\Models\CheckEmployee;
+use App\Models\DailyQuantity;
 use App\Models\Product;
+use App\Models\TotalDailyQuantity;
 use App\Models\TotalMonthQuantity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -408,6 +412,221 @@ class ProductController extends BaseController
             return response()->json([
                 'error' => 'Hãy bổ sung lịch làm việc để cập nhật sản lượng!',
                 'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // detailProduct
+    public function detailProduct($id, Request $request)
+    {
+        try {
+            $month = Carbon::now()->format('m');
+            $year = Carbon::now()->format('Y');
+            $monthNearly = $request->month ?? Carbon::now()->format('m-Y');
+            $monthYearArray = explode('-', $monthNearly);
+
+            if (count($monthYearArray) > 1) {
+                $month = $monthYearArray[0];
+                $year = $monthYearArray[1];
+            }
+
+            $product = Product::find($id);
+            if (! $product) {
+                return response()->json(['message' => 'Product not found'], 404);
+            }
+
+            $listMonth = TotalMonthQuantity::distinct()->pluck('month');
+
+            // Lấy chi tiết từng status kèm employee
+            $status1 = DailyQuantity::with('employee:id,name')
+                ->where('product_id', $id)
+                ->where('status', 1)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->orderBy('id', 'DESC')
+                ->get();
+
+            $status2 = DailyQuantity::with('employee:id,name')
+                ->where('product_id', $id)
+                ->where('status', 2)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->orderBy('id', 'DESC')
+                ->get();
+
+            $status3 = DailyQuantity::with('employee:id,name')
+                ->where('product_id', $id)
+                ->where('status', 3)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->orderBy('id', 'DESC')
+                ->get();
+
+            $status6 = DailyQuantity::with('employee:id,name')
+                ->where('product_id', $id)
+                ->where('status', 6)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->orderBy('id', 'DESC')
+                ->get();
+
+            return response()->json([
+                'product' => $product,
+                'status1' => $status1,
+                'status2' => $status2,
+                'status3' => $status3,
+                'status6' => $status6,
+                'listMonth' => $listMonth,
+                'monthNearly' => $monthNearly,
+            ]);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
+    }
+
+    // update detailProduct
+    public function updateDetailProduct(Request $request)
+    {
+        if ($request->quantity == 0) {
+            return response()->json([
+                'message' => 'Bạn không thể cập nhật sản lượng là 0!',
+            ], 400);
+        }
+
+        try {
+            $month = Carbon::now()->format('m');
+            $year = Carbon::now()->format('Y');
+            $monthYear = Carbon::now()->format('m-Y');
+
+            $daily = DailyQuantity::with('employee:id,name')->find($request->dailyId);
+            if (! $daily) {
+                return response()->json([
+                    'message' => 'Không tìm thấy bản ghi!',
+                ], 404);
+            }
+
+            // cập nhật lại số lượng mới
+            $daily->quantity = $request->quantity;
+            $daily->save();
+
+            // tính lại totalDaily từ DailyQuantity
+            $sumDaily = DailyQuantity::where('product_id', $request->product_id)
+                ->where('date', $daily->date)
+                ->where('status', $request->status)
+                ->sum('quantity');
+
+            $totalDaily = TotalDailyQuantity::updateOrCreate(
+                [
+                    'product_id' => $request->product_id,
+                    'date' => $daily->date,
+                    'status' => $request->status,
+                ],
+                ['totalQuan' => $sumDaily]
+            );
+
+            // tính lại totalMonth từ DailyQuantity
+            $sumMonth = DailyQuantity::where('product_id', $request->product_id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $month)
+                ->where('status', $request->status)
+                ->sum('quantity');
+
+            $totalMonth = TotalMonthQuantity::updateOrCreate(
+                [
+                    'product_id' => $request->product_id,
+                    'month' => $monthYear,
+                    'status' => $request->status,
+                ],
+                ['totalQuan' => $sumMonth]
+            );
+
+            return response()->json([
+                'message' => 'Cập nhật sản lượng thành công!',
+                'daily' => $daily,
+                'totalDaily' => $totalDaily,
+                'totalMonth' => $totalMonth,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('errors: '.$e->getMessage().' line: '.$e->getLine());
+
+            return response()->json([
+                'message' => 'Cập nhật số lượng sản phẩm không thành công!',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // addQuantityDetailProduct
+    public function addQuantityDetailProduct(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $date = $request->date ?? Carbon::now()->format('Y-m-d');
+            $month = Carbon::parse($date)->format('m-Y');
+            $year = Carbon::parse($date)->format('Y');
+            $monthNum = Carbon::parse($date)->format('m');
+
+            // Thêm mới DailyQuantity
+            $dailyQuan = new DailyQuantity;
+            $dailyQuan->product_id = $request->product_id;
+            $dailyQuan->employee_id = auth()->id();
+            $dailyQuan->quantity = $request->quantity;
+            $dailyQuan->status = $request->status;
+            $dailyQuan->date = $date;
+            $dailyQuan->save();
+
+            // Tính lại TotalDailyQuantity từ DailyQuantity
+            $sumDaily = DailyQuantity::where('product_id', $request->product_id)
+                ->where('date', $date)
+                ->where('status', $request->status)
+                ->sum('quantity');
+
+            $totalDaily = TotalDailyQuantity::updateOrCreate(
+                [
+                    'product_id' => $request->product_id,
+                    'date' => $date,
+                    'status' => $request->status,
+                ],
+                ['totalQuan' => $sumDaily]
+            );
+
+            // Tính lại TotalMonthQuantity từ DailyQuantity
+            $sumMonth = DailyQuantity::where('product_id', $request->product_id)
+                ->whereYear('date', $year)
+                ->whereMonth('date', $monthNum)
+                ->where('status', $request->status)
+                ->sum('quantity');
+
+            $totalMonth = TotalMonthQuantity::updateOrCreate(
+                [
+                    'product_id' => $request->product_id,
+                    'month' => $month,
+                    'status' => $request->status,
+                ],
+                ['totalQuan' => $sumMonth]
+            );
+
+            DB::commit();
+
+            LogActivity::logRoleSpecificLoginActivity(
+                auth()->user(),
+                'Admin Thêm Sản Lượng',
+                'Admin đã thêm mới sản lượng'
+            );
+
+            return response()->json([
+                'message' => 'Thêm sản lượng thành công!',
+                'daily' => $dailyQuan->load('employee:id,name'),
+                'totalDaily' => $totalDaily,
+                'totalMonth' => $totalMonth,
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('errors: '.$e->getMessage().' line: '.$e->getLine());
+
+            return response()->json([
+                'message' => 'Thêm sản lượng không thành công!',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

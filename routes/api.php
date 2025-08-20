@@ -161,6 +161,9 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/{id}', [ProductController::class, 'getProduct']);
         Route::middleware(['api.authAdmin'])->patch('/{id}', [ProductController::class, 'updateProduct']);
         Route::middleware(['api.authAdmin'])->delete('/{id}', [ProductController::class, 'deleteProduct']);
+        Route::middleware(['api.authAdmin'])->get('/detail/{id}', [ProductController::class, 'detailProduct']);
+        Route::middleware(['api.authAdmin'])->post('/updateDetail', [ProductController::class, 'updateDetailProduct']);
+        Route::middleware(['api.authAdmin'])->post('/addQuantityDetail', [ProductController::class, 'addQuantityDetailProduct']);
     });
 
     Route::middleware(['api.authAdmin'])->prefix('quantities')->group(function () {
@@ -177,10 +180,10 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     });
 
     Route::middleware(['api.check.qa.qc'])->prefix('stamps')->group(function () {
-        Route::put('/savePrint', [StampController::class, 'savePrint'])->name('api.save-print');
-        Route::get('/history', [StampController::class, 'getStampHistory'])->name('api.stamp.history');
-        Route::get('/history/{id}', [StampController::class, 'getStampHistoryById'])->name('api.stamp.history.id');
-        Route::post('/reject/{id}', [StampController::class, 'rejectPrint'])->name('api.stamp.reject');
+        Route::put('/savePrint', [StampController::class, 'savePrint']);
+        Route::get('/history', [StampController::class, 'getStampHistory']);
+        Route::get('/history/{id}', [StampController::class, 'getStampHistoryById']);
+        Route::post('/reject/{id}', [StampController::class, 'rejectPrint']);
     });
 
     Route::middleware(['api.check.leader'])->prefix('daily-schedules')->group(function () {
@@ -194,10 +197,10 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     Route::middleware(['api.authAdmin'])->prefix('history')->group(function () {
         Route::get('/', [HistoryController::class, 'index'])->name('api.history.index');
         Route::delete('/{id}', [HistoryController::class, 'destroy'])->name('api.history.destroy');
-        Route::get('/view-log-all-quantity', [HistoryController::class, 'viewLogAllQuantity'])->name('api.history.view-log-all-quantity');
+        Route::get('/view-log-all-quantity', [HistoryController::class, 'viewLogAllQuantity']);
     });
 
-    Route::middleware(['api.authAdmin'])->get('/check-stamp', [CheckStampController::class, 'index'])->name('api.check-stamp');
+    Route::middleware(['api.authAdmin'])->get('/check-stamp', [CheckStampController::class, 'index']);
 
     // EMPLOYEE ROUTES
     Route::middleware(['api.authEmployees'])->prefix('employee')->group(function () {
