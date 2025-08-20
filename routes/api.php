@@ -162,8 +162,9 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::middleware(['api.authAdmin'])->patch('/{id}', [ProductController::class, 'updateProduct']);
         Route::middleware(['api.authAdmin'])->delete('/{id}', [ProductController::class, 'deleteProduct']);
         Route::middleware(['api.authAdmin'])->get('/detail/{id}', [ProductController::class, 'detailProduct']);
-        Route::middleware(['api.authAdmin'])->post('/updateDetail', [ProductController::class, 'updateDetailProduct']);
-        Route::middleware(['api.authAdmin'])->post('/addQuantityDetail', [ProductController::class, 'addQuantityDetailProduct']);
+        Route::middleware(['api.authAdmin'])->put('/detail', [ProductController::class, 'updateDetailProduct']);
+        Route::middleware(['api.authAdmin'])->delete('/detail/{id}', [ProductController::class, 'deleteDetailProduct']);
+        Route::middleware(['api.authAdmin'])->put('/addQuantityDetail', [ProductController::class, 'addQuantityDetailProduct']);
     });
 
     Route::middleware(['api.authAdmin'])->prefix('quantities')->group(function () {

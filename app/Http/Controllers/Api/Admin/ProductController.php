@@ -556,6 +556,27 @@ class ProductController extends BaseController
         }
     }
 
+    // delete detail product
+    public function deleteDetailProduct($id)
+    {
+        DB::beginTransaction();
+        try {
+            $detail = DailyQuantity::findOrFail($id);
+            $detail->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Delete successful!',
+                'data' => $detail,
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return HandleError::handle($th);
+        }
+    }
+
     // addQuantityDetailProduct
     public function addQuantityDetailProduct(Request $request)
     {
