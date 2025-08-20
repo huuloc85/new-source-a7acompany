@@ -177,7 +177,7 @@ class CheckPoController extends Controller
         DB::beginTransaction();
         try {
             $validate = $request->validate([
-                'month' => 'required|date_format:Y-m',
+                'month' => 'required|date_format:m-Y',
                 'products' => 'required|array',
                 'products.*.productId' => 'required|integer|exists:products,id',
                 'products.*.quantity' => 'required|integer',
