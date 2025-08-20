@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
 use App\Http\Controllers\Api\Admin\AttendanceRecordController;
 use App\Http\Controllers\Api\Admin\AuthController;
+use App\Http\Controllers\Api\Admin\CheckPoController;
 use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DailyScheduleController;
 use App\Http\Controllers\Api\Admin\DashboardController;
@@ -244,4 +245,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/check', [EmpScanController::class, 'checkBarCode']);
         Route::get('/storage', [EmpScanController::class, 'StorageProduct']);
     });
+
+    Route::middleware('api.authAdmin')->prefix('check-po')->group(function () {
+        // Route::get('/', [CheckPoController::class, 'index']);
+        // Route::get('/{id}', [CheckPoController::class, 'show']);
+        Route::post('/export', [CheckPoController::class, 'addPoExport']);
+        Route::post('/import', [CheckPoController::class, 'addPoImport']);
+        Route::patch('/{id}', [CheckPoController::class, 'update']);
+        Route::delete('/{id}', [CheckPoController::class, 'destroy']);
+    });
+
 });
