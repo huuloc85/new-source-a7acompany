@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use App\Http\Controllers\Api\Employee\EmpStampController;
 use App\Http\Controllers\Api\Employee\EmpTodoController;
+use App\Http\Controllers\Api\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -258,6 +259,16 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/inventory', [CheckPoController::class, 'addStockQuantityInventory']);
         // Route::patch('/{id}', [CheckPoController::class, 'update']);
         // Route::delete('/{id}', [CheckPoController::class, 'destroy']);
+    });
+
+    Route::prefix('upload')->group(function () {
+        Route::prefix('images')->group(function () {
+            Route::get('/', [UploadController::class, 'getImages']);
+            Route::get('/{id}', [UploadController::class, 'getImage']);
+            Route::middleware('api.authAdmin')->post('/', [UploadController::class, 'uploadImage']);
+            Route::middleware('api.authAdmin')->delete('/{id}', [UploadController::class, 'deleteImage']);
+            Route::middleware('api.authAdmin')->patch('/{id}', [UploadController::class, 'updateImage']);
+        });
     });
 
 });
