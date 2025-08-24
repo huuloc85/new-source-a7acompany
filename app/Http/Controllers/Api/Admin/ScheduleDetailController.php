@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Helpers\HandleError;
 use App\Models\ScheduleDetail;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class ScheduleDetailController extends BaseController
@@ -25,6 +26,7 @@ class ScheduleDetailController extends BaseController
                     'is_wc_trash',
                     'is_eat_room',
                     'hnhc',
+                    AllowedFilter::scope('date_between'),
                     'employees.name',
                     'employees.id',
                     'employees.calendar_category_id',
