@@ -209,6 +209,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     // EMPLOYEE ROUTES
     Route::middleware(['api.authEmployees'])->prefix('employee')->group(function () {
         Route::prefix('schedules')->group(function () {
+            Route::get('/details', [EmpScheduleDetailController::class, 'showByDateRange']);
             Route::get('/', [ScheduleController::class, 'index']);
             Route::get('/{id}', [EmpScheduleDetailController::class, 'show']);
         });
