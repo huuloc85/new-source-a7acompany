@@ -50,7 +50,7 @@ class Daily extends DefaultValueBinder implements FromView, ShouldAutoSize, With
             ];
         }
 
-        return view('export/checkpo/daily', compact('data', 'products', 'daysInMonth'));
+        return view('export/checkPo/daily', compact('data', 'products', 'daysInMonth'));
     }
 
     public function title(): string
