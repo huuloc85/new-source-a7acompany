@@ -9,6 +9,7 @@ use App\Models\CelenderDetailWCCleanWomen;
 use App\Models\Employee;
 use App\Models\LoginHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
@@ -190,5 +191,15 @@ class AuthController extends BaseController
         }
 
         return response()->json(['user' => $user]);
+    }
+
+    public function getBirthdayEmployees()
+    {
+        $today = Carbon::today();
+        $employees = Employee::whereMonth('birthday', $today->month)
+            ->whereDay('birthday', $today->day)
+            ->get();
+
+        return response()->json($employees);
     }
 }
