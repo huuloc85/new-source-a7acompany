@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use App\Http\Controllers\Api\Employee\EmpStampController;
 use App\Http\Controllers\Api\Employee\EmpTodoController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -271,4 +272,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         });
     });
 
+    Route::prefix('notifications')->group(function () {
+        Route::middleware('api.authAdmin')->get('/trashed', [NotificationController::class, 'trashed']);
+        Route::middleware('api.authAdmin')->post('/restore/{id}', [NotificationController::class, 'restore']);
+        Route::middleware('api.authAdmin')->delete('/force-delete/{id}', [NotificationController::class, 'forceDelete']);
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::post('/', [NotificationController::class, 'store']);
+        Route::middleware('api.authAdmin')->get('/{id}', [NotificationController::class, 'show']);
+        Route::middleware('api.authAdmin')->patch('/{id}', [NotificationController::class, 'update']);
+        Route::middleware('api.authAdmin')->delete('/{id}', [NotificationController::class, 'destroy']);
+    });
 });
