@@ -128,7 +128,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/delete-all', [LogController::class, 'deleteAll']);
     });
 
-    Route::middleware(['api.authAdmin'])->prefix('salaries')->group(function () {
+    Route::middleware(['api.authAdmin', 'api.check.coAdmin'])->prefix('salaries')->group(function () {
         Route::get('/', [SalaryController::class, 'getSalaries']);
         Route::post('/', [SalaryController::class, 'addSalary']);
         Route::get('/{id}', [SalaryController::class, 'getSalary']);
