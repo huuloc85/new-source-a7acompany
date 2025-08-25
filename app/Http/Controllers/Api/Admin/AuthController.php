@@ -12,6 +12,7 @@ use App\Models\LoginHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
 
@@ -91,9 +92,11 @@ class AuthController extends BaseController
             ->role
             ->permissions()
             ->select(['permissions.id', 'permissions.key', 'permissions.name', 'permissions.type', 'permissions.display_area'])
-            ->with(['sidebarItems' => function ($q) {
-                $q->select(['id', 'permission_id', 'key', 'title', 'icon', 'path']);
-            }])
+            ->with([
+                'sidebarItems' => function ($q) {
+                    $q->select(['id', 'permission_id', 'key', 'title', 'icon', 'path']);
+                },
+            ])
             ->get();
 
         return response()->json([
@@ -175,26 +178,70 @@ class AuthController extends BaseController
         }
     }
 
+    public function authChangeProfile(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $id = auth()->user()->id;
+            $employee = Employee::query()
+                ->findOrFail($id);
+
+            $validated = $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'phone' => 'sometimes|string|regex:/^0[0-9]{9}$/|unique:employees,phone,'.$id,
+                'email' => 'nullable|email|unique:employees,email,'.$id,
+                'CCCD' => 'sometimes|string|regex:/^[0-9]+$/|unique:employees,cccd,'.$id,
+                'address' => 'sometimes|string',
+                'home_town' => 'sometimes|string',
+                'birthday' => 'sometimes|date|before:today|after:1900-01-01',
+                'gender' => 'sometimes|in:male,female,other',
+                'marital_status' => 'sometimes|in:single,married,divorced,widowed',
+            ]);
+
+            $employee->update($validated);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Employee updated successfully!',
+                'data' => $employee,
+            ], 200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
+        }
+    }
+
     public function changePassword(Request $request)
     {
-        $user = Auth::user();
-        $employee = Employee::find($user->id);
-
-        if (! $employee) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        // Lấy field từ FormRequest đã validate
-        $current = $request->input('password');
-        $new = $request->input('newpassword');
-
         try {
+            $validate = $request->validate([
+                'password' => 'required|string',
+                'newPassword' => 'required|string|min:6',
+                'confirmPassword' => 'required|string|min:6',
+            ]);
+            $user = Auth::user();
+            $employee = Employee::find($user->id);
+
+            if (! $employee) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            $current = $validate['password'];
+            $new = $validate['newPassword'];
+            $confirm = $validate['confirmPassword'];
+
             if (! Hash::check($current, $employee->password)) {
                 return response()->json(['message' => 'Mật khẩu hiện tại không đúng'], 422);
             }
 
+            if ($new !== $confirm) {
+                return response()->json(['message' => 'Xác nhận mật khẩu không khớp'], 422);
+            }
+
             // Cập nhật mật khẩu
-            $employee->password = Hash::make($new);
+            $employee->password = bcrypt($new);
             $employee->save();
 
             return response()->json(['message' => 'Thay đổi mật khẩu thành công'], 200);
@@ -204,11 +251,11 @@ class AuthController extends BaseController
         }
     }
 
-    public function resetPassword(Request $request, $id)
+    public function resetPassword($id)
     {
         try {
             $employee = Employee::findOrFail($id);
-            $employee->password = Hash::make($id);
+            $employee->password = bcrypt($id);
             $employee->save();
 
             return response()->json([
