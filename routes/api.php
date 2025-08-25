@@ -74,10 +74,13 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
     Route::middleware(['api.authAdmin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
-        Route::get('/me', [AuthController::class, 'authMe']);
-        Route::get('/profile', [AuthController::class, 'authProfile']);
-        Route::patch('/profile', [AuthController::class, 'authChangeInfo']);
-        Route::patch('/users/{id}/profile', [AuthController::class, 'authChangeProfile']);
+    });
+
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [AuthController::class, 'authProfile']);
+        Route::patch('/', [AuthController::class, 'authChangeProfile']);
+        Route::patch('/change-password', [AuthController::class, 'changePassword']);
+        Route::middleware(['api.authAdmin'])->put('/reset-password/{id}', [AuthController::class, 'resetPassword']);
     });
 
     // Employees (Quản Lý Nhân Sự)

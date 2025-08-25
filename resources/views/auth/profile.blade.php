@@ -29,8 +29,7 @@
     @endif
 --}}
                                 alt="avatar"
-                                class="avatar avatar-xl rounded-circle shadow object-fit-cover"
-                            />
+                                class="avatar avatar-xl rounded-circle shadow object-fit-cover" />
                         </div>
                         <h5 class="mb-1">
                             {{ Auth()->user()->name }}
@@ -50,36 +49,26 @@
                 </div>
                 <div class="card-body">
                     @if ($isManager)
-                        <form
-                            action="{{ route('admin.change-profile') }}"
-                            method="post"
-                            enctype="multipart/form-data"
-                        >
+                        <form action="{{ route('admin.change-profile') }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
                                 <div class="text-center">
                                     <img
                                         id="blah1"
                                         src="{{ asset('img/default-avatar.jpg') }}"
-                                        class="avatar avatar-xxl rounded-circle shadow object-fit-cover"
-                                    />
+                                        class="avatar avatar-xxl rounded-circle shadow object-fit-cover" />
                                 </div>
-                                <label class="form-label" for="photo">
-                                    Ảnh
-                                </label>
+                                <label class="form-label" for="photo">Ảnh</label>
                                 <input
                                     accept="image/*"
                                     type="file"
                                     id="inputFile"
                                     name="photo"
                                     id="photo"
-                                    class="form-control"
-                                />
+                                    class="form-control" />
                             </div>
                             <div class="mb-3">
-                                <label for="name" class="form-label" for="">
-                                    Tên
-                                </label>
+                                <label for="name" class="form-label" for="">Tên</label>
                                 <input
                                     type="text"
                                     value="{{ old('name') ?? (Auth()->user()->name ?? '') }}"
@@ -87,8 +76,7 @@
                                     id="name"
                                     class="form-control @error('name') is-invalid @enderror"
                                     placeholder="Tên"
-                                    disabled
-                                />
+                                    disabled />
                                 @error('name')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -96,9 +84,7 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="phone" class="form-label" for="">
-                                    Tên đăng nhập
-                                </label>
+                                <label for="phone" class="form-label" for="">Tên đăng nhập</label>
                                 <input
                                     type="text"
                                     value="{{ old('phone') ?? (Auth()->user()->phone ?? '') }}"
@@ -106,8 +92,7 @@
                                     id="phone"
                                     class="form-control @error('phone') is-invalid @enderror"
                                     placeholder="Tên đăng nhập"
-                                    disabled
-                                />
+                                    disabled />
                                 @error('phone')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -115,21 +100,11 @@
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-primary">
-                                Cập nhật thông tin
-                            </button>
-                            <a
-                                href="{{ route('logout') }}"
-                                class="btn btn-danger"
-                            >
-                                Đăng xuất
-                            </a>
+                            <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+                            <a href="{{ route('logout') }}" class="btn btn-danger">Đăng xuất</a>
                         </form>
                     @else
-                        <form
-                            action="{{ route('admin.change-info') }}"
-                            method="post"
-                        >
+                        <form action="{{ route('admin.change-info') }}" method="post">
                             @csrf
                             <div class="form-floating mb-3">
                                 <input
@@ -138,8 +113,7 @@
                                     name="code"
                                     id="code"
                                     class="form-control"
-                                    placeholder="Mã nhân viên"
-                                />
+                                    placeholder="Mã nhân viên" />
                                 <label for="code">Mã nhân viên</label>
                                 @error('code')
                                     <div class="text text-danger">
@@ -154,8 +128,7 @@
                                     name="name"
                                     id="name"
                                     class="form-control"
-                                    placeholder="Tên"
-                                />
+                                    placeholder="Tên" />
                                 <label for="name">Tên</label>
                                 @error('name')
                                     <div class="text text-danger">
@@ -170,8 +143,7 @@
                                     name="phone"
                                     id="phone"
                                     class="form-control"
-                                    placeholder="Số điện thoại"
-                                />
+                                    placeholder="Số điện thoại" />
                                 <label for="phone">Số điện thoại</label>
                                 @error('phone')
                                     <div class="text text-danger">
@@ -186,8 +158,7 @@
                                     name="email"
                                     id="email"
                                     class="form-control"
-                                    placeholder="Email"
-                                />
+                                    placeholder="Email" />
                                 <label for="email">Email</label>
                             </div>
 
@@ -198,11 +169,8 @@
                                     name="birthday"
                                     id="birthday"
                                     class="form-control"
-                                    placeholder="Ngày tháng năm sinh"
-                                />
-                                <label for="birthday">
-                                    Ngày tháng năm sinh
-                                </label>
+                                    placeholder="Ngày tháng năm sinh" />
+                                <label for="birthday">Ngày tháng năm sinh</label>
                                 @error('birthday')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -216,11 +184,8 @@
                                     name="date_joining"
                                     id="date_joining"
                                     class="form-control"
-                                    placeholder="Ngày vào công ty"
-                                />
-                                <label for="date_joining">
-                                    Ngày vào công ty
-                                </label>
+                                    placeholder="Ngày vào công ty" />
+                                <label for="date_joining">Ngày vào công ty</label>
                                 @error('date_joining')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -234,9 +199,8 @@
                                     id="address"
                                     class="form-control"
                                     style="height: 6rem"
-                                    placeholder="Tạm trú"
-                                >
-{{ Auth()->user()->address ?? '' }}</textarea
+                                    placeholder="Tạm trú">
+    {{ Auth()->user()->address ?? '' }}</textarea
                                 >
                                 <label for="address">Tạm trú</label>
                                 @error('address')
@@ -251,9 +215,8 @@
                                     id="home_town"
                                     class="form-control"
                                     style="height: 6rem"
-                                    placeholder="Quê quán"
-                                >
-{{ Auth()->user()->home_town ?? '' }}</textarea
+                                    placeholder="Quê quán">
+    {{ Auth()->user()->home_town ?? '' }}</textarea
                                 >
                                 <label for="home_town">Quê quán</label>
                                 @error('home_town')
@@ -269,8 +232,7 @@
                                     name="CCCD"
                                     id="CCCD"
                                     class="form-control"
-                                    placeholder="Số CCCD"
-                                />
+                                    placeholder="Số CCCD" />
                                 <label for="CCCD">Số CCCD</label>
                                 @error('CCCD')
                                     <div class="text text-danger">
@@ -285,8 +247,7 @@
                                     name="gender"
                                     id="gender"
                                     class="form-control"
-                                    placeholder="Giới tính"
-                                />
+                                    placeholder="Giới tính" />
                                 <label for="gender">Giới tính</label>
                                 @error('gender')
                                     <div class="text text-danger">
@@ -301,11 +262,8 @@
                                     name="marital_status"
                                     id="marital_status"
                                     class="form-control"
-                                    placeholder="Tình trạng hôn nhân"
-                                />
-                                <label for="marital_status">
-                                    Tình trạng hôn nhân
-                                </label>
+                                    placeholder="Tình trạng hôn nhân" />
+                                <label for="marital_status">Tình trạng hôn nhân</label>
                                 @error('marital_status')
                                     <div class="text text-danger">
                                         {{ $message }}
@@ -322,8 +280,7 @@
                                         id="blah1"
                                         src="{{ asset('img/default-image.png') }}"
                                         {{-- src="{{ asset('storage/employee/'.Auth()->user()->photo) }}" --}}
-                                        alt=""
-                                    />
+                                        alt="" />
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -336,13 +293,10 @@
                                         id="blah1"
                                         src="{{ asset('img/default-image.png') }}"
                                         {{-- src="{{ asset('storage/employee/card/'.Auth()->user()->card_photo) }}" --}}
-                                        alt=""
-                                    />
+                                        alt="" />
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">
-                                Cập nhật
-                            </button>
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
                         </form>
                     @endif
                 </div>
@@ -354,10 +308,7 @@
                     <h5 class="text-center">Thay đổi mật khẩu</h5>
                 </div>
                 <div class="card-body">
-                    <form
-                        action="{{ route('admin.change-password') }}"
-                        method="post"
-                    >
+                    <form action="{{ route('admin.change-password') }}" method="post">
                         @csrf
                         <div class="form-floating mb-3">
                             <input
@@ -366,8 +317,7 @@
                                 name="password"
                                 class="form-control @error('password') is-invalid @enderror"
                                 placeholder="Mật khẩu cũ"
-                                required
-                            />
+                                required />
                             <label for="password">Mật khẩu cũ</label>
                             @error('password')
                                 <div class="text text-danger">
@@ -382,8 +332,7 @@
                                 name="newpassword"
                                 class="form-control @error('newpassword') is-invalid @enderror"
                                 placeholder="Mật khẩu mới"
-                                required
-                            />
+                                required />
                             <label for="newpassword">Mật khẩu mới</label>
                             @error('newpassword')
                                 <div class="text text-danger">
@@ -398,11 +347,8 @@
                                 name="renewpassword"
                                 class="form-control @error('renewpassword') is-invalid @enderror"
                                 placeholder="Nhập lại mật khẩu mới"
-                                required
-                            />
-                            <label for="renewpassword">
-                                Nhập lại mật khẩu mới
-                            </label>
+                                required />
+                            <label for="renewpassword">Nhập lại mật khẩu mới</label>
                             @error('renewpassword')
                                 <div class="text text-danger">
                                     {{ $message }}
@@ -414,13 +360,10 @@
                             type="button"
                             class="btn btn-secondary"
                             data-bs-toggle="modal"
-                            data-bs-target="#resetPassword"
-                        >
+                            data-bs-target="#resetPassword">
                             Khôi phục mật khẩu
                         </button>
-                        <button type="submit" class="btn btn-primary">
-                            Cập nhật
-                        </button>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
                     </form>
 
                     <!-- Modal reset password -->
@@ -429,48 +372,28 @@
                         id="resetPassword"
                         tabindex="-1"
                         aria-labelledby="resetPasswordLabel"
-                        aria-hidden="true"
-                    >
+                        aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h1
-                                        class="modal-title fs-5"
-                                        id="resetPasswordLabel"
-                                    >
-                                        Khôi phục mật khẩu
-                                    </h1>
+                                    <h1 class="modal-title fs-5" id="resetPasswordLabel">Khôi phục mật khẩu</h1>
                                     <button
                                         type="button"
                                         class="btn-close"
                                         data-bs-dismiss="modal"
-                                        aria-label="Close"
-                                    ></button>
+                                        aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>
-                                        Bạn có chắc chắn muốn khôi phục lại mật
-                                        khẩu?
-                                    </p>
+                                    <p>Bạn có chắc chắn muốn khôi phục lại mật khẩu?</p>
                                 </div>
                                 <div class="modal-footer">
                                     <form
                                         action="{{ route('admin.reset-password', Auth()->user()->id) }}"
-                                        method="post"
-                                    >
+                                        method="post">
                                         @csrf
-                                        <button
-                                            type="submit"
-                                            class="btn btn-primary"
-                                        >
-                                            Reset
-                                        </button>
+                                        <button type="submit" class="btn btn-primary">Reset</button>
                                     </form>
-                                    <button
-                                        type="button"
-                                        class="btn btn-secondary"
-                                        data-bs-dismiss="modal"
-                                    >
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                         Cancel
                                     </button>
                                 </div>
@@ -488,16 +411,16 @@
     <script>
         jQuery(document).ready(function () {
             if ($('#blah').hide()) {
-                $('#blah').hide();
+                $('#blah').hide()
             }
             jQuery('#inputFile').change(function () {
-                $('#blah').show();
-                const file = jQuery(this)[0].files;
+                $('#blah').show()
+                const file = jQuery(this)[0].files
                 if (file[0]) {
-                    jQuery('#blah').attr('src', URL.createObjectURL(file[0]));
-                    jQuery('#blah1').attr('src', URL.createObjectURL(file[0]));
+                    jQuery('#blah').attr('src', URL.createObjectURL(file[0]))
+                    jQuery('#blah1').attr('src', URL.createObjectURL(file[0]))
                 }
-            });
-        });
+            })
+        })
     </script>
 @endsection
