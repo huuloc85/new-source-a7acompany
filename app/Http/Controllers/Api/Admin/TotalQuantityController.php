@@ -29,6 +29,7 @@ class TotalQuantityController extends BaseController
                         'month',
                         'status',
                     ])
+                    ->allowedIncludes('product')
                     ->allowedFilters([
                         'id',
                         'product_id',

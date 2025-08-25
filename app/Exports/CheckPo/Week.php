@@ -35,7 +35,7 @@ class Week extends DefaultValueBinder implements FromView, ShouldAutoSize, WithE
         $index = $this->index;
         $products = Product::all();
 
-        return view('export/checkpo/week', compact('products', 'weekDates', 'index'));
+        return view('export/checkPo/week', compact('products', 'weekDates', 'index'));
     }
 
     public function title(): string

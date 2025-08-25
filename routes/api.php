@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
 use App\Http\Controllers\Api\Admin\AttendanceRecordController;
 use App\Http\Controllers\Api\Admin\AuthController;
+use App\Http\Controllers\Api\Admin\CheckPoController;
 use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DailyScheduleController;
 use App\Http\Controllers\Api\Admin\DashboardController;
@@ -24,6 +25,8 @@ use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use App\Http\Controllers\Api\Employee\EmpStampController;
 use App\Http\Controllers\Api\Employee\EmpTodoController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -70,6 +73,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         return;
     }
     Route::post('/auth/check', [AuthController::class, 'authCheck']);
+    Route::get('/birthday', [AuthController::class, 'getBirthdayEmployees']);
 
     // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
     Route::middleware(['api.authAdmin'])->prefix('admin')->group(function () {
@@ -164,8 +168,9 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::middleware(['api.authAdmin'])->patch('/{id}', [ProductController::class, 'updateProduct']);
         Route::middleware(['api.authAdmin'])->delete('/{id}', [ProductController::class, 'deleteProduct']);
         Route::middleware(['api.authAdmin'])->get('/detail/{id}', [ProductController::class, 'detailProduct']);
-        Route::middleware(['api.authAdmin'])->post('/updateDetail', [ProductController::class, 'updateDetailProduct']);
-        Route::middleware(['api.authAdmin'])->post('/addQuantityDetail', [ProductController::class, 'addQuantityDetailProduct']);
+        Route::middleware(['api.authAdmin'])->put('/detail', [ProductController::class, 'updateDetailProduct']);
+        Route::middleware(['api.authAdmin'])->delete('/detail/{id}', [ProductController::class, 'deleteDetailProduct']);
+        Route::middleware(['api.authAdmin'])->put('/addQuantityDetail', [ProductController::class, 'addQuantityDetailProduct']);
     });
 
     Route::middleware(['api.authAdmin'])->prefix('quantities')->group(function () {
@@ -207,6 +212,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     // EMPLOYEE ROUTES
     Route::middleware(['api.authEmployees'])->prefix('employee')->group(function () {
         Route::prefix('schedules')->group(function () {
+            Route::get('/details', [EmpScheduleDetailController::class, 'showByDateRange']);
             Route::get('/', [ScheduleController::class, 'index']);
             Route::get('/{id}', [EmpScheduleDetailController::class, 'show']);
         });
@@ -249,5 +255,36 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     Route::middleware('api.check.warehouse')->prefix('scan')->group(function () {
         Route::post('/check', [EmpScanController::class, 'checkBarCode']);
         Route::get('/storage', [EmpScanController::class, 'StorageProduct']);
+    });
+
+    Route::middleware('api.authAdmin')->prefix('check-po')->group(function () {
+        // Route::get('/', [CheckPoController::class, 'index']);
+        // Route::get('/{id}', [CheckPoController::class, 'show']);
+        Route::post('/export', [CheckPoController::class, 'addPoExport']);
+        Route::post('/import', [CheckPoController::class, 'addPoImport']);
+        Route::post('/inventory', [CheckPoController::class, 'addStockQuantityInventory']);
+        // Route::patch('/{id}', [CheckPoController::class, 'update']);
+        // Route::delete('/{id}', [CheckPoController::class, 'destroy']);
+    });
+
+    Route::prefix('upload')->group(function () {
+        Route::prefix('images')->group(function () {
+            Route::get('/', [UploadController::class, 'getImages']);
+            Route::get('/{id}', [UploadController::class, 'getImage']);
+            Route::middleware('api.authAdmin')->post('/', [UploadController::class, 'uploadImage']);
+            Route::middleware('api.authAdmin')->delete('/{id}', [UploadController::class, 'deleteImage']);
+            Route::middleware('api.authAdmin')->patch('/{id}', [UploadController::class, 'updateImage']);
+        });
+    });
+
+    Route::prefix('notifications')->group(function () {
+        Route::middleware('api.authAdmin')->get('/trashed', [NotificationController::class, 'trashed']);
+        Route::middleware('api.authAdmin')->post('/restore/{id}', [NotificationController::class, 'restore']);
+        Route::middleware('api.authAdmin')->delete('/force-delete/{id}', [NotificationController::class, 'forceDelete']);
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::post('/', [NotificationController::class, 'store']);
+        Route::middleware('api.authAdmin')->get('/{id}', [NotificationController::class, 'show']);
+        Route::middleware('api.authAdmin')->patch('/{id}', [NotificationController::class, 'update']);
+        Route::middleware('api.authAdmin')->delete('/{id}', [NotificationController::class, 'destroy']);
     });
 });

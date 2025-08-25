@@ -10,6 +10,7 @@ use App\Models\CelenderDetailWCCleanWomen;
 use App\Models\Employee;
 use App\Models\LoginHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
@@ -217,5 +218,15 @@ class AuthController extends BaseController
             // LogHelper::saveLog('resetPassword', $e->getMessage(), $e->getLine());
             return response()->json(['message' => 'Khôi phục mật khẩu thất bại'], 500);
         }
+    }
+
+    public function getBirthdayEmployees()
+    {
+        $today = Carbon::today();
+        $employees = Employee::whereMonth('birthday', $today->month)
+            ->whereDay('birthday', $today->day)
+            ->get();
+
+        return response()->json($employees);
     }
 }

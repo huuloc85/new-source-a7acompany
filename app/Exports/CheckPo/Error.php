@@ -64,7 +64,7 @@ class Error extends DefaultValueBinder implements FromView, ShouldAutoSize, With
 
         $title = 'Danh sách hàng hóa';
 
-        return view('export/checkpo/error', compact('data', 'title', 'daysInMonth'));
+        return view('export/checkPo/error', compact('data', 'title', 'daysInMonth'));
     }
 
     public function title(): string
