@@ -13,6 +13,7 @@ use App\Models\TotalMonthQuantity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CheckPoController extends Controller
@@ -224,6 +225,127 @@ class CheckPoController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
 
+            return HandleError::handle($th);
+        }
+    }
+
+    public function getPoHistory(Request $request)
+    {
+        $month = $request->input('month') ? Carbon::createFromFormat('Y-m', $request->input('month')) : Carbon::now();
+
+        $dailyQuantities = DailyQuantityPO::whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->orderBy('date', 'asc')
+            ->with(['product', 'employee'])
+            ->get();
+
+        $dates = DailyQuantityPO::whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->select('date')
+            ->distinct()
+            ->orderBy('date')
+            ->pluck('date');
+
+        return response()->json([
+            'month' => $month,
+            'dailyQuantitiesPo' => $dailyQuantities,
+            'dates' => $dates,
+        ], 200);
+    }
+
+    public function updatePO(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validate = $request->validate([
+                'date' => 'required|date_format:Y-m-d',
+                'products' => 'required|array',
+                'products.*.quantity' => 'required|integer',
+                'products.*.productId' => 'required|integer|exists:products,id',
+            ]);
+
+            $date = $validate['date'];
+            $status = 8;
+
+            $results = collect($validate['products'])->map(function ($product) use ($date, $status) {
+                $productId = $product['productId'];
+                $quantity = $product['quantity'];
+                $employeeId = Auth::id();
+
+                // Update or create DailyQuantityPO
+                $dailyQuantity = DailyQuantityPO::updateOrCreate(
+                    [
+                        'product_id' => $productId,
+                        'date' => $date,
+                        'status' => $status,
+                    ],
+                    [
+                        'quantity' => $quantity,
+                        'employee_id' => $employeeId,
+                    ]
+                );
+
+                // Update or create TotalDailyQuantityPO
+                $totalDailyQuantity = TotalDailyQuantityPO::updateOrCreate(
+                    [
+                        'product_id' => $productId,
+                        'date' => $date,
+                        'status' => $status,
+                    ],
+                    [
+                        'totalQuan' => $quantity,
+                    ]
+                );
+
+                return [
+                    'dailyPO' => $dailyQuantity,
+                    'totalDailyPO' => $totalDailyQuantity,
+                ];
+            });
+
+            Cache::tags(['products'])->flush();
+            Cache::tags(['total-month-quantity'])->flush();
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Cập nhật số lượng thành công!',
+                'count' => $results->count(),
+                'data' => $results,
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return HandleError::handle($th);
+        }
+
+    }
+
+    public function deletePO($id)
+    {
+        try {
+            // Find and get the record in DailyQuantityPO to delete
+            $dailyQuantity = DailyQuantityPO::findOrFail($id);
+            $date = $dailyQuantity->date;
+
+            // Delete the record in DailyQuantityPO
+            $dailyQuantity->delete();
+
+            // Update the records in TotalDailyQuantityPo for the specified date
+            $totalDailyQuantities = TotalDailyQuantityPO::where('date', $date)->get();
+            foreach ($totalDailyQuantities as $totalDailyQuantity) {
+                $remainingDailyQuantities = DailyQuantityPO::where('product_id', $totalDailyQuantity->product_id)
+                    ->whereDate('date', $date)
+                    ->get();
+                $totalQuantity = $remainingDailyQuantities->sum('quantity');
+                $totalDailyQuantity->totalQuan = $totalQuantity;
+                $totalDailyQuantity->save();
+            }
+
+            return response()->json([
+                'message' => 'Đã xoá thành công sản lượng PO và cập nhật lại tổng sản lượng.',
+                'success' => true,
+            ], 200);
+        } catch (\Throwable $th) {
             return HandleError::handle($th);
         }
     }

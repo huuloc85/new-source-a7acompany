@@ -260,8 +260,9 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/export', [CheckPoController::class, 'addPoExport']);
         Route::post('/import', [CheckPoController::class, 'addPoImport']);
         Route::post('/inventory', [CheckPoController::class, 'addStockQuantityInventory']);
-        // Route::patch('/{id}', [CheckPoController::class, 'update']);
-        // Route::delete('/{id}', [CheckPoController::class, 'destroy']);
+        Route::get('/history', [CheckPoController::class, 'getPoHistory']);
+        Route::put('/', [CheckPoController::class, 'updatePO']);
+        Route::delete('/{id}', [CheckPoController::class, 'deletePO']);
     });
 
     Route::prefix('upload')->group(function () {

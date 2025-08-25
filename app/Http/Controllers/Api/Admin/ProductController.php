@@ -46,10 +46,12 @@ class ProductController extends BaseController
                     'page' => 'nullable|integer|min:1',
                     'month' => 'nullable|date_format:Y-m',
                     'status' => 'nullable|integer|min:1|max:7',
+                    'date' => 'nullable|date_format:Y-m-d',
                 ]);
 
                 $currentMonth = $validated['month'] ?? null;
                 $status = $validated['status'] ?? null;
+                $date = $validated['date'] ?? null;
 
                 $products = QueryBuilder::for(Product::class)
                     ->allowedFields(
@@ -84,33 +86,59 @@ class ProductController extends BaseController
                         AllowedFilter::custom('search', new NameOrCodeFilter),
                     ])
                     ->allowedIncludes([
-                        AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status) {
+                        AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status, $date) {
                             if ($currentMonth) {
                                 $query->where('month', Carbon::parse($currentMonth)->format('m-Y'));
                             }
+                            if ($date) {
+                                $query->where('date', $date);
+                            }
                             if ($status) {
                                 $query->where('status', $status);
                             }
                         }),
-                        AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status) {
+                        AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status, $date) {
+                            if ($currentMonth) {
+                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            }
+                            if ($date) {
+                                $query->where('date', $date);
+                            }
+                            if ($status) {
+                                $query->where('status', $status);
+                            }
+                        }),
+                        AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status, $date) {
+                            if ($currentMonth) {
+                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            }
+                            if ($date) {
+                                $query->where('date', $date);
+                            }
+                            if ($status) {
+                                $query->where('status', $status);
+                            }
+                        }),
+                        AllowedInclude::callback('dailyQuantitiesPo', function ($query) use ($currentMonth, $status, $date) {
                             if ($currentMonth) {
                                 $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                             }
                             if ($status) {
                                 $query->where('status', $status);
                             }
+                            if ($date) {
+                                $query->where('date', $date);
+                            }
                         }),
-                        AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status) {
+                        AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth, $status, $date) {
                             if ($currentMonth) {
                                 $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                             }
                             if ($status) {
                                 $query->where('status', $status);
                             }
-                        }),
-                        AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth) {
-                            if ($currentMonth) {
-                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            if ($date) {
+                                $query->where('date', $date);
                             }
                         }),
                     ]);
