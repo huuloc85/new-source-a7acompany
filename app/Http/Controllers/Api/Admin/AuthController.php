@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Helpers\HandleError;
 use App\Models\Celender;
 use App\Models\CelenderDetailEatroom;
 use App\Models\CelenderDetailWCCleanMen;
@@ -11,6 +12,8 @@ use App\Models\LoginHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Throwable;
 
 class AuthController extends BaseController
 {
@@ -134,63 +137,87 @@ class AuthController extends BaseController
         }
     }
 
-    // Admin cập nhật thông tin của người khác
-    public function authChangeProfile(Request $request, $id)
-    {
-        // $data = "Hello World";
-        // return response()->json($data, 200);
-        $admin = Auth::user(); // Lấy thông tin người dùng đang đăng nhập
-
-        // Kiểm tra quyền admin
-        if (! $admin || $admin->role_id != 15) { // Chỉ cho phép admin (role_id = 1)
-            return response()->json(['message' => 'Bạn không có quyền thực hiện thao tác này!'], 403);
-        }
-
-        // Tìm nhân viên cần cập nhật
-        $user = Employee::find($id);
-        if (! $user) {
-            return response()->json(['message' => 'Người dùng không tồn tại!'], 404);
-        }
-
-        // Cập nhật thông tin
-        $user->update([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'email' => $request->email,
-            'role' => $request->role,
-        ]);
-
-        return response()->json(['message' => 'Cập nhật thông tin thành công!', 'user' => $user]);
-    }
-
-    // Nhân viên cập nhật thông tin cá nhân của chính họ
-    public function authChangeInfo(Request $request)
-    {
-        $user = Auth::user();
-
-        $user->update([
-            'name' => $request->name,
-            'phone' => $request->phone,
-        ]);
-
-        return response()->json(['message' => 'Cập nhật thông tin cá nhân thành công!', 'user' => $user]);
-    }
-
-    public function authMe(Request $request)
-    {
-        return response()->json($request->user());
-    }
-
-    // Lấy thông tin profile của người dùng đang đăng nhập
     public function authProfile()
     {
-        $user = Auth::user();
+        $id = auth()->user()->id;
+        try {
+            $employee = Employee::query()
+                ->select(
+                    'id',
+                    'name',
+                    'phone',
+                    'email',
+                    'address',
+                    'home_town',
+                    'gender',
+                    'birthday',
+                    'CCCD',
+                    'photo',
+                    'card_photo',
+                    'marital_status',
+                    'date_joining',
+                    'company',
+                    'role_id',
+                    'calendar_category_id',
+                    'created_at',
+                    'updated_at',
+                )
+                ->with([
+                    'role:id,role_name',
+                    'calendarCategory:id,name',
+                ])
+                ->where('id', $id)
+                ->firstOrFail();
 
-        if (! $user) {
-            return response()->json(['message' => 'Người dùng chưa đăng nhập!'], 401);
+            return response()->json($employee, 200);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        $user = Auth::user();
+        $employee = Employee::find($user->id);
+
+        if (! $employee) {
+            return response()->json(['message' => 'User not found'], 404);
         }
 
-        return response()->json(['user' => $user]);
+        // Lấy field từ FormRequest đã validate
+        $current = $request->input('password');
+        $new = $request->input('newpassword');
+
+        try {
+            if (! Hash::check($current, $employee->password)) {
+                return response()->json(['message' => 'Mật khẩu hiện tại không đúng'], 422);
+            }
+
+            // Cập nhật mật khẩu
+            $employee->password = Hash::make($new);
+            $employee->save();
+
+            return response()->json(['message' => 'Thay đổi mật khẩu thành công'], 200);
+        } catch (Throwable $e) {
+            // LogHelper::saveLog('changePassword', $e->getMessage(), $e->getLine());
+            return response()->json(['message' => 'Thay đổi mật khẩu thất bại'], 500);
+        }
+    }
+
+    public function resetPassword(Request $request, $id)
+    {
+        try {
+            $employee = Employee::findOrFail($id);
+            $employee->password = Hash::make($id);
+            $employee->save();
+
+            return response()->json([
+                'message' => 'Khôi phục mật khẩu thành công',
+            ], 200);
+        } catch (Throwable $e) {
+            // LogHelper::saveLog('resetPassword', $e->getMessage(), $e->getLine());
+            return response()->json(['message' => 'Khôi phục mật khẩu thất bại'], 500);
+        }
     }
 
     public function getBirthdayEmployees()
