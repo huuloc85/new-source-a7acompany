@@ -22,6 +22,7 @@ class CheckQcQa
             'qa-qc',
             'qc',
             'super admin',
+            'co admin',
         ];
 
         if (

@@ -20,6 +20,7 @@ class CheckEmployee
         $forbiddenRoles = [
             'admin',
             'super admin',
+            'co admin',
         ];
 
         if (

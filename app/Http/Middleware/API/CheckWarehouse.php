@@ -22,6 +22,7 @@ class CheckWarehouse
             'admin',
             'kho',
             'super admin',
+            'co admin',
         ];
 
         if (

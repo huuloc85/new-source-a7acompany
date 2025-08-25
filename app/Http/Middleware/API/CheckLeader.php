@@ -21,6 +21,7 @@ class CheckLeader
         $allowedRoles = [
             'super admin',
             'admin',
+            'co admin',
             'tổ trưởng ngoại quan',
             'tổ phó sản xuất',
             'tổ trưởng sản xuất',
