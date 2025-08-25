@@ -104,6 +104,63 @@
                                     </span>
                                 </div>
                             </div>
+                            <div class="container">
+                                <h1>Quản lý RBAC</h1>
+                                {{-- Nút mở modal --}}
+                                <button
+                                    type="button"
+                                    class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#createAdminModal">
+                                    Tạo Admin User mới
+                                </button>
+                                {{-- Modal --}}
+                                <div
+                                    class="modal fade"
+                                    id="createAdminModal"
+                                    tabindex="-1"
+                                    aria-labelledby="createAdminModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="{{ route('rbac.create-admin-user') }}" method="POST">
+                                                @csrf
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="createAdminModalLabel">
+                                                        Tạo Admin User mới
+                                                    </h5>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Đóng"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="name" class="form-label">Tên Admin</label>
+                                                        <input
+                                                            type="text"
+                                                            name="name"
+                                                            id="name"
+                                                            class="form-control"
+                                                            required />
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                        Hủy
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary">Tạo</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="card-body">
                                 <form method="GET" action="{{ route('rbac.index') }}" id="roleForm">
                                     <div class="mb-3">

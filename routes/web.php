@@ -41,6 +41,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('rbac')->middleware('permission')->group(function () {
     Route::get('/', [RBACController::class, 'index'])->name('rbac.index');
     Route::post('/save', [RBACController::class, 'save'])->name('rbac.save');
+    Route::post('/create-admin-user', [RBACController::class, 'adminCreate'])->name('rbac.create-admin-user');
 });
 
 Route::prefix('permissions')->middleware('permission')->group(function () {

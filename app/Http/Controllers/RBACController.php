@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\SidebarItem;
@@ -68,5 +69,34 @@ class RBACController extends Controller
 
         return redirect()->route('rbac.index', ['role_ids' => $validated['role_ids']])
             ->with('success', 'Phân quyền đã được cập nhật cho '.count($updatedRoles).' vai trò: '.implode(', ', $updatedRoles));
+    }
+
+    public function adminCreate(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $adminRole = Role::where('role_name', 'Admin')->first();
+        if (! $adminRole) {
+            return redirect()->back()->with('error', 'Role Admin không tồn tại');
+        }
+
+        $lastUser = Employee::where('phone', 'like', 'ctyvinhvinhphat%')
+            ->selectRaw("MAX(CAST(SUBSTRING(phone, LENGTH('ctyvinhvinhphat')+1) AS UNSIGNED)) as max_number")
+            ->first();
+
+        $nextNumber = $lastUser && $lastUser->max_number ? $lastUser->max_number + 1 : 1;
+
+        $adminUser = Employee::create([
+            'id' => 'Admin'.$nextNumber,
+            'name' => $request->input('name'),
+            'phone' => 'ctyvinhvinhphat'.$nextNumber,
+            'password' => bcrypt('123456'),
+            'role_id' => $adminRole->id,
+            'calendar_category_id' => null, // FIXME migrate null calendar_category_id
+        ]);
+
+        return redirect()->route('rbac.index')->with('success', 'Admin user đã được tạo: '.$adminUser->phone);
     }
 }
