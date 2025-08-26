@@ -20,7 +20,7 @@ class AttendanceHistoryController extends BaseController
             $requestHash = md5(json_encode($request->all()));
             $key = 'attendances:history:'.$requestHash;
 
-            return Cache::tags(['attendances'])->remember($key, 3600, function () use ($request) {
+            return Cache::tags(['attendances'])->remember($key, 30, function () use ($request) {
                 $records = QueryBuilder::for(AttendanceRecord::class)
                     ->allowedFilters([
                         'datetime',
