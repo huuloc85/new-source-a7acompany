@@ -124,7 +124,7 @@ class EmployeeController extends BaseController
                     'updated_at',
                 ])
                 ->allowedIncludes(['role', 'calendarCategory', 'schedules', 'scheduleDetails', 'attendanceRecords'])
-                ->whereNotIn('role_id', [15, 17, 21]);
+                ->whereNotIn('role_id', [15, 21, 22]);
 
             $limit = $request->limit;
             if (! is_null($limit) && $limit == 0) {
@@ -167,7 +167,7 @@ class EmployeeController extends BaseController
                     'calendarCategory:id,name',
                 ])
                 ->where('id', $id)
-                ->whereNotIn('role_id', [15, 17, 21])
+                ->whereNotIn('role_id', [15, 21, 22])
                 ->firstOrFail();
 
             return response()->json($employee, 200);
@@ -294,7 +294,7 @@ class EmployeeController extends BaseController
                     'created_at',
                     'updated_at',
                 )
-                ->whereNotIn('role_id', [15, 17, 21])
+                ->whereNotIn('role_id', [15, 21, 22])
                 ->findOrFail($id);
 
             $validated = $request->validate([
@@ -431,7 +431,7 @@ class EmployeeController extends BaseController
                     'deleted_at',
                 ])
                 ->allowedIncludes(['role', 'calendarCategory'])
-                ->whereNotIn('role_id', [15, 17, 21]);
+                ->whereNotIn('role_id', [15, 21, 22]);
 
             $limit = $request->limit;
             if (! is_null($limit) && $limit == 0) {
