@@ -30,10 +30,13 @@ class CelenderHNHCImport implements HasReferencesToOtherSheets, SkipsEmptyRows, 
 
     public function array(array $rows)
     {
+        Log::info('Starting import for CelenderDetailHNHC with celender ID: '.$this->celenderId);
+        Log::info('Total rows to process: '.count($rows));
         try {
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
                     $employee = Employee::where('id', $row[1])->first();
+                    Log::info('Processing row for employee ID: '.$row[1].' - Found: '.($employee ? 'Yes' : 'No'));
                     if ($employee != null) {
                         $checkCelenderDetailHNHC = CelenderDetailHNHC::where('celender_id', $this->celenderId)->where('employee_id', $employee->id)->first();
                         if ($checkCelenderDetailHNHC == null) {

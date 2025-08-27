@@ -112,6 +112,7 @@ class ScheduleController extends BaseController
 
             if ($excelFile != null && $celender != null) {
                 Excel::import(new CelenderManagerImport($celender->id), $excelFile);
+                Log::info('Import excel file for celender ID: '.$celender->id);
             }
 
             DB::commit();
@@ -121,6 +122,7 @@ class ScheduleController extends BaseController
                 'status' => true,
                 'message' => 'Thêm lịch làm việc mới thành công!',
                 'data' => $celender,
+                'excelFile' => $excelFile,
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
