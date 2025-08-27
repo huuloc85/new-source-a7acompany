@@ -43,7 +43,7 @@ class SalaryOfficialA7ATimekepingImport implements HasReferencesToOtherSheets, S
             $dateEnd = Carbon::parse($this->endDate);
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = SalaryOfficialA7A::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
                         if ($salaryManager) {
@@ -51,33 +51,33 @@ class SalaryOfficialA7ATimekepingImport implements HasReferencesToOtherSheets, S
                             $limit = $countDate * 3 + 13;
                             $date = $this->startDate;
 
-                            //chấm công chi tiết
+                            // chấm công chi tiết
                             for ($i = 13; $i < $limit; $i += 3) {
                                 SalaryOfficialA7ATimekeeping::create([
                                     'salary_official_a7a_id' => $salaryManager->id,
-                                    'timekeeping_date' => $date,                          //ngày chấm công
-                                    'timekeeping_day' => $row[$i] ?? null,                //số giờ làm ngày
-                                    'timekeeping_night' => $row[$i + 1] ?? null,          //số giờ làm đêm
-                                    'timekeeping_overtime' => $row[$i + 2] ?? null,       //số giờ tăng ca
+                                    'timekeeping_date' => $date,                          // ngày chấm công
+                                    'timekeeping_day' => $row[$i] ?? null,                // số giờ làm ngày
+                                    'timekeeping_night' => $row[$i + 1] ?? null,          // số giờ làm đêm
+                                    'timekeeping_overtime' => $row[$i + 2] ?? null,       // số giờ tăng ca
                                 ]);
                                 $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
                             }
 
-                            //thông số chấm công tổng quát
-                            $salaryManager->total_day_offical = $row[4] ?? null;                           //tổng ngày
-                            $salaryManager->total_night_offical = $row[5] ?? null;                         //tổng đêm
-                            $salaryManager->total_overtime_offical = $row[6] ?? null;                      //tổng tăng ca
-                            $salaryManager->workday_count_trial = $row[7] ?? null;                         //số công ngày
-                            $salaryManager->worknight_count_trial = $row[8] ?? null;                       //số công đêm
-                            $salaryManager->overtime_day_count_trial = $row[9] ?? null;                    //số ngày tăng ca
-                            $salaryManager->allowance_rice_day_timekeeping = $row[10] ?? null;             //Phụ cấp tiền cơm ngày
-                            $salaryManager->allowance_rice_night_timekeeping = $row[11] ?? null;           //Phụ cấp tiền cơm đêm
-                            $salaryManager->allowance_overtime_timekeeping = $row[12] ?? null;             //phụ cấp tăng ca
+                            // thông số chấm công tổng quát
+                            $salaryManager->total_day_offical = $row[4] ?? null;                           // tổng ngày
+                            $salaryManager->total_night_offical = $row[5] ?? null;                         // tổng đêm
+                            $salaryManager->total_overtime_offical = $row[6] ?? null;                      // tổng tăng ca
+                            $salaryManager->workday_count_trial = $row[7] ?? null;                         // số công ngày
+                            $salaryManager->worknight_count_trial = $row[8] ?? null;                       // số công đêm
+                            $salaryManager->overtime_day_count_trial = $row[9] ?? null;                    // số ngày tăng ca
+                            $salaryManager->allowance_rice_day_timekeeping = $row[10] ?? null;             // Phụ cấp tiền cơm ngày
+                            $salaryManager->allowance_rice_night_timekeeping = $row[11] ?? null;           // Phụ cấp tiền cơm đêm
+                            $salaryManager->allowance_overtime_timekeeping = $row[12] ?? null;             // phụ cấp tăng ca
 
-                            $salaryManager->holidays_count = $row[106] ?? null;                             //số ngày nghĩ lễ tết
-                            $salaryManager->paid_holidays_count = $row[107] ?? null;                        //số ngày phép năm
-                            $salaryManager->daysleave_allowed_timekeeping = $row[108] ?? null;              //số ngày nghỉ có phép
-                            $salaryManager->daysleave_notallowed_timekeeping = $row[109] ?? null;           //số ngày nghỉ không phép
+                            $salaryManager->holidays_count = $row[106] ?? null;                             // số ngày nghĩ lễ tết
+                            $salaryManager->paid_holidays_count = $row[107] ?? null;                        // số ngày phép năm
+                            $salaryManager->daysleave_allowed_timekeeping = $row[108] ?? null;              // số ngày nghỉ có phép
+                            $salaryManager->daysleave_notallowed_timekeeping = $row[109] ?? null;           // số ngày nghỉ không phép
                             $salaryManager->save();
                         }
                     }
@@ -89,10 +89,10 @@ class SalaryOfficialA7ATimekepingImport implements HasReferencesToOtherSheets, S
         }
     }
 
-    //validate
+    // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('code')->toArray();
+        $listCode = Employee::all()->pluck('id')->toArray();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
@@ -152,7 +152,7 @@ class SalaryOfficialA7ATimekepingImport implements HasReferencesToOtherSheets, S
 
     public function startRow(): int
     {
-        //7
+        // 7
         return 8;
     }
 }

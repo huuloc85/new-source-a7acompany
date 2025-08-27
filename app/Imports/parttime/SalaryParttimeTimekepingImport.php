@@ -43,7 +43,7 @@ class SalaryParttimeTimekepingImport implements HasReferencesToOtherSheets, Skip
             $dateEnd = Carbon::parse($this->endDate);
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = SalaryParttime::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
                         if ($salaryManager) {
@@ -51,33 +51,33 @@ class SalaryParttimeTimekepingImport implements HasReferencesToOtherSheets, Skip
                             $limit = $countDate * 3 + 10;
                             $date = $this->startDate;
 
-                            //chấm công chi tiết
+                            // chấm công chi tiết
                             for ($i = 11; $i < $limit; $i += 3) {
                                 SalaryParttimeTimekeeping::create([
                                     'salary_parttime_id' => $salaryManager->id,
-                                    'timekeeping_date' => $date,                //ngày chấm công
-                                    'timekeeping_day' => $row[$i] ?? null,              //số giờ làm ngày
-                                    'timekeeping_night' => $row[$i + 1] ?? null,        //số giờ làm đêm
-                                    'timekeeping_overtime' => $row[$i + 2] ?? null,     //số giờ tăng ca
+                                    'timekeeping_date' => $date,                // ngày chấm công
+                                    'timekeeping_day' => $row[$i] ?? null,              // số giờ làm ngày
+                                    'timekeeping_night' => $row[$i + 1] ?? null,        // số giờ làm đêm
+                                    'timekeeping_overtime' => $row[$i + 2] ?? null,     // số giờ tăng ca
                                 ]);
                                 $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
                             }
 
-                            //thông số chấm công tổng quát
-                            $salaryManager->total_day = $row[4] ?? null;                     //tổng ngày
-                            $salaryManager->total_night = $row[5] ?? null;                   //tổng đêm
-                            $salaryManager->total_overtime = $row[6] ?? null;                //tổng tăng ca
-                            $salaryManager->workday_money = $row[7] ?? null;                 //số tiền ngày
-                            $salaryManager->worknight_money = $row[8] ?? null;               //số công đêm
-                            $salaryManager->allowance_outwork = $row[9] ?? null;             //phụ cấp hết việc
-                            $salaryManager->salary_total_2 = $row[10] ?? null;               //tổng lương 2
+                            // thông số chấm công tổng quát
+                            $salaryManager->total_day = $row[4] ?? null;                     // tổng ngày
+                            $salaryManager->total_night = $row[5] ?? null;                   // tổng đêm
+                            $salaryManager->total_overtime = $row[6] ?? null;                // tổng tăng ca
+                            $salaryManager->workday_money = $row[7] ?? null;                 // số tiền ngày
+                            $salaryManager->worknight_money = $row[8] ?? null;               // số công đêm
+                            $salaryManager->allowance_outwork = $row[9] ?? null;             // phụ cấp hết việc
+                            $salaryManager->salary_total_2 = $row[10] ?? null;               // tổng lương 2
 
-                            $salaryManager->holidays_count = $row[104] ?? null;              //số ngày nghĩ lễ tết
-                            $salaryManager->paid_holidays_count = $row[105] ?? null;         //số ngày phép năm
-                            $salaryManager->outwork_day_count = $row[106] ?? null;           //số ngày hết việc
-                            $salaryManager->increase_day = $row[107] ?? null;                //tăng cường ngày
-                            $salaryManager->increase_night = $row[108] ?? null;              //tăng cường đêm
-                            $salaryManager->annual_leave = $row[109] ?? null;                //phép năm lũy kế thừa tháng này
+                            $salaryManager->holidays_count = $row[104] ?? null;              // số ngày nghĩ lễ tết
+                            $salaryManager->paid_holidays_count = $row[105] ?? null;         // số ngày phép năm
+                            $salaryManager->outwork_day_count = $row[106] ?? null;           // số ngày hết việc
+                            $salaryManager->increase_day = $row[107] ?? null;                // tăng cường ngày
+                            $salaryManager->increase_night = $row[108] ?? null;              // tăng cường đêm
+                            $salaryManager->annual_leave = $row[109] ?? null;                // phép năm lũy kế thừa tháng này
                             $salaryManager->save();
                         }
                     }
@@ -91,14 +91,14 @@ class SalaryParttimeTimekepingImport implements HasReferencesToOtherSheets, Skip
 
     public function headingRow(): int
     {
-        //7
+        // 7
         return 8;
     }
 
-    //validate
+    // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('code')->toArray();
+        $listCode = Employee::all()->pluck('id')->toArray();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],

@@ -34,18 +34,18 @@ class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, Skip
         try {
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = SalaryOfficialVVP::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
                         if ($salaryManager) {
-                            //bảng lương
-                            $salaryManager->salary_total = $row[4] ?? null;                      //tổng lương
-                            $salaryManager->insurance_payroll = $row[5] ?? null;                 //trừ bảo hiểm
-                            $salaryManager->advance_money_payroll = $row[6] ?? null;             //tạm ứng
-                            $salaryManager->company_insurance_payroll = $row[7] ?? null;         //bảo hiểm công ty đóng
-                            $salaryManager->KPI_Subtraction_payroll = $row[8] ?? null;           //trừ KPI
-                            $salaryManager->previous_period_debt_payroll = $row[9] ?? null;      //Nợ kỳ trước
-                            $salaryManager->actually_received_payroll = $row[10] ?? null;        //thực lãnh detail
+                            // bảng lương
+                            $salaryManager->salary_total = $row[4] ?? null;                      // tổng lương
+                            $salaryManager->insurance_payroll = $row[5] ?? null;                 // trừ bảo hiểm
+                            $salaryManager->advance_money_payroll = $row[6] ?? null;             // tạm ứng
+                            $salaryManager->company_insurance_payroll = $row[7] ?? null;         // bảo hiểm công ty đóng
+                            $salaryManager->KPI_Subtraction_payroll = $row[8] ?? null;           // trừ KPI
+                            $salaryManager->previous_period_debt_payroll = $row[9] ?? null;      // Nợ kỳ trước
+                            $salaryManager->actually_received_payroll = $row[10] ?? null;        // thực lãnh detail
                             $salaryManager->save();
                         }
                     }
@@ -57,10 +57,10 @@ class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, Skip
         }
     }
 
-    //validate
+    // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('code')->toArray();
+        $listCode = Employee::all()->pluck('id')->toArray();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
@@ -92,7 +92,7 @@ class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, Skip
         ];
     }
 
-    //số dòng bỏ qua
+    // số dòng bỏ qua
     public function startRow(): int
     {
         return 8;

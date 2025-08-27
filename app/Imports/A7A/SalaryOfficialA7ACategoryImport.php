@@ -34,7 +34,7 @@ class SalaryOfficialA7ACategoryImport implements HasReferencesToOtherSheets, Ski
         try {
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         SalaryOfficialA7A::create([
                             'salaries_manager_id' => $this->salaryManagerId,
@@ -67,7 +67,7 @@ class SalaryOfficialA7ACategoryImport implements HasReferencesToOtherSheets, Ski
 
     public function startRow(): int
     {
-        //5
+        // 5
         return 8;
     }
 
@@ -81,7 +81,7 @@ class SalaryOfficialA7ACategoryImport implements HasReferencesToOtherSheets, Ski
         }
     }
 
-    //validate
+    // validate
 
     /**
      * @return array

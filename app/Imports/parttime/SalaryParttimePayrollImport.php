@@ -33,18 +33,18 @@ class SalaryParttimePayrollImport implements HasReferencesToOtherSheets, SkipsEm
         try {
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null && $this->salaryManagerId != null) {
-                        //bảng lương
+                        // bảng lương
                         SalaryParttime::create([
                             'salaries_manager_id' => $this->salaryManagerId,
                             'employee_id' => $employee->id,
-                            'salary_total' => $row[4] ?? null,                      //tổng lương
-                            'insurance' => $row['tru_bao_hiem_105'] ?? null,        //trừ bảo hiểm
-                            'advance_money' => $row['tam_ung'] ?? null,             //tạm ứng
-                            'company_insurance' => $row['bh_cty_dong_215'] ?? null, //bảo hiểm công ty đóng
-                            'debt_last' => $row['no_ky_truoc'] ?? null,             //nợ kỳ trước
-                            'actually_received' => $row[9] ?? null,                 //thực lãnh
+                            'salary_total' => $row[4] ?? null,                      // tổng lương
+                            'insurance' => $row['tru_bao_hiem_105'] ?? null,        // trừ bảo hiểm
+                            'advance_money' => $row['tam_ung'] ?? null,             // tạm ứng
+                            'company_insurance' => $row['bh_cty_dong_215'] ?? null, // bảo hiểm công ty đóng
+                            'debt_last' => $row['no_ky_truoc'] ?? null,             // nợ kỳ trước
+                            'actually_received' => $row[9] ?? null,                 // thực lãnh
                         ]);
                     }
                 }
@@ -58,14 +58,14 @@ class SalaryParttimePayrollImport implements HasReferencesToOtherSheets, SkipsEm
 
     public function headingRow(): int
     {
-        //5
+        // 5
         return 5;
     }
 
-    //validate
+    // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('code')->toArray();
+        $listCode = Employee::all()->pluck('id')->toArray();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],

@@ -37,11 +37,11 @@ class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, Skips
         try {
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = SalaryOfficialA7A::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
                         if ($salaryManager) {
-                            //detail
+                            // detail
                             $salaryManager->number_of_work_days_trial = $row[4] ?? null;                            // Số công ngày (thử việc)
                             $salaryManager->day_shift_salary_trial = $row[5] ?? null;                             // Lương ca ngày (thử việc)
                             $salaryManager->day_shift_salary_trial_notice = $row[6] ?? null;                      // Lương ca ngày (thử việc) Ghi Chú
@@ -141,15 +141,15 @@ class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, Skips
 
     public function startRow(): int
     {
-        //7
+        // 7
         return 8;
     }
 
-    //validate
+    // validate
     public function rules(): array
     {
         $rules = [];
-        $listCode = Employee::all()->pluck('code')->toArray();
+        $listCode = Employee::all()->pluck('id')->toArray();
         $rules['1'] = ['required', 'in:'.implode(',', $listCode)];
         for ($i = 4; $i <= 89; $i++) {
             if (! in_array($i, $this->roleIgnore)) {
