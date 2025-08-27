@@ -33,7 +33,7 @@ class CelenderWCCleanWomenImport implements HasReferencesToOtherSheets, SkipsEmp
         try {
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null) {
                         $checkCelenderDetailWCCleanWomen = CelenderDetailWCCleanWomen::where('celender_id', $this->celenderId)->where('employee_id', $employee->id)->first();
                         if ($checkCelenderDetailWCCleanWomen == null) {
@@ -82,10 +82,10 @@ class CelenderWCCleanWomenImport implements HasReferencesToOtherSheets, SkipsEmp
         }
     }
 
-    //validate
+    // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('code')->toArray();
+        $listCode = Employee::all()->pluck('id')->toArray();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],

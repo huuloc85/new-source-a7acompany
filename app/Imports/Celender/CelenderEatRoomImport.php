@@ -37,7 +37,7 @@ class CelenderEatRoomImport implements HasReferencesToOtherSheets, SkipsEmptyRow
             foreach ($rows as $row) {
                 // dd($row);
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('code', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->first();
                     if ($employee != null) {
                         $checkCelenderDetailEatroom = CelenderDetailEatroom::where('celender_id', $this->celenderId)->where('employee_id', $employee->id)->first();
                         if ($checkCelenderDetailEatroom == null) {
@@ -86,10 +86,10 @@ class CelenderEatRoomImport implements HasReferencesToOtherSheets, SkipsEmptyRow
         }
     }
 
-    //validate
+    // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('code')->toArray();
+        $listCode = Employee::all()->pluck('id')->toArray();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
