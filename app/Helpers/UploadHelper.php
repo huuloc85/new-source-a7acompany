@@ -2,17 +2,15 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Facades\Storage;
-
 class UploadHelper
 {
     public static function upload($file, $groupName, $path = null)
     {
         if ($file) {
             $fileName = $groupName.'_'.time().'.'.$file->getClientOriginalExtension();
-            $storage = Storage::putFileAs('public/'.($path ?: 'employee'), $file, $fileName);
+            $storage = $file->storeAs('employee', $fileName, 'public');
 
-            return Storage::url($storage);
+            return $storage;
         }
 
         return null;
