@@ -78,7 +78,7 @@ class AttendanceHistoryController extends BaseController
         DB::beginTransaction();
         try {
             $this->validate($request, [
-                'employee_code' => 'required|exists:employees,code',
+                'employee_code' => 'required|exists:employees,id',
                 'datetime' => 'required|date_format:Y-m-d H:i:s',
             ]);
 
