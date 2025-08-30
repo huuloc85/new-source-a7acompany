@@ -42,7 +42,7 @@ class EmpStampController extends Controller
                 ]);
             }
 
-            $roles = [15, 8, 21];
+            $roles = [8, 21, 13];
 
             foreach ($stamps as $stamp) {
                 foreach ($roles as $role) {
