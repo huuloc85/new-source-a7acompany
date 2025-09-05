@@ -13,7 +13,6 @@ use App\Models\TotalDailyQuantity;
 use App\Models\TotalMonthQuantity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -37,121 +36,116 @@ class ProductController extends BaseController
     public function getProducts(Request $request)
     {
         try {
-            $requestHash = md5(json_encode($request->all()));
-            $key = 'products:list:'.$requestHash;
+            $validated = $request->validate([
+                'limit' => 'nullable|integer|min:0',
+                'page' => 'nullable|integer|min:1',
+                'month' => 'nullable|date_format:Y-m',
+                'status' => 'nullable|integer|min:1|max:7',
+                'date' => 'nullable|date_format:Y-m-d',
+            ]);
 
-            return Cache::tags(['products'])->remember($key, 3600, function () use ($request) {
-                $validated = $request->validate([
-                    'limit' => 'nullable|integer|min:0',
-                    'page' => 'nullable|integer|min:1',
-                    'month' => 'nullable|date_format:Y-m',
-                    'status' => 'nullable|integer|min:1|max:7',
-                    'date' => 'nullable|date_format:Y-m-d',
+            $currentMonth = $validated['month'] ?? null;
+            $status = $validated['status'] ?? null;
+            $date = $validated['date'] ?? null;
+
+            $products = QueryBuilder::for(Product::class)
+                ->allowedFields(
+                    'id',
+                    'code',
+                    'name',
+                    'moldSize',
+                    'CAV',
+                    'cycle',
+                    'binCode',
+                    'quanEntityBin',
+                    'FAPV',
+                    'FASV',
+                    'FAVV',
+                )
+                ->allowedSorts([
+                    'id',
+                    'code',
+                    'name',
+                    'moldSize',
+                    'binCode',
+                    'created_at',
+                    'updated_at',
+                ])
+                ->allowedFilters([
+                    'id',
+                    'code',
+                    'name',
+                    'moldSize',
+                    'binCode',
+                    'created_at',
+                    AllowedFilter::custom('search', new NameOrCodeFilter),
+                ])
+                ->allowedIncludes([
+                    AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status, $date) {
+                        if ($currentMonth) {
+                            $query->where('month', Carbon::parse($currentMonth)->format('m-Y'));
+                        }
+                        if ($date) {
+                            $query->where('date', $date);
+                        }
+                        if ($status) {
+                            $query->where('status', $status);
+                        }
+                    }),
+                    AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status, $date) {
+                        if ($currentMonth) {
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                        }
+                        if ($date) {
+                            $query->where('date', $date);
+                        }
+                        if ($status) {
+                            $query->where('status', $status);
+                        }
+                    }),
+                    AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status, $date) {
+                        if ($currentMonth) {
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                        }
+                        if ($date) {
+                            $query->where('date', $date);
+                        }
+                        if ($status) {
+                            $query->where('status', $status);
+                        }
+                    }),
+                    AllowedInclude::callback('dailyQuantitiesPo', function ($query) use ($currentMonth, $status, $date) {
+                        if ($currentMonth) {
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                        }
+                        if ($status) {
+                            $query->where('status', $status);
+                        }
+                        if ($date) {
+                            $query->where('date', $date);
+                        }
+                    }),
+                    AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth, $status, $date) {
+                        if ($currentMonth) {
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                        }
+                        if ($status) {
+                            $query->where('status', $status);
+                        }
+                        if ($date) {
+                            $query->where('date', $date);
+                        }
+                    }),
                 ]);
 
-                $currentMonth = $validated['month'] ?? null;
-                $status = $validated['status'] ?? null;
-                $date = $validated['date'] ?? null;
+            // Logic to get products
+            $limit = $validated['limit'] ?? 10;
+            if (! is_null($limit) && $limit == 0) {
+                $limit = $products->count();
+            }
+            $products = $products->paginate($limit);
 
-                $products = QueryBuilder::for(Product::class)
-                    ->allowedFields(
-                        'id',
-                        'code',
-                        'name',
-                        'moldSize',
-                        'CAV',
-                        'cycle',
-                        'binCode',
-                        'quanEntityBin',
-                        'FAPV',
-                        'FASV',
-                        'FAVV',
-                    )
-                    ->allowedSorts([
-                        'id',
-                        'code',
-                        'name',
-                        'moldSize',
-                        'binCode',
-                        'created_at',
-                        'updated_at',
-                    ])
-                    ->allowedFilters([
-                        'id',
-                        'code',
-                        'name',
-                        'moldSize',
-                        'binCode',
-                        'created_at',
-                        AllowedFilter::custom('search', new NameOrCodeFilter),
-                    ])
-                    ->allowedIncludes([
-                        AllowedInclude::callback('totalmonthquantities', function ($query) use ($currentMonth, $status, $date) {
-                            if ($currentMonth) {
-                                $query->where('month', Carbon::parse($currentMonth)->format('m-Y'));
-                            }
-                            if ($date) {
-                                $query->where('date', $date);
-                            }
-                            if ($status) {
-                                $query->where('status', $status);
-                            }
-                        }),
-                        AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status, $date) {
-                            if ($currentMonth) {
-                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
-                            }
-                            if ($date) {
-                                $query->where('date', $date);
-                            }
-                            if ($status) {
-                                $query->where('status', $status);
-                            }
-                        }),
-                        AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status, $date) {
-                            if ($currentMonth) {
-                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
-                            }
-                            if ($date) {
-                                $query->where('date', $date);
-                            }
-                            if ($status) {
-                                $query->where('status', $status);
-                            }
-                        }),
-                        AllowedInclude::callback('dailyQuantitiesPo', function ($query) use ($currentMonth, $status, $date) {
-                            if ($currentMonth) {
-                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
-                            }
-                            if ($status) {
-                                $query->where('status', $status);
-                            }
-                            if ($date) {
-                                $query->where('date', $date);
-                            }
-                        }),
-                        AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth, $status, $date) {
-                            if ($currentMonth) {
-                                $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
-                            }
-                            if ($status) {
-                                $query->where('status', $status);
-                            }
-                            if ($date) {
-                                $query->where('date', $date);
-                            }
-                        }),
-                    ]);
-
-                // Logic to get products
-                $limit = $validated['limit'] ?? 10;
-                if (! is_null($limit) && $limit == 0) {
-                    $limit = $products->count();
-                }
-                $products = $products->paginate($limit);
-
-                return response()->json($products);
-            });
+            return response()->json($products);
         } catch (\Throwable $e) {
             return HandleError::handle($e);
         }
@@ -160,23 +154,21 @@ class ProductController extends BaseController
     public function getProduct($id)
     {
         try {
-            return Cache::tags(['products'])->remember('products:detail:'.$id, 3600, function () use ($id) {
-                $product = Product::findOrFail($id);
+            $product = Product::findOrFail($id);
 
-                $companies = [];
-                if ($product->FAPV) {
-                    array_push($companies, 'FAPV');
-                }
-                if ($product->FASV) {
-                    array_push($companies, 'FASV');
-                }
-                if ($product->FAVV) {
-                    array_push($companies, 'FAVV');
-                }
-                $product->companies = $companies;
+            $companies = [];
+            if ($product->FAPV) {
+                array_push($companies, 'FAPV');
+            }
+            if ($product->FASV) {
+                array_push($companies, 'FASV');
+            }
+            if ($product->FAVV) {
+                array_push($companies, 'FAVV');
+            }
+            $product->companies = $companies;
 
-                return response()->json($product);
-            });
+            return response()->json($product);
         } catch (\Throwable $e) {
             return HandleError::handle($e);
         }
@@ -232,8 +224,6 @@ class ProductController extends BaseController
                 'totalQuan' => $validated['stockQuanMOQ'],
             ]);
 
-            Cache::tags(['products'])->flush();
-            Cache::tags(['total-month-quantity'])->flush();
             DB::commit();
 
             return response()->json([
@@ -276,7 +266,6 @@ class ProductController extends BaseController
                 'FAVV' => in_array('FAVV', $validated['companies']) ? 1 : 0,
             ]);
 
-            Cache::tags(['products'])->flush();
             DB::commit();
 
             return response()->json([
@@ -297,7 +286,6 @@ class ProductController extends BaseController
             $product = Product::findOrFail($id);
             $product->delete();
 
-            Cache::tags(['products'])->flush();
             DB::commit();
 
             return response()->json([
@@ -313,51 +301,46 @@ class ProductController extends BaseController
 
     public function getTrashProducts(Request $request)
     {
-        $requestHash = md5(json_encode($request->all()));
-        $key = 'products:trash:'.$requestHash;
+        try {
+            $validated = $request->validate([
+                'limit' => 'integer|nullable',
+                'page' => 'integer|nullable',
+            ]);
 
-        return Cache::tags(['products'])->remember($key, 3600, function () use ($request) {
-            try {
-                $validated = $request->validate([
-                    'limit' => 'integer|nullable',
-                    'page' => 'integer|nullable',
+            $products = QueryBuilder::for(Product::class)
+                ->onlyTrashed()
+                ->allowedSorts([
+                    'id',
+                    'code',
+                    'name',
+                    'moldSize',
+                    'CAV',
+                    'binCode',
+                    'quanEntityBin',
+                    'created_at',
+                    'updated_at',
+                ])
+                ->allowedFilters([
+                    'id',
+                    'code',
+                    'name',
+                    'moldSize',
+                    'binCode',
+                    'created_at',
+                    'updated_at',
+                    AllowedFilter::custom('search', new NameOrCodeFilter),
                 ]);
 
-                $products = QueryBuilder::for(Product::class)
-                    ->onlyTrashed()
-                    ->allowedSorts([
-                        'id',
-                        'code',
-                        'name',
-                        'moldSize',
-                        'CAV',
-                        'binCode',
-                        'quanEntityBin',
-                        'created_at',
-                        'updated_at',
-                    ])
-                    ->allowedFilters([
-                        'id',
-                        'code',
-                        'name',
-                        'moldSize',
-                        'binCode',
-                        'created_at',
-                        'updated_at',
-                        AllowedFilter::custom('search', new NameOrCodeFilter),
-                    ]);
-
-                $limit = $validated['limit'] ?? 10;
-                if (! is_null($limit) && $limit == 0) {
-                    $limit = $products->count();
-                }
-                $products = $products->paginate($limit);
-
-                return response()->json($products);
-            } catch (\Throwable $e) {
-                return HandleError::handle($e);
+            $limit = $validated['limit'] ?? 10;
+            if (! is_null($limit) && $limit == 0) {
+                $limit = $products->count();
             }
-        });
+            $products = $products->paginate($limit);
+
+            return response()->json($products);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
     }
 
     public function restoreProduct($id)
@@ -367,7 +350,6 @@ class ProductController extends BaseController
             $product = Product::onlyTrashed()->findOrFail($id);
             $product->restore();
 
-            Cache::tags(['products'])->flush();
             DB::commit();
 
             return response()->json([
@@ -590,13 +572,46 @@ class ProductController extends BaseController
         DB::beginTransaction();
         try {
             $detail = DailyQuantity::findOrFail($id);
-            $detail->delete();
 
+            $monthYear = Carbon::now()->format('m-Y');
+
+            // Update quantity total day
+            $totalDaily = TotalDailyQuantity::where('product_id', $detail->product_id)
+                ->where('date', $detail->date)
+                ->where('status', $detail->status)->first();
+            if ($totalDaily != null) {
+                $newTotalDaily = $totalDaily->totalQuan - $detail->quantity;
+                if ($newTotalDaily > 0) {
+                    $totalDaily->totalQuan = $newTotalDaily;
+                    $totalDaily->save();
+                } else {
+                    $totalDaily->delete();
+                }
+            }
+
+            // Update quantity total month
+            $totalMonth = TotalMonthQuantity::where('product_id', $detail->product_id)
+                ->where('month', $monthYear)
+                ->where('status', $detail->status)->first();
+            if ($totalMonth != null) {
+                $newTotalMonth = $totalMonth->totalQuan - $detail->quantity;
+                if ($newTotalMonth > 0) {
+                    $totalMonth->totalQuan = $newTotalMonth;
+                    $totalMonth->save();
+                } else {
+                    $totalMonth->delete();
+                }
+            }
+
+            $detail->delete();
             DB::commit();
 
             return response()->json([
-                'message' => 'Delete successful!',
-                'data' => $detail,
+                'message' => 'Xóa sản lượng thành công!',
+                'data' => [
+                    'id' => $id,
+                    'deleted' => true,
+                ],
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
