@@ -32,7 +32,9 @@ class EmpScanController extends BaseController
             $bin = substr($barcode[1], 9);
             $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
 
-            $storage = StorageProduct::where('lot', $lot)->first();
+            $storage = StorageProduct::where('product_id', $productId)
+                ->where('lot', $lot)
+                ->first();
             // If the lot already exists, return an error
             if ($storage) {
                 return response()->json([
