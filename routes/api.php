@@ -56,7 +56,7 @@ Route::post('/login', [AuthController::class, 'authLogin'])->name('auth.login');
 Route::post('/logout', [AuthController::class, 'authLogout'])->name('auth.logout');
 
 // clear cache
-app()->environment('local') && Route::get('/clear-cache', function () {
+Route::get('/clear-cache', function () {
     if (connection_aborted()) {
         Log::info('Request aborted early.');
     }

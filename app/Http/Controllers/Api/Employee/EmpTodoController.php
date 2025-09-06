@@ -14,7 +14,6 @@ use App\Models\TotalMonthQuantity;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class EmpTodoController extends Controller
@@ -102,9 +101,6 @@ class EmpTodoController extends Controller
             $checkEmployee->date = $date;
             $checkEmployee->status = $status;
             $checkEmployee->save();
-
-            Cache::tags(['products'])->flush();
-            Cache::tags(['total-month-quantity'])->flush();
 
             return response()->json([
                 'success' => true,
@@ -291,9 +287,6 @@ class EmpTodoController extends Controller
                 }
             }
 
-            Cache::tags(['products'])->flush();
-            Cache::tags(['total-month-quantity'])->flush();
-
             DB::commit();
             LogActivity::logViewActivity(auth()->user(), 'Nhập Sản Lượng', 'Nhân viên nhập sản lượng');
 
@@ -353,9 +346,6 @@ class EmpTodoController extends Controller
 
             DB::commit();
             LogActivity::logViewActivity(auth()->user(), 'Enter Error Quantity', 'Employee entered error quantity');
-
-            Cache::tags(['products'])->flush();
-            Cache::tags(['total-month-quantity'])->flush();
 
             return response()->json([
                 'success' => true,

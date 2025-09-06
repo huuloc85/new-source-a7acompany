@@ -13,7 +13,6 @@ use App\Models\TotalMonthQuantity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CheckPoController extends Controller
@@ -303,8 +302,6 @@ class CheckPoController extends Controller
                 ];
             });
 
-            Cache::tags(['products'])->flush();
-            Cache::tags(['total-month-quantity'])->flush();
             DB::commit();
 
             return response()->json([

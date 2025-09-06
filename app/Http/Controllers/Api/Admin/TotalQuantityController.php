@@ -9,58 +9,52 @@ use App\Models\TotalMonthQuantity;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class TotalQuantityController extends BaseController
 {
     public function getMonthly(Request $request)
     {
-        $requestHash = md5(json_encode($request->all()));
-        $key = 'total-month-quantity:list:'.$requestHash;
+        try {
+            $totalMonthlyQuantities = QueryBuilder::for(TotalMonthQuantity::class)
+                ->allowedSorts([
+                    'id',
+                    'product_id',
+                    'quantity',
+                    'month',
+                    'status',
+                ])
+                ->allowedIncludes('product')
+                ->allowedFilters([
+                    'id',
+                    'product_id',
+                    'quantity',
+                    'month',
+                    'status',
+                ]);
 
-        return Cache::tags('total-month-quantity')->remember($key, 3600, function () use ($request) {
-            try {
-                $totalMonthlyQuantities = QueryBuilder::for(TotalMonthQuantity::class)
-                    ->allowedSorts([
-                        'id',
-                        'product_id',
-                        'quantity',
-                        'month',
-                        'status',
-                    ])
-                    ->allowedIncludes('product')
-                    ->allowedFilters([
-                        'id',
-                        'product_id',
-                        'quantity',
-                        'month',
-                        'status',
-                    ]);
-
-                if (! is_null($request['month'])) {
-                    $totalMonthlyQuantities->where('month', $request['month']);
-                }
-
-                if ($request['status']) {
-                    $totalMonthlyQuantities->where('status', $request['status']);
-                }
-
-                if ($request['productId']) {
-                    $totalMonthlyQuantities->where('product_id', $request['productId']);
-                }
-
-                $limit = $request->limit;
-                if (! is_null($limit) && $limit == 0) {
-                    $limit = $totalMonthlyQuantities->count();
-                }
-                $totalMonthlyQuantities = $totalMonthlyQuantities->paginate($limit ?? 10);
-
-                return response()->json($totalMonthlyQuantities);
-            } catch (\Throwable $e) {
-                return HandleError::handle($e);
+            if (! is_null($request['month'])) {
+                $totalMonthlyQuantities->where('month', $request['month']);
             }
-        });
+
+            if ($request['status']) {
+                $totalMonthlyQuantities->where('status', $request['status']);
+            }
+
+            if ($request['productId']) {
+                $totalMonthlyQuantities->where('product_id', $request['productId']);
+            }
+
+            $limit = $request->limit;
+            if (! is_null($limit) && $limit == 0) {
+                $limit = $totalMonthlyQuantities->count();
+            }
+            $totalMonthlyQuantities = $totalMonthlyQuantities->paginate($limit ?? 10);
+
+            return response()->json($totalMonthlyQuantities);
+        } catch (\Throwable $e) {
+            return HandleError::handle($e);
+        }
     }
 
     public function updateMonthQuantity(Request $request)
@@ -84,7 +78,6 @@ class TotalQuantityController extends BaseController
                     'totalQuan' => $validate['quantity'],
                 ]
             );
-            Cache::tags('total-month-quantity')->flush();
             DB::commit();
 
             return response()->json($totalQuantity);
@@ -119,7 +112,6 @@ class TotalQuantityController extends BaseController
                     ]
                 );
             });
-            Cache::tags(['products', 'total-month-quantity'])->flush();
             DB::commit();
 
             return response()->json([
@@ -211,7 +203,6 @@ class TotalQuantityController extends BaseController
                 ];
             });
 
-            Cache::tags(['products', 'total-month-quantity'])->flush();
             DB::commit();
 
             return response()->json([

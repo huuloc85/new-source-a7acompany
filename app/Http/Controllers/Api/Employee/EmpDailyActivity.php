@@ -9,7 +9,6 @@ use App\Models\DailyQuantity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -81,7 +80,6 @@ class EmpDailyActivity extends Controller
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->update($request->only('product_id', 'status'));
 
-            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
 
             return response()->json(['message' => 'Updated successfully', 'data' => $checkEmployee], 200);
@@ -99,7 +97,6 @@ class EmpDailyActivity extends Controller
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->delete();
 
-            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
 
             return response()->json([

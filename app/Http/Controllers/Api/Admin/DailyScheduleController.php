@@ -7,7 +7,6 @@ use App\Models\CheckEmployee;
 use App\Models\DailyQuantity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -77,7 +76,6 @@ class DailyScheduleController extends BaseController
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->update($request->only('product_id', 'status'));
 
-            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
 
             return response()->json(['message' => 'Updated successfully', 'data' => $checkEmployee], 200);
@@ -95,7 +93,6 @@ class DailyScheduleController extends BaseController
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->delete();
 
-            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
 
             return response()->json([
