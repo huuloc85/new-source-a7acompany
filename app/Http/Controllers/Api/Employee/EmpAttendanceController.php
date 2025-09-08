@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -196,7 +195,7 @@ class EmpAttendanceController extends Controller
                     ['path' => request()->url(), 'query' => request()->query()]
                 );
 
-                LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Sử Chấm Công', 'Nhân viên xem danh sách chấm công');
+                LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công', 'Nhân viên xem chi tiết chấm công');
 
                 return response()->json($paginator);
             });
@@ -205,51 +204,22 @@ class EmpAttendanceController extends Controller
         }
     }
 
-    public function show($id)
-    {
-        try {
-            $key = 'attendances:history:show:'.$id;
+    // public function show($id)
+    // {
+    //     try {
+    //         $key = 'attendances:history:show:' . $id;
 
-            return Cache::tags(['attendances'])->remember($key, 3600, function () use ($id) {
-                $record = AttendanceRecord::with(['employees'])->findOrFail($id);
+    //         return Cache::tags(['attendances'])->remember($key, 3600, function () use ($id) {
+    //             $record = AttendanceRecord::with(['employees'])->findOrFail($id);
 
-                LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công', 'Nhân viên xem chi tiết bản ghi chấm công');
+    //             LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công', 'Nhân viên xem chi tiết bản ghi chấm công');
 
-                return response()->json($record);
-            });
-        } catch (\Throwable $e) {
-            return HandleError::handle($e);
-        }
-    }
-
-    public function update(Request $request, $id)
-    {
-        DB::beginTransaction();
-        try {
-            $record = AttendanceRecord::findOrFail($id);
-            $this->validate($request, [
-                'employee_code' => 'sometimes|exists:employees,id',
-                'datetime' => 'required|date_format:Y-m-d H:i:s',
-                'date' => 'sometimes|date',
-                'time' => 'sometimes|date_format:H:i:s',
-            ]);
-            $record->update($request->all());
-
-            Cache::tags(['attendances'])->flush();
-            DB::commit();
-
-            LogActivity::logViewActivity(auth()->user(), 'Cập Nhật Chấm Công', 'Nhân viên cập nhật thông tin chấm công');
-
-            return response()->json([
-                'message' => 'updated successfully',
-                'data' => $record,
-            ], 200);
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            return HandleError::handle($e);
-        }
-    }
+    //             return response()->json($record);
+    //         });
+    //     } catch (\Throwable $e) {
+    //         return HandleError::handle($e);
+    //     }
+    // }
 
     public function history(Request $request)
     {

@@ -108,7 +108,7 @@ class EmpTodoController extends Controller
             Cache::tags(['products'])->flush();
             Cache::tags(['total-month-quantity'])->flush();
 
-            LogActivity::logViewActivity(auth()->user(), 'Thêm Sản Phẩm Kiểm Tra', 'Nhân viên thêm sản phẩm vào danh sách kiểm tra');
+            LogActivity::logViewActivity(auth()->user(), 'Thêm Sản Phẩm Hoạt Động', 'Nhân viên thêm sản phẩm vào danh sách hoạt động');
 
             return response()->json([
                 'success' => true,
