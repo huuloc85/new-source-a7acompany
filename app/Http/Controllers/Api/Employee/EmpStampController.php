@@ -52,7 +52,7 @@ class EmpStampController extends Controller
             }
             DB::commit();
 
-            LogActivity::logViewActivity(auth()->user(), 'Yêu Cầu Tem Dán', 'Nhân viên gửi yêu cầu tem dán sản phẩm');
+            LogActivity::logViewActivity(auth()->user(), 'Yêu Cầu In Tem', 'Nhân viên gửi yêu cầu in tem');
 
             return response()->json(
                 [
@@ -100,7 +100,7 @@ class EmpStampController extends Controller
 
             $stampHistory = $stampHistory->paginate($limit);
 
-            LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Sử Tem Dán', 'Nhân viên xem lịch sử yêu cầu tem dán');
+            LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Sử Yêu Cầu In Tem', 'Nhân viên xem lịch sử yêu cầu in tem');
 
             return response()->json($stampHistory, 200);
         } catch (\Throwable $e) {
