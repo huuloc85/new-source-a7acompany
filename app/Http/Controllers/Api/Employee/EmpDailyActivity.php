@@ -10,7 +10,6 @@ use App\Models\DailyQuantity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -86,7 +85,6 @@ class EmpDailyActivity extends Controller
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->update($request->only('product_id', 'status'));
 
-            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
 
             LogActivity::logViewActivity(auth()->user(), 'Cập Nhật Hoạt Động', 'Nhân viên cập nhật thông tin hoạt động');
@@ -106,7 +104,6 @@ class EmpDailyActivity extends Controller
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->delete();
 
-            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
 
             LogActivity::logViewActivity(auth()->user(), 'Xóa Hoạt Động', 'Nhân viên xóa hoạt động');

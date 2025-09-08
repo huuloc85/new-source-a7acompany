@@ -28,7 +28,6 @@ use App\Http\Controllers\Api\Employee\EmpTodoController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UploadController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
@@ -54,17 +53,6 @@ Route::get('/acs-events/today', [AttendanceRecordController::class, 'fetchTodayE
 // Đăng nhập
 Route::post('/login', [AuthController::class, 'authLogin'])->name('auth.login');
 Route::post('/logout', [AuthController::class, 'authLogout'])->name('auth.logout');
-
-// clear cache
-Route::get('/clear-cache', function () {
-    if (connection_aborted()) {
-        Log::info('Request aborted early.');
-    }
-
-    Artisan::call('cache:clear');
-
-    return response()->json(['message' => 'Cache cleared successfully']);
-});
 
 Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
     if (connection_aborted()) {
