@@ -35,7 +35,7 @@ class HistoryController extends Controller
 
             $date = Carbon::create($year, $month, substr($selectedDate, -2))->format('Y-m-d');
 
-            $loginHistoryQuery = LoginHistory::query()->where('date', $date);
+            $loginHistoryQuery = LoginHistory::query()->where('date', $date)->with('employee');
 
             $selectedActivityType = $request->input('activity_type');
             if (! empty($selectedActivityType)) {
