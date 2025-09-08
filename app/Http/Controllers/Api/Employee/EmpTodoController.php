@@ -11,9 +11,10 @@ use App\Models\DailyQuantity;
 use App\Models\Product;
 use App\Models\TotalDailyQuantity;
 use App\Models\TotalMonthQuantity;
-use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class EmpTodoController extends Controller
@@ -49,6 +50,8 @@ class EmpTodoController extends Controller
 
                     return $itemDate == $today || ($itemDate == $yesterday && $item->shift == 'Ca 2');
                 });
+
+            LogActivity::logViewActivity(auth()->user(), 'Xem Danh Sách Sản Phẩm', 'Nhân viên xem danh sách sản phẩm cần kiểm tra');
 
             return response()->json([
                 'success' => true,
@@ -101,6 +104,11 @@ class EmpTodoController extends Controller
             $checkEmployee->date = $date;
             $checkEmployee->status = $status;
             $checkEmployee->save();
+
+            Cache::tags(['products'])->flush();
+            Cache::tags(['total-month-quantity'])->flush();
+
+            LogActivity::logViewActivity(auth()->user(), 'Thêm Sản Phẩm Kiểm Tra', 'Nhân viên thêm sản phẩm vào danh sách kiểm tra');
 
             return response()->json([
                 'success' => true,
@@ -287,6 +295,9 @@ class EmpTodoController extends Controller
                 }
             }
 
+            Cache::tags(['products'])->flush();
+            Cache::tags(['total-month-quantity'])->flush();
+
             DB::commit();
             LogActivity::logViewActivity(auth()->user(), 'Nhập Sản Lượng', 'Nhân viên nhập sản lượng');
 
@@ -345,7 +356,10 @@ class EmpTodoController extends Controller
             $totalMonth->save();
 
             DB::commit();
-            LogActivity::logViewActivity(auth()->user(), 'Enter Error Quantity', 'Employee entered error quantity');
+            LogActivity::logViewActivity(auth()->user(), 'Nhập Sản Lượng Lỗi', 'Nhân viên nhập sản luợng lỗi');
+
+            Cache::tags(['products'])->flush();
+            Cache::tags(['total-month-quantity'])->flush();
 
             return response()->json([
                 'success' => true,
@@ -382,6 +396,8 @@ class EmpTodoController extends Controller
             ->whereYear('date', $year)
             ->whereMonth('date', $month)
             ->get();
+
+        LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Sử Sản Lượng', 'Nhân viên xem lịch sử sản lượng theo tháng');
 
         return response()->json(['products' => $listProduct, 'data' => $histories]);
     }

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api\Employee;
 
 use App\Helpers\HandleError;
+use App\Helpers\LogActivity;
 use App\Http\Controllers\Controller;
 use App\Models\ScheduleDetail;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -63,6 +64,8 @@ class EmpScheduleDetailController extends Controller
                 $limit = $scheduleDetails->count();
             }
             $scheduleDetails = $scheduleDetails->paginate($limit ?? 10);
+
+            LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Làm Việc', 'Nhân viên xem danh sách lịch làm việc');
 
             return response()->json($scheduleDetails);
         } catch (\Throwable $th) {
@@ -123,6 +126,8 @@ class EmpScheduleDetailController extends Controller
             }
             $scheduleDetails = $scheduleDetails->paginate($limit ?? 10);
 
+            LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Lịch Làm Việc', 'Nhân viên xem chi tiết lịch làm việc theo ID');
+
             return response()->json($scheduleDetails);
         } catch (\Throwable $th) {
             return HandleError::handle($th);
@@ -181,6 +186,8 @@ class EmpScheduleDetailController extends Controller
                 $limit = $scheduleDetails->count();
             }
             $scheduleDetails = $scheduleDetails->paginate($limit ?? 10);
+
+            LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Làm Việc Theo Khoảng Thời Gian', 'Nhân viên xem lịch làm việc theo khoảng thời gian');
 
             return response()->json($scheduleDetails);
         } catch (\Throwable $th) {

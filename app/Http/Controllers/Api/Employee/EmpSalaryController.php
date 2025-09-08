@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Api\Employee;
 
 use App\Helpers\HandleError;
+use App\Helpers\LogActivity;
 use App\Http\Controllers\Controller;
 use App\Models\SalaryManager;
 use App\Models\SalaryOfficialA7A;
 use App\Models\SalaryOfficialVVP;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class EmpSalaryController extends Controller
@@ -27,6 +28,8 @@ class EmpSalaryController extends Controller
                 $limit = $salaries->count();
             }
             $salaries = $salaries->paginate($limit ?? 10);
+
+            LogActivity::logViewActivity(auth()->user(), 'Xem Danh Sách Lương', 'Nhân viên xem danh sách bảng lương');
 
             return response()->json($salaries);
         } catch (\Throwable $e) {
@@ -61,11 +64,11 @@ class EmpSalaryController extends Controller
                     ->firstOrFail();
             }
 
-            return response()->json($salary);
+            LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Lương', 'Nhân viên xem chi tiết bảng lương cá nhân');
 
+            return response()->json($salary);
         } catch (\Throwable $e) {
             return HandleError::handle($e);
         }
-
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Employee;
 
 use App\Events\StampNotificationEvent;
 use App\Helpers\HandleError;
+use App\Helpers\LogActivity;
 use App\Http\Controllers\Controller;
 use App\Models\SendStamp;
 use Illuminate\Http\Request;
@@ -51,6 +52,8 @@ class EmpStampController extends Controller
             }
             DB::commit();
 
+            LogActivity::logViewActivity(auth()->user(), 'Yêu Cầu Tem Dán', 'Nhân viên gửi yêu cầu tem dán sản phẩm');
+
             return response()->json(
                 [
                     'message' => 'Stamp request created successfully',
@@ -96,6 +99,8 @@ class EmpStampController extends Controller
             }
 
             $stampHistory = $stampHistory->paginate($limit);
+
+            LogActivity::logViewActivity(auth()->user(), 'Xem Lịch Sử Tem Dán', 'Nhân viên xem lịch sử yêu cầu tem dán');
 
             return response()->json($stampHistory, 200);
         } catch (\Throwable $e) {

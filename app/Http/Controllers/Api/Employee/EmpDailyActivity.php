@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api\Employee;
 
 use App\Helpers\HandleError;
+use App\Helpers\LogActivity;
 use App\Http\Controllers\Controller;
 use App\Models\CheckEmployee;
 use App\Models\DailyQuantity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -51,6 +53,8 @@ class EmpDailyActivity extends Controller
                 $checkEmployee->dailyQuantities = $dailyQuantities;
             });
 
+            LogActivity::logViewActivity(auth()->user(), 'Xem Hoạt Động Hàng Ngày', 'Nhân viên xem danh sách hoạt động hàng ngày');
+
             return response()->json($employees, 200);
         } catch (\Throwable $th) {
             return HandleError::handle($th);
@@ -61,6 +65,8 @@ class EmpDailyActivity extends Controller
     {
         try {
             $checkEmployee = CheckEmployee::with(['employee', 'product'])->findOrFail($id);
+
+            LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Hoạt Động', 'Nhân viên xem chi tiết hoạt động theo ID');
 
             return response()->json($checkEmployee, 200);
         } catch (\Throwable $th) {
@@ -80,7 +86,10 @@ class EmpDailyActivity extends Controller
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->update($request->only('product_id', 'status'));
 
+            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
+
+            LogActivity::logViewActivity(auth()->user(), 'Cập Nhật Hoạt Động', 'Nhân viên cập nhật thông tin hoạt động');
 
             return response()->json(['message' => 'Updated successfully', 'data' => $checkEmployee], 200);
         } catch (\Throwable $th) {
@@ -97,7 +106,10 @@ class EmpDailyActivity extends Controller
             $checkEmployee = CheckEmployee::findOrFail($id);
             $checkEmployee->delete();
 
+            Cache::tags(['daily-schedule'])->flush();
             DB::commit();
+
+            LogActivity::logViewActivity(auth()->user(), 'Xóa Hoạt Động', 'Nhân viên xóa hoạt động');
 
             return response()->json([
                 'message' => 'Deleted successfully',
