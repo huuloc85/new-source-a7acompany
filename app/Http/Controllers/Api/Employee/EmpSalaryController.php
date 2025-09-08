@@ -64,8 +64,6 @@ class EmpSalaryController extends Controller
                     ->firstOrFail();
             }
 
-            LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Lương', 'Nhân viên xem chi tiết bảng lương cá nhân');
-
             return response()->json($salary);
         } catch (\Throwable $e) {
             return HandleError::handle($e);

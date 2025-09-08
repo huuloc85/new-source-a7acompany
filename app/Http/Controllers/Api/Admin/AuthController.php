@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Helpers\HandleError;
+use App\Helpers\LogActivity;
 use App\Models\Celender;
 use App\Models\CelenderDetailEatroom;
 use App\Models\CelenderDetailWCCleanMen;
@@ -98,6 +99,8 @@ class AuthController extends BaseController
                 },
             ])
             ->get();
+        $roleName = in_array($employee->role_id, [15, 21, 22]) ? 'Admin' : 'Nhân Viên';
+        LogActivity::logViewActivity($user, "{$roleName} Đăng Nhập", "{$roleName} đã đăng nhập vào web");
 
         return response()->json([
             'id' => $user->id,
