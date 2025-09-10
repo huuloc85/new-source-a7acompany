@@ -27,17 +27,20 @@ class EmpStampController extends Controller
                 'stamps.*.date' => 'required|date_format:Y-m-d',
                 'stamps.*.shift' => 'required|in:1,2',
                 'stamps.*.binCount' => 'required|integer|min:1',
-                'stamps.*.binStart' => 'required|integer|min:1',
+                'stamps.*.binStart' => 'required|string',
             ]);
             $stamps = [];
             foreach ($validate['stamps'] as $stamp) {
+                // Validate và chuẩn hóa binStart
+                $this->validateBinStart($stamp['binStart']);
+
                 $stamps[] = SendStamp::create([
                     'employee_id' => $user->id,
                     'type' => $stamp['type'],
                     'product_id' => $stamp['productId'],
                     'date' => Carbon::parse($stamp['date'])->toDateString(),
                     'shift' => $stamp['shift'],
-                    'binCount' => $stamp['binCount'],
+                    'binCount' => $stamp['binCount'] ?? 1,
                     'binStart' => $stamp['binStart'],
                     'status' => 'pending',
                 ]);
@@ -105,6 +108,20 @@ class EmpStampController extends Controller
             return response()->json($stampHistory, 200);
         } catch (\Throwable $e) {
             return HandleError::handle($e);
+        }
+    }
+
+    /**
+     * Validate binStart string - có thể là một số hoặc nhiều số cách nhau bởi dấu phẩy
+     */
+    private function validateBinStart(string $binStart): void
+    {
+        $numbers = array_map('trim', explode(',', $binStart));
+
+        foreach ($numbers as $number) {
+            if (! is_numeric($number) || (int) $number < 1) {
+                throw new \InvalidArgumentException("Invalid binStart value: {$number}");
+            }
         }
     }
 }

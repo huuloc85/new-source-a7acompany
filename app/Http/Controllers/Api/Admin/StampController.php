@@ -7,7 +7,7 @@ use App\Models\SendStamp;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class StampController extends BaseController
@@ -30,51 +30,30 @@ class StampController extends BaseController
             ]);
 
             if ($request['stamp_id']) {
-                $originalStamp = SendStamp::findOrFail($validation['stamp_id']);
-                $originalStamp->update([
-                    'status' => 'approve',
-                    'manager_id' => Auth()->user()->id,
-                    'manager_time' => Carbon::now()->format('H:i:s'),
-                ]);
-                Log::info('Stamp updated successfully', ['stamp_id' => $originalStamp->id]);
-                DB::commit();
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Stamp updated successfully',
-                    'data' => $originalStamp,
-                ], 200);
+                return $this->approveExistingStamp($validation['stamp_id']);
             }
 
-            $binList = explode(',', $validation['binStart']);
-            foreach ($binList as $bin) {
-                SendStamp::updateOrCreate([
-                    'product_id' => $validation['productId'],
-                    'manager_id' => Auth()->user()->id,
-                    'employee_id' => $validation['employee_id'] ?? Auth()->user()->id,
-                    'type' => $validation['type'],
-                    'date' => $validation['date'],
-                    'shift' => $validation['shift'] ?? 1,
-                    'binCount' => count($binList) > 1 ? 1 : $validation['binCount'],
-                    'binStart' => count($binList) > 1 ? $bin : $validation['binStart'],
-                    'manager_time' => Carbon::now()->format('H:i:s'),
-                    'status' => 'approve',
-                ]);
-            }
+            $createdStamps = $this->createStampsFromBinList($validation);
 
-            Log::info('Print saved successfully');
+            Log::info('Print saved successfully', ['created_stamps_count' => count($createdStamps)]);
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Print saved successfully',
                 'data' => [
-                    'product_id' => $validation['productId'],
-                    'type' => $validation['type'],
-                    'date' => $validation['date'],
-                    'shift' => $validation['shift'],
-                    'binCount' => $validation['binCount'],
-                    'binStart' => count($binList) > 1 ? $binList : $validation['binStart'],
+                    'stamps_created' => count($createdStamps),
+                    'stamps' => $createdStamps->map(function ($stamp) {
+                        return [
+                            'id' => $stamp->id,
+                            'product_id' => $stamp->product_id,
+                            'type' => $stamp->type,
+                            'date' => $stamp->date,
+                            'shift' => $stamp->shift,
+                            'binCount' => $stamp->binCount,
+                            'binStart' => $stamp->binStart,
+                        ];
+                    }),
                 ],
             ], 201);
         } catch (\Throwable $e) {
@@ -134,5 +113,123 @@ class StampController extends BaseController
 
             return HandleError::handle($e);
         }
+    }
+
+    /**
+     * Approve existing stamp request
+     */
+    private function approveExistingStamp(int $stampId)
+    {
+        $originalStamp = SendStamp::findOrFail($stampId);
+
+        // Kiểm tra nếu binStart có dấu phẩy thì tách thành nhiều records
+        if (strpos($originalStamp->binStart, ',') !== false) {
+            return $this->splitStampIntoBins($originalStamp);
+        }
+
+        // Nếu không có dấu phẩy thì approve bình thường
+        $originalStamp->update([
+            'status' => 'approve',
+            'manager_id' => Auth()->user()->id,
+            'manager_time' => Carbon::now()->format('H:i:s'),
+        ]);
+
+        Log::info('Stamp updated successfully', ['stamp_id' => $originalStamp->id]);
+        DB::commit();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Stamp updated successfully',
+            'data' => $originalStamp,
+        ], 200);
+    }
+
+    /**
+     * Create separate stamp records for each bin in binStart
+     */
+    private function createStampsFromBinList(array $validation)
+    {
+        $binList = explode(',', $validation['binStart']);
+        $createdStamps = collect();
+
+        foreach ($binList as $bin) {
+            $bin = trim($bin);
+
+            $stamp = SendStamp::updateOrCreate([
+                'product_id' => $validation['productId'],
+                'manager_id' => Auth()->user()->id,
+                'employee_id' => $validation['employee_id'] ?? Auth()->user()->id,
+                'type' => $validation['type'],
+                'date' => $validation['date'],
+                'shift' => $validation['shift'] ?? 1,
+                'binStart' => $bin, // Mỗi bin tách thành record riêng
+                'manager_time' => Carbon::now()->format('H:i:s'),
+                'status' => 'approve',
+            ], [
+                'binCount' => 1, // Mỗi record chỉ có 1 bin
+            ]);
+
+            $createdStamps->push($stamp);
+        }
+
+        return $createdStamps;
+    }
+
+    /**
+     * Split a pending stamp with comma-separated binStart into multiple approved records
+     */
+    private function splitStampIntoBins(SendStamp $originalStamp)
+    {
+        $binList = explode(',', $originalStamp->binStart);
+        $createdStamps = collect();
+
+        foreach ($binList as $bin) {
+            $bin = trim($bin);
+
+            // Tạo record mới cho mỗi bin
+            $newStamp = SendStamp::create([
+                'employee_id' => $originalStamp->employee_id,
+                'product_id' => $originalStamp->product_id,
+                'manager_id' => Auth()->user()->id,
+                'type' => $originalStamp->type,
+                'date' => $originalStamp->date,
+                'shift' => $originalStamp->shift,
+                'binCount' => 1, // Mỗi record chỉ có 1 bin
+                'binStart' => $bin, // Từng số riêng biệt
+                'manager_time' => Carbon::now()->format('H:i:s'),
+                'status' => 'approve',
+            ]);
+
+            $createdStamps->push($newStamp);
+        }
+
+        // Xóa record pending gốc
+        $originalStamp->delete();
+
+        Log::info('Stamp split into multiple bins', [
+            'original_stamp_id' => $originalStamp->id,
+            'bins_created' => count($createdStamps),
+        ]);
+
+        DB::commit();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Stamp approved and split into individual bins successfully',
+            'data' => [
+                'original_stamp_id' => $originalStamp->id,
+                'bins_created' => count($createdStamps),
+                'stamps' => $createdStamps->map(function ($stamp) {
+                    return [
+                        'id' => $stamp->id,
+                        'binStart' => $stamp->binStart,
+                        'binCount' => $stamp->binCount,
+                        'type' => $stamp->type,
+                        'date' => $stamp->date,
+                        'shift' => $stamp->shift,
+                    ];
+                }),
+            ],
+        ], 200);
     }
 }
