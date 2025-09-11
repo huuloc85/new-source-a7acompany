@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Helpers\HandleError;
 use App\Helpers\LogActivity;
+use App\Helpers\UploadHelper;
 use App\Models\Celender;
 use App\Models\CelenderDetailEatroom;
 use App\Models\CelenderDetailWCCleanMen;
@@ -15,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class AuthController extends BaseController
@@ -267,6 +269,51 @@ class AuthController extends BaseController
         } catch (Throwable $e) {
             // LogHelper::saveLog('resetPassword', $e->getMessage(), $e->getLine());
             return response()->json(['message' => 'Khôi phục mật khẩu thất bại'], 500);
+        }
+    }
+
+    // make change avatar
+    public function changeAvatar(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $id = auth()->user()->id;
+            $employee = Employee::query()
+                ->select('id', 'photo')
+                ->findOrFail($id);
+
+            $validated = $request->validate([
+                'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
+
+            $oldPhoto = $employee->photo;
+
+            // Process new avatar
+            if ($request->hasFile('photo')) {
+                $file = $request->file('photo');
+                $validated['photo'] = UploadHelper::upload($file, 'photo');
+            }
+
+            $employee->update($validated);
+
+            DB::commit();
+
+            // Delete old photo after successful update
+            if ($oldPhoto) {
+                Storage::delete('public/employee/'.$oldPhoto);
+            }
+
+            return response()->json([
+                'message' => 'Avatar updated successfully!',
+                'data' => [
+                    'id' => $employee->id,
+                    'photo' => $employee->photo,
+                ],
+            ], 200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
         }
     }
 

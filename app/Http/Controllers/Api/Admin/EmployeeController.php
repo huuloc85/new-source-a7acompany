@@ -195,15 +195,15 @@ class EmployeeController extends BaseController
                 'date_joining' => 'required|date|after:2000-01-01',
                 'role_id' => 'required|exists:roles,id',
                 'calendar_category_id' => 'required|exists:calendar_categories,id',
-                'photo' => 'required|image|mimes:jpeg,png,jpg',
+                // 'photo' => 'required|image|mimes:jpeg,png,jpg',
                 'card_photo' => 'required|image|mimes:jpeg,png,jpg',
             ]);
 
             // Process avatar
-            if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
-                $validated['photo'] = UploadHelper::upload($file, 'photo');
-            }
+            // if ($request->hasFile('photo')) {
+            //     $file = $request->file('photo');
+            //     $validated['photo'] = UploadHelper::upload($file, 'photo');
+            // }
 
             // Process card photo
             if ($request->hasFile('card_photo')) {
@@ -312,7 +312,7 @@ class EmployeeController extends BaseController
                 'date_joining' => 'sometimes|date|after:2000-01-01',
                 'role_id' => 'sometimes|exists:roles,id',
                 'calendar_category_id' => 'sometimes|exists:calendar_categories,id',
-                'photo' => 'sometimes|image|mimes:jpeg,png,jpg',
+                // 'photo' => 'sometimes|image|mimes:jpeg,png,jpg',
                 'card_photo' => 'sometimes|image|mimes:jpeg,png,jpg',
             ]);
 
@@ -320,10 +320,10 @@ class EmployeeController extends BaseController
             $oldCardPhoto = $employee->card_photo;
 
             // Process avatar
-            if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
-                $validated['photo'] = UploadHelper::upload($file, 'photo');
-            }
+            // if ($request->hasFile('photo')) {
+            //     $file = $request->file('photo');
+            //     $validated['photo'] = UploadHelper::upload($file, 'photo');
+            // }
 
             // Process card photo
             if ($request->hasFile('card_photo')) {
@@ -334,9 +334,9 @@ class EmployeeController extends BaseController
             $employee->update($validated);
 
             DB::commit();
-            if ($oldPhoto) {
-                Storage::delete('public/employee/'.$oldPhoto);
-            }
+            // if ($oldPhoto) {
+            //     Storage::delete('public/employee/'.$oldPhoto);
+            // }
             if ($oldCardPhoto) {
                 Storage::delete('public/employee/'.$oldCardPhoto);
             }

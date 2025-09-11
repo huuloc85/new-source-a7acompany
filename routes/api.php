@@ -72,6 +72,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/', [AuthController::class, 'authProfile']);
         Route::patch('/', [AuthController::class, 'authChangeProfile']);
         Route::patch('/change-password', [AuthController::class, 'changePassword']);
+        Route::post('/change-avatar', [AuthController::class, 'changeAvatar']);
         Route::middleware(['api.authAdmin'])->put('/reset-password/{id}', [AuthController::class, 'resetPassword']);
     });
 
