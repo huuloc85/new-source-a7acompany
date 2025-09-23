@@ -290,85 +290,61 @@ class AttendanceCalculationController extends BaseController
                     $dateEntries = array_filter($dates, function ($d) use ($date) {
                         return $d['date'] === $date;
                     });
-
                     if (count($dateEntries) > 0) {
-                        // Check if attendance is sufficient for day shift
-                        $morningRecords = array_filter($dateEntries, function ($d) {
-                            $hour = Carbon::parse($d['datetime'])->hour;
-
-                            return $hour >= 6 && $hour < 12; // Morning session: 6:00 - 12:00
+                        $time_in = array_reduce($dateEntries, function ($min, $d) {
+                            return $min === null || $d['datetime'] < $min ? $d['datetime'] : $min;
                         });
 
-                        $afternoonRecords = array_filter($dateEntries, function ($d) {
-                            $hour = Carbon::parse($d['datetime'])->hour;
-
-                            return $hour >= 12 && $hour < 19; // Afternoon session: 12:00 - 19:00
-                        });
-
-                        // Set time_in if there are morning records
-                        if (count($morningRecords) > 0) {
-                            $time_in = array_reduce($morningRecords, function ($min, $d) {
-                                return $min === null || $d['datetime'] < $min ? $d['datetime'] : $min;
-                            });
-                        }
-
-                        // Set time_out if there are afternoon records
-                        if (count($afternoonRecords) > 0) {
-                            $time_out = array_reduce($afternoonRecords, function ($max, $d) {
+                        // Only set time_out if there are multiple records (complete attendance)
+                        if (count($dateEntries) > 1) {
+                            $time_out = array_reduce($dateEntries, function ($max, $d) {
                                 return $max === null || $d['datetime'] > $max ? $d['datetime'] : $max;
                             });
+
+                            // If time_in and time_out are the same, it means only one record
+                            if ($time_in === $time_out) {
+                                $time_out = '';
+                            }
                         }
                     }
                 } elseif ($shift === 2) {
                     // Night shift: time_in from current date, time_out from next date
                     $tomorrow = Carbon::parse($date)->addDay()->format('Y-m-d');
 
-                    // Get evening records from current date
+                    // Get time_in from current date (evening start)
                     $todayEntries = array_filter($dates, function ($d) use ($date) {
                         return $d['date'] === $date;
                     });
-
-                    $eveningRecords = array_filter($todayEntries, function ($d) {
-                        $hour = Carbon::parse($d['datetime'])->hour;
-
-                        return $hour >= 19 || $hour <= 2; // Evening session: 19:00 - 02:00 next day
-                    });
-
-                    // Get morning records from next date
-                    $tomorrowEntries = array_filter($dates, function ($d) use ($tomorrow) {
-                        return $d['date'] === $tomorrow;
-                    });
-
-                    $morningRecords = array_filter($tomorrowEntries, function ($d) {
-                        $hour = Carbon::parse($d['datetime'])->hour;
-
-                        return $hour >= 2 && $hour <= 8; // Morning session: 02:00 - 08:00
-                    });
-
-                    // Set time_in if there are evening records (start of night shift)
-                    if (count($eveningRecords) > 0) {
+                    if (count($todayEntries) > 0) {
                         $time_in = array_reduce($todayEntries, function ($min, $d) {
                             return $min === null || $d['datetime'] < $min ? $d['datetime'] : $min;
                         });
                     }
 
-                    // Set time_out if there are morning records (end of night shift)
-                    if (count($morningRecords) > 0) {
+                    // Get time_out from next date (morning end)
+                    $tomorrowEntries = array_filter($dates, function ($d) use ($tomorrow) {
+                        return $d['date'] === $tomorrow;
+                    });
+                    if (count($tomorrowEntries) > 0) {
                         $time_out = array_reduce($tomorrowEntries, function ($max, $d) {
                             return $max === null || $d['datetime'] > $max ? $d['datetime'] : $max;
                         });
                     }
-                    // Alternative: if no records tomorrow but have multiple records today spanning both evening and very late
-                    elseif (count($eveningRecords) > 0 && count($morningRecords) === 0 && count($todayEntries) > 1) {
+
+                    // If no time_out from tomorrow, check if there are multiple records today that could be time_out
+                    if (! $time_out && count($todayEntries) > 1) {
                         $latestToday = array_reduce($todayEntries, function ($max, $d) {
                             return $max === null || $d['datetime'] > $max ? $d['datetime'] : $max;
                         });
+                        // If latest record today is after midnight, it could be time_out
                         $latestTime = Carbon::parse($latestToday);
-
-                        // Check if latest record is very late (after 22:00) or very early (before 6:00)
-                        // This might indicate the person worked through the night
                         if ($latestTime->hour >= 22 || $latestTime->hour <= 6) {
                             $time_out = $latestToday;
+                        }
+
+                        // If time_in and time_out are the same, it means only one record
+                        if ($time_in === $time_out) {
+                            $time_out = '';
                         }
                     }
                 }
@@ -377,6 +353,7 @@ class AttendanceCalculationController extends BaseController
             $total_hours = 0;
             $break_time = 0;
 
+            // Only calculate total hours if both time_in and time_out are available
             if ($time_in && $time_out) {
                 $start = Carbon::parse($time_in);
                 $end = Carbon::parse($time_out);
