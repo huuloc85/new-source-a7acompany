@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\AttendanceCalculationController;
 use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
 use App\Http\Controllers\Api\Admin\AttendanceRecordController;
 use App\Http\Controllers\Api\Admin\AuthController;
@@ -98,6 +99,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             // Route::post('/import', [AttendanceController::class, 'import']);
             // Route::get('/export/{id}', [AttendanceController::class, 'exportById']);
         });
+        Route::get('/calculate', [AttendanceCalculationController::class, 'calculate']);
         Route::get('/', [AttendanceHistoryController::class, 'detail']);
     });
 
@@ -213,6 +215,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
         Route::prefix('attendances')->group(function () {
             Route::get('/history', [EmpAttendanceController::class, 'history']);
+            Route::get('/calculate', [EmpAttendanceController::class, 'calculate']);
             Route::get('/', [EmpAttendanceController::class, 'index']);
             // Route::get('/{id}', [EmpAttendance::class, 'show']);
             // Route::patch('/{id}', [EmpAttendance::class, 'update']);
