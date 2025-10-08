@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\AdminRequestFormController;
 use App\Http\Controllers\Api\Admin\AttendanceCalculationController;
 use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
 use App\Http\Controllers\Api\Admin\AttendanceRecordController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
 use App\Http\Controllers\Api\Employee\EmpAttendanceController;
 use App\Http\Controllers\Api\Employee\EmpDailyActivity;
+use App\Http\Controllers\Api\Employee\EmpRequestFormController;
 use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use App\Http\Controllers\Api\Employee\EmpStampController;
@@ -86,6 +88,14 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/', [EmployeeController::class, 'addEmployee']);
         Route::patch('/{id}', [EmployeeController::class, 'updateEmployee']);
         Route::delete('/{id}', [EmployeeController::class, 'removeEmployee']);
+    });
+
+    // Request Forms Management (Quản Lý Đơn Yêu Cầu)
+    Route::middleware(['api.check.request.form'])->prefix('request-forms')->group(function () {
+        Route::get('/', [AdminRequestFormController::class, 'index']);  // Xem tất cả đơn
+        Route::get('/statistics', [AdminRequestFormController::class, 'getStatistics']); // Thống kê
+        Route::get('/{id}', [AdminRequestFormController::class, 'show']); // Xem chi tiết đơn
+        Route::post('/{id}/approve', [AdminRequestFormController::class, 'approve']); // Duyệt/từ chối đơn
     });
 
     // Attendance Records (Quản Lý Chấm Công)
@@ -236,6 +246,21 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             Route::get('/', [EmpTodoController::class, 'index']);
             Route::post('/', [EmpTodoController::class, 'store']);
             Route::get('/history', [EmpTodoController::class, 'history']);
+        });
+
+        Route::prefix('request-forms')->group(function () {
+            Route::get('/', [EmpRequestFormController::class, 'index']);
+            Route::post('/', [EmpRequestFormController::class, 'store']);
+            Route::get('/types', [EmpRequestFormController::class, 'getFormTypes']);
+            Route::get('/signature-fields', [EmpRequestFormController::class, 'getSignatureFields']);
+            Route::get('/authorizable-employees', [EmpRequestFormController::class, 'getAuthorizableEmployees']);
+            Route::get('/authorized-to-me', [EmpRequestFormController::class, 'getAuthorizedToMe']);
+            Route::post('/{id}/sign-delegation', [EmpRequestFormController::class, 'signDelegation']);
+            Route::post('/{id}/approve-as-authorized', [EmpRequestFormController::class, 'approveAsAuthorized']);
+            Route::post('/{id}/reject-as-authorized', [EmpRequestFormController::class, 'rejectAsAuthorized']);
+            Route::get('/{id}', [EmpRequestFormController::class, 'show']);
+            Route::put('/{id}', [EmpRequestFormController::class, 'update']);
+            Route::delete('/{id}', [EmpRequestFormController::class, 'destroy']);
         });
 
         Route::prefix('stamps')->group(function () {

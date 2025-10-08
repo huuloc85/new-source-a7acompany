@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\LoginHistory;
 use App\Models\Product;
 use App\Models\ProductionPlan;
+use App\Models\RequestForm;
 use App\Models\Role;
 use App\Models\SalaryManager;
 use Carbon\Carbon;
@@ -41,6 +42,9 @@ class DashboardController extends BaseController
         $totalRecord = AttendanceRecord::count();
         $totalCheckEmployee = CheckEmployee::whereDate('date', $today)->count();
 
+        // ✅ Thêm tổng số Request Forms
+        $totalRequestForms = RequestForm::count();
+
         $salaryManagers = SalaryManager::orderBy('id', 'DESC')->limit(10)->get();
         $celenders = Celender::orderBy('id', 'DESC')->limit(10)->get();
 
@@ -54,6 +58,7 @@ class DashboardController extends BaseController
             'totalPlan' => $totalPlan,
             'totalRecord' => $totalRecord,
             'totalCheckEmployee' => $totalCheckEmployee,
+            'totalRequestForms' => $totalRequestForms, // ✅ Thêm tổng số Request Forms
             'topUsers' => $topUsers,
             'salaryManagers' => $salaryManagers,
             'celenders' => $celenders,

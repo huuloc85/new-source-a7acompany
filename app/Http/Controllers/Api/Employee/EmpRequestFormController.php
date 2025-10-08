@@ -1,0 +1,826 @@
+<?php
+
+namespace App\Http\Controllers\Api\Employee;
+
+use App\Http\Controllers\Controller;
+use App\Models\RequestForm;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class EmpRequestFormController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        // Employee chỉ xem được đơn của mình
+        $query = RequestForm::query()->where('employee_id', Auth::id());
+
+        // Lọc theo loại đơn
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Lọc theo trạng thái
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Lọc theo ngày tạo
+        if ($request->has('from_date')) {
+            $query->whereDate('submitted_at', '>=', $request->from_date);
+        }
+
+        if ($request->has('to_date')) {
+            $query->whereDate('submitted_at', '<=', $request->to_date);
+        }
+
+        // ✅ Select TẤT CẢ columns cần thiết cho response (theo yêu cầu FE)
+        $query->select([
+            'id',
+            'employee_id',
+            'type',
+            'title',
+            'content',
+            'form_data',
+            'status',
+            'rejection_reason',
+            'submitted_at',
+            'approved_at',
+            'rejected_at',
+            'created_at',
+            'updated_at',
+            // Giấy ủy quyền fields
+            'authorized_employee_id',
+            'digital_signature_delegator',
+            'digital_signature_authorized',
+            'delegator_approved_by',
+            'delegator_approved_at',
+            'authorized_approved_by',
+            'authorized_approved_at',
+            // Đơn thường fields
+            'supervisor_id',
+            'digital_signature_applicant',
+            'digital_signature_supervisor',
+            'digital_signature_manager',
+            'supervisor_approved_by',
+            'supervisor_approved_at',
+            'manager_approved_by',
+            'manager_approved_at',
+            'approved_by',
+        ]);
+
+        // ✅ Eager load TẤT CẢ relationships với FULL FIELDS (id, name, email, phone) theo yêu cầu FE
+        // Load tất cả để đảm bảo không bị thiếu dữ liệu khi không filter type
+        $query->with([
+            'employee:id,name,email,phone',
+            // Giấy ủy quyền relationships
+            'delegatorApprovedBy:id,name,email,phone',
+            'authorizedApprovedBy:id,name,email,phone',
+            'authorizedEmployee:id,name,email,phone',
+            // Đơn thường relationships
+            'approvedBy:id,name,email,phone',
+            'supervisor:id,name,email',
+            'supervisorApprovedBy:id,name,email,phone',
+            'managerApprovedBy:id,name,email,phone',
+        ]);
+
+        $requestForms = $query->orderBy('submitted_at', 'desc')
+            ->paginate($request->get('per_page', 15));
+
+        return response()->json([
+            'success' => true,
+            'data' => $requestForms,
+            'types' => RequestForm::getTypes(),
+            'statuses' => RequestForm::getStatuses(),
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            // Chuẩn bị data để tạo đơn
+            $createData = [
+                'employee_id' => Auth::id(),
+                'type' => $request->type,
+                'title' => $request->title,
+                'content' => $request->content,
+                'form_data' => $request->form_data ?? [],
+                'status' => RequestForm::STATUS_PENDING,
+                'submitted_at' => now(),
+            ];
+
+            // Nếu là đơn ủy quyền, lưu thêm authorized_employee_id
+            if ($request->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
+                $formData = is_array($request->form_data) ? $request->form_data : json_decode($request->form_data, true);
+                if (! empty($formData['authorized_employee_id'])) {
+                    $createData['authorized_employee_id'] = $formData['authorized_employee_id'];
+                }
+            } else {
+                // Nếu là đơn thường, lưu supervisor_id
+                if ($request->has('supervisor_id')) {
+                    $createData['supervisor_id'] = $request->supervisor_id;
+                }
+            }
+
+            // Tạo đơn
+            $requestForm = RequestForm::create($createData);
+
+            // Xử lý upload chữ ký điện tử theo loại đơn
+            $signatureFields = $requestForm->getDigitalSignatureFields();
+            $updateData = [];
+
+            foreach ($signatureFields as $fieldName => $fieldLabel) {
+                if ($request->hasFile($fieldName)) {
+                    $file = $request->file($fieldName);
+                    $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
+                    $path = $file->storeAs('digital_signatures', $filename, 'public');
+                    $updateData[$fieldName] = $path;
+
+                    // Lưu thông tin người ký và thời gian ký
+                    if ($fieldName === 'digital_signature_delegator') {
+                        $updateData['delegator_approved_by'] = Auth::id();
+                        $updateData['delegator_approved_at'] = now();
+                    } elseif ($fieldName === 'digital_signature_authorized') {
+                        $updateData['authorized_approved_by'] = Auth::id();
+                        $updateData['authorized_approved_at'] = now();
+                    } elseif ($fieldName === 'digital_signature_applicant') {
+                        // Có thể thêm tracking cho applicant nếu cần
+                    }
+                }
+            }
+
+            // Cập nhật chữ ký nếu có
+            if (! empty($updateData)) {
+                $requestForm->update($updateData);
+            }
+
+            // Load relationships dựa trên loại đơn
+            if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
+                $requestForm->load(['employee', 'approvedBy', 'delegatorApprovedBy', 'authorizedApprovedBy']);
+            } else {
+                $requestForm->load(['employee', 'approvedBy']);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đơn yêu cầu đã được tạo thành công',
+                'data' => $requestForm,
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi tạo đơn yêu cầu',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id): JsonResponse
+    {
+        $requestForm = RequestForm::with([
+            'employee',
+            'approvedBy',
+            'authorizedEmployee',
+            'delegatorApprovedBy',
+            'authorizedApprovedBy',
+            'supervisorApprovedBy',
+            'managerApprovedBy',
+        ])->find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $requestForm,
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $requestForm = RequestForm::find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        // Chỉ cho phép cập nhật đơn chưa được duyệt và của chính mình
+        if ($requestForm->status !== RequestForm::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể cập nhật đơn đã được xử lý',
+            ], 403);
+        }
+
+        if ($requestForm->employee_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền cập nhật đơn này',
+            ], 403);
+        }
+
+        try {
+            $updateData = [
+                'title' => $request->title ?? $requestForm->title,
+                'content' => $request->content ?? $requestForm->content,
+                'form_data' => $request->form_data ?? $requestForm->form_data,
+            ];
+
+            // Nếu là đơn ủy quyền và có cập nhật authorized_employee_id
+            if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN && $request->has('form_data')) {
+                $formData = is_array($request->form_data) ? $request->form_data : json_decode($request->form_data, true);
+                if (! empty($formData['authorized_employee_id'])) {
+                    $updateData['authorized_employee_id'] = $formData['authorized_employee_id'];
+                }
+            }
+
+            // Xử lý cập nhật chữ ký điện tử theo loại đơn
+            $signatureFields = $requestForm->getDigitalSignatureFields();
+
+            foreach ($signatureFields as $fieldName => $fieldLabel) {
+                if ($request->hasFile($fieldName)) {
+                    // Xóa file cũ nếu có
+                    if ($requestForm->$fieldName && Storage::disk('public')->exists($requestForm->$fieldName)) {
+                        Storage::disk('public')->delete($requestForm->$fieldName);
+                    }
+
+                    $file = $request->file($fieldName);
+                    $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
+                    $updateData[$fieldName] = $file->storeAs('digital_signatures', $filename, 'public');
+
+                    // Lưu thông tin người ký và thời gian ký
+                    if ($fieldName === 'digital_signature_delegator') {
+                        $updateData['delegator_approved_by'] = Auth::id();
+                        $updateData['delegator_approved_at'] = now();
+                    } elseif ($fieldName === 'digital_signature_authorized') {
+                        $updateData['authorized_approved_by'] = Auth::id();
+                        $updateData['authorized_approved_at'] = now();
+                    }
+                }
+            }
+
+            $requestForm->update($updateData);
+
+            // Load relationships dựa trên loại đơn
+            if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
+                $requestForm->load(['employee', 'approvedBy', 'delegatorApprovedBy', 'authorizedApprovedBy']);
+            } else {
+                $requestForm->load(['employee', 'approvedBy']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đơn yêu cầu đã được cập nhật thành công',
+                'data' => $requestForm,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi cập nhật đơn yêu cầu',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        $requestForm = RequestForm::find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        // Chỉ cho phép xóa đơn chưa được duyệt và của chính mình
+        if ($requestForm->status !== RequestForm::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không thể xóa đơn đã được xử lý',
+            ], 403);
+        }
+
+        if ($requestForm->employee_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xóa đơn này',
+            ], 403);
+        }
+
+        try {
+            // Xóa tất cả file chữ ký điện tử nếu có
+            $uploadedSignatures = $requestForm->getUploadedSignatures();
+            foreach ($uploadedSignatures as $field => $path) {
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+
+            $requestForm->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đơn yêu cầu đã được xóa thành công',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi xóa đơn yêu cầu',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Lấy danh sách các loại đơn và trạng thái
+     */
+    public function getFormTypes(): JsonResponse
+    {
+        $data = Cache::remember('request_form_types_statuses', 86400, function () {
+            return [
+                'types' => RequestForm::getTypes(),
+                'statuses' => RequestForm::getStatuses(),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * Lấy thông tin các loại chữ ký theo loại đơn
+     */
+    public function getSignatureFields(Request $request): JsonResponse
+    {
+        $type = $request->get('type');
+
+        if (! $type || ! array_key_exists($type, RequestForm::getTypes())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Loại đơn không hợp lệ',
+            ], 400);
+        }
+
+        // Tạo instance tạm để lấy signature fields
+        $tempForm = new RequestForm(['type' => $type]);
+        $signatureFields = $tempForm->getDigitalSignatureFields();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'type' => $type,
+                'type_name' => RequestForm::getTypes()[$type],
+                'signature_fields' => $signatureFields,
+            ],
+        ]);
+    }
+
+    /**
+     * Lấy danh sách nhân viên có thể được ủy quyền
+     * (loại trừ admin, co admin, super admin và deleted)
+     */
+    public function getAuthorizableEmployees(): JsonResponse
+    {
+        $employees = Cache::remember('authorizable_employees', 3600, function () {
+            return \App\Models\Employee::with('role:id,role_name')
+                ->whereHas('role', function ($query) {
+                    $query->whereNotIn('role_name', ['admin', 'co admin', 'super admin']);
+                })
+                ->whereNull('deleted_at')
+                ->select('id', 'name', 'role_id', 'gender')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($employee) {
+                    return [
+                        'id' => $employee->id,
+                        'name' => $employee->name,
+                        'gender' => $employee->gender,
+                        'role_name' => $employee->role ? $employee->role->role_name : null,
+                    ];
+                });
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $employees,
+        ]);
+    }
+
+    /**
+     * User ký chữ ký cho đơn ủy quyền (delegator hoặc authorized)
+     */
+    public function signDelegation(Request $request, $id): JsonResponse
+    {
+        $requestForm = RequestForm::findOrFail($id);
+
+        // Kiểm tra quyền: chỉ người tạo đơn hoặc người được ủy quyền mới có thể ký
+        $currentUserId = Auth::id();
+        $authorizedEmployeeId = $requestForm->authorized_employee_id;
+
+        if ($currentUserId != $requestForm->employee_id && $currentUserId != $authorizedEmployeeId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền ký đơn này',
+            ], 403);
+        }
+
+        // Kiểm tra đơn phải là loại ủy quyền
+        if ($requestForm->type !== RequestForm::TYPE_GIAY_UY_QUYEN) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể ký chữ ký cho đơn ủy quyền',
+            ], 400);
+        }
+
+        // Kiểm tra đơn phải ở trạng thái pending
+        if ($requestForm->status !== RequestForm::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể ký chữ ký cho đơn đang chờ duyệt',
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $updateData = [];
+            $hasNewSignature = false;
+            $signatureType = '';
+
+            // Xác định loại chữ ký dựa trên user hiện tại
+            if ($currentUserId == $requestForm->employee_id) {
+                // Người tạo đơn = delegator
+                if ($request->hasFile('digital_signature_delegator')) {
+                    $file = $request->file('digital_signature_delegator');
+
+                    // Delete old signature if exists
+                    if ($requestForm->digital_signature_delegator && Storage::disk('public')->exists($requestForm->digital_signature_delegator)) {
+                        Storage::disk('public')->delete($requestForm->digital_signature_delegator);
+                    }
+
+                    // Store new signature
+                    $filename = time().'_delegator_'.$file->getClientOriginalName();
+                    $path = $file->storeAs('signatures', $filename, 'public');
+
+                    $updateData['digital_signature_delegator'] = $path;
+                    $updateData['delegator_approved_by'] = $currentUserId;
+                    $updateData['delegator_approved_at'] = now();
+                    $hasNewSignature = true;
+                    $signatureType = 'delegator';
+                }
+            } elseif ($currentUserId == $authorizedEmployeeId) {
+                // Người được ủy quyền = authorized
+                if ($request->hasFile('digital_signature_authorized')) {
+                    $file = $request->file('digital_signature_authorized');
+
+                    // Delete old signature if exists
+                    if ($requestForm->digital_signature_authorized && Storage::disk('public')->exists($requestForm->digital_signature_authorized)) {
+                        Storage::disk('public')->delete($requestForm->digital_signature_authorized);
+                    }
+
+                    // Store new signature
+                    $filename = time().'_authorized_'.$file->getClientOriginalName();
+                    $path = $file->storeAs('signatures', $filename, 'public');
+
+                    $updateData['digital_signature_authorized'] = $path;
+                    $updateData['authorized_approved_by'] = $currentUserId;
+                    $updateData['authorized_approved_at'] = now();
+                    $hasNewSignature = true;
+                    $signatureType = 'authorized';
+                }
+            }
+
+            if (! $hasNewSignature) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy file chữ ký để upload',
+                ], 400);
+            }
+
+            $requestForm->update($updateData);
+            $requestForm->refresh();
+
+            // Load relationships
+            $requestForm->load(['employee', 'delegatorApprovedBy', 'authorizedApprovedBy']);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Đã ký chữ ký {$signatureType} thành công. Đơn sẽ được gửi để admin duyệt.",
+                'data' => [
+                    'id' => $requestForm->id,
+                    'type' => $requestForm->type,
+                    'status' => $requestForm->status,
+                    'has_delegator_signature' => ! empty($requestForm->digital_signature_delegator),
+                    'has_authorized_signature' => ! empty($requestForm->digital_signature_authorized),
+                    'delegator_approved_by_employee' => $requestForm->delegatorApprovedBy ? [
+                        'id' => $requestForm->delegatorApprovedBy->id,
+                        'name' => $requestForm->delegatorApprovedBy->name,
+                    ] : null,
+                    'authorized_approved_by_employee' => $requestForm->authorizedApprovedBy ? [
+                        'id' => $requestForm->authorizedApprovedBy->id,
+                        'name' => $requestForm->authorizedApprovedBy->name,
+                    ] : null,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi ký chữ ký',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Lấy danh sách các đơn mà user hiện tại được ủy quyền
+     */
+    public function getAuthorizedToMe(Request $request): JsonResponse
+    {
+        $currentUserId = Auth::id();
+
+        // ✅ Select TẤT CẢ columns cần thiết cho Giấy Ủy Quyền (theo yêu cầu FE)
+        $query = RequestForm::query()
+            ->select([
+                'id',
+                'employee_id',
+                'type',
+                'title',
+                'content',
+                'form_data',
+                'status',
+                'rejection_reason',
+                'authorized_employee_id',
+                'digital_signature_delegator',
+                'digital_signature_authorized',
+                'delegator_approved_by',
+                'delegator_approved_at',
+                'authorized_approved_by',
+                'authorized_approved_at',
+                'submitted_at',
+                'approved_at',
+                'rejected_at',
+                'created_at',
+                'updated_at',
+            ])
+            ->where('type', RequestForm::TYPE_GIAY_UY_QUYEN)
+            ->where('authorized_employee_id', $currentUserId);
+
+        // ✅ Eager load với FULL FIELDS (id, name, email, phone) theo yêu cầu FE
+        $query->with([
+            'employee:id,name,email,phone',
+            'delegatorApprovedBy:id,name,email,phone',
+            'authorizedApprovedBy:id,name,email,phone',
+            'authorizedEmployee:id,name,email,phone',
+        ]);
+
+        // Filter theo status
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        // Sắp xếp theo ngày tạo mới nhất
+        $query->orderBy('created_at', 'desc');
+
+        // Pagination
+        $limit = $request->get('limit', 10);
+        $requestForms = $query->paginate($limit);
+
+        return response()->json([
+            'success' => true,
+            'data' => $requestForms->items(),
+            'total' => $requestForms->total(),
+            'page' => $requestForms->currentPage(),
+            'limit' => $requestForms->perPage(),
+            'last_page' => $requestForms->lastPage(),
+        ]);
+    }
+
+    /**
+     * Người được ủy quyền duyệt đơn và upload chữ ký điện tử
+     */
+    public function approveAsAuthorized(Request $request, string $id): JsonResponse
+    {
+        $requestForm = RequestForm::find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        // Kiểm tra user hiện tại có phải là người được ủy quyền không
+        $currentUserId = Auth::id();
+        $authorizedEmployeeId = $requestForm->authorized_employee_id;
+
+        if ($currentUserId != $authorizedEmployeeId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền duyệt đơn này',
+            ], 403);
+        }
+
+        // Kiểm tra đơn phải là loại ủy quyền
+        if ($requestForm->type !== RequestForm::TYPE_GIAY_UY_QUYEN) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể duyệt đơn ủy quyền',
+            ], 400);
+        }
+
+        // Kiểm tra status phải là pending
+        if ($requestForm->status !== RequestForm::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể duyệt đơn đang chờ xử lý',
+            ], 400);
+        }
+
+        // Validate file upload
+        $request->validate([
+            'digital_signature_authorized' => 'required|file|mimes:png,jpg,jpeg|max:2048',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $updateData = [];
+
+            // Xử lý upload file chữ ký
+            if ($request->hasFile('digital_signature_authorized')) {
+                $file = $request->file('digital_signature_authorized');
+
+                // Delete old signature if exists
+                if ($requestForm->digital_signature_authorized && Storage::disk('public')->exists($requestForm->digital_signature_authorized)) {
+                    Storage::disk('public')->delete($requestForm->digital_signature_authorized);
+                }
+
+                // Store new signature
+                $filename = time().'_authorized_'.$file->getClientOriginalName();
+                $path = $file->storeAs('signatures', $filename, 'public');
+
+                $updateData['digital_signature_authorized'] = $path;
+                $updateData['status'] = RequestForm::STATUS_AUTHORIZED_APPROVED;
+                $updateData['authorized_approved_by'] = $currentUserId;
+                $updateData['authorized_approved_at'] = now();
+            }
+
+            // Update request form
+            $requestForm->update($updateData);
+
+            $requestForm->refresh();
+            $requestForm->load(['employee', 'authorizedApprovedBy']);
+
+            // TODO: Gửi notification cho delegator
+            // Có thể implement sau với event/notification system
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã duyệt đơn thành công',
+                'data' => [
+                    'id' => $requestForm->id,
+                    'status' => $requestForm->status,
+                    'digital_signature_authorized' => $requestForm->digital_signature_authorized,
+                    'authorized_at' => $requestForm->authorized_approved_at,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi duyệt đơn',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Người được ủy quyền từ chối đơn với lý do
+     */
+    public function rejectAsAuthorized(Request $request, string $id): JsonResponse
+    {
+        $requestForm = RequestForm::find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        // Kiểm tra user hiện tại có phải là người được ủy quyền không
+        $currentUserId = Auth::id();
+        $authorizedEmployeeId = $requestForm->authorized_employee_id;
+
+        if ($currentUserId != $authorizedEmployeeId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền từ chối đơn này',
+            ], 403);
+        }
+
+        // Kiểm tra đơn phải là loại ủy quyền
+        if ($requestForm->type !== RequestForm::TYPE_GIAY_UY_QUYEN) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể từ chối đơn ủy quyền',
+            ], 400);
+        }
+
+        // Kiểm tra status phải là pending
+        if ($requestForm->status !== RequestForm::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ có thể từ chối đơn đang chờ xử lý',
+            ], 400);
+        }
+
+        // Validate rejection reason
+        $request->validate([
+            'rejection_reason' => 'required|string|min:10|max:500',
+        ], [
+            'rejection_reason.required' => 'Vui lòng nhập lý do từ chối',
+            'rejection_reason.min' => 'Lý do từ chối phải có ít nhất 10 ký tự',
+            'rejection_reason.max' => 'Lý do từ chối không được quá 500 ký tự',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Update request form
+            $requestForm->update([
+                'status' => RequestForm::STATUS_REJECTED,
+                'rejection_reason' => $request->rejection_reason,
+                'rejected_at' => now(),
+            ]);
+
+            $requestForm->refresh();
+            $requestForm->load(['employee']);
+
+            // TODO: Gửi notification cho delegator về việc đơn bị từ chối
+            // Có thể implement sau với event/notification system
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã từ chối đơn',
+                'data' => [
+                    'id' => $requestForm->id,
+                    'status' => $requestForm->status,
+                    'rejection_reason' => $requestForm->rejection_reason,
+                    'rejected_at' => $requestForm->rejected_at,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi từ chối đơn',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+}

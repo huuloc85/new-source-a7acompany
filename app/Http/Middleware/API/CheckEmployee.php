@@ -3,7 +3,6 @@
 namespace App\Http\Middleware\API;
 
 use Closure;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CheckEmployee
@@ -13,7 +12,7 @@ class CheckEmployee
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): JsonResponse
+    public function handle(Request $request, Closure $next)
     {
         $user = auth()->user();
 

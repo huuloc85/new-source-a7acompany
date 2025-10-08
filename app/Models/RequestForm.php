@@ -1,0 +1,256 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class RequestForm extends Model
+{
+    use HasFactory;
+
+    // Các loại đơn
+    const TYPE_GIAY_UY_QUYEN = 'giay_uy_quyen';
+
+    const TYPE_DON_XIN_TU_CHUC = 'don_xin_tu_chuc';
+
+    const TYPE_DON_XIN_NGHI_VIEC = 'don_xin_nghi_viec';
+
+    const TYPE_DON_XIN_NGHI_PHEP = 'don_xin_nghi_phep';
+
+    const TYPE_DON_XIN_DI_TRE_VE_SOM = 'don_xin_di_tre_ve_som';
+
+    // Trạng thái đơn
+    const STATUS_PENDING = 'pending';
+
+    const STATUS_APPROVED = 'approved';
+
+    const STATUS_REJECTED = 'rejected';
+
+    const STATUS_AUTHORIZED_APPROVED = 'authorized_approved';
+
+    protected $fillable = [
+        'employee_id',
+        'authorized_employee_id',
+        'supervisor_id',
+        'type',
+        'title',
+        'content',
+        'form_data',
+        'digital_signature_delegator',
+        'digital_signature_authorized',
+        'digital_signature_applicant',
+        'digital_signature_supervisor',
+        'digital_signature_manager',
+        'status',
+        'approved_by',
+        'approved_at',
+        'rejection_reason',
+        'submitted_at',
+        'supervisor_approved_by',
+        'supervisor_approved_at',
+        'manager_approved_by',
+        'manager_approved_at',
+        'delegator_approved_by',
+        'delegator_approved_at',
+        'authorized_approved_by',
+        'authorized_approved_at',
+    ];
+
+    protected $casts = [
+        'form_data' => 'array',
+        'submitted_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'supervisor_approved_at' => 'datetime',
+        'manager_approved_at' => 'datetime',
+        'delegator_approved_at' => 'datetime',
+        'authorized_approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+    ];
+
+    /**
+     * Danh sách các loại đơn
+     */
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_GIAY_UY_QUYEN => 'Giấy ủy quyền',
+            self::TYPE_DON_XIN_TU_CHUC => 'Đơn xin từ chức',
+            self::TYPE_DON_XIN_NGHI_VIEC => 'Đơn xin nghỉ việc',
+            self::TYPE_DON_XIN_NGHI_PHEP => 'Đơn xin nghỉ phép',
+            self::TYPE_DON_XIN_DI_TRE_VE_SOM => 'Đơn xin đi trễ - về sớm',
+        ];
+    }
+
+    /**
+     * Danh sách trạng thái
+     */
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_PENDING => 'Chờ duyệt',
+            self::STATUS_APPROVED => 'Đã duyệt',
+            self::STATUS_REJECTED => 'Từ chối',
+            self::STATUS_AUTHORIZED_APPROVED => 'Người được ủy quyền đã duyệt',
+        ];
+    }
+
+    /**
+     * Relationship với Employee (người tạo đơn)
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    /**
+     * Relationship với Employee (người duyệt đơn)
+     */
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'approved_by');
+    }
+
+    /**
+     * Relationship với Employee (supervisor được chọn)
+     */
+    public function supervisor(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'supervisor_id');
+    }
+
+    /**
+     * Relationship với Employee (supervisor đã ký)
+     */
+    public function supervisorApprovedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'supervisor_approved_by');
+    }
+
+    /**
+     * Relationship với Employee (manager đã ký)
+     */
+    public function managerApprovedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'manager_approved_by');
+    }
+
+    /**
+     * Relationship với Employee (người ủy quyền đã ký)
+     */
+    public function delegatorApprovedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'delegator_approved_by');
+    }
+
+    /**
+     * Relationship với Employee (người được ủy quyền đã ký)
+     */
+    public function authorizedApprovedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'authorized_approved_by');
+    }
+
+    /**
+     * Relationship với Employee (người được ủy quyền - người nhận ủy quyền)
+     */
+    public function authorizedEmployee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'authorized_employee_id');
+    }
+
+    /**
+     * Scope để lọc theo loại đơn
+     */
+    public function scopeOfType($query, string $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    /**
+     * Scope để lọc theo trạng thái
+     */
+    public function scopeOfStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope để lọc đơn chờ duyệt
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', self::STATUS_PENDING);
+    }
+
+    /**
+     * Scope để lọc đơn đã duyệt
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('status', self::STATUS_APPROVED);
+    }
+
+    /**
+     * Scope để lọc đơn bị từ chối
+     */
+    public function scopeRejected($query)
+    {
+        return $query->where('status', self::STATUS_REJECTED);
+    }
+
+    /**
+     * Lấy danh sách các trường chữ ký theo loại đơn
+     */
+    public function getDigitalSignatureFields(): array
+    {
+        if ($this->type === self::TYPE_GIAY_UY_QUYEN) {
+            // Đơn ủy quyền - 2 chữ ký
+            return [
+                'digital_signature_delegator' => 'Chữ ký bên ủy quyền',
+                'digital_signature_authorized' => 'Chữ ký bên được ủy quyền',
+            ];
+        } else {
+            // Các đơn khác - 3 chữ ký
+            return [
+                'digital_signature_applicant' => 'Chữ ký người làm đơn',
+                'digital_signature_supervisor' => 'Chữ ký tổ trưởng/giám sát',
+                'digital_signature_manager' => 'Chữ ký quản lý/phê duyệt',
+            ];
+        }
+    }
+
+    /**
+     * Kiểm tra xem có chữ ký nào được upload không
+     */
+    public function hasDigitalSignatures(): bool
+    {
+        $fields = array_keys($this->getDigitalSignatureFields());
+
+        foreach ($fields as $field) {
+            if (! empty($this->$field)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Lấy tất cả chữ ký đã upload
+     */
+    public function getUploadedSignatures(): array
+    {
+        $fields = array_keys($this->getDigitalSignatureFields());
+        $uploaded = [];
+
+        foreach ($fields as $field) {
+            if (! empty($this->$field)) {
+                $uploaded[$field] = $this->$field;
+            }
+        }
+
+        return $uploaded;
+    }
+}
