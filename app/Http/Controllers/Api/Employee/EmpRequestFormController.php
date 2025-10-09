@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendRequestFormNotificationJob;
 use App\Models\RequestForm;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EmpRequestFormController extends Controller
@@ -136,6 +138,13 @@ class EmpRequestFormController extends Controller
             // Tạo đơn
             $requestForm = RequestForm::create($createData);
 
+            // Lấy thông tin supervisor để gửi email thông báo (nếu có)
+            $supervisor = null;
+            if (! empty($createData['supervisor_id'])) {
+                $supervisor = \App\Models\Employee::select('id', 'name', 'email', 'phone')
+                    ->find($createData['supervisor_id']);
+            }
+
             // Xử lý upload chữ ký điện tử theo loại đơn
             $signatureFields = $requestForm->getDigitalSignatureFields();
             $updateData = [];
@@ -169,15 +178,67 @@ class EmpRequestFormController extends Controller
             if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
                 $requestForm->load(['employee', 'approvedBy', 'delegatorApprovedBy', 'authorizedApprovedBy']);
             } else {
-                $requestForm->load(['employee', 'approvedBy']);
+                $requestForm->load(['employee', 'approvedBy', 'supervisor']);
             }
 
             DB::commit();
 
+            // Tạo URL để xem danh sách đơn cần duyệt
+            $frontendUrl = config('app.frontend_url', 'https://a7acompany.com');
+            $approvalUrlSupervisor = $frontendUrl.'/employee/request-forms';
+            $approvalUrlManager = $frontendUrl.'/request-forms';
+
+            // Gửi email thông báo cho supervisor (nếu có)
+            if ($supervisor && $supervisor->email) {
+                try {
+                    // Dispatch job để gửi email (chạy bất đồng bộ qua queue)
+                    SendRequestFormNotificationJob::dispatch($requestForm, $supervisor, $approvalUrlSupervisor);
+
+                    Log::info('📤 Đã thêm job gửi email cho supervisor vào queue', [
+                        'supervisor_id' => $supervisor->id,
+                        'supervisor_email' => $supervisor->email,
+                        'supervisor_name' => $supervisor->name,
+                        'request_form_id' => $requestForm->id,
+                        'request_form_type' => $requestForm->type,
+                        'request_form_title' => $requestForm->title,
+                        'approval_url' => $approvalUrlSupervisor,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('❌ Lỗi khi thêm job gửi email cho supervisor vào queue: '.$e->getMessage());
+                }
+            }
+
+            // Gửi email thông báo cho quản lý nhà máy
+            try {
+                $factoryManagerEmail = 'ctyvinhvinhphat1@gmail.com';
+                $factoryManager = (object) [
+                    'name' => 'Quản lý nhà máy',
+                    'email' => $factoryManagerEmail,
+                ];
+
+                // Dispatch job để gửi email cho quản lý nhà máy với URL riêng
+                SendRequestFormNotificationJob::dispatch($requestForm, $factoryManager, $approvalUrlManager);
+
+                Log::info('📤 Đã thêm job gửi email cho quản lý nhà máy vào queue', [
+                    'manager_email' => $factoryManagerEmail,
+                    'request_form_id' => $requestForm->id,
+                    'request_form_type' => $requestForm->type,
+                    'request_form_title' => $requestForm->title,
+                    'approval_url' => $approvalUrlManager,
+                ]);
+            } catch (\Exception $e) {
+                Log::error('❌ Lỗi khi thêm job gửi email cho quản lý nhà máy vào queue: '.$e->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Đơn yêu cầu đã được tạo thành công',
+                'message' => 'Đơn yêu cầu đã được tạo thành công'.($supervisor ? ' và đã gửi thông báo cho tổ trưởng' : ''),
                 'data' => $requestForm,
+                'supervisor_notified' => $supervisor ? [
+                    'id' => $supervisor->id,
+                    'name' => $supervisor->name,
+                    'email' => $supervisor->email,
+                ] : null,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
