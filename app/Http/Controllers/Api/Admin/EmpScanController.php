@@ -24,12 +24,83 @@ class EmpScanController extends BaseController
                 'barcode' => 'required|string',
             ]);
 
-            $barcode = explode('a', $validate['barcode']);
+            // Tách barcode với cả 'a' thường và 'A' hoa
+            $barcode = preg_split('/[aA]/', $validate['barcode'], 2);
+
+            // Kiểm tra định dạng barcode hợp lệ
+            if (count($barcode) !== 2 || empty($barcode[0]) || empty($barcode[1])) {
+                return response()->json([
+                    'error' => [
+                        'code' => 400,
+                        'message' => 'Bad Request',
+                        'errors' => [
+                            'barcode' => ['Định dạng barcode không hợp lệ.'],
+                        ],
+                    ],
+                ], 400);
+            }
 
             $productId = $barcode[0];
-            $date = substr($barcode[1], 0, 8);
-            $shift = substr($barcode[1], 8, 1);
-            $bin = substr($barcode[1], 9);
+            $barcodeData = $barcode[1];
+
+            // Kiểm tra độ dài barcode data tối thiểu (8 ngày + 1 ca + ít nhất 1 số thùng)
+            if (strlen($barcodeData) < 10) {
+                return response()->json([
+                    'error' => [
+                        'code' => 400,
+                        'message' => 'Bad Request',
+                        'errors' => [
+                            'barcode' => ['Dữ liệu barcode không đủ dài.'],
+                        ],
+                    ],
+                ], 400);
+            }
+
+            $date = substr($barcodeData, 0, 8);
+            $shift = substr($barcodeData, 8, 1);
+            $bin = substr($barcodeData, 9);
+
+            // Validate ngày có đúng định dạng ddmmyyyy không
+            if (! preg_match('/^\d{8}$/', $date)) {
+                return response()->json([
+                    'error' => [
+                        'code' => 400,
+                        'message' => 'Bad Request',
+                        'errors' => [
+                            'barcode' => ['Định dạng ngày trong barcode không hợp lệ (phải là ddmmyyyy).'],
+                        ],
+                    ],
+                ], 400);
+            }
+
+            // Validate ca làm việc (1 hoặc 2)
+            if (! in_array($shift, ['1', '2'])) {
+                return response()->json([
+                    'error' => [
+                        'code' => 400,
+                        'message' => 'Bad Request',
+                        'errors' => [
+                            'barcode' => ['Ca làm việc phải là 1 hoặc 2.'],
+                        ],
+                    ],
+                ], 400);
+            }
+
+            // Kiểm tra số thùng không được rỗng và phải là số
+            if (empty($bin) || ! is_numeric($bin)) {
+                return response()->json([
+                    'error' => [
+                        'code' => 400,
+                        'message' => 'Bad Request',
+                        'errors' => [
+                            'barcode' => ['Số thùng không được để trống và phải là số.'],
+                        ],
+                    ],
+                ], 400);
+            }
+
+            // Đảm bảo số thùng có định dạng 3 chữ số (pad với 0 ở đầu nếu cần)
+            $bin = str_pad($bin, 3, '0', STR_PAD_LEFT);
             $lot = 'A-'.$date.'-'.$shift.'-'.$bin;
 
             $storage = StorageProduct::where('product_id', $productId)
