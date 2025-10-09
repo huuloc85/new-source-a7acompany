@@ -414,7 +414,6 @@ class EmpAttendanceController extends Controller
             LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công Tính Toán', 'Nhân viên xem chi tiết chấm công đã tính toán');
 
             return response()->json($paginator);
-
         } catch (\Throwable $th) {
             return HandleError::handle($th);
         }
@@ -438,6 +437,11 @@ class EmpAttendanceController extends Controller
                 return $d['date'] === $date;
             });
 
+            // Skip if no attendance records for this date
+            if (count($todayRecords) === 0) {
+                continue;
+            }
+
             // Get yesterday's schedule and attendance info
             $yesterday = Carbon::parse($date)->subDay()->format('Y-m-d');
             $yesterdayEntries = array_filter($data, function ($item) use ($employee_id, $yesterday) {
@@ -447,13 +451,42 @@ class EmpAttendanceController extends Controller
             $shift = 0;
             $isScheduleChange = false;
 
-            // Case 1: Has schedule but no attendance records - Schedule change
-            if (($hnhc === 'N' || $hnhc === 'LN' || $hnhc === 'D' || $hnhc === 'TC') && count($todayRecords) === 0) {
-                $isScheduleChange = true;
-                // No attendance, no shift calculation needed
-            }
-            // Case 2: Holiday/off day but has attendance records - Schedule change
-            elseif (($hnhc === 'X' || empty($hnhc) || $hnhc === null) && count($todayRecords) > 0) {
+            // Case 1: Holiday/off day but has attendance records - Schedule change
+            if (($hnhc === 'X' || empty($hnhc) || $hnhc === null) && count($todayRecords) > 0) {
+                // Check if yesterday was night shift (shift 2)
+                $yesterdayWasNightShift = false;
+                if (count($yesterdayEntries) > 0) {
+                    $yesterdayHnhc = array_values($yesterdayEntries)[0]['hnhc'];
+                    $yesterdayWasNightShift = ($yesterdayHnhc === 'D' || $yesterdayHnhc === 'TC');
+                }
+
+                // Check if today's records are only early morning records (likely time_out of night shift)
+                $onlyEarlyMorningRecords = true;
+                $hasAfternoonOrEveningRecords = false;
+
+                foreach ($todayRecords as $record) {
+                    $hour = Carbon::parse($record['datetime'])->hour;
+
+                    // If there are any records after 10:00 AM, it's likely a real work day
+                    if ($hour >= 10) {
+                        $onlyEarlyMorningRecords = false;
+                        break;
+                    }
+
+                    // Check for afternoon/evening records (indicating real attendance)
+                    if ($hour >= 14) {
+                        $hasAfternoonOrEveningRecords = true;
+                    }
+                }
+
+                // If it's an off day (X) and only has early morning records,
+                // these are likely time_out from previous night shift
+                // Skip this date unless there are clear afternoon/evening records
+                if ($onlyEarlyMorningRecords && ! $hasAfternoonOrEveningRecords) {
+                    continue;
+                }
+
+                // Otherwise, it's a real schedule change
                 $isScheduleChange = true;
                 // Determine shift based on yesterday's work pattern or time of attendance
                 if (count($yesterdayEntries) > 0) {
@@ -475,41 +508,25 @@ class EmpAttendanceController extends Controller
                     $shift = ($recordTime >= 6 && $recordTime < 18) ? 1 : 2;
                 }
             }
-            // Case 3: Normal work day with attendance
-            elseif (count($todayRecords) > 0) {
+            // Case 2: Normal work day with attendance
+            else {
                 if ($hnhc === 'N' || $hnhc === 'LN') {
                     $shift = 1;
                 } elseif ($hnhc === 'D' || $hnhc === 'TC') {
                     $shift = 2;
-                } elseif ($hnhc === 'X') {
-                    // Schedule change but determine shift from context
-                    $isScheduleChange = true;
-                    if (count($yesterdayEntries) > 0) {
-                        $yesterdayHnhc = array_values($yesterdayEntries)[0]['hnhc'];
-                        if ($yesterdayHnhc === 'N' || $yesterdayHnhc === 'LN') {
-                            $shift = 1;
-                        } elseif ($yesterdayHnhc === 'D' || $yesterdayHnhc === 'TC') {
-                            $shift = 2;
-                        } else {
-                            // Guess from time
-                            $firstRecord = array_values($todayRecords)[0];
-                            $recordTime = Carbon::parse($firstRecord['datetime'])->hour;
-                            $shift = ($recordTime >= 6 && $recordTime < 18) ? 1 : 2;
-                        }
-                    } else {
-                        // Guess from time
-                        $firstRecord = array_values($todayRecords)[0];
-                        $recordTime = Carbon::parse($firstRecord['datetime'])->hour;
-                        $shift = ($recordTime >= 6 && $recordTime < 18) ? 1 : 2;
-                    }
+                } else {
+                    // If no clear schedule, guess from attendance time
+                    $firstRecord = array_values($todayRecords)[0];
+                    $recordTime = Carbon::parse($firstRecord['datetime'])->hour;
+                    $shift = ($recordTime >= 6 && $recordTime < 18) ? 1 : 2;
                 }
             }
 
             $time_in = '';
             $time_out = '';
 
-            // Only calculate time if there's a shift and attendance records
-            if ($shift > 0 && count($todayRecords) > 0) {
+            // Calculate time since we have attendance records and a shift
+            if ($shift > 0) {
                 if ($shift === 1) {
                     // Day shift: use only records from current date
                     $dateEntries = array_filter($dates, function ($d) use ($date) {
@@ -519,17 +536,32 @@ class EmpAttendanceController extends Controller
                         $time_in = array_reduce($dateEntries, function ($min, $d) {
                             return $min === null || $d['datetime'] < $min ? $d['datetime'] : $min;
                         });
-                        $time_out = array_reduce($dateEntries, function ($max, $d) {
-                            return $max === null || $d['datetime'] > $max ? $d['datetime'] : $max;
-                        });
+
+                        // Only set time_out if there are multiple records (complete attendance)
+                        if (count($dateEntries) > 1) {
+                            $time_out = array_reduce($dateEntries, function ($max, $d) {
+                                return $max === null || $d['datetime'] > $max ? $d['datetime'] : $max;
+                            });
+
+                            // If time_in and time_out are the same, it means only one record
+                            if ($time_in === $time_out) {
+                                $time_out = '';
+                            }
+                        }
                     }
                 } elseif ($shift === 2) {
-                    // Night shift: time_in from current date, time_out from next date
+                    // Night shift: time_in from current date (evening), time_out from next date (morning)
                     $tomorrow = Carbon::parse($date)->addDay()->format('Y-m-d');
 
-                    // Get time_in from current date (evening start)
+                    // Get time_in from current date (evening start) - only records after 18:00
                     $todayEntries = array_filter($dates, function ($d) use ($date) {
-                        return $d['date'] === $date;
+                        if ($d['date'] !== $date) {
+                            return false;
+                        }
+                        // For night shift, only consider records after 18:00 as time_in
+                        $hour = Carbon::parse($d['datetime'])->hour;
+
+                        return $hour >= 18;
                     });
                     if (count($todayEntries) > 0) {
                         $time_in = array_reduce($todayEntries, function ($min, $d) {
@@ -537,9 +569,15 @@ class EmpAttendanceController extends Controller
                         });
                     }
 
-                    // Get time_out from next date (morning end)
+                    // Get time_out from next date (morning end) - only records before 12:00
                     $tomorrowEntries = array_filter($dates, function ($d) use ($tomorrow) {
-                        return $d['date'] === $tomorrow;
+                        if ($d['date'] !== $tomorrow) {
+                            return false;
+                        }
+                        // For night shift, only consider records before 12:00 as time_out
+                        $hour = Carbon::parse($d['datetime'])->hour;
+
+                        return $hour < 12;
                     });
                     if (count($tomorrowEntries) > 0) {
                         $time_out = array_reduce($tomorrowEntries, function ($max, $d) {
@@ -547,7 +585,7 @@ class EmpAttendanceController extends Controller
                         });
                     }
 
-                    // If no time_out from tomorrow, check if there are late records today that could be time_out
+                    // If no time_out from tomorrow, check if there are multiple records today that could be time_out
                     if (! $time_out && count($todayEntries) > 1) {
                         $latestToday = array_reduce($todayEntries, function ($max, $d) {
                             return $max === null || $d['datetime'] > $max ? $d['datetime'] : $max;
@@ -557,6 +595,11 @@ class EmpAttendanceController extends Controller
                         if ($latestTime->hour >= 22 || $latestTime->hour <= 6) {
                             $time_out = $latestToday;
                         }
+
+                        // If time_in and time_out are the same, it means only one record
+                        if ($time_in === $time_out) {
+                            $time_out = '';
+                        }
                     }
                 }
             }
@@ -564,6 +607,7 @@ class EmpAttendanceController extends Controller
             $total_hours = 0;
             $break_time = 0;
 
+            // Only calculate total hours if both time_in and time_out are available
             if ($time_in && $time_out) {
                 $start = Carbon::parse($time_in);
                 $end = Carbon::parse($time_out);
@@ -653,10 +697,17 @@ class EmpAttendanceController extends Controller
                 }
             }
 
+            // Skip records where user has work schedule but no time_in and time_out
+            // This filters out users who were scheduled to work but didn't show up (absent without leave)
+            if (($hnhc === 'N' || $hnhc === 'LN' || $hnhc === 'D' || $hnhc === 'TC') && empty($time_in) && empty($time_out)) {
+                continue;
+            }
+
             $result[] = [
                 'employee_id' => $employee_id,
                 'name' => $name,
                 'company' => $company,
+                'calendar_category_id' => $calendar_category_id,
                 'date' => $date,
                 'shift' => $shift,
                 'hnhc' => $hnhc,
