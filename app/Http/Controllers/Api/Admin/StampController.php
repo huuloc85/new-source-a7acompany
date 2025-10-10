@@ -27,6 +27,7 @@ class StampController extends BaseController
                 'binStart' => 'required|regex:/^[0-9]+(,[0-9]+)*$/',
                 'employee_id' => 'sometimes|exists:employees,id',
                 'stamp_id' => 'sometimes|exists:send_stamps,id',
+                'purpose' => 'nullable|in:new,additional,reprint',
             ]);
 
             if ($request['stamp_id']) {
@@ -167,6 +168,7 @@ class StampController extends BaseController
                 'status' => 'approve',
             ], [
                 'binCount' => 1, // Mỗi record chỉ có 1 bin
+                'purpose' => $validation['purpose'] ?? null,
             ]);
 
             $createdStamps->push($stamp);
@@ -198,6 +200,7 @@ class StampController extends BaseController
                 'binStart' => $bin, // Từng số riêng biệt
                 'manager_time' => Carbon::now()->format('H:i:s'),
                 'status' => 'approve',
+                'purpose' => $originalStamp->purpose,
             ]);
 
             $createdStamps->push($newStamp);

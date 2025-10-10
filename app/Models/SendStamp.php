@@ -20,6 +20,7 @@ class SendStamp extends Model
         'type',
         'status',
         'manager_time',
+        'purpose',
     ];
 
     // Quan hệ với Employee

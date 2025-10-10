@@ -201,38 +201,64 @@ class AdminRequestFormController extends Controller
                     $requestForm->update(['status' => RequestForm::STATUS_APPROVED]);
                     $message = 'Đơn ủy quyền đã được duyệt thành công';
                 } else {
-                    // Đơn thường → Logic: Supervisor ký → Manager (Admin) ký và duyệt
+                    // Đơn thường → Logic phức tạp hơn tùy thuộc vào người gửi và người duyệt
                     $hasSupervisorSignature = ! empty($requestForm->digital_signature_supervisor);
                     $hasManagerSignature = ! empty($requestForm->digital_signature_manager);
 
                     // Danh sách supervisor employee IDs
                     $supervisorIds = [19010400, 20020700, 18010900, 19010300, 20102800];
                     $isCurrentUserSupervisor = in_array($currentUserId, $supervisorIds);
+                    $isRequestFromSupervisor = in_array($requestForm->employee_id, $supervisorIds);
 
-                    if ($hasSupervisorSignature && $hasManagerSignature) {
-                        // Có đủ 2 chữ ký → Chỉ Manager (Admin) mới có thể duyệt
-                        if (! $isCurrentUserSupervisor) {
-                            // Current user là Manager (Admin) → Set status = 'approved'
+                    // Case 1: Supervisor tự gửi đơn cho chính mình
+                    if ($isRequestFromSupervisor) {
+                        // Supervisor không thể tự ký cho chính mình → Chỉ cần Admin ký và duyệt
+                        if (! $isCurrentUserSupervisor && $hasManagerSignature) {
+                            // Admin đã ký và duyệt → Set status = 'approved'
                             $requestForm->update(['status' => RequestForm::STATUS_APPROVED]);
-                            $message = 'Đơn yêu cầu đã được duyệt thành công với đủ 2 chữ ký';
-                        } else {
-                            // Current user là Supervisor → Không thể duyệt, chỉ ký
+                            $message = 'Đơn yêu cầu của supervisor đã được duyệt thành công';
+                        } elseif (! $isCurrentUserSupervisor) {
+                            // Admin chưa ký → Giữ pending
                             $requestForm->update(['status' => RequestForm::STATUS_PENDING]);
-                            $message = 'Đã ký chữ ký supervisor. Đơn vẫn chờ Manager duyệt';
-                        }
-                    } else {
-                        // Chưa đủ 2 chữ ký → Giữ status = 'pending'
-                        $requestForm->update(['status' => RequestForm::STATUS_PENDING]);
+                            $message = $hasNewSignatures ? 'Đã ký chữ ký manager. Đơn đã được duyệt' : 'Đơn chờ admin ký và duyệt';
 
-                        if ($hasNewSignatures) {
-                            if ($isCurrentUserSupervisor) {
-                                $message = 'Đã ký chữ ký supervisor. Đơn vẫn chờ Manager ký và duyệt';
-                            } else {
-                                $missingSignature = ! $hasSupervisorSignature ? 'supervisor' : 'manager';
-                                $message = "Đã lưu chữ ký. Đơn vẫn đang chờ duyệt - thiếu chữ ký {$missingSignature}";
+                            // Nếu vừa ký xong thì approve luôn
+                            if ($hasNewSignatures && $hasManagerSignature) {
+                                $requestForm->update(['status' => RequestForm::STATUS_APPROVED]);
+                                $message = 'Đơn yêu cầu của supervisor đã được duyệt thành công';
                             }
                         } else {
-                            $message = 'Đơn vẫn đang chờ duyệt - cần có chữ ký supervisor và manager';
+                            // Supervisor không thể approve đơn của chính mình
+                            $requestForm->update(['status' => RequestForm::STATUS_PENDING]);
+                            $message = 'Supervisor không thể duyệt đơn của chính mình. Chỉ Admin mới có thể duyệt';
+                        }
+                    } else {
+                        // Case 2: Nhân viên thường gửi đơn → Cần cả supervisor và manager signature
+                        if ($hasSupervisorSignature && $hasManagerSignature) {
+                            // Có đủ 2 chữ ký → Chỉ Manager (Admin) mới có thể duyệt
+                            if (! $isCurrentUserSupervisor) {
+                                // Current user là Manager (Admin) → Set status = 'approved'
+                                $requestForm->update(['status' => RequestForm::STATUS_APPROVED]);
+                                $message = 'Đơn yêu cầu đã được duyệt thành công với đủ 2 chữ ký';
+                            } else {
+                                // Current user là Supervisor → Không thể duyệt, chỉ ký
+                                $requestForm->update(['status' => RequestForm::STATUS_PENDING]);
+                                $message = 'Đã ký chữ ký supervisor. Đơn vẫn chờ Manager duyệt';
+                            }
+                        } else {
+                            // Chưa đủ 2 chữ ký → Giữ status = 'pending'
+                            $requestForm->update(['status' => RequestForm::STATUS_PENDING]);
+
+                            if ($hasNewSignatures) {
+                                if ($isCurrentUserSupervisor) {
+                                    $message = 'Đã ký chữ ký supervisor. Đơn vẫn chờ Manager ký và duyệt';
+                                } else {
+                                    $missingSignature = ! $hasSupervisorSignature ? 'supervisor' : 'manager';
+                                    $message = "Đã lưu chữ ký. Đơn vẫn đang chờ duyệt - thiếu chữ ký {$missingSignature}";
+                                }
+                            } else {
+                                $message = 'Đơn vẫn đang chờ duyệt - cần có chữ ký supervisor và manager';
+                            }
                         }
                     }
                 }

@@ -48,6 +48,7 @@ class SendStampController extends Controller
             $binCounts = $request->binCount;
             $binStarts = $request->binStart;
             $types = $request->type;
+            $purposes = $request->purpose;
             $status = $request->status;
 
             $sendStamps = [];
@@ -62,6 +63,7 @@ class SendStampController extends Controller
                     'binStart' => $binStarts[$key],
                     'type' => $types[$key],
                     'status' => $status,
+                    'purpose' => $purposes[$key] ?? null,
                 ]);
             }
 

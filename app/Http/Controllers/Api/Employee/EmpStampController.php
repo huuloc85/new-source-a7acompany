@@ -28,6 +28,7 @@ class EmpStampController extends Controller
                 'stamps.*.shift' => 'required|in:1,2',
                 'stamps.*.binCount' => 'required|integer|min:1',
                 'stamps.*.binStart' => 'required|string',
+                'stamps.*.purpose' => 'nullable|in:new,additional,reprint',
             ]);
             $stamps = [];
             foreach ($validate['stamps'] as $stamp) {
@@ -43,6 +44,7 @@ class EmpStampController extends Controller
                     'binCount' => $stamp['binCount'] ?? 1,
                     'binStart' => $stamp['binStart'],
                     'status' => 'pending',
+                    'purpose' => $stamp['purpose'] ?? null,
                 ]);
             }
 
