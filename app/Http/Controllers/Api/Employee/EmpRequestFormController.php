@@ -8,7 +8,6 @@ use App\Models\RequestForm;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -114,24 +113,24 @@ class EmpRequestFormController extends Controller
             // Chuẩn bị data để tạo đơn
             $createData = [
                 'employee_id' => Auth::id(),
-                'type' => $request->type,
-                'title' => $request->title,
-                'content' => $request->content,
-                'form_data' => $request->form_data ?? [],
+                'type' => $request->input('type'),
+                'title' => $request->input('title'),
+                'content' => $request->input('content'),
+                'form_data' => $request->input('form_data') ?? [],
                 'status' => RequestForm::STATUS_PENDING,
                 'submitted_at' => now(),
             ];
 
             // Nếu là đơn ủy quyền, lưu thêm authorized_employee_id
-            if ($request->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
-                $formData = is_array($request->form_data) ? $request->form_data : json_decode($request->form_data, true);
+            if ($request->input('type') === RequestForm::TYPE_GIAY_UY_QUYEN) {
+                $formData = is_array($request->input('form_data')) ? $request->input('form_data') : json_decode($request->input('form_data'), true);
                 if (! empty($formData['authorized_employee_id'])) {
                     $createData['authorized_employee_id'] = $formData['authorized_employee_id'];
                 }
             } else {
                 // Nếu là đơn thường, lưu supervisor_id
                 if ($request->has('supervisor_id')) {
-                    $createData['supervisor_id'] = $request->supervisor_id;
+                    $createData['supervisor_id'] = $request->input('supervisor_id');
                 }
             }
 
@@ -310,14 +309,14 @@ class EmpRequestFormController extends Controller
 
         try {
             $updateData = [
-                'title' => $request->title ?? $requestForm->title,
-                'content' => $request->content ?? $requestForm->content,
-                'form_data' => $request->form_data ?? $requestForm->form_data,
+                'title' => $request->input('title') ?? $requestForm->title,
+                'content' => $request->input('content') ?? $requestForm->content,
+                'form_data' => $request->input('form_data') ?? $requestForm->form_data,
             ];
 
             // Nếu là đơn ủy quyền và có cập nhật authorized_employee_id
             if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN && $request->has('form_data')) {
-                $formData = is_array($request->form_data) ? $request->form_data : json_decode($request->form_data, true);
+                $formData = is_array($request->input('form_data')) ? $request->input('form_data') : json_decode($request->input('form_data'), true);
                 if (! empty($formData['authorized_employee_id'])) {
                     $updateData['authorized_employee_id'] = $formData['authorized_employee_id'];
                 }
@@ -327,6 +326,9 @@ class EmpRequestFormController extends Controller
             $signatureFields = $requestForm->getDigitalSignatureFields();
 
             foreach ($signatureFields as $fieldName => $fieldLabel) {
+                // 🔥 HỖ TRỢ 2 CÁCH GỬI FILE:
+
+                // Cách 1: File upload trực tiếp (multipart/form-data)
                 if ($request->hasFile($fieldName)) {
                     // Xóa file cũ nếu có
                     if ($requestForm->$fieldName && Storage::disk('public')->exists($requestForm->$fieldName)) {
@@ -335,7 +337,8 @@ class EmpRequestFormController extends Controller
 
                     $file = $request->file($fieldName);
                     $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
-                    $updateData[$fieldName] = $file->storeAs('digital_signatures', $filename, 'public');
+                    $path = $file->storeAs('digital_signatures', $filename, 'public');
+                    $updateData[$fieldName] = $path;
 
                     // Lưu thông tin người ký và thời gian ký
                     if ($fieldName === 'digital_signature_delegator') {
@@ -346,15 +349,61 @@ class EmpRequestFormController extends Controller
                         $updateData['authorized_approved_at'] = now();
                     }
                 }
+                // Cách 2: Base64 string (trong JSON body)
+                else {
+                    // 🔥 HỖ TRỢ CẢ 2 TÊN: "digital_signature_applicant" HOẶC "digital_signature_applicant_base64"
+                    $base64FieldName = $fieldName.'_base64';
+                    $base64Data = null;
+
+                    if ($request->has($fieldName) && ! empty($request->input($fieldName))) {
+                        $base64Data = $request->input($fieldName);
+                    } elseif ($request->has($base64FieldName) && ! empty($request->input($base64FieldName))) {
+                        $base64Data = $request->input($base64FieldName);
+                    }
+
+                    if ($base64Data) {
+                        // Kiểm tra xem có phải base64 string không
+                        if (is_string($base64Data) && preg_match('/^data:image\/(\w+);base64,/', $base64Data, $matches)) {
+                            // Xóa file cũ nếu có
+                            if ($requestForm->$fieldName && Storage::disk('public')->exists($requestForm->$fieldName)) {
+                                Storage::disk('public')->delete($requestForm->$fieldName);
+                            }
+
+                            // Extract base64 data
+                            $imageType = $matches[1]; // png, jpg, jpeg, etc
+                            $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+                            $imageData = base64_decode($base64Image);
+
+                            // Tạo filename và lưu file
+                            $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$imageType;
+                            $path = 'digital_signatures/'.$filename;
+
+                            Storage::disk('public')->put($path, $imageData);
+                            $updateData[$fieldName] = $path;
+
+                            // Lưu thông tin người ký và thời gian ký
+                            if ($fieldName === 'digital_signature_delegator') {
+                                $updateData['delegator_approved_by'] = Auth::id();
+                                $updateData['delegator_approved_at'] = now();
+                            } elseif ($fieldName === 'digital_signature_authorized') {
+                                $updateData['authorized_approved_by'] = Auth::id();
+                                $updateData['authorized_approved_at'] = now();
+                            }
+                        }
+                    }
+                }
             }
 
             $requestForm->update($updateData);
 
+            // ✅ Refresh để lấy dữ liệu mới nhất từ database (bao gồm chữ ký vừa upload)
+            $requestForm->refresh();
+
             // Load relationships dựa trên loại đơn
             if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
-                $requestForm->load(['employee', 'approvedBy', 'delegatorApprovedBy', 'authorizedApprovedBy']);
+                $requestForm->load(['employee', 'approvedBy', 'delegatorApprovedBy', 'authorizedApprovedBy', 'authorizedEmployee']);
             } else {
-                $requestForm->load(['employee', 'approvedBy']);
+                $requestForm->load(['employee', 'approvedBy', 'supervisor', 'supervisorApprovedBy', 'managerApprovedBy']);
             }
 
             return response()->json([
@@ -429,16 +478,12 @@ class EmpRequestFormController extends Controller
      */
     public function getFormTypes(): JsonResponse
     {
-        $data = Cache::remember('request_form_types_statuses', 86400, function () {
-            return [
-                'types' => RequestForm::getTypes(),
-                'statuses' => RequestForm::getStatuses(),
-            ];
-        });
-
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => [
+                'types' => RequestForm::getTypes(),
+                'statuses' => RequestForm::getStatuses(),
+            ],
         ]);
     }
 
@@ -476,24 +521,22 @@ class EmpRequestFormController extends Controller
      */
     public function getAuthorizableEmployees(): JsonResponse
     {
-        $employees = Cache::remember('authorizable_employees', 3600, function () {
-            return \App\Models\Employee::with('role:id,role_name')
-                ->whereHas('role', function ($query) {
-                    $query->whereNotIn('role_name', ['admin', 'co admin', 'super admin']);
-                })
-                ->whereNull('deleted_at')
-                ->select('id', 'name', 'role_id', 'gender')
-                ->orderBy('name')
-                ->get()
-                ->map(function ($employee) {
-                    return [
-                        'id' => $employee->id,
-                        'name' => $employee->name,
-                        'gender' => $employee->gender,
-                        'role_name' => $employee->role ? $employee->role->role_name : null,
-                    ];
-                });
-        });
+        $employees = \App\Models\Employee::with('role:id,role_name')
+            ->whereHas('role', function ($query) {
+                $query->whereNotIn('role_name', ['admin', 'co admin', 'super admin']);
+            })
+            ->whereNull('deleted_at')
+            ->select('id', 'name', 'role_id', 'gender')
+            ->orderBy('name')
+            ->get()
+            ->map(function ($employee) {
+                return [
+                    'id' => $employee->id,
+                    'name' => $employee->name,
+                    'gender' => $employee->gender,
+                    'role_name' => $employee->role ? $employee->role->role_name : null,
+                ];
+            });
 
         return response()->json([
             'success' => true,

@@ -34,6 +34,7 @@ class CheckWarehouse
         }
 
         return response()->json([
+            'success' => false,
             'message' => 'Bạn không có quyền truy cập!',
         ], 403);
     }
