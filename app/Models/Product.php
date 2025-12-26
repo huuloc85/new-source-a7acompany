@@ -33,6 +33,9 @@ class Product extends Model
         'FAVV',                // Công ty C
         'binCode',             // Mã thùng
         'quanEntityBin',       // Số lượng con/thùng
+        'material',            // Vật liệu
+        'color',               // Màu sắc
+        'quantity_per_package', // Số lượng/gói
         // 'stockQuan',           //Số lượng tồn đầu kì
         // 'stockQuan200',        //Số lượng tồn đầu hàng 200%
         // 'prorealityQuan',      //Tổng số lượng sản xuất thực tế (nhân viên nhập vào hằng ngày)
@@ -110,7 +113,7 @@ class Product extends Model
     public function scopeName($query, $request)
     {
         if ($request->has('name')) {
-            return $query->where('name', 'like', '%'.$request->name.'%');
+            return $query->where('name', 'like', '%' . $request->name . '%');
         }
 
         return $query;
@@ -120,7 +123,7 @@ class Product extends Model
     public function scopeCode($query, $request)
     {
         if ($request->has('code')) {
-            return $query->where('code', 'like', '%'.$request->code.'%');
+            return $query->where('code', 'like', '%' . $request->code . '%');
         }
 
         return $query;
@@ -130,7 +133,7 @@ class Product extends Model
     public function scopeMoldSize($query, $request)
     {
         if ($request->has('moldSize')) {
-            return $query->where('moldSize', 'like', '%'.$request->moldSize.'%');
+            return $query->where('moldSize', 'like', '%' . $request->moldSize . '%');
         }
 
         return $query;
@@ -140,7 +143,7 @@ class Product extends Model
     public function scopeBinCode($query, $request)
     {
         if ($request->has('binCode')) {
-            return $query->where('binCode', 'like', '%'.$request->binCode.'%');
+            return $query->where('binCode', 'like', '%' . $request->binCode . '%');
         }
 
         return $query;

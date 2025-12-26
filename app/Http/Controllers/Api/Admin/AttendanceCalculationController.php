@@ -421,7 +421,9 @@ class AttendanceCalculationController extends BaseController
                     if ($endMinutes > 9 * 60 + 30 && $startMinutes < 9 * 60 + 45 && $startMinutes < 9 * 60 + 30) {
                         $break_time += 15;
                     }
-                    if ($endMinutes > 12 * 60 && $startMinutes < 13 * 60 && $startMinutes < 12 * 60) {
+                    // Chỉ trừ giờ nghỉ trưa (60 phút) khi nhân viên làm việc qua giờ nghỉ trưa
+                    // Nghỉ trưa: 12:00 - 13:00, nên chỉ trừ khi ra về >= 13:00 (bao gồm cả 13:00)
+                    if ($endMinutes >= 13 * 60 && $startMinutes < 12 * 60) {
                         $break_time += 60;
                     }
                     if ($endMinutes > 14 * 60 + 30 && $startMinutes < 14 * 60 + 45 && $startMinutes < 14 * 60 + 30) {
@@ -431,7 +433,9 @@ class AttendanceCalculationController extends BaseController
                     if ($endMinutes > 9 * 60 + 30 && $startMinutes < 9 * 60 + 35 && $startMinutes < 9 * 60 + 30) {
                         $break_time += 5;
                     }
-                    if ($endMinutes > 11 * 60 + 20 && $startMinutes < 12 * 60 && $startMinutes < 11 * 60 + 20) {
+                    // Chỉ trừ giờ nghỉ trưa (40 phút) khi nhân viên làm việc qua giờ nghỉ trưa
+                    // Nghỉ trưa: 11:20 - 12:00, nên chỉ trừ khi ra về >= 12:00 (bao gồm cả 12:00)
+                    if ($endMinutes >= 12 * 60 && $startMinutes < 11 * 60 + 20) {
                         $break_time += 40;
                     }
                     if ($endMinutes > 14 * 60 + 30 && $startMinutes < 14 * 60 + 35 && $startMinutes < 14 * 60 + 30) {
@@ -447,7 +451,9 @@ class AttendanceCalculationController extends BaseController
                     if ($endMinutes > 9 * 60 + 30 && $startMinutes < 9 * 60 + 40 && $startMinutes < 9 * 60 + 30) {
                         $break_time += 10;
                     }
-                    if ($endMinutes > 11 * 60 + 20 && $startMinutes < 11 * 60 + 50 && $startMinutes < 11 * 60 + 20) {
+                    // Chỉ trừ giờ nghỉ trưa (30 phút) khi nhân viên làm việc qua giờ nghỉ trưa
+                    // Nghỉ trưa: 11:20 - 11:50, nên chỉ trừ khi ra về >= 11:50 (bao gồm cả 11:50)
+                    if ($endMinutes >= 11 * 60 + 50 && $startMinutes < 11 * 60 + 20) {
                         $break_time += 30;
                     }
                     if ($endMinutes > 14 * 60 + 30 && $startMinutes < 14 * 60 + 40 && $startMinutes < 14 * 60 + 30) {
@@ -460,7 +466,9 @@ class AttendanceCalculationController extends BaseController
                     if ($endMinutes > 21 * 60 + 30 && $startMinutes < 21 * 60 + 40 && $startMinutes < 21 * 60 + 30) {
                         $break_time += 10;
                     }
-                    if ($endMinutes > 23 * 60 + 30 && $startMinutes < 24 * 60 && $startMinutes < 23 * 60 + 30) {
+                    // Chỉ trừ giờ nghỉ đêm (30 phút) khi nhân viên làm việc qua giờ nghỉ
+                    // Nghỉ đêm: 23:30 - 00:00 (24:00), nên chỉ trừ khi ra về >= 00:00 (bao gồm cả 00:00)
+                    if ($endMinutes >= 24 * 60 && $startMinutes < 23 * 60 + 30) {
                         $break_time += 30;
                     }
                     if ($endMinutes > 26 * 60 + 30 && $startMinutes < 26 * 60 + 40 && $startMinutes < 26 * 60 + 30) {

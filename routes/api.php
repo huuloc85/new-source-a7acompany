@@ -165,6 +165,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/month-list', [ProductController::class, 'getMonthList']);
         Route::middleware(['api.authAdmin'])->get('/trash', [ProductController::class, 'getTrashProducts']);
         Route::middleware(['api.authAdmin'])->post('/restore/{id}', [ProductController::class, 'restoreProduct']);
+        Route::middleware(['api.authAdmin'])->delete('/force-delete/{id}', [ProductController::class, 'forceDeleteProduct']);
         Route::get('/', [ProductController::class, 'getProducts']);
         Route::middleware(['api.authAdmin'])->post('/', [ProductController::class, 'addProduct']);
         Route::get('/{id}', [ProductController::class, 'getProduct']);

@@ -59,7 +59,7 @@
             </script>
         @endif
 
-        @vite('resources/js/pusher.js')
+        {{-- @vite('resources/js/pusher.js') --}}
 
         <!-- Styling css -->
         <style class="fslightbox-styles">

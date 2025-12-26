@@ -94,7 +94,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
                         }
                         if ($date) {
                             $query->where('date', $date);
@@ -105,7 +105,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
                         }
                         if ($date) {
                             $query->where('date', $date);
@@ -116,7 +116,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('dailyQuantitiesPo', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -127,7 +127,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -189,11 +189,23 @@ class ProductController extends BaseController
                 'stockQuan200' => 'required|numeric',
                 'binCode' => 'required|string',
                 'quanEntityBin' => 'required|numeric',
+                'material' => 'nullable|string',
+                'color' => 'nullable|string',
+                'quantity_per_package' => 'nullable|numeric',
                 'companies' => 'required|array',
             ]);
 
             $product = Product::create([
-                ...$validated,
+                'code' => $validated['code'],
+                'name' => $validated['name'],
+                'moldSize' => $validated['moldSize'],
+                'CAV' => $validated['CAV'],
+                'cycle' => $validated['cycle'],
+                'binCode' => $validated['binCode'],
+                'quanEntityBin' => $validated['quanEntityBin'],
+                'material' => $validated['material'] ?? null,
+                'color' => $validated['color'] ?? null,
+                'quantity_per_package' => $validated['quantity_per_package'] ?? null,
                 'FAPV' => in_array('FAPV', $validated['companies']) ? 1 : 0,
                 'FASV' => in_array('FASV', $validated['companies']) ? 1 : 0,
                 'FAVV' => in_array('FAVV', $validated['companies']) ? 1 : 0,
@@ -224,6 +236,9 @@ class ProductController extends BaseController
                 'totalQuan' => $validated['stockQuanMOQ'],
             ]);
 
+            // ✅ Refresh để lấy dữ liệu mới nhất từ database
+            $product->refresh();
+
             DB::commit();
 
             return response()->json([
@@ -249,22 +264,51 @@ class ProductController extends BaseController
             $product = Product::findOrFail($id);
 
             $validated = $request->validate([
-                'code' => 'sometimes|string|unique:products,code,'.$id,
+                'code' => 'sometimes|string|unique:products,code,' . $id,
                 'name' => 'sometimes|string',
                 'moldSize' => 'sometimes|string',
                 'CAV' => 'sometimes|numeric',
                 'cycle' => 'sometimes|numeric',
                 'binCode' => 'sometimes|string',
                 'quanEntityBin' => 'sometimes|numeric',
+                'material' => 'nullable|string',
+                'color' => 'nullable|string',
+                'quantity_per_package' => 'nullable|numeric',
                 'companies' => 'sometimes|array',
             ]);
 
-            $product->update([
-                ...$validated,
-                'FAPV' => in_array('FAPV', $validated['companies']) ? 1 : 0,
-                'FASV' => in_array('FASV', $validated['companies']) ? 1 : 0,
-                'FAVV' => in_array('FAVV', $validated['companies']) ? 1 : 0,
-            ]);
+            $updateData = [
+                'code' => $validated['code'] ?? $product->code,
+                'name' => $validated['name'] ?? $product->name,
+                'moldSize' => $validated['moldSize'] ?? $product->moldSize,
+                'CAV' => $validated['CAV'] ?? $product->CAV,
+                'cycle' => $validated['cycle'] ?? $product->cycle,
+                'binCode' => $validated['binCode'] ?? $product->binCode,
+                'quanEntityBin' => $validated['quanEntityBin'] ?? $product->quanEntityBin,
+            ];
+
+            if (isset($validated['material'])) {
+                $updateData['material'] = $validated['material'];
+            }
+
+            if (isset($validated['color'])) {
+                $updateData['color'] = $validated['color'];
+            }
+
+            if (isset($validated['quantity_per_package'])) {
+                $updateData['quantity_per_package'] = $validated['quantity_per_package'];
+            }
+
+            if (isset($validated['companies'])) {
+                $updateData['FAPV'] = in_array('FAPV', $validated['companies']) ? 1 : 0;
+                $updateData['FASV'] = in_array('FASV', $validated['companies']) ? 1 : 0;
+                $updateData['FAVV'] = in_array('FAVV', $validated['companies']) ? 1 : 0;
+            }
+
+            $product->update($updateData);
+
+            // ✅ Refresh để lấy dữ liệu mới nhất từ database
+            $product->refresh();
 
             DB::commit();
 
@@ -363,6 +407,41 @@ class ProductController extends BaseController
         }
     }
 
+    /**
+     * Force delete a product permanently from trash
+     */
+    public function forceDeleteProduct($id)
+    {
+        DB::beginTransaction();
+        try {
+            $product = Product::onlyTrashed()->findOrFail($id);
+
+            // Lưu thông tin product để log
+            $productData = [
+                'id' => $product->id,
+                'code' => $product->code,
+                'name' => $product->name,
+            ];
+
+            // Xóa vĩnh viễn
+            $product->forceDelete();
+
+            DB::commit();
+
+            // Log activity
+            // LogActivity::addToLog('Xóa vĩnh viễn sản phẩm: ' . $productData['name'] . ' (Mã: ' . $productData['code'] . ')');
+
+            return response()->json([
+                'message' => 'Product permanently deleted successfully',
+                'data' => $productData,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
+        }
+    }
+
     public function updateQuantity()
     {
         DB::beginTransaction();
@@ -378,7 +457,7 @@ class ProductController extends BaseController
 
             $date = Carbon::now()->format('d');
             $date = $this->convertDate($date); // Chuyển đổi nếu cần
-            $column = 'day'.$date;
+            $column = 'day' . $date;
 
             if (! isset($calendar->$column)) {
                 return response()->json([
@@ -557,7 +636,7 @@ class ProductController extends BaseController
                 'totalMonth' => $totalMonth,
             ]);
         } catch (\Exception $e) {
-            Log::error('errors: '.$e->getMessage().' line: '.$e->getLine());
+            Log::error('errors: ' . $e->getMessage() . ' line: ' . $e->getLine());
 
             return response()->json([
                 'message' => 'Cập nhật số lượng sản phẩm không thành công!',
@@ -686,7 +765,7 @@ class ProductController extends BaseController
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('errors: '.$e->getMessage().' line: '.$e->getLine());
+            Log::error('errors: ' . $e->getMessage() . ' line: ' . $e->getLine());
 
             return response()->json([
                 'message' => 'Thêm sản lượng không thành công!',

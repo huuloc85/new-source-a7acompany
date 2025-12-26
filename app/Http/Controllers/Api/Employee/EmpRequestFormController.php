@@ -149,9 +149,12 @@ class EmpRequestFormController extends Controller
             $updateData = [];
 
             foreach ($signatureFields as $fieldName => $fieldLabel) {
+                // 🔥 HỖ TRỢ 2 CÁCH GỬI FILE:
+
+                // Cách 1: File upload trực tiếp (multipart/form-data)
                 if ($request->hasFile($fieldName)) {
                     $file = $request->file($fieldName);
-                    $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
+                    $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('digital_signatures', $filename, 'public');
                     $updateData[$fieldName] = $path;
 
@@ -166,6 +169,46 @@ class EmpRequestFormController extends Controller
                         // Có thể thêm tracking cho applicant nếu cần
                     }
                 }
+                // Cách 2: Base64 string (trong JSON body)
+                else {
+                    // 🔥 HỖ TRỢ CẢ 2 TÊN: "digital_signature_applicant" HOẶC "digital_signature_applicant_base64"
+                    $base64FieldName = $fieldName . '_base64';
+                    $base64Data = null;
+
+                    if ($request->has($fieldName) && ! empty($request->input($fieldName))) {
+                        $base64Data = $request->input($fieldName);
+                    } elseif ($request->has($base64FieldName) && ! empty($request->input($base64FieldName))) {
+                        $base64Data = $request->input($base64FieldName);
+                    }
+
+                    if ($base64Data) {
+                        // Kiểm tra xem có phải base64 string không
+                        if (is_string($base64Data) && preg_match('/^data:image\/(\w+);base64,/', $base64Data, $matches)) {
+                            // Extract base64 data
+                            $imageType = $matches[1]; // png, jpg, jpeg, etc
+                            $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+                            $imageData = base64_decode($base64Image);
+
+                            // Tạo filename và lưu file
+                            $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $imageType;
+                            $path = 'digital_signatures/' . $filename;
+
+                            Storage::disk('public')->put($path, $imageData);
+                            $updateData[$fieldName] = $path;
+
+                            // Lưu thông tin người ký và thời gian ký
+                            if ($fieldName === 'digital_signature_delegator') {
+                                $updateData['delegator_approved_by'] = Auth::id();
+                                $updateData['delegator_approved_at'] = now();
+                            } elseif ($fieldName === 'digital_signature_authorized') {
+                                $updateData['authorized_approved_by'] = Auth::id();
+                                $updateData['authorized_approved_at'] = now();
+                            } elseif ($fieldName === 'digital_signature_applicant') {
+                                // Có thể thêm tracking cho applicant nếu cần
+                            }
+                        }
+                    }
+                }
             }
 
             // Cập nhật chữ ký nếu có
@@ -173,19 +216,22 @@ class EmpRequestFormController extends Controller
                 $requestForm->update($updateData);
             }
 
+            // ✅ Refresh để lấy dữ liệu mới nhất từ database (bao gồm chữ ký vừa upload)
+            $requestForm->refresh();
+
             // Load relationships dựa trên loại đơn
             if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
-                $requestForm->load(['employee', 'approvedBy', 'delegatorApprovedBy', 'authorizedApprovedBy']);
+                $requestForm->load(['employee', 'approvedBy', 'delegatorApprovedBy', 'authorizedApprovedBy', 'authorizedEmployee']);
             } else {
-                $requestForm->load(['employee', 'approvedBy', 'supervisor']);
+                $requestForm->load(['employee', 'approvedBy', 'supervisor', 'supervisorApprovedBy', 'managerApprovedBy']);
             }
 
             DB::commit();
 
             // Tạo URL để xem danh sách đơn cần duyệt
             $frontendUrl = config('app.frontend_url', 'https://a7acompany.com');
-            $approvalUrlSupervisor = $frontendUrl.'/employee/request-forms';
-            $approvalUrlManager = $frontendUrl.'/request-forms';
+            $approvalUrlSupervisor = $frontendUrl . '/employee/request-forms';
+            $approvalUrlManager = $frontendUrl . '/request-forms';
 
             // Gửi email thông báo cho supervisor (nếu có)
             if ($supervisor && $supervisor->email) {
@@ -203,7 +249,7 @@ class EmpRequestFormController extends Controller
                         'approval_url' => $approvalUrlSupervisor,
                     ]);
                 } catch (\Exception $e) {
-                    Log::error('❌ Lỗi khi thêm job gửi email cho supervisor vào queue: '.$e->getMessage());
+                    Log::error('❌ Lỗi khi thêm job gửi email cho supervisor vào queue: ' . $e->getMessage());
                 }
             }
 
@@ -226,12 +272,12 @@ class EmpRequestFormController extends Controller
                     'approval_url' => $approvalUrlManager,
                 ]);
             } catch (\Exception $e) {
-                Log::error('❌ Lỗi khi thêm job gửi email cho quản lý nhà máy vào queue: '.$e->getMessage());
+                Log::error('❌ Lỗi khi thêm job gửi email cho quản lý nhà máy vào queue: ' . $e->getMessage());
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Đơn yêu cầu đã được tạo thành công'.($supervisor ? ' và đã gửi thông báo cho tổ trưởng' : ''),
+                'message' => 'Đơn yêu cầu đã được tạo thành công' . ($supervisor ? ' và đã gửi thông báo cho tổ trưởng' : ''),
                 'data' => $requestForm,
                 'supervisor_notified' => $supervisor ? [
                     'id' => $supervisor->id,
@@ -336,7 +382,7 @@ class EmpRequestFormController extends Controller
                     }
 
                     $file = $request->file($fieldName);
-                    $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
+                    $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('digital_signatures', $filename, 'public');
                     $updateData[$fieldName] = $path;
 
@@ -352,7 +398,7 @@ class EmpRequestFormController extends Controller
                 // Cách 2: Base64 string (trong JSON body)
                 else {
                     // 🔥 HỖ TRỢ CẢ 2 TÊN: "digital_signature_applicant" HOẶC "digital_signature_applicant_base64"
-                    $base64FieldName = $fieldName.'_base64';
+                    $base64FieldName = $fieldName . '_base64';
                     $base64Data = null;
 
                     if ($request->has($fieldName) && ! empty($request->input($fieldName))) {
@@ -375,8 +421,8 @@ class EmpRequestFormController extends Controller
                             $imageData = base64_decode($base64Image);
 
                             // Tạo filename và lưu file
-                            $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$imageType;
-                            $path = 'digital_signatures/'.$filename;
+                            $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $imageType;
+                            $path = 'digital_signatures/' . $filename;
 
                             Storage::disk('public')->put($path, $imageData);
                             $updateData[$fieldName] = $path;
@@ -597,7 +643,7 @@ class EmpRequestFormController extends Controller
                     }
 
                     // Store new signature
-                    $filename = time().'_delegator_'.$file->getClientOriginalName();
+                    $filename = time() . '_delegator_' . $file->getClientOriginalName();
                     $path = $file->storeAs('signatures', $filename, 'public');
 
                     $updateData['digital_signature_delegator'] = $path;
@@ -617,7 +663,7 @@ class EmpRequestFormController extends Controller
                     }
 
                     // Store new signature
-                    $filename = time().'_authorized_'.$file->getClientOriginalName();
+                    $filename = time() . '_authorized_' . $file->getClientOriginalName();
                     $path = $file->storeAs('signatures', $filename, 'public');
 
                     $updateData['digital_signature_authorized'] = $path;
@@ -798,7 +844,7 @@ class EmpRequestFormController extends Controller
                 }
 
                 // Store new signature
-                $filename = time().'_authorized_'.$file->getClientOriginalName();
+                $filename = time() . '_authorized_' . $file->getClientOriginalName();
                 $path = $file->storeAs('signatures', $filename, 'public');
 
                 $updateData['digital_signature_authorized'] = $path;
