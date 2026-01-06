@@ -191,6 +191,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     });
 
     Route::middleware(['api.check.qa.qc'])->prefix('stamps')->group(function () {
+        Route::post('/check-duplicate', [StampController::class, 'checkDuplicate']);
         Route::put('/savePrint', [StampController::class, 'savePrint']);
         Route::get('/history', [StampController::class, 'getStampHistory']);
         Route::get('/history/{id}', [StampController::class, 'getStampHistoryById']);

@@ -117,6 +117,106 @@ class StampController extends BaseController
     }
 
     /**
+     * Check for duplicate stamps before printing
+     */
+    public function checkDuplicate(Request $request)
+    {
+        try {
+            // Validate request
+            $validated = $request->validate([
+                'product_id' => 'required|string',
+                'date' => 'required|date_format:Y-m-d',
+                'shift' => 'required|in:1,2',
+                'binStart' => 'required|string|regex:/^[0-9]+(,[0-9]+)*$/',
+                'binCount' => 'required|integer|min:1',
+                'type' => 'required|string|in:box,bag',
+            ]);
+
+            Log::info('Check duplicate request', ['request' => $validated]);
+
+            // Query existing approved stamps with purpose = 'new'
+            $existingStamps = SendStamp::where('product_id', $validated['product_id'])
+                ->where('date', $validated['date'])
+                ->where('shift', $validated['shift'])
+                ->where('type', $validated['type'])
+                ->where('status', 'approve')
+                ->where('purpose', 'new')
+                ->select('id', 'binStart', 'binCount')
+                ->get();
+
+            Log::info('Found existing stamps', ['count' => $existingStamps->count()]);
+
+            // Calculate request stamp range
+            $requestStamps = $this->getStampRange($validated['binStart'], $validated['binCount']);
+
+            // Check for duplicates
+            $duplicates = [];
+            foreach ($existingStamps as $existingStamp) {
+                $existingStampRange = $this->getStampRange($existingStamp->binStart, $existingStamp->binCount);
+
+                // Find overlapping stamps
+                $overlappingStamps = array_intersect($requestStamps, $existingStampRange);
+
+                if (!empty($overlappingStamps)) {
+                    $duplicates[] = [
+                        'id' => $existingStamp->id,
+                        'binStart' => $existingStamp->binStart,
+                        'binCount' => $existingStamp->binCount,
+                        'overlappingStamps' => array_values($overlappingStamps),
+                    ];
+                }
+            }
+
+            $isDuplicate = !empty($duplicates);
+
+            return response()->json([
+                'isDuplicate' => $isDuplicate,
+                'duplicates' => $duplicates,
+                'message' => $isDuplicate ? 'Phát hiện tem trùng lặp' : 'Không có tem trùng lặp',
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'error' => 'Validation Error',
+                'message' => 'Missing required fields',
+                'details' => $e->errors(),
+            ], 400);
+        } catch (\Throwable $e) {
+            Log::error('Error checking duplicate stamps', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'error' => 'Server Error',
+                'message' => 'Error checking duplicate stamps',
+            ], 500);
+        }
+    }
+
+    /**
+     * Get stamp range from binStart and binCount
+     * 
+     * @param string $binStart
+     * @param int $binCount
+     * @return array
+     */
+    private function getStampRange(string $binStart, int $binCount): array
+    {
+        if (strpos($binStart, ',') !== false) {
+            // Parse comma-separated values
+            $stamps = array_map('intval', array_map('trim', explode(',', $binStart)));
+
+            // Return only the first $binCount stamps
+            return array_slice($stamps, 0, $binCount);
+        } else {
+            // Generate continuous range
+            $start = (int) $binStart;
+
+            return range($start, $start + $binCount - 1);
+        }
+    }
+
+    /**
      * Approve existing stamp request
      */
     private function approveExistingStamp(int $stampId)
