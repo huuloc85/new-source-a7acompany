@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Thay đổi column status từ string thành enum
-        DB::statement("ALTER TABLE send_stamps MODIFY COLUMN status ENUM('pending', 'approve', 'reject') NOT NULL DEFAULT 'pending'");
+        DB::statement("ALTER TABLE send_stamps MODIFY COLUMN status ENUM('pending', 'approve', 'rejected') NOT NULL DEFAULT 'pending'");
     }
 
     /**
