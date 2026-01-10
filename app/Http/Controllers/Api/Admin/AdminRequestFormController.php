@@ -207,23 +207,16 @@ class AdminRequestFormController extends Controller
 
                     // Danh sách supervisor employee IDs
                     $supervisorIds = [19010400, 20020700, 18010900, 19010300, 20102800];
-
-                    // Danh sách nhân viên đặc biệt (tự gửi đơn cho quản lý, không cần supervisor duyệt)
-                    $specialEmployeeIds = [23030100, 17031400, 20122900];
-
                     $isCurrentUserSupervisor = in_array($currentUserId, $supervisorIds);
                     $isRequestFromSupervisor = in_array($requestForm->employee_id, $supervisorIds);
-                    $isRequestFromSpecialEmployee = in_array($requestForm->employee_id, $specialEmployeeIds);
 
-                    // Case 1: Supervisor hoặc nhân viên đặc biệt tự gửi đơn cho quản lý
-                    if ($isRequestFromSupervisor || $isRequestFromSpecialEmployee) {
-                        // Supervisor/Nhân viên đặc biệt không thể tự ký cho chính mình → Chỉ cần Admin ký và duyệt
+                    // Case 1: Supervisor tự gửi đơn cho chính mình
+                    if ($isRequestFromSupervisor) {
+                        // Supervisor không thể tự ký cho chính mình → Chỉ cần Admin ký và duyệt
                         if (! $isCurrentUserSupervisor && $hasManagerSignature) {
                             // Admin đã ký và duyệt → Set status = 'approved'
                             $requestForm->update(['status' => RequestForm::STATUS_APPROVED]);
-                            $message = $isRequestFromSupervisor
-                                ? 'Đơn yêu cầu của supervisor đã được duyệt thành công'
-                                : 'Đơn yêu cầu của nhân viên đã được duyệt thành công';
+                            $message = 'Đơn yêu cầu của supervisor đã được duyệt thành công';
                         } elseif (! $isCurrentUserSupervisor) {
                             // Admin chưa ký → Giữ pending
                             $requestForm->update(['status' => RequestForm::STATUS_PENDING]);
@@ -232,9 +225,7 @@ class AdminRequestFormController extends Controller
                             // Nếu vừa ký xong thì approve luôn
                             if ($hasNewSignatures && $hasManagerSignature) {
                                 $requestForm->update(['status' => RequestForm::STATUS_APPROVED]);
-                                $message = $isRequestFromSupervisor
-                                    ? 'Đơn yêu cầu của supervisor đã được duyệt thành công'
-                                    : 'Đơn yêu cầu của nhân viên đã được duyệt thành công';
+                                $message = 'Đơn yêu cầu của supervisor đã được duyệt thành công';
                             }
                         } else {
                             // Supervisor không thể approve đơn của chính mình

@@ -268,6 +268,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         });
 
         Route::prefix('stamps')->group(function () {
+            Route::post('/check-duplicate', [EmpStampController::class, 'checkDuplicate']);
             Route::post('/request', [EmpStampController::class, 'requestStamp']);
             Route::get('/history', [EmpStampController::class, 'getStampHistory']);
         });
