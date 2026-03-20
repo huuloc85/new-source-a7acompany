@@ -10,7 +10,6 @@ use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DailyScheduleController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\EmployeeController;
-use App\Http\Controllers\Api\Admin\EmpScanController;
 use App\Http\Controllers\Api\Admin\HistoryController;
 use App\Http\Controllers\Api\Admin\LogController;
 use App\Http\Controllers\Api\Admin\ProductController;
@@ -29,7 +28,6 @@ use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
 use App\Http\Controllers\Api\Employee\EmpStampController;
 use App\Http\Controllers\Api\Employee\EmpTodoController;
 use App\Http\Controllers\Api\NotificationController;
-use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\StockTransactionController;
 use App\Http\Controllers\Api\UploadController;
 use Illuminate\Http\Request;
@@ -274,11 +272,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         });
     });
 
-    Route::middleware('api.check.warehouse')->prefix('scan')->group(function () {
-        Route::post('/check', [EmpScanController::class, 'checkBarCode']);
-        Route::get('/storage', [EmpScanController::class, 'StorageProduct']);
-    });
-
     Route::middleware('api.authAdmin')->prefix('check-po')->group(function () {
         // Route::get('/', [CheckPoController::class, 'index']);
         // Route::get('/{id}', [CheckPoController::class, 'show']);
@@ -311,42 +304,21 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::middleware('api.authAdmin')->delete('/{id}', [NotificationController::class, 'destroy']);
     });
 
-    // Stock Management (Quản Lý Kho)
-    Route::prefix('stock')->group(function () {
-        // Scan barcode
-        Route::post('/scan', [StockController::class, 'scanBarcode']);
-
-        // Stock in/out operations
-        Route::post('/in', [StockController::class, 'stockIn']);
-        Route::post('/out', [StockController::class, 'stockOut']);
-
-        // Scan and stock in/out directly
-        Route::post('/scan-and-in', [StockController::class, 'scanAndStockIn']);
-        Route::post('/scan-and-out', [StockController::class, 'scanAndStockOut']);
-
-        // Inventory and history
-        Route::get('/inventory', [StockController::class, 'getInventory']);
-        Route::get('/transactions', [StockController::class, 'getTransactionHistory']);
-        Route::get('/used-bins', [StockController::class, 'getUsedBins']);
-    });
-
-    // Stock Transaction Management (Quản Lý Giao Dịch Kho) - RESTful API
+    // Stock Transaction Management (Quản Lý Giao Dịch Kho)
     Route::prefix('stock-transactions')->middleware('api.check.warehouse')->group(function () {
-        Route::get('/', [StockTransactionController::class, 'index']); // Danh sách giao dịch
-        Route::post('/', [StockTransactionController::class, 'store']); // Tạo giao dịch mới
-        Route::get('/statistics', [StockTransactionController::class, 'statistics']); // Thống kê giao dịch
-        Route::get('/current-stock', [StockTransactionController::class, 'currentStock']); // Tình trạng tồn kho hiện tại
+        Route::get('/', [StockTransactionController::class, 'index']);
+        Route::post('/', [StockTransactionController::class, 'store']);
+        Route::get('/statistics', [StockTransactionController::class, 'statistics']);
+        Route::get('/current-stock', [StockTransactionController::class, 'currentStock']);
+        Route::get('/storage', [StockTransactionController::class, 'storageProduct']);
 
-        // Simple scan operations - Main workflow
-        Route::post('/scan-in', [StockTransactionController::class, 'scanToStockIn']); // Scan để nhập kho (đơn giản)
-        Route::post('/scan-out', [StockTransactionController::class, 'scanToStockOut']); // Scan để xuất kho (đơn giản)
+        Route::post('/scan', [StockTransactionController::class, 'scanBarcode']);
+        Route::post('/scan-in', [StockTransactionController::class, 'scanIn']);
+        Route::post('/scan-out', [StockTransactionController::class, 'scanOut']);
 
-        // Barcode info only
-        Route::post('/scan', [StockTransactionController::class, 'scanBarcode']); // Scan barcode để xem thông tin
-
-        Route::get('/storage-product/{storageProductId}', [StockTransactionController::class, 'byStorageProduct']); // Giao dịch theo sản phẩm
-        Route::get('/{id}', [StockTransactionController::class, 'show']); // Chi tiết giao dịch
-        Route::put('/{id}', [StockTransactionController::class, 'update']); // Cập nhật giao dịch
-        Route::delete('/{id}', [StockTransactionController::class, 'destroy']); // Xóa giao dịch
+        Route::get('/storage-product/{storageProductId}', [StockTransactionController::class, 'byStorageProduct']);
+        Route::get('/{id}', [StockTransactionController::class, 'show']);
+        Route::put('/{id}', [StockTransactionController::class, 'update']);
+        Route::delete('/{id}', [StockTransactionController::class, 'destroy']);
     });
 });
