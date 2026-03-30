@@ -11,7 +11,7 @@ class SidebarItem extends Model
         'key',
         'title',
         'icon',
-        'path',
+        'url',
     ];
 
     public function permission()

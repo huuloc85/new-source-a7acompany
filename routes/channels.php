@@ -22,3 +22,18 @@ Broadcast::channel('send-stamp-channel', function ($user) {
         return true;
     }
 });
+
+// Feedback: employee nhận thông báo khi admin reply
+Broadcast::channel('feedback.employee.{employeeId}', function ($user, $employeeId) {
+    return $user->id === $employeeId;
+});
+
+// Feedback: admin nhận thông báo khi employee gửi góp ý mới
+Broadcast::channel('feedback.admin', function ($user) {
+    if (! $user || ! $user->role) {
+        return false;
+    }
+    $roleName = strtolower(trim($user->role->role_name));
+
+    return in_array($roleName, ['super admin', 'admin', 'co admin'], true);
+});

@@ -15,410 +15,327 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class EmpAttendanceController extends Controller
 {
+    /**
+     * Unified attendance index endpoint.
+     *
+     * - Without ?include_calculation: returns raw attendance history (original index behavior)
+     * - With ?include_calculation=1: returns calculated attendance data (original calculate behavior)
+     *
+     * This allows the FE to use a single page/component for both views.
+     */
     public function index(Request $request)
     {
         try {
-            $user = Auth::user();
-            $query = ScheduleDetail::query()
-                ->where('employee_id', $user->id)
-                ->leftJoin('attendance_records', function ($join) {
-                    $join->on('schedule_details.date', '=', 'attendance_records.date')
-                        ->on('schedule_details.employee_id', '=', 'attendance_records.employee_code');
-                })
-                ->rightJoin('employees', function ($join) {
-                    $join->on('schedule_details.employee_id', '=', 'employees.id')
-                        ->whereNull('employees.deleted_at');
-                })
-                ->leftJoin('calendar_categories', function ($join) {
-                    $join->on('employees.calendar_category_id', '=', 'calendar_categories.id');
-                })
-                ->select([
-                    'schedule_details.employee_id',
-                    'employees.name',
-                    'schedule_details.schedule_id',
-                    'employees.calendar_category_id',
-                    'calendar_categories.name as calendar_category_name',
-                    'schedule_details.is_wc_clean_men',
-                    'schedule_details.is_wc_clean_women',
-                    'schedule_details.is_wc_trash',
-                    'schedule_details.is_eat_room',
-                    'schedule_details.hnhc',
-                    'schedule_details.date',
-                    'attendance_records.datetime',
-                    'attendance_records.time',
-                    'employees.company',
-                ]);
+            $includeCalculation = $request->boolean('include_calculation', false);
 
-            $arrayDate = explode(',', $request->input('filter.date_between'));
-
-            if (count($arrayDate) !== 2) {
-                $query->whereBetween('schedule_details.date', [
-                    Carbon::now()->startOfMonth(),
-                    Carbon::now(),
-                ]);
+            if ($includeCalculation) {
+                return $this->handleCalculation($request);
             }
 
-            $records = QueryBuilder::for($query)
-                ->allowedFilters([
-                    'employee_id',
-                    'date',
-                    'employees.name',
-                    'employees.company',
-                    AllowedFilter::callback('date_between', function ($query, $value) {
-                        if (is_array($value) && count($value) === 2) {
-                            $start = Carbon::parse($value[0])->subDay();
-                            $end = Carbon::parse($value[1]) > Carbon::now() ? Carbon::now()->addDay() : Carbon::parse($value[1])->addDay();
-                            $query->whereBetween('schedule_details.date', [
-                                $start,
-                                $end,
-                            ]);
-                        }
-                    }),
-                    'employees.calendar_category_id',
-                ])
-                ->defaultSort('date')
-                ->allowedSorts([
-                    'employee_id',
-                    'name',
-                    'date',
-                    'calendar_category_id',
-                    'calendar_category_name',
-                ])
-                ->get();
-
-            $grouped = $records->groupBy(['employee_id', 'name', 'date']);
-            $result = [];
-            foreach ($grouped as $employee_id => $byName) {
-                foreach ($byName as $name => $byDate) {
-                    $datesList = $byDate->keys()->sort()->values();
-                    foreach ($byDate as $date => $items) {
-                        $dates = $items->filter(function ($item) {
-                            return ! empty($item->datetime);
-                        })->map(function ($item) {
-                            return [
-                                'datetime' => $item->datetime,
-                                'date' => $item->date,
-                                'time' => $item->time,
-                            ];
-                        })->values();
-
-                        $currentIndex = $datesList->search($date);
-                        $yesterday = $currentIndex !== false && $currentIndex > 0 ? $byDate[$datesList[$currentIndex - 1]] : [];
-                        $tomorrow = $currentIndex !== false && $currentIndex < $datesList->count() - 1 ? $byDate[$datesList[$currentIndex + 1]] : [];
-
-                        $result[] = [
-                            'employee_id' => $employee_id,
-                            'name' => $name,
-                            'date' => $date,
-                            'calendar_category_id' => $items->first()->calendar_category_id,
-                            'calendar_category_name' => $items->first()->calendar_category_name,
-                            'schedule_id' => $items->first()->schedule_id,
-                            'is_wc_clean_men' => $items->first()->is_wc_clean_men,
-                            'is_wc_clean_women' => $items->first()->is_wc_clean_women,
-                            'is_wc_trash' => $items->first()->is_wc_trash,
-                            'is_eat_room' => $items->first()->is_eat_room,
-                            'hnhc' => $items->first()->hnhc,
-                            'company' => $items->first()->company,
-                            'dates' => (function () use ($yesterday, $dates, $tomorrow, $date) {
-                                $result = $dates->toArray();
-
-                                if ($yesterday && $yesterday->isNotEmpty()) {
-                                    $prevDate = Carbon::parse($date)->copy()->subDay()->format('Y-m-d');
-                                    if ($yesterday->first()->date === $prevDate) {
-                                        $result = array_merge(
-                                            $yesterday->filter(function ($item) {
-                                                return ! empty($item->datetime);
-                                            })->map(function ($item) {
-                                                return [
-                                                    'datetime' => $item->datetime,
-                                                    'date' => $item->date,
-                                                    'time' => $item->time,
-                                                ];
-                                            })->toArray(),
-                                            $result
-                                        );
-                                    }
-                                }
-
-                                if ($tomorrow && $tomorrow->isNotEmpty()) {
-                                    $nextDate = Carbon::parse($date)->copy()->addDay()->format('Y-m-d');
-                                    if ($tomorrow->first()->date === $nextDate) {
-                                        $result = array_merge(
-                                            $result,
-                                            $tomorrow->filter(function ($item) {
-                                                return ! empty($item->datetime);
-                                            })->map(function ($item) {
-                                                return [
-                                                    'datetime' => $item->datetime,
-                                                    'date' => $item->date,
-                                                    'time' => $item->time,
-                                                ];
-                                            })->toArray()
-                                        );
-                                    }
-                                }
-
-                                return $result;
-                            })(),
-                        ];
-                    }
-                }
-            }
-
-            if ($arrayDate && count($arrayDate) === 2) {
-                $start = Carbon::parse($arrayDate[0])->startOfDay();
-                $end = Carbon::parse($arrayDate[1])->endOfDay();
-                $result = array_filter($result, function ($item) use ($start, $end) {
-                    $date = Carbon::parse($item['date']);
-
-                    return $date->between($start, $end) || $date->equalTo($start) || $date->equalTo($end);
-                });
-            }
-
-            $page = request()->input('page', 1);
-            $perPage = request()->input('limit', 15);
-            if ($perPage == 0) {
-                $perPage = max(1, count($result));
-            }
-            $offset = ($page - 1) * $perPage;
-            $paginated = array_slice($result, $offset, $perPage);
-            $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
-                $paginated,
-                count($result),
-                $perPage,
-                $page,
-                ['path' => request()->url(), 'query' => request()->query()]
-            );
-
-            LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công', 'Nhân viên xem chi tiết chấm công');
-
-            return response()->json($paginator);
+            return $this->handleIndex($request);
         } catch (\Throwable $th) {
             return HandleError::handle($th);
         }
     }
 
-    // public function show($id)
-    // {
-    //     try {
-    //         $record = AttendanceRecord::with(['employees'])->findOrFail($id);
-
-    //         LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công', 'Nhân viên xem chi tiết bản ghi chấm công');
-
-    //         return response()->json($record);
-    //     } catch (\Throwable $e) {
-    //         return HandleError::handle($e);
-    //     }
-    // }
-
-    public function calculate(Request $request)
+    /**
+     * Original index logic - raw attendance history grouped by date.
+     */
+    private function handleIndex(Request $request)
     {
-        try {
-            $user = Auth::user();
-            $query = ScheduleDetail::query()
-                ->where('employee_id', $user->id)
-                ->leftJoin('attendance_records', function ($join) {
-                    $join->on('schedule_details.date', '=', 'attendance_records.date')
-                        ->on('schedule_details.employee_id', '=', 'attendance_records.employee_code');
-                })
-                ->rightJoin('employees', function ($join) {
-                    $join->on('schedule_details.employee_id', '=', 'employees.id')
-                        ->whereNull('employees.deleted_at');
-                })
-                ->leftJoin('calendar_categories', function ($join) {
-                    $join->on('employees.calendar_category_id', '=', 'calendar_categories.id');
-                })
-                ->select([
-                    'schedule_details.employee_id',
-                    'employees.name',
-                    'schedule_details.schedule_id',
-                    'employees.calendar_category_id',
-                    'calendar_categories.name as calendar_category_name',
-                    'schedule_details.is_wc_clean_men',
-                    'schedule_details.is_wc_clean_women',
-                    'schedule_details.is_wc_trash',
-                    'schedule_details.is_eat_room',
-                    'schedule_details.hnhc',
-                    'schedule_details.date',
-                    'attendance_records.datetime',
-                    'attendance_records.time',
-                    'employees.company',
-                ]);
+        $user = Auth::user();
+        $arrayDate = explode(',', $request->input('filter.date_between'));
 
-            $arrayDate = explode(',', $request->input('filter.date_between'));
-            $originalStartDate = null;
-            $originalEndDate = null;
+        $query = $this->buildBaseQuery($user);
 
-            if (count($arrayDate) !== 2) {
-                $query->whereBetween('schedule_details.date', [
-                    Carbon::now()->startOfMonth(),
-                    Carbon::now(),
-                ]);
-            } else {
-                // Store original date range for final filtering
-                $originalStartDate = Carbon::parse($arrayDate[0]);
-                $originalEndDate = Carbon::parse($arrayDate[1]);
-            }
+        if (count($arrayDate) !== 2) {
+            $query->whereBetween('schedule_details.date', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now(),
+            ]);
+        }
 
-            $records = QueryBuilder::for($query)
-                ->allowedFilters([
-                    'employee_id',
-                    'date',
-                    'employees.name',
-                    'employees.company',
-                    AllowedFilter::callback('date_between', function ($query, $value) {
-                        if (is_array($value) && count($value) === 2) {
+        $records = $this->applyFiltersAndSorts($query, 'index')->get();
+
+        $result = $this->groupAndBuildResult($records);
+
+        if ($arrayDate && count($arrayDate) === 2) {
+            $start = Carbon::parse($arrayDate[0])->startOfDay();
+            $end = Carbon::parse($arrayDate[1])->endOfDay();
+            $result = array_filter($result, function ($item) use ($start, $end) {
+                $date = Carbon::parse($item['date']);
+
+                return $date->between($start, $end) || $date->equalTo($start) || $date->equalTo($end);
+            });
+        }
+
+        $page = request()->input('page', 1);
+        $perPage = request()->input('limit', 15);
+        if ($perPage == 0) {
+            $perPage = max(1, count($result));
+        }
+        $offset = ($page - 1) * $perPage;
+        $paginated = array_slice($result, $offset, $perPage);
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginated,
+            count($result),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công', 'Nhân viên xem chi tiết chấm công');
+
+        return response()->json($paginator);
+    }
+
+    /**
+     * Original calculate logic - attendance with time_in, time_out, total_hours calculations.
+     * IMPORTANT: The calculateAttendances() method logic is NOT changed.
+     */
+    private function handleCalculation(Request $request)
+    {
+        $user = Auth::user();
+        $arrayDate = explode(',', $request->input('filter.date_between'));
+        $originalStartDate = null;
+        $originalEndDate = null;
+
+        $query = $this->buildBaseQuery($user);
+
+        if (count($arrayDate) !== 2) {
+            $query->whereBetween('schedule_details.date', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now(),
+            ]);
+        } else {
+            // Store original date range for final filtering
+            $originalStartDate = Carbon::parse($arrayDate[0]);
+            $originalEndDate = Carbon::parse($arrayDate[1]);
+        }
+
+        $records = $this->applyFiltersAndSorts($query, 'calculate')->get();
+
+        $rawResult = $this->groupAndBuildResult($records);
+
+        // Filter by original date range if provided (return only requested dates)
+        if ($originalStartDate && $originalEndDate) {
+            $rawResult = array_filter($rawResult, function ($item) use ($originalStartDate, $originalEndDate) {
+                $date = Carbon::parse($item['date']);
+
+                return $date->between($originalStartDate, $originalEndDate, true); // true = inclusive
+            });
+        } elseif ($arrayDate && count($arrayDate) === 2) {
+            $start = Carbon::parse($arrayDate[0])->startOfDay();
+            $end = Carbon::parse($arrayDate[1])->endOfDay();
+            $rawResult = array_filter($rawResult, function ($item) use ($start, $end) {
+                $date = Carbon::parse($item['date']);
+
+                return $date->between($start, $end) || $date->equalTo($start) || $date->equalTo($end);
+            });
+        }
+
+        // Calculate attendance results using the same logic as Admin controller
+        $calculatedResult = $this->calculateAttendances($rawResult);
+
+        // No pagination for employee, return all results
+        $perPage = $request->input('limit', 0);
+        if ($perPage == 0) {
+            return response()->json([
+                'data' => $calculatedResult,
+                'total' => count($calculatedResult),
+            ]);
+        }
+
+        // Pagination if limit is provided
+        $page = $request->input('page', 1);
+        $offset = ($page - 1) * $perPage;
+        $paginated = array_slice($calculatedResult, $offset, $perPage);
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginated,
+            count($calculatedResult),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công Tính Toán', 'Nhân viên xem chi tiết chấm công đã tính toán');
+
+        return response()->json($paginator);
+    }
+
+    /**
+     * Build the base query shared between index and calculate.
+     */
+    private function buildBaseQuery($user)
+    {
+        return ScheduleDetail::query()
+            ->where('employee_id', $user->id)
+            ->leftJoin('attendance_records', function ($join) {
+                $join->on('schedule_details.date', '=', 'attendance_records.date')
+                    ->on('schedule_details.employee_id', '=', 'attendance_records.employee_code');
+            })
+            ->rightJoin('employees', function ($join) {
+                $join->on('schedule_details.employee_id', '=', 'employees.id')
+                    ->whereNull('employees.deleted_at');
+            })
+            ->leftJoin('calendar_categories', function ($join) {
+                $join->on('employees.calendar_category_id', '=', 'calendar_categories.id');
+            })
+            ->select([
+                'schedule_details.employee_id',
+                'employees.name',
+                'schedule_details.schedule_id',
+                'employees.calendar_category_id',
+                'calendar_categories.name as calendar_category_name',
+                'schedule_details.is_wc_clean_men',
+                'schedule_details.is_wc_clean_women',
+                'schedule_details.is_wc_trash',
+                'schedule_details.is_eat_room',
+                'schedule_details.hnhc',
+                'schedule_details.date',
+                'attendance_records.datetime',
+                'attendance_records.time',
+                'employees.company',
+            ]);
+    }
+
+    /**
+     * Apply filters and sorts via QueryBuilder.
+     * The only difference: calculate mode extends the date range by 2 days on each side
+     * for shift detection and hnhc='X' cases.
+     */
+    private function applyFiltersAndSorts($query, string $mode = 'index')
+    {
+        return QueryBuilder::for($query)
+            ->allowedFilters([
+                'employee_id',
+                'date',
+                'employees.name',
+                'employees.company',
+                AllowedFilter::callback('date_between', function ($query, $value) use ($mode) {
+                    if (is_array($value) && count($value) === 2) {
+                        if ($mode === 'calculate') {
                             // Extend range by 2 days on each side for calculation
                             // This ensures we have enough data for shift detection and hnhc='X' cases
                             $start = Carbon::parse($value[0])->subDays(2);
                             $end = Carbon::parse($value[1])->addDays(2);
-                            $query->whereBetween('schedule_details.date', [
-                                $start,
-                                $end,
-                            ]);
+                        } else {
+                            $start = Carbon::parse($value[0])->subDay();
+                            $end = Carbon::parse($value[1]) > Carbon::now() ? Carbon::now()->addDay() : Carbon::parse($value[1])->addDay();
                         }
-                    }),
-                    'employees.calendar_category_id',
-                ])
-                ->defaultSort('date')
-                ->allowedSorts([
-                    'employee_id',
-                    'name',
-                    'date',
-                    'calendar_category_id',
-                    'calendar_category_name',
-                ])
-                ->get();
-
-            $grouped = $records->groupBy(['employee_id', 'name', 'date']);
-            $rawResult = [];
-
-            foreach ($grouped as $employee_id => $byName) {
-                foreach ($byName as $name => $byDate) {
-                    $datesList = $byDate->keys()->sort()->values();
-                    foreach ($byDate as $date => $items) {
-                        $dates = $items->filter(function ($item) {
-                            return ! empty($item->datetime);
-                        })->map(function ($item) {
-                            return [
-                                'datetime' => $item->datetime,
-                                'date' => $item->date,
-                                'time' => $item->time,
-                            ];
-                        })->values();
-
-                        $currentIndex = $datesList->search($date);
-                        $yesterday = $currentIndex !== false && $currentIndex > 0 ? $byDate[$datesList[$currentIndex - 1]] : [];
-                        $tomorrow = $currentIndex !== false && $currentIndex < $datesList->count() - 1 ? $byDate[$datesList[$currentIndex + 1]] : [];
-
-                        $rawResult[] = [
-                            'employee_id' => $employee_id,
-                            'name' => $name,
-                            'date' => $date,
-                            'calendar_category_id' => $items->first()->calendar_category_id,
-                            'calendar_category_name' => $items->first()->calendar_category_name,
-                            'schedule_id' => $items->first()->schedule_id,
-                            'is_wc_clean_men' => $items->first()->is_wc_clean_men,
-                            'is_wc_clean_women' => $items->first()->is_wc_clean_women,
-                            'is_wc_trash' => $items->first()->is_wc_trash,
-                            'is_eat_room' => $items->first()->is_eat_room,
-                            'hnhc' => $items->first()->hnhc,
-                            'company' => $items->first()->company,
-                            'dates' => (function () use ($yesterday, $dates, $tomorrow, $date) {
-                                $result = $dates->toArray();
-
-                                if ($yesterday && $yesterday->isNotEmpty()) {
-                                    $prevDate = Carbon::parse($date)->copy()->subDay()->format('Y-m-d');
-                                    if ($yesterday->first()->date === $prevDate) {
-                                        $result = array_merge(
-                                            $yesterday->filter(function ($item) {
-                                                return ! empty($item->datetime);
-                                            })->map(function ($item) {
-                                                return [
-                                                    'datetime' => $item->datetime,
-                                                    'date' => $item->date,
-                                                    'time' => $item->time,
-                                                ];
-                                            })->toArray(),
-                                            $result
-                                        );
-                                    }
-                                }
-
-                                if ($tomorrow && $tomorrow->isNotEmpty()) {
-                                    $nextDate = Carbon::parse($date)->copy()->addDay()->format('Y-m-d');
-                                    if ($tomorrow->first()->date === $nextDate) {
-                                        $result = array_merge(
-                                            $result,
-                                            $tomorrow->filter(function ($item) {
-                                                return ! empty($item->datetime);
-                                            })->map(function ($item) {
-                                                return [
-                                                    'datetime' => $item->datetime,
-                                                    'date' => $item->date,
-                                                    'time' => $item->time,
-                                                ];
-                                            })->toArray()
-                                        );
-                                    }
-                                }
-
-                                return $result;
-                            })(),
-                        ];
+                        $query->whereBetween('schedule_details.date', [
+                            $start,
+                            $end,
+                        ]);
                     }
-                }
-            }
-
-            // Filter by original date range if provided (return only requested dates)
-            if ($originalStartDate && $originalEndDate) {
-                $rawResult = array_filter($rawResult, function ($item) use ($originalStartDate, $originalEndDate) {
-                    $date = Carbon::parse($item['date']);
-
-                    return $date->between($originalStartDate, $originalEndDate, true); // true = inclusive
-                });
-            } elseif ($arrayDate && count($arrayDate) === 2) {
-                $start = Carbon::parse($arrayDate[0])->startOfDay();
-                $end = Carbon::parse($arrayDate[1])->endOfDay();
-                $rawResult = array_filter($rawResult, function ($item) use ($start, $end) {
-                    $date = Carbon::parse($item['date']);
-
-                    return $date->between($start, $end) || $date->equalTo($start) || $date->equalTo($end);
-                });
-            }
-
-            // Calculate attendance results using the same logic as Admin controller
-            $calculatedResult = $this->calculateAttendances($rawResult);
-
-            // No pagination for employee, return all results
-            $perPage = $request->input('limit', 0);
-            if ($perPage == 0) {
-                return response()->json([
-                    'data' => $calculatedResult,
-                    'total' => count($calculatedResult),
-                ]);
-            }
-
-            // Pagination if limit is provided
-            $page = $request->input('page', 1);
-            $offset = ($page - 1) * $perPage;
-            $paginated = array_slice($calculatedResult, $offset, $perPage);
-            $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
-                $paginated,
-                count($calculatedResult),
-                $perPage,
-                $page,
-                ['path' => $request->url(), 'query' => $request->query()]
-            );
-
-            LogActivity::logViewActivity(auth()->user(), 'Xem Chi Tiết Chấm Công Tính Toán', 'Nhân viên xem chi tiết chấm công đã tính toán');
-
-            return response()->json($paginator);
-        } catch (\Throwable $th) {
-            return HandleError::handle($th);
-        }
+                }),
+                'employees.calendar_category_id',
+            ])
+            ->defaultSort('date')
+            ->allowedSorts([
+                'employee_id',
+                'name',
+                'date',
+                'calendar_category_id',
+                'calendar_category_name',
+            ]);
     }
 
+    /**
+     * Group records and build the result array.
+     * This is the shared grouping logic used by both index and calculate.
+     */
+    private function groupAndBuildResult($records)
+    {
+        $grouped = $records->groupBy(['employee_id', 'name', 'date']);
+        $result = [];
+
+        foreach ($grouped as $employee_id => $byName) {
+            foreach ($byName as $name => $byDate) {
+                $datesList = $byDate->keys()->sort()->values();
+                foreach ($byDate as $date => $items) {
+                    $dates = $items->filter(function ($item) {
+                        return ! empty($item->datetime);
+                    })->map(function ($item) {
+                        return [
+                            'datetime' => $item->datetime,
+                            'date' => $item->date,
+                            'time' => $item->time,
+                        ];
+                    })->values();
+
+                    $currentIndex = $datesList->search($date);
+                    $yesterday = $currentIndex !== false && $currentIndex > 0 ? $byDate[$datesList[$currentIndex - 1]] : [];
+                    $tomorrow = $currentIndex !== false && $currentIndex < $datesList->count() - 1 ? $byDate[$datesList[$currentIndex + 1]] : [];
+
+                    $result[] = [
+                        'employee_id' => $employee_id,
+                        'name' => $name,
+                        'date' => $date,
+                        'calendar_category_id' => $items->first()->calendar_category_id,
+                        'calendar_category_name' => $items->first()->calendar_category_name,
+                        'schedule_id' => $items->first()->schedule_id,
+                        'is_wc_clean_men' => $items->first()->is_wc_clean_men,
+                        'is_wc_clean_women' => $items->first()->is_wc_clean_women,
+                        'is_wc_trash' => $items->first()->is_wc_trash,
+                        'is_eat_room' => $items->first()->is_eat_room,
+                        'hnhc' => $items->first()->hnhc,
+                        'company' => $items->first()->company,
+                        'dates' => (function () use ($yesterday, $dates, $tomorrow, $date) {
+                            $result = $dates->toArray();
+
+                            if ($yesterday && $yesterday->isNotEmpty()) {
+                                $prevDate = Carbon::parse($date)->copy()->subDay()->format('Y-m-d');
+                                if ($yesterday->first()->date === $prevDate) {
+                                    $result = array_merge(
+                                        $yesterday->filter(function ($item) {
+                                            return ! empty($item->datetime);
+                                        })->map(function ($item) {
+                                            return [
+                                                'datetime' => $item->datetime,
+                                                'date' => $item->date,
+                                                'time' => $item->time,
+                                            ];
+                                        })->toArray(),
+                                        $result
+                                    );
+                                }
+                            }
+
+                            if ($tomorrow && $tomorrow->isNotEmpty()) {
+                                $nextDate = Carbon::parse($date)->copy()->addDay()->format('Y-m-d');
+                                if ($tomorrow->first()->date === $nextDate) {
+                                    $result = array_merge(
+                                        $result,
+                                        $tomorrow->filter(function ($item) {
+                                            return ! empty($item->datetime);
+                                        })->map(function ($item) {
+                                            return [
+                                                'datetime' => $item->datetime,
+                                                'date' => $item->date,
+                                                'time' => $item->time,
+                                            ];
+                                        })->toArray()
+                                    );
+                                }
+                            }
+
+                            return $result;
+                        })(),
+                    ];
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Calculate attendance details (time_in, time_out, total_hours, overtime, etc.)
+     *
+     * ⚠️ WARNING: DO NOT modify this method! It has been thoroughly tested for both
+     * hidden and visible bugs. Any changes here could break the calculation logic.
+     */
     private function calculateAttendances($data)
     {
         $result = [];

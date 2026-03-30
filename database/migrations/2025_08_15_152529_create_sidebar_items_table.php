@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('key')->unique(); // Khóa duy nhất cho item sidebar
             $table->string('title');             // Nhãn hiển thị
             $table->string('icon')->nullable();  // Icon nếu có
-            $table->string('path')->nullable();  // Route path nếu có
 
             $table->timestamps();
         });

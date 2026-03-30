@@ -68,12 +68,73 @@ class Employee extends Authenticatable
         'password' => 'hashed',
     ];
 
+    /**
+     * Quyền được thêm riêng (ngoài role) - Grant
+     */
+    public function grantedPermissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_granted_permissions', 'user_id', 'permission_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Quyền bị chặn (từ role nhưng bị deny) - Deny
+     */
+    public function deniedPermissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_denied_permissions', 'user_id', 'permission_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Tính quyền hiệu lực = (role - denied) ∪ granted
+     */
+    public function getEffectivePermissions()
+    {
+        $rolePermissions = $this->role?->permissions ?? collect();
+        $deniedIds = $this->deniedPermissions->pluck('id')->toArray();
+        $grantedPermissions = $this->grantedPermissions;
+
+        // Bỏ quyền bị deny khỏi role
+        $filtered = $rolePermissions->filter(fn ($p) => ! in_array($p->id, $deniedIds));
+
+        // Merge thêm quyền granted
+        return $filtered->merge($grantedPermissions)->unique('id');
+    }
+
+    /**
+     * Kiểm tra user có quyền cụ thể không (bao gồm grant/deny)
+     */
     public function hasPermission($key)
     {
-        return $this->role
-            ->permissions()
-            ->where('key', $key)
-            ->exists();
+        // Nếu quyền bị deny → không có
+        if ($this->deniedPermissions()->where('key', $key)->exists()) {
+            return false;
+        }
+
+        // Kiểm tra quyền từ role (null-safe)
+        if ($this->role && $this->role->permissions()->where('key', $key)->exists()) {
+            return true;
+        }
+
+        // Kiểm tra quyền được grant thêm
+        return $this->grantedPermissions()->where('key', $key)->exists();
+    }
+
+    /**
+     * Kiểm tra quyền (alias cho hasPermission)
+     */
+    public function hasEffectivePermission(string $permissionKey): bool
+    {
+        return $this->hasPermission($permissionKey);
+    }
+
+    /**
+     * Đếm số quyền override (granted + denied)
+     */
+    public function getDirectPermissionsCountAttribute(): int
+    {
+        return $this->grantedPermissions()->count() + $this->deniedPermissions()->count();
     }
 
     public function getEmployeeTotalHoursAttribute()

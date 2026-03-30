@@ -10,9 +10,12 @@ use App\Http\Controllers\Api\Admin\CheckStampController;
 use App\Http\Controllers\Api\Admin\DailyScheduleController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\EmployeeController;
+use App\Http\Controllers\Api\Admin\FeedbackController;
 use App\Http\Controllers\Api\Admin\HistoryController;
 use App\Http\Controllers\Api\Admin\LogController;
+use App\Http\Controllers\Api\Admin\PermissionController;
 use App\Http\Controllers\Api\Admin\ProductController;
+use App\Http\Controllers\Api\Admin\RBACController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\SalaryController;
 use App\Http\Controllers\Api\Admin\ScheduleCategoryController;
@@ -22,6 +25,7 @@ use App\Http\Controllers\Api\Admin\StampController;
 use App\Http\Controllers\Api\Admin\TotalQuantityController;
 use App\Http\Controllers\Api\Employee\EmpAttendanceController;
 use App\Http\Controllers\Api\Employee\EmpDailyActivity;
+use App\Http\Controllers\Api\Employee\EmpFeedbackController;
 use App\Http\Controllers\Api\Employee\EmpRequestFormController;
 use App\Http\Controllers\Api\Employee\EmpSalaryController;
 use App\Http\Controllers\Api\Employee\EmpScheduleDetailController;
@@ -67,7 +71,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     Route::get('/birthday', [AuthController::class, 'getBirthdayEmployees']);
 
     // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)
-    Route::middleware(['api.authAdmin'])->prefix('admin')->group(function () {
+    Route::middleware(['api.can:view_total_employees'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
     });
 
@@ -76,13 +80,15 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::patch('/', [AuthController::class, 'authChangeProfile']);
         Route::patch('/change-password', [AuthController::class, 'changePassword']);
         Route::post('/change-avatar', [AuthController::class, 'changeAvatar']);
-        Route::middleware(['api.authAdmin'])->put('/reset-password/{id}', [AuthController::class, 'resetPassword']);
+        Route::middleware(['api.can:view_employee_management'])->put('/reset-password/{id}', [AuthController::class, 'resetPassword']);
     });
 
     // Employees (Quản Lý Nhân Sự)
-    Route::middleware(['api.authAdmin'])->prefix('employees')->group(function () {
+    Route::middleware(['api.can:view_employee_management'])->prefix('employees')->group(function () {
         Route::get('/trash', [EmployeeController::class, 'getTrashEmployees']);
         Route::post('/restore/{id}', [EmployeeController::class, 'restoreEmployee']);
+        Route::delete('/trash/force-delete-all', [EmployeeController::class, 'forceDeleteAllTrash']); // Xoá vĩnh viễn tất cả quá hạn
+        Route::delete('/force-delete/{id}', [EmployeeController::class, 'forceDeleteEmployee']); // Xoá vĩnh viễn 1 nhân viên
         Route::get('/', [EmployeeController::class, 'getEmployees']);
         Route::get('/{id}', [EmployeeController::class, 'getEmployee']);
         Route::post('/', [EmployeeController::class, 'addEmployee']);
@@ -91,7 +97,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     });
 
     // Request Forms Management (Quản Lý Đơn Yêu Cầu)
-    Route::middleware(['api.check.request.form'])->prefix('request-forms')->group(function () {
+    Route::middleware(['api.can:view_employee_management'])->prefix('request-forms')->group(function () {
         Route::get('/', [AdminRequestFormController::class, 'index']);  // Xem tất cả đơn
         Route::get('/statistics', [AdminRequestFormController::class, 'getStatistics']); // Thống kê
         Route::get('/{id}', [AdminRequestFormController::class, 'show']); // Xem chi tiết đơn
@@ -99,7 +105,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     });
 
     // Attendance Records (Quản Lý Chấm Công)
-    Route::middleware(['api.authAdmin'])->prefix('attendances')->group(function () {
+    Route::middleware(['api.can:view_attendance'])->prefix('attendances')->group(function () {
         Route::prefix('history')->group(function () {
             Route::get('/', [AttendanceHistoryController::class, 'index']);
             Route::get('/{id}', [AttendanceHistoryController::class, 'show']);
@@ -114,7 +120,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     });
 
     // Roles (Quản Lý Chức Vụ)
-    Route::middleware(['api.authAdmin'])->prefix('roles')->group(function () {
+    Route::middleware(['api.can:view_total_positions'])->prefix('roles')->group(function () {
         Route::get('/', [RoleController::class, 'getRoles']);
         Route::get('/{id}', [RoleController::class, 'getRole']);
         Route::post('/', [RoleController::class, 'addRole']);
@@ -123,20 +129,20 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     });
 
     // Logs (Quản Lý Logs)
-    Route::middleware(['api.authAdmin'])->prefix('logs')->group(function () {
+    Route::middleware(['api.can:view_history'])->prefix('logs')->group(function () {
         Route::get('/', [LogController::class, 'index']);
         Route::delete('/{id}', [LogController::class, 'delete']);
         Route::post('/delete-all', [LogController::class, 'deleteAll']);
     });
 
-    Route::middleware(['api.authAdmin', 'api.check.coAdmin'])->prefix('salaries')->group(function () {
+    Route::middleware(['api.can:view_salary_total'])->prefix('salaries')->group(function () {
         Route::get('/', [SalaryController::class, 'getSalaries']);
         Route::post('/', [SalaryController::class, 'addSalary']);
         Route::get('/{id}', [SalaryController::class, 'getSalary']);
         Route::delete('/{id}', [SalaryController::class, 'deleteSalary']);
     });
 
-    Route::middleware(['api.authAdmin'])->prefix('schedule-categories')->group(function () {
+    Route::middleware(['api.can:view_schedule_categories'])->prefix('schedule-categories')->group(function () {
         Route::get('/', [ScheduleCategoryController::class, 'index']);   // Lấy danh sách danh mục
         Route::post('/', [ScheduleCategoryController::class, 'store']);  // Thêm mới danh mục
         Route::get('/{id}', [ScheduleCategoryController::class, 'show']);  // Lấy chi tiết danh mục
@@ -144,7 +150,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::delete('/{id}', [ScheduleCategoryController::class, 'delete']); // Xóa danh mục
     });
 
-    Route::middleware(['api.check.leader'])->prefix('schedules')->group(function () {
+    Route::middleware(['api.can:view_schedule'])->prefix('schedules')->group(function () {
         Route::prefix('detail')->group(function () {
             Route::get('/', [ScheduleDetailController::class, 'index']);
             //     Route::get('/{id}', [ScheduleDetailController::class, 'detail']);
@@ -161,21 +167,21 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
     Route::prefix('products')->group(function () {
         Route::get('/month-list', [ProductController::class, 'getMonthList']);
-        Route::middleware(['api.authAdmin'])->get('/trash', [ProductController::class, 'getTrashProducts']);
-        Route::middleware(['api.authAdmin'])->post('/restore/{id}', [ProductController::class, 'restoreProduct']);
-        Route::middleware(['api.authAdmin'])->delete('/force-delete/{id}', [ProductController::class, 'forceDeleteProduct']);
+        Route::middleware(['api.can:view_products'])->get('/trash', [ProductController::class, 'getTrashProducts']);
+        Route::middleware(['api.can:view_products'])->post('/restore/{id}', [ProductController::class, 'restoreProduct']);
+        Route::middleware(['api.can:view_products'])->delete('/force-delete/{id}', [ProductController::class, 'forceDeleteProduct']);
         Route::get('/', [ProductController::class, 'getProducts']);
-        Route::middleware(['api.authAdmin'])->post('/', [ProductController::class, 'addProduct']);
+        Route::middleware(['api.can:view_products'])->post('/', [ProductController::class, 'addProduct']);
         Route::get('/{id}', [ProductController::class, 'getProduct']);
-        Route::middleware(['api.authAdmin'])->patch('/{id}', [ProductController::class, 'updateProduct']);
-        Route::middleware(['api.authAdmin'])->delete('/{id}', [ProductController::class, 'deleteProduct']);
-        Route::middleware(['api.authAdmin'])->get('/detail/{id}', [ProductController::class, 'detailProduct']);
-        Route::middleware(['api.authAdmin'])->put('/detail', [ProductController::class, 'updateDetailProduct']);
-        Route::middleware(['api.authAdmin'])->delete('/detail/{id}', [ProductController::class, 'deleteDetailProduct']);
-        Route::middleware(['api.authAdmin'])->put('/addQuantityDetail', [ProductController::class, 'addQuantityDetailProduct']);
+        Route::middleware(['api.can:view_products'])->patch('/{id}', [ProductController::class, 'updateProduct']);
+        Route::middleware(['api.can:view_products'])->delete('/{id}', [ProductController::class, 'deleteProduct']);
+        Route::middleware(['api.can:view_products'])->get('/detail/{id}', [ProductController::class, 'detailProduct']);
+        Route::middleware(['api.can:view_products'])->put('/detail', [ProductController::class, 'updateDetailProduct']);
+        Route::middleware(['api.can:view_products'])->delete('/detail/{id}', [ProductController::class, 'deleteDetailProduct']);
+        Route::middleware(['api.can:view_products'])->put('/addQuantityDetail', [ProductController::class, 'addQuantityDetailProduct']);
     });
 
-    Route::middleware(['api.authAdmin'])->prefix('quantities')->group(function () {
+    Route::middleware(['api.can:view_products'])->prefix('quantities')->group(function () {
         Route::post('/addList', [TotalQuantityController::class, 'addProductsQuantity']);
         Route::prefix('monthly')->group(function () {
             Route::patch('/updateList', [TotalQuantityController::class, 'updateMonthQuantities']);
@@ -188,7 +194,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         // Route::delete('/{id}', [TotalQuantityController::class, 'delete']);
     });
 
-    Route::middleware(['api.check.qa.qc'])->prefix('stamps')->group(function () {
+    Route::middleware(['api.can:view_label_management'])->prefix('stamps')->group(function () {
         Route::post('/check-duplicate', [StampController::class, 'checkDuplicate']);
         Route::put('/savePrint', [StampController::class, 'savePrint']);
         Route::get('/history', [StampController::class, 'getStampHistory']);
@@ -196,7 +202,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/reject/{id}', [StampController::class, 'rejectPrint']);
     });
 
-    Route::middleware(['api.check.leader'])->prefix('daily-schedules')->group(function () {
+    Route::middleware(['api.can:view_schedule'])->prefix('daily-schedules')->group(function () {
         Route::get('/', [DailyScheduleController::class, 'index']);
         // Route::post('/', [DailyScheduleController::class, 'store']);
         Route::get('/{id}', [DailyScheduleController::class, 'show']);
@@ -204,13 +210,13 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::delete('/{id}', [DailyScheduleController::class, 'destroy']);
     });
 
-    Route::middleware(['api.authAdmin'])->prefix('history')->group(function () {
+    Route::middleware(['api.can:view_history'])->prefix('history')->group(function () {
         Route::get('/', [HistoryController::class, 'index'])->name('api.history.index');
         Route::delete('/{id}', [HistoryController::class, 'destroy'])->name('api.history.destroy');
         Route::get('/view-log-all-quantity', [HistoryController::class, 'viewLogAllQuantity']);
     });
 
-    Route::middleware(['api.authAdmin'])->get('/check-stamp', [CheckStampController::class, 'index']);
+    Route::middleware(['api.can:view_labels_to_print'])->get('/check-stamp', [CheckStampController::class, 'index']);
 
     // EMPLOYEE ROUTES
     Route::middleware(['api.authEmployees'])->prefix('employee')->group(function () {
@@ -227,7 +233,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
         Route::prefix('attendances')->group(function () {
             Route::get('/history', [EmpAttendanceController::class, 'history']);
-            Route::get('/calculate', [EmpAttendanceController::class, 'calculate']);
+            // Route::get('/calculate', ...) → Now merged into index with ?include_calculation=1
             Route::get('/', [EmpAttendanceController::class, 'index']);
             // Route::get('/{id}', [EmpAttendance::class, 'show']);
             // Route::patch('/{id}', [EmpAttendance::class, 'update']);
@@ -270,9 +276,17 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
             Route::post('/request', [EmpStampController::class, 'requestStamp']);
             Route::get('/history', [EmpStampController::class, 'getStampHistory']);
         });
+
+        // Employee gửi góp ý
+        Route::prefix('feedbacks')->group(function () {
+            Route::get('/', [EmpFeedbackController::class, 'index']);       // Xem góp ý của mình
+            Route::post('/', [EmpFeedbackController::class, 'store']);      // Gửi góp ý mới
+            Route::get('/{id}', [EmpFeedbackController::class, 'show']);    // Xem chi tiết
+            Route::delete('/{id}', [EmpFeedbackController::class, 'destroy']); // Xóa góp ý pending
+        });
     });
 
-    Route::middleware('api.authAdmin')->prefix('check-po')->group(function () {
+    Route::middleware('api.can:view_po_list')->prefix('check-po')->group(function () {
         // Route::get('/', [CheckPoController::class, 'index']);
         // Route::get('/{id}', [CheckPoController::class, 'show']);
         Route::post('/export', [CheckPoController::class, 'addPoExport']);
@@ -280,6 +294,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/inventory', [CheckPoController::class, 'addStockQuantityInventory']);
         Route::get('/history', [CheckPoController::class, 'getPoHistory']);
         Route::put('/', [CheckPoController::class, 'updatePO']);
+        Route::delete('/batch/{batchId}', [CheckPoController::class, 'deleteBatch']);
         Route::delete('/{id}', [CheckPoController::class, 'deletePO']);
     });
 
@@ -287,25 +302,25 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::prefix('images')->group(function () {
             Route::get('/', [UploadController::class, 'getImages']);
             Route::get('/{id}', [UploadController::class, 'getImage']);
-            Route::middleware('api.authAdmin')->post('/', [UploadController::class, 'uploadImage']);
-            Route::middleware('api.authAdmin')->delete('/{id}', [UploadController::class, 'deleteImage']);
-            Route::middleware('api.authAdmin')->patch('/{id}', [UploadController::class, 'updateImage']);
+            Route::middleware('api.can:view_employee_management')->post('/', [UploadController::class, 'uploadImage']);
+            Route::middleware('api.can:view_employee_management')->delete('/{id}', [UploadController::class, 'deleteImage']);
+            Route::middleware('api.can:view_employee_management')->patch('/{id}', [UploadController::class, 'updateImage']);
         });
     });
 
     Route::prefix('notifications')->group(function () {
-        Route::middleware('api.authAdmin')->get('/trashed', [NotificationController::class, 'trashed']);
-        Route::middleware('api.authAdmin')->post('/restore/{id}', [NotificationController::class, 'restore']);
-        Route::middleware('api.authAdmin')->delete('/force-delete/{id}', [NotificationController::class, 'forceDelete']);
+        Route::middleware('api.can:view_employee_management')->get('/trashed', [NotificationController::class, 'trashed']);
+        Route::middleware('api.can:view_employee_management')->post('/restore/{id}', [NotificationController::class, 'restore']);
+        Route::middleware('api.can:view_employee_management')->delete('/force-delete/{id}', [NotificationController::class, 'forceDelete']);
         Route::get('/', [NotificationController::class, 'index']);
         Route::post('/', [NotificationController::class, 'store']);
-        Route::middleware('api.authAdmin')->get('/{id}', [NotificationController::class, 'show']);
-        Route::middleware('api.authAdmin')->patch('/{id}', [NotificationController::class, 'update']);
-        Route::middleware('api.authAdmin')->delete('/{id}', [NotificationController::class, 'destroy']);
+        Route::middleware('api.can:view_employee_management')->get('/{id}', [NotificationController::class, 'show']);
+        Route::middleware('api.can:view_employee_management')->patch('/{id}', [NotificationController::class, 'update']);
+        Route::middleware('api.can:view_employee_management')->delete('/{id}', [NotificationController::class, 'destroy']);
     });
 
     // Stock Transaction Management (Quản Lý Giao Dịch Kho)
-    Route::prefix('stock-transactions')->middleware('api.check.warehouse')->group(function () {
+    Route::prefix('stock-transactions')->middleware('api.can:storage_export_product')->group(function () {
         Route::get('/', [StockTransactionController::class, 'index']);
         Route::post('/', [StockTransactionController::class, 'store']);
         Route::get('/statistics', [StockTransactionController::class, 'statistics']);
@@ -320,5 +335,40 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/{id}', [StockTransactionController::class, 'show']);
         Route::put('/{id}', [StockTransactionController::class, 'update']);
         Route::delete('/{id}', [StockTransactionController::class, 'destroy']);
+    });
+
+    // Feedbacks - Admin nhận và phản hồi góp ý
+    Route::middleware(['api.can:view_employee_management'])->prefix('feedbacks')->group(function () {
+        Route::get('/', [FeedbackController::class, 'index']);            // Xem tất cả góp ý
+        Route::get('/{id}', [FeedbackController::class, 'show']);         // Xem chi tiết
+        Route::post('/{id}/reply', [FeedbackController::class, 'reply']); // Phản hồi
+        Route::delete('/{id}', [FeedbackController::class, 'destroy']);   // Xóa
+    });
+
+    // RBAC Management (Quản Lý Phân Quyền - Chỉ Super Admin)
+    Route::middleware(['api.permission'])->prefix('rbac')->group(function () {
+        Route::get('/', [RBACController::class, 'index']);                      // Lấy danh sách roles, permissions, mapping
+        Route::post('/save', [RBACController::class, 'save']);                  // Lưu phân quyền cho roles
+        Route::post('/create-admin-user', [RBACController::class, 'createAdminUser']); // Tạo admin user
+        Route::get('/admin-users', [RBACController::class, 'getAdminUsers']);   // Danh sách admin users
+        Route::delete('/admin-users/{id}', [RBACController::class, 'deleteAdminUser']); // Xoá admin user
+        Route::get('/admin-users/{id}/permissions', [RBACController::class, 'getUserPermissions']); // Lấy quyền của 1 admin user
+        Route::post('/admin-users/{id}/permissions', [RBACController::class, 'saveUserPermissions']); // Lưu quyền trực tiếp cho admin user
+        Route::get('/roles/{roleId}/permissions', [RBACController::class, 'getRolePermissions']); // Lấy permissions của 1 role
+    });
+
+    // Permissions & Sidebar Items Management (Quản Lý Quyền & Menu - Chỉ Super Admin)
+    Route::middleware(['api.permission'])->prefix('permissions')->group(function () {
+        Route::get('/', [PermissionController::class, 'index']);                // Lấy danh sách permissions
+        Route::post('/', [PermissionController::class, 'store']);               // Tạo permission mới
+        Route::get('/{id}', [PermissionController::class, 'show']);             // Xem chi tiết permission
+        Route::put('/{id}', [PermissionController::class, 'update']);           // Cập nhật permission
+        Route::delete('/{id}', [PermissionController::class, 'destroy']);       // Xóa permission
+
+        // Sidebar Items
+        Route::get('/sidebar-items/all', [PermissionController::class, 'getSidebarItems']);            // Lấy tất cả sidebar items
+        Route::post('/sidebar-items', [PermissionController::class, 'storeSidebarItem']);              // Tạo sidebar item
+        Route::patch('/sidebar-items/{sidebarItemId}', [PermissionController::class, 'updateSidebarItem']); // Cập nhật sidebar item
+        Route::delete('/sidebar-items/{sidebarItemId}', [PermissionController::class, 'destroySidebarItem']); // Xóa sidebar item
     });
 });

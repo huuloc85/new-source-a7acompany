@@ -94,7 +94,7 @@ class RBACController extends Controller
             'phone' => 'ctyvinhvinhphat'.$nextNumber,
             'password' => bcrypt('123456'),
             'role_id' => $adminRole->id,
-            'calendar_category_id' => null, // FIXME migrate null calendar_category_id
+            'calendar_category_id' => 3,
         ]);
 
         return redirect()->route('rbac.index')->with('success', 'Admin user đã được tạo: '.$adminUser->phone);

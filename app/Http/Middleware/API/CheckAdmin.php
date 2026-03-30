@@ -10,17 +10,26 @@ class CheckAdmin
 {
     /**
      * Handle an incoming request.
+     * Chỉ cho phép Admin / Co Admin / Super Admin truy cập.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): JsonResponse
     {
         $user = auth()->user();
-        // Chỉ cho phép nếu role_name là 'Admin'
-        if (
-            ! $user || ! isset($user->role) ||
-            (strtolower(trim($user->role->role_name)) !== 'admin' && strtolower(trim($user->role->role_name)) !== 'super admin' && strtolower(trim($user->role->role_name)) !== 'co admin')
-        ) {
+
+        if (! $user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if (! $user->role) {
+            return response()->json(['message' => 'Bạn chưa được gán vai trò.'], 403);
+        }
+
+        $roleName = strtolower(trim($user->role->role_name));
+        $adminRoles = ['admin', 'super admin', 'co admin'];
+
+        if (! in_array($roleName, $adminRoles, true)) {
             return response()->json(['message' => 'Bạn không có quyền truy cập chức năng này.'], 403);
         }
 

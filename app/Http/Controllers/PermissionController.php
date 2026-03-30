@@ -186,8 +186,8 @@ class PermissionController extends Controller
     {
         try {
             DB::transaction(function () use ($permission) {
-                SidebarItem::where('permission_id', $permission->id)
-                    ->update(['permission_id' => null]);
+                // sidebar_items sẽ tự cascade delete nhờ FK onDelete('cascade')
+                // KHÔNG set permission_id = null vì column là NOT NULL
                 $permission->delete();
             });
 

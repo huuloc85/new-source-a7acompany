@@ -91,16 +91,39 @@ class AuthController extends BaseController
         // Lưu expires_at vào token
         $tokenResult->accessToken->expires_at = $expiresAt;
         $tokenResult->accessToken->save();
-        $permissions = Auth::user()
-            ->role
+        $permissionSelect = ['permissions.id', 'permissions.key', 'permissions.name', 'permissions.type', 'permissions.display_area', 'permissions.icon', 'permissions.url', 'permissions.sort_order'];
+        $sidebarEager = [
+            'sidebarItems' => function ($q) {
+                $q->select(['id', 'permission_id', 'key', 'title', 'icon', 'url']);
+            },
+        ];
+
+        // 1. Lấy quyền từ Role
+        $rolePermissions = $user->role
             ->permissions()
-            ->select(['permissions.id', 'permissions.key', 'permissions.name', 'permissions.type', 'permissions.display_area'])
-            ->with([
-                'sidebarItems' => function ($q) {
-                    $q->select(['id', 'permission_id', 'key', 'title', 'icon', 'path']);
-                },
-            ])
+            ->select($permissionSelect)
+            ->orderBy('permissions.sort_order')
+            ->with($sidebarEager)
             ->get();
+
+        // 2. Lấy danh sách quyền bị deny
+        $deniedIds = $user->deniedPermissions()->pluck('permissions.id')->toArray();
+
+        // 3. Lọc bỏ quyền bị deny khỏi role permissions
+        $permissions = $rolePermissions->filter(fn ($p) => ! in_array($p->id, $deniedIds));
+
+        // 4. Lấy quyền được grant thêm
+        $grantedPermissions = $user->grantedPermissions()
+            ->select($permissionSelect)
+            ->with($sidebarEager)
+            ->get();
+
+        // 5. Merge granted + unique + sort
+        $permissions = $permissions->merge($grantedPermissions)
+            ->unique('id')
+            ->sortBy('sort_order')
+            ->values();
+
         $roleName = in_array($employee->role_id, [15, 21, 22]) ? 'Admin' : 'Nhân Viên';
         LogActivity::logViewActivity($user, "{$roleName} Đăng Nhập", "{$roleName} đã đăng nhập vào web");
 
@@ -246,14 +269,15 @@ class AuthController extends BaseController
                 return response()->json(['message' => 'Xác nhận mật khẩu không khớp'], 422);
             }
 
-            // Cập nhật mật khẩu
-            $employee->password = bcrypt($new);
+            // Cập nhật mật khẩu (Model Employee đã có cast 'hashed', KHÔNG dùng bcrypt() thủ công)
+            $employee->password = $new;
             $employee->save();
+
+            LogActivity::logViewActivity($user, 'Đổi mật khẩu', 'Đã đổi mật khẩu thành công');
 
             return response()->json(['message' => 'Thay đổi mật khẩu thành công'], 200);
         } catch (Throwable $e) {
-            // LogHelper::saveLog('changePassword', $e->getMessage(), $e->getLine());
-            return response()->json(['message' => 'Thay đổi mật khẩu thất bại'], 500);
+            return response()->json(['message' => 'Thay đổi mật khẩu thất bại', 'error' => $e->getMessage()], 500);
         }
     }
 
@@ -261,15 +285,18 @@ class AuthController extends BaseController
     {
         try {
             $employee = Employee::findOrFail($id);
-            $employee->password = bcrypt($id);
+            // Reset mật khẩu về mã nhân viên (Model Employee đã có cast 'hashed', KHÔNG dùng bcrypt() thủ công)
+            $employee->password = $id;
             $employee->save();
+
+            $admin = Auth::user();
+            LogActivity::logViewActivity($admin, 'Reset mật khẩu', "Admin đã reset mật khẩu cho nhân viên: {$employee->name} (ID: {$id})");
 
             return response()->json([
                 'message' => 'Khôi phục mật khẩu thành công',
             ], 200);
         } catch (Throwable $e) {
-            // LogHelper::saveLog('resetPassword', $e->getMessage(), $e->getLine());
-            return response()->json(['message' => 'Khôi phục mật khẩu thất bại'], 500);
+            return response()->json(['message' => 'Khôi phục mật khẩu thất bại', 'error' => $e->getMessage()], 500);
         }
     }
 

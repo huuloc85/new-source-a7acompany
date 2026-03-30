@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CheckPoController extends Controller
 {
@@ -120,7 +121,10 @@ class CheckPoController extends Controller
             $status = 8;
             $employeeId = Auth::id();
 
-            $results = collect($validate['products'])->map(function ($product) use ($date, $status, $employeeId) {
+            // Tạo batch_id chung cho tất cả records trong request này
+            $batchId = Str::uuid()->toString();
+
+            $results = collect($validate['products'])->map(function ($product) use ($date, $status, $employeeId, $batchId) {
                 $productId = $product['productId'];
                 $quantity = $product['quantity'];
 
@@ -131,6 +135,7 @@ class CheckPoController extends Controller
                     'quantity' => $quantity,
                     'status' => $status,
                     'date' => $date,
+                    'batch_id' => $batchId,
                 ]);
 
                 // Update or create total daily PO
@@ -163,6 +168,7 @@ class CheckPoController extends Controller
                 'message' => 'Cập nhật số lượng thành công!',
                 'count' => $results->count(),
                 'data' => $results,
+                'batch_id' => $batchId,
             ], 200);
 
         } catch (\Throwable $th) {
@@ -315,6 +321,43 @@ class CheckPoController extends Controller
             return HandleError::handle($th);
         }
 
+    }
+
+    public function deleteBatch(string $batchId)
+    {
+        try {
+            $records = DailyQuantityPO::where('batch_id', $batchId)->get();
+            $count = $records->count();
+
+            if ($count === 0) {
+                return response()->json(['message' => 'Batch không tồn tại'], 404);
+            }
+
+            // Collect affected dates for recalculating totals
+            $affectedDates = $records->pluck('date')->unique();
+
+            // Delete all records in the batch
+            DailyQuantityPO::where('batch_id', $batchId)->delete();
+
+            // Update TotalDailyQuantityPO for each affected date
+            foreach ($affectedDates as $date) {
+                $totalDailyQuantities = TotalDailyQuantityPO::where('date', $date)->get();
+                foreach ($totalDailyQuantities as $totalDailyQuantity) {
+                    $remainingQuantity = DailyQuantityPO::where('product_id', $totalDailyQuantity->product_id)
+                        ->whereDate('date', $date)
+                        ->sum('quantity');
+                    $totalDailyQuantity->totalQuan = $remainingQuantity;
+                    $totalDailyQuantity->save();
+                }
+            }
+
+            return response()->json([
+                'message' => "Đã xóa {$count} records trong batch",
+                'deleted_count' => $count,
+            ]);
+        } catch (\Throwable $th) {
+            return HandleError::handle($th);
+        }
     }
 
     public function deletePO($id)

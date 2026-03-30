@@ -466,6 +466,96 @@ class EmployeeController extends BaseController
         }
     }
 
+    // Xoá vĩnh viễn nhân viên trong thùng rác
+    public function forceDeleteEmployee($id)
+    {
+        try {
+            $employee = Employee::onlyTrashed()->findOrFail($id);
+
+            // Bảo vệ Super Admin & Giám đốc
+            if (in_array($employee->role_id, [1, 21])) {
+                return response()->json([
+                    'message' => 'Không thể xoá vĩnh viễn tài khoản này.',
+                ], 403);
+            }
+
+            $deletedInfo = [
+                'id' => $employee->id,
+                'name' => $employee->name,
+            ];
+
+            // Tắt FK check, xoá, bật lại
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            try {
+                $employee->tokens()->delete();
+                $employee->forceDelete();
+            } finally {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1');
+            }
+
+            Log::info('Employee force deleted', $deletedInfo);
+
+            return response()->json([
+                'message' => "Đã xoá vĩnh viễn nhân viên: {$deletedInfo['name']} ({$deletedInfo['id']})",
+            ]);
+        } catch (\Throwable $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
+            return HandleError::handle($e);
+        }
+    }
+
+    // Xoá vĩnh viễn TẤT CẢ nhân viên trong thùng rác (quá N ngày)
+    public function forceDeleteAllTrash(Request $request)
+    {
+        $days = (int) $request->input('days', 0); // Mặc định xoá tất cả
+
+        try {
+            $cutoffDate = now()->subDays($days);
+
+            $trashedEmployees = Employee::onlyTrashed()
+                ->where('deleted_at', '<=', $cutoffDate)
+                ->whereNotIn('role_id', [1, 21]) // Bảo vệ Super Admin & Giám đốc
+                ->get();
+
+            if ($trashedEmployees->isEmpty()) {
+                return response()->json([
+                    'message' => $days > 0
+                        ? "Không có nhân viên nào trong thùng rác quá {$days} ngày."
+                        : 'Thùng rác trống.',
+                    'deleted_count' => 0,
+                ]);
+            }
+
+            $deletedCount = 0;
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            try {
+                foreach ($trashedEmployees as $employee) {
+                    $employee->tokens()->delete();
+                    $employee->forceDelete();
+                    $deletedCount++;
+
+                    Log::info('Employee force deleted (bulk)', [
+                        'id' => $employee->id,
+                        'name' => $employee->name,
+                    ]);
+                }
+            } finally {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1');
+            }
+
+            return response()->json([
+                'message' => "Đã xoá vĩnh viễn {$deletedCount} nhân viên trong thùng rác.",
+                'deleted_count' => $deletedCount,
+            ]);
+        } catch (\Throwable $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
+            return HandleError::handle($e);
+        }
+    }
+
     // Show Calander For Employee
     public function calendar(Request $request)
     {

@@ -9,6 +9,8 @@ class CheckEmployee
 {
     /**
      * Handle an incoming request.
+     * Chỉ cho phép Employee truy cập. Admin/Co Admin bị chặn.
+     * Super Admin luôn bypass (quyền truy cập toàn hệ thống).
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
@@ -16,19 +18,28 @@ class CheckEmployee
     {
         $user = auth()->user();
 
-        $forbiddenRoles = [
-            'admin',
-            'super admin',
-            'co admin',
-        ];
+        if (! $user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-        if (
-            $user &&
-            isset($user->role) &&
-            in_array(strtolower(trim($user->role->role_name)), $forbiddenRoles, true)
-        ) {
+        // User chưa được gán role → chặn
+        if (! $user->role) {
+            return response()->json(['message' => 'Bạn chưa được gán vai trò.'], 403);
+        }
+
+        $roleName = strtolower(trim($user->role->role_name));
+
+        // Super Admin luôn bypass — quyền truy cập toàn hệ thống
+        if ($roleName === 'super admin') {
+            return $next($request);
+        }
+
+        // Admin và Co Admin không được truy cập các route dành cho Employee
+        $adminRoles = ['admin', 'co admin'];
+
+        if (in_array($roleName, $adminRoles, true)) {
             return response()->json([
-                'message' => 'Bạn không có quyền truy cập!',
+                'message' => 'Chức năng này chỉ dành cho nhân viên.',
             ], 403);
         }
 

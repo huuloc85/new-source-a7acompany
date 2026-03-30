@@ -146,17 +146,39 @@ class EmpRequestFormController extends Controller
             }
 
             // Xử lý upload chữ ký điện tử theo loại đơn
+            // Hỗ trợ cả 2 format: file upload (multipart) VÀ base64 string
             $signatureFields = $requestForm->getDigitalSignatureFields();
             $updateData = [];
 
             foreach ($signatureFields as $fieldName => $fieldLabel) {
                 if ($request->hasFile($fieldName)) {
+                    // Case 1: File upload (multipart/form-data)
                     $file = $request->file($fieldName);
                     $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
                     $path = $file->storeAs('digital_signatures', $filename, 'public');
                     $updateData[$fieldName] = $path;
+                } elseif ($request->has($fieldName) && is_string($request->input($fieldName))) {
+                    // Case 2: Base64 string (từ frontend canvas/signature pad)
+                    $base64Data = $request->input($fieldName);
 
-                    // Lưu thông tin người ký và thời gian ký
+                    // Kiểm tra và xử lý base64 data
+                    if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $matches)) {
+                        $extension = $matches[1]; // png, jpeg, etc.
+                        $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+                        $base64Data = str_replace(' ', '+', $base64Data);
+                        $imageData = base64_decode($base64Data);
+
+                        if ($imageData !== false) {
+                            $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$extension;
+                            $path = 'digital_signatures/'.$filename;
+                            Storage::disk('public')->put($path, $imageData);
+                            $updateData[$fieldName] = $path;
+                        }
+                    }
+                }
+
+                // Lưu thông tin người ký và thời gian ký (nếu có chữ ký mới)
+                if (isset($updateData[$fieldName])) {
                     if ($fieldName === 'digital_signature_delegator') {
                         $updateData['delegator_approved_by'] = Auth::id();
                         $updateData['delegator_approved_at'] = now();
@@ -164,7 +186,11 @@ class EmpRequestFormController extends Controller
                         $updateData['authorized_approved_by'] = Auth::id();
                         $updateData['authorized_approved_at'] = now();
                     } elseif ($fieldName === 'digital_signature_applicant') {
-                        // Có thể thêm tracking cho applicant nếu cần
+                        // Tracking: Applicant đã ký khi tạo đơn
+                        Log::info('✅ Đã lưu chữ ký applicant', [
+                            'request_form_id' => $requestForm->id,
+                            'employee_id' => Auth::id(),
+                        ]);
                     }
                 }
             }
@@ -324,10 +350,12 @@ class EmpRequestFormController extends Controller
             }
 
             // Xử lý cập nhật chữ ký điện tử theo loại đơn
+            // Hỗ trợ cả 2 format: file upload (multipart) VÀ base64 string
             $signatureFields = $requestForm->getDigitalSignatureFields();
 
             foreach ($signatureFields as $fieldName => $fieldLabel) {
                 if ($request->hasFile($fieldName)) {
+                    // Case 1: File upload (multipart/form-data)
                     // Xóa file cũ nếu có
                     if ($requestForm->$fieldName && Storage::disk('public')->exists($requestForm->$fieldName)) {
                         Storage::disk('public')->delete($requestForm->$fieldName);
@@ -336,8 +364,32 @@ class EmpRequestFormController extends Controller
                     $file = $request->file($fieldName);
                     $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
                     $updateData[$fieldName] = $file->storeAs('digital_signatures', $filename, 'public');
+                } elseif ($request->has($fieldName) && is_string($request->input($fieldName))) {
+                    // Case 2: Base64 string (từ frontend canvas/signature pad)
+                    $base64Data = $request->input($fieldName);
 
-                    // Lưu thông tin người ký và thời gian ký
+                    if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $matches)) {
+                        // Xóa file cũ nếu có
+                        if ($requestForm->$fieldName && Storage::disk('public')->exists($requestForm->$fieldName)) {
+                            Storage::disk('public')->delete($requestForm->$fieldName);
+                        }
+
+                        $extension = $matches[1];
+                        $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+                        $base64Data = str_replace(' ', '+', $base64Data);
+                        $imageData = base64_decode($base64Data);
+
+                        if ($imageData !== false) {
+                            $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$extension;
+                            $path = 'digital_signatures/'.$filename;
+                            Storage::disk('public')->put($path, $imageData);
+                            $updateData[$fieldName] = $path;
+                        }
+                    }
+                }
+
+                // Lưu thông tin người ký và thời gian ký (nếu có chữ ký mới)
+                if (isset($updateData[$fieldName])) {
                     if ($fieldName === 'digital_signature_delegator') {
                         $updateData['delegator_approved_by'] = Auth::id();
                         $updateData['delegator_approved_at'] = now();

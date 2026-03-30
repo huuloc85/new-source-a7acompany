@@ -16,6 +16,9 @@ class Permission extends Model
         'name',         // hiển thị: 'Xem danh sách người dùng'
         'type',         // admin / employee / both
         'display_area', // home / sidebar / both
+        'icon',         // icon cho permission
+        'url',          // URL path cho FE
+        'sort_order',   // thứ tự hiển thị
     ];
 
     public function roles()

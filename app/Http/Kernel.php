@@ -81,5 +81,8 @@ class Kernel extends HttpKernel
         'api.check.qa.qc' => \App\Http\Middleware\API\CheckQcQa::class,
         'api.check.warehouse' => \App\Http\Middleware\API\CheckWarehouse::class,
         'api.check.coAdmin' => \App\Http\Middleware\API\DenyCoAdmin::class,
+        'api.permission' => \App\Http\Middleware\API\CheckSuperAdmin::class,
+        // Dynamic RBAC middleware - sử dụng: middleware('api.can:permission_key')
+        'api.can' => \App\Http\Middleware\API\CheckPermissionKey::class,
     ];
 }
