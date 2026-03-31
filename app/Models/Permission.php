@@ -15,6 +15,7 @@ class Permission extends Model
         'key',          // ví dụ: 'view_users'
         'name',         // hiển thị: 'Xem danh sách người dùng'
         'type',         // admin / employee / both
+        'module',       // nhóm quyền: schedule, salary, products...
         'display_area', // home / sidebar / both
         'icon',         // icon cho permission
         'url',          // URL path cho FE

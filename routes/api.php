@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\AdminRequestFormController;
+use App\Http\Controllers\Api\Admin\ApiRegistryController;
 use App\Http\Controllers\Api\Admin\AttendanceCalculationController;
 use App\Http\Controllers\Api\Admin\AttendanceHistoryController;
 use App\Http\Controllers\Api\Admin\AttendanceRecordController;
@@ -198,7 +199,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/check-duplicate', [StampController::class, 'checkDuplicate']);
         Route::put('/savePrint', [StampController::class, 'savePrint']);
         Route::get('/history', [StampController::class, 'getStampHistory']);
-        Route::get('/history/{id}', [StampController::class, 'getStampHistoryById']);
         Route::post('/reject/{id}', [StampController::class, 'rejectPrint']);
     });
 
@@ -371,4 +371,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::patch('/sidebar-items/{sidebarItemId}', [PermissionController::class, 'updateSidebarItem']); // Cập nhật sidebar item
         Route::delete('/sidebar-items/{sidebarItemId}', [PermissionController::class, 'destroySidebarItem']); // Xóa sidebar item
     });
+
+    // API Registry (Danh sách tất cả API routes - Chỉ Super Admin)
+    Route::middleware(['api.permission'])->get('/registry', [ApiRegistryController::class, 'index']);
 });

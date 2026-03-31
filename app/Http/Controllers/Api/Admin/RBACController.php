@@ -22,7 +22,8 @@ class RBACController extends BaseController
     {
         try {
             $roles = Role::select('id', 'role_name')->get();
-            $permissions = Permission::select('id', 'key', 'name', 'type', 'display_area', 'icon', 'url', 'sort_order')
+            $permissions = Permission::select('id', 'key', 'name', 'type', 'module', 'display_area', 'icon', 'url', 'sort_order')
+                ->orderBy('module')
                 ->orderBy('sort_order')
                 ->orderBy('type')
                 ->get();
@@ -35,7 +36,7 @@ class RBACController extends BaseController
             }
 
             // Load selected roles với permissions
-            $selectedRoles = Role::with('permissions:id,key,name,type,display_area,icon,url,sort_order')
+            $selectedRoles = Role::with('permissions:id,key,name,type,module,display_area,icon,url,sort_order')
                 ->whereIn('id', $selectedRoleIds)
                 ->get(['id', 'role_name']);
 
@@ -46,8 +47,9 @@ class RBACController extends BaseController
 
             // Sidebar permissions & items
             $permissionsSidebar = Permission::whereIn('display_area', ['sidebar', 'both'])
+                ->orderBy('module')
                 ->orderBy('sort_order')
-                ->get(['id', 'name', 'key', 'type', 'display_area', 'icon', 'url', 'sort_order']);
+                ->get(['id', 'name', 'key', 'type', 'module', 'display_area', 'icon', 'url', 'sort_order']);
 
             $sidebarItemsByPermission = SidebarItem::whereIn('permission_id', $permissionsSidebar->pluck('id'))
                 ->orderBy('id')
@@ -100,7 +102,7 @@ class RBACController extends BaseController
             DB::commit();
 
             // Reload roles with permissions
-            $refreshedRoles = Role::with('permissions:id,key,name,type,display_area,icon,url,sort_order')
+            $refreshedRoles = Role::with('permissions:id,key,name,type,module,display_area,icon,url,sort_order')
                 ->whereIn('id', $validated['role_ids'])
                 ->get(['id', 'role_name']);
 
@@ -205,7 +207,7 @@ class RBACController extends BaseController
     public function getRolePermissions(string $roleId): JsonResponse
     {
         try {
-            $role = Role::with('permissions:id,key,name,type,display_area,icon,url,sort_order')
+            $role = Role::with('permissions:id,key,name,type,module,display_area,icon,url,sort_order')
                 ->findOrFail($roleId);
 
             return response()->json([

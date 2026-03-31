@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Events\SalaryCreated;
 use App\Helpers\HandleError;
 use App\Imports\A7A\SalaryOfficialA7AManagerImport;
 use App\Imports\VVP\SalaryOfficialVVPManagerImport;
@@ -287,6 +288,10 @@ class SalaryController extends BaseController
             }
             $this->calculateTotal($salary->id);
             DB::commit();
+
+            // Broadcast thông báo đến nhân viên qua Pusher
+            $salary->refresh();
+            broadcast(new SalaryCreated($salary));
 
             return response()->json(['message' => 'Salary created successfully!', 'data' => $salary], 201);
         } catch (\Throwable $e) {

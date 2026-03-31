@@ -28,6 +28,11 @@ Broadcast::channel('feedback.employee.{employeeId}', function ($user, $employeeI
     return $user->id === $employeeId;
 });
 
+// Salary & Schedule: tất cả nhân viên nhận thông báo khi admin thêm bảng lương / lịch làm việc
+Broadcast::channel('employee.notifications', function ($user) {
+    return $user !== null;
+});
+
 // Feedback: admin nhận thông báo khi employee gửi góp ý mới
 Broadcast::channel('feedback.admin', function ($user) {
     if (! $user || ! $user->role) {

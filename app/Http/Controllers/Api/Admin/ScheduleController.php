@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Events\ScheduleCreated;
 use App\Helpers\HandleError;
 use App\Helpers\LogActivity;
 use App\Imports\Celender\CelenderManagerImport;
@@ -117,6 +118,9 @@ class ScheduleController extends BaseController
 
             DB::commit();
             LogActivity::logRoleSpecificLoginActivity(auth()->user(), 'Admin Thêm Lịch Làm Việc', 'Admin đã thêm lịch làm việc');
+
+            // Broadcast thông báo đến nhân viên qua Pusher
+            broadcast(new ScheduleCreated($celender));
 
             return response()->json([
                 'status' => true,

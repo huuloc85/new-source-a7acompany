@@ -22,22 +22,25 @@ class PermissionController extends BaseController
 
             // Permissions hiện trên Home: 'home' và 'both'
             $homePermissions = Permission::whereIn('display_area', ['home', 'both'])
+                ->orderBy('module')
                 ->orderBy('sort_order')
                 ->orderBy('type')
-                ->get(['id', 'key', 'name', 'type', 'display_area', 'icon', 'url', 'sort_order', 'created_at', 'updated_at']);
+                ->get(['id', 'key', 'name', 'type', 'module', 'display_area', 'icon', 'url', 'sort_order', 'created_at', 'updated_at']);
 
             // Permissions hiện trên Sidebar: 'sidebar' và 'both' + load sidebarItems
             $sidebarPermissions = Permission::whereIn('display_area', ['sidebar', 'both'])
                 ->with(['sidebarItems' => $sidebarItemQuery])
+                ->orderBy('module')
                 ->orderBy('sort_order')
                 ->orderBy('type')
-                ->get(['id', 'key', 'name', 'type', 'display_area', 'icon', 'url', 'sort_order', 'created_at', 'updated_at']);
+                ->get(['id', 'key', 'name', 'type', 'module', 'display_area', 'icon', 'url', 'sort_order', 'created_at', 'updated_at']);
 
             // Tất cả permissions (không phân nhóm)
             $allPermissions = Permission::with(['sidebarItems' => $sidebarItemQuery])
+                ->orderBy('module')
                 ->orderBy('sort_order')
                 ->orderBy('type')
-                ->get(['id', 'key', 'name', 'type', 'display_area', 'icon', 'url', 'sort_order', 'created_at', 'updated_at']);
+                ->get(['id', 'key', 'name', 'type', 'module', 'display_area', 'icon', 'url', 'sort_order', 'created_at', 'updated_at']);
 
             return response()->json([
                 'home_permissions' => $homePermissions,
@@ -90,6 +93,7 @@ class PermissionController extends BaseController
             'key' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'type' => 'required|in:admin,employee,both',
+            'module' => 'nullable|string|max:100',
             'display_area' => 'required|in:home,sidebar,both',
             'icon' => 'nullable|string|max:255',
             'url' => 'nullable|string|max:255',
@@ -132,6 +136,7 @@ class PermissionController extends BaseController
             'key' => 'sometimes|string|max:255',
             'name' => 'sometimes|string|max:255',
             'type' => 'sometimes|in:admin,employee,both',
+            'module' => 'nullable|string|max:100',
             'display_area' => 'sometimes|in:home,sidebar,both',
             'icon' => 'nullable|string|max:255',
             'url' => 'nullable|string|max:255',
@@ -212,7 +217,7 @@ class PermissionController extends BaseController
     public function getSidebarItems(): JsonResponse
     {
         try {
-            $sidebarItems = SidebarItem::with('permission:id,key,name,type,display_area,icon,url,sort_order')
+            $sidebarItems = SidebarItem::with('permission:id,key,name,type,module,display_area,icon,url,sort_order')
                 ->orderBy('id')
                 ->get(['id', 'permission_id', 'key', 'title', 'icon', 'url']);
 
