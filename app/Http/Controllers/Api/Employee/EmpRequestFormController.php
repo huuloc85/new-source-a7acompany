@@ -201,6 +201,303 @@ class EmpRequestFormController extends Controller
     }
 
     /**
+     * Get detail of a request form as supervisor
+     * Endpoint: GET /api/employee/request-forms/as-supervisor/{id}
+     */
+    public function getDetailAsSupervisor(string $id): JsonResponse
+    {
+        $currentUserId = Auth::id();
+
+        // Danh sách supervisor employee IDs được phép truy cập
+        $supervisorIds = ['19010400', '20020700', '18010900', '19010300', '20102800'];
+
+        // Kiểm tra user hiện tại có phải supervisor không
+        if (! in_array($currentUserId, $supervisorIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền truy cập',
+            ], 403);
+        }
+
+        $requestForm = RequestForm::with([
+            'employee:id,name,email,phone',
+            'approvedBy:id,name,email,phone',
+            'supervisor:id,name,email,phone',
+            'supervisorApprovedBy:id,name,email,phone',
+            'managerApprovedBy:id,name,email,phone',
+        ])->find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        // Kiểm tra đơn này có thuộc quyền quản lý của supervisor không
+        if ($requestForm->supervisor_id !== $currentUserId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền xem đơn này',
+            ], 403);
+        }
+
+        // Không cho phép xem đơn giấy ủy quyền
+        if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không có quyền xem loại đơn này',
+            ], 403);
+        }
+
+        // Chuẩn bị thông tin chữ ký cho response
+        $signatureInfo = [
+            'has_applicant_signature' => ! empty($requestForm->digital_signature_applicant),
+            'has_supervisor_signature' => ! empty($requestForm->digital_signature_supervisor),
+            'has_manager_signature' => ! empty($requestForm->digital_signature_manager),
+            'digital_signature_applicant' => $requestForm->digital_signature_applicant,
+            'digital_signature_supervisor' => $requestForm->digital_signature_supervisor,
+            'digital_signature_manager' => $requestForm->digital_signature_manager,
+            'supervisor_approved_by' => $requestForm->supervisor_approved_by,
+            'supervisor_approved_at' => $requestForm->supervisor_approved_at,
+            'manager_approved_by' => $requestForm->manager_approved_by,
+            'manager_approved_at' => $requestForm->manager_approved_at,
+            'supervisor_approved_by_employee' => $requestForm->supervisorApprovedBy ? [
+                'id' => $requestForm->supervisorApprovedBy->id,
+                'name' => $requestForm->supervisorApprovedBy->name,
+            ] : null,
+            'manager_approved_by_employee' => $requestForm->managerApprovedBy ? [
+                'id' => $requestForm->managerApprovedBy->id,
+                'name' => $requestForm->managerApprovedBy->name,
+            ] : null,
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => array_merge($requestForm->toArray(), [
+                'signature_info' => $signatureInfo,
+            ]),
+        ]);
+    }
+
+    /**
+     * Approve request form by supervisor with digital signature
+     * Endpoint: POST /api/employee/request-forms/as-supervisor/{id}/approve
+     */
+    public function approveBySupervisor(Request $request, string $id): JsonResponse
+    {
+        $currentUserId = Auth::id();
+
+        // Danh sách supervisor employee IDs được phép truy cập
+        $supervisorIds = ['19010400', '20020700', '18010900', '19010300', '20102800'];
+
+        // Kiểm tra user hiện tại có phải supervisor không
+        if (! in_array($currentUserId, $supervisorIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền duyệt đơn',
+            ], 403);
+        }
+
+        $requestForm = RequestForm::find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        // Kiểm tra quyền
+        if ($requestForm->supervisor_id !== $currentUserId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền duyệt đơn này',
+            ], 403);
+        }
+
+        // Kiểm tra trạng thái đơn
+        if ($requestForm->status !== RequestForm::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn này đã được xử lý',
+            ], 403);
+        }
+
+        // Không cho phép duyệt đơn giấy ủy quyền
+        if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không có quyền duyệt loại đơn này',
+            ], 403);
+        }
+
+        // Kiểm tra đã có chữ ký supervisor chưa
+        if (! empty($requestForm->digital_signature_supervisor)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn này đã được supervisor ký',
+            ], 403);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $updateData = [];
+
+            // Xử lý upload chữ ký điện tử supervisor
+            if ($request->hasFile('digital_signature_supervisor')) {
+                // Case 1: File upload (multipart/form-data)
+                $file = $request->file('digital_signature_supervisor');
+                $filename = 'digital_signature_supervisor_' . $currentUserId . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('digital_signatures', $filename, 'public');
+                $updateData['digital_signature_supervisor'] = $path;
+            } elseif ($request->has('digital_signature_supervisor') && is_string($request->input('digital_signature_supervisor'))) {
+                // Case 2: Base64 string (từ frontend canvas/signature pad)
+                $base64Data = $request->input('digital_signature_supervisor');
+
+                if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $matches)) {
+                    $extension = $matches[1];
+                    $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+                    $base64Data = str_replace(' ', '+', $base64Data);
+                    $imageData = base64_decode($base64Data);
+
+                    if ($imageData !== false) {
+                        $filename = 'digital_signature_supervisor_' . $currentUserId . '_' . time() . '.' . $extension;
+                        $path = 'digital_signatures/' . $filename;
+                        Storage::disk('public')->put($path, $imageData);
+                        $updateData['digital_signature_supervisor'] = $path;
+                    }
+                }
+            }
+
+            if (empty($updateData['digital_signature_supervisor'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng cung cấp chữ ký điện tử',
+                ], 400);
+            }
+
+            // Cập nhật thông tin người ký và thời gian ký
+            $updateData['supervisor_approved_by'] = $currentUserId;
+            $updateData['supervisor_approved_at'] = now();
+
+            $requestForm->update($updateData);
+            $requestForm->refresh();
+            $requestForm->load(['employee', 'supervisor', 'supervisorApprovedBy']);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã ký duyệt đơn thành công. Đơn sẽ được chuyển cho quản lý nhà máy duyệt tiếp.',
+                'data' => $requestForm,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi duyệt đơn',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Reject request form by supervisor
+     * Endpoint: POST /api/employee/request-forms/as-supervisor/{id}/reject
+     */
+    public function rejectBySupervisor(Request $request, string $id): JsonResponse
+    {
+        $currentUserId = Auth::id();
+
+        // Danh sách supervisor employee IDs được phép truy cập
+        $supervisorIds = ['19010400', '20020700', '18010900', '19010300', '20102800'];
+
+        // Kiểm tra user hiện tại có phải supervisor không
+        if (! in_array($currentUserId, $supervisorIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền từ chối đơn',
+            ], 403);
+        }
+
+        $requestForm = RequestForm::find($id);
+
+        if (! $requestForm) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy đơn yêu cầu',
+            ], 404);
+        }
+
+        // Kiểm tra quyền
+        if ($requestForm->supervisor_id !== $currentUserId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền từ chối đơn này',
+            ], 403);
+        }
+
+        // Kiểm tra trạng thái đơn
+        if ($requestForm->status !== RequestForm::STATUS_PENDING) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn này đã được xử lý',
+            ], 403);
+        }
+
+        // Không cho phép từ chối đơn giấy ủy quyền
+        if ($requestForm->type === RequestForm::TYPE_GIAY_UY_QUYEN) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không có quyền từ chối loại đơn này',
+            ], 403);
+        }
+
+        // Validate rejection reason
+        $request->validate([
+            'rejection_reason' => 'required|string|min:10|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Update request form
+            $requestForm->update([
+                'status' => RequestForm::STATUS_REJECTED,
+                'rejection_reason' => $request->rejection_reason,
+                'rejected_at' => now(),
+            ]);
+
+            $requestForm->refresh();
+            $requestForm->load(['employee', 'supervisor']);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã từ chối đơn',
+                'data' => [
+                    'id' => $requestForm->id,
+                    'status' => $requestForm->status,
+                    'rejection_reason' => $requestForm->rejection_reason,
+                    'rejected_at' => $requestForm->rejected_at,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi từ chối đơn',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request): JsonResponse
