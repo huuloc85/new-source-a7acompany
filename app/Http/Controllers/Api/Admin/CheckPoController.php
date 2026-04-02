@@ -44,9 +44,9 @@ class CheckPoController extends Controller
                 // Determine created_at if status == 1 and shift is set
                 if ($status == 1 && $shift !== null) {
                     if ($shift == 1) {
-                        $created_at = $date.' 19:30:00';
+                        $created_at = $date . ' 19:30:00';
                     } else {
-                        $created_at = date('Y-m-d', strtotime($date.' +1 day')).' 07:30:00';
+                        $created_at = date('Y-m-d', strtotime($date . ' +1 day')) . ' 07:30:00';
                     }
                 }
 
@@ -68,7 +68,7 @@ class CheckPoController extends Controller
                         'status' => $status,
                     ],
                     [
-                        'totalQuan' => DB::raw('COALESCE(totalQuan,0)+'.$quantity),
+                        'totalQuan' => DB::raw('COALESCE(totalQuan,0)+' . $quantity),
                     ]
                 );
 
@@ -80,7 +80,7 @@ class CheckPoController extends Controller
                         'status' => $status,
                     ],
                     [
-                        'totalQuan' => DB::raw('COALESCE(totalQuan,0)+'.$quantity),
+                        'totalQuan' => DB::raw('COALESCE(totalQuan,0)+' . $quantity),
                     ]
                 );
 
@@ -98,7 +98,6 @@ class CheckPoController extends Controller
                 'count' => $results->count(),
                 'data' => $results,
             ], 200);
-
         } catch (\Throwable $th) {
             DB::rollBack();
 
@@ -112,19 +111,21 @@ class CheckPoController extends Controller
         try {
             $validate = $request->validate([
                 'date' => 'required|date_format:Y-m-d',
+                'fileName' => 'required|string',
                 'products' => 'required|array',
                 'products.*.quantity' => 'required|integer|min:1',
                 'products.*.productId' => 'required|integer|exists:products,id',
             ]);
 
             $date = $validate['date'];
+            $fileName = $validate['fileName'];
             $status = 8;
             $employeeId = Auth::id();
 
             // Tạo batch_id chung cho tất cả records trong request này
             $batchId = Str::uuid()->toString();
 
-            $results = collect($validate['products'])->map(function ($product) use ($date, $status, $employeeId, $batchId) {
+            $results = collect($validate['products'])->map(function ($product) use ($date, $status, $employeeId, $batchId, $fileName) {
                 $productId = $product['productId'];
                 $quantity = $product['quantity'];
 
@@ -136,6 +137,7 @@ class CheckPoController extends Controller
                     'status' => $status,
                     'date' => $date,
                     'batch_id' => $batchId,
+                    'file_name' => $fileName,
                 ]);
 
                 // Update or create total daily PO
@@ -170,7 +172,6 @@ class CheckPoController extends Controller
                 'data' => $results,
                 'batch_id' => $batchId,
             ], 200);
-
         } catch (\Throwable $th) {
             DB::rollBack();
 
@@ -226,7 +227,6 @@ class CheckPoController extends Controller
                 'count' => $results->count(),
                 'data' => $results->values(),
             ], 200);
-
         } catch (\Throwable $th) {
             DB::rollBack();
 
@@ -320,7 +320,6 @@ class CheckPoController extends Controller
 
             return HandleError::handle($th);
         }
-
     }
 
     public function deleteBatch(string $batchId)

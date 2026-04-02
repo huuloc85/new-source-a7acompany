@@ -19,6 +19,7 @@ class DailyQuantityPO extends Model
         'date',                       // Ngày nhập số lượng sử dụng cột timestamp để lấy thời gian nhạp số lượng
         'employee_id',                 // Người nhập số lượng
         'batch_id',                   // UUID nhóm các record import cùng 1 lần
+        'file_name',                  // Tên file gốc mà user upload
     ];
 
     // relationship employee
