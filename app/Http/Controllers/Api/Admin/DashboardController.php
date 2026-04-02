@@ -6,6 +6,7 @@ use App\Models\AttendanceRecord;
 use App\Models\Celender;
 use App\Models\CheckEmployee;
 use App\Models\Employee;
+use App\Models\Feedback;
 use App\Models\LoginHistory;
 use App\Models\Product;
 use App\Models\ProductionPlan;
@@ -41,9 +42,8 @@ class DashboardController extends BaseController
         $totalPlan = ProductionPlan::count();
         $totalRecord = AttendanceRecord::count();
         $totalCheckEmployee = CheckEmployee::whereDate('date', $today)->count();
-
-        // ✅ Thêm tổng số Request Forms
         $totalRequestForms = RequestForm::count();
+        $totalFeedback = (int) Feedback::count();
 
         $salaryManagers = SalaryManager::orderBy('id', 'DESC')->limit(10)->get();
         $celenders = Celender::orderBy('id', 'DESC')->limit(10)->get();
@@ -59,6 +59,9 @@ class DashboardController extends BaseController
             'totalRecord' => $totalRecord,
             'totalCheckEmployee' => $totalCheckEmployee,
             'totalRequestForms' => $totalRequestForms, // ✅ Thêm tổng số Request Forms
+            // Keep both camelCase and snake_case for frontend compatibility.
+            'totalFeedback' => $totalFeedback,
+            'total_feedback' => $totalFeedback,
             'topUsers' => $topUsers,
             'salaryManagers' => $salaryManagers,
             'celenders' => $celenders,
