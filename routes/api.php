@@ -258,6 +258,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
 
         Route::prefix('request-forms')->group(function () {
             Route::get('/', [EmpRequestFormController::class, 'index']);
+            Route::get('/as-supervisor', [EmpRequestFormController::class, 'getAsSupervisor']);
             Route::post('/', [EmpRequestFormController::class, 'store']);
             Route::get('/types', [EmpRequestFormController::class, 'getFormTypes']);
             Route::get('/signature-fields', [EmpRequestFormController::class, 'getSignatureFields']);

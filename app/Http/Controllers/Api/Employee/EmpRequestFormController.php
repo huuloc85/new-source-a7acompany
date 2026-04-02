@@ -104,6 +104,103 @@ class EmpRequestFormController extends Controller
     }
 
     /**
+     * Get request forms as supervisor (for specific supervisor users)
+     * Endpoint: GET /api/employee/request-forms/as-supervisor
+     */
+    public function getAsSupervisor(Request $request): JsonResponse
+    {
+        $currentUserId = Auth::id();
+
+        // Danh sách supervisor employee IDs được phép truy cập
+        $supervisorIds = ['19010400', '20020700', '18010900', '19010300', '20102800'];
+
+        // Kiểm tra user hiện tại có phải supervisor không
+        if (! in_array($currentUserId, $supervisorIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bạn không có quyền truy cập danh sách này',
+            ], 403);
+        }
+
+        // Query các đơn có supervisor_id = user hiện tại
+        $query = RequestForm::query()
+            ->where('supervisor_id', $currentUserId)
+            ->where('employee_id', '!=', $currentUserId); // Loại bỏ đơn do chính mình tạo
+
+        // Lọc theo loại đơn (nếu có)
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Luôn loại bỏ đơn giấy ủy quyền
+        $query->where('type', '!=', RequestForm::TYPE_GIAY_UY_QUYEN);
+
+        // Lọc theo trạng thái (nếu có)
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Lọc theo employee_id (nếu có)
+        if ($request->has('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Lọc theo ngày tạo
+        if ($request->has('from_date')) {
+            $query->whereDate('submitted_at', '>=', $request->from_date);
+        }
+
+        if ($request->has('to_date')) {
+            $query->whereDate('submitted_at', '<=', $request->to_date);
+        }
+
+        // Select các columns cần thiết
+        $query->select([
+            'id',
+            'employee_id',
+            'type',
+            'title',
+            'content',
+            'form_data',
+            'status',
+            'rejection_reason',
+            'submitted_at',
+            'approved_at',
+            'rejected_at',
+            'created_at',
+            'updated_at',
+            'supervisor_id',
+            'digital_signature_applicant',
+            'digital_signature_supervisor',
+            'digital_signature_manager',
+            'supervisor_approved_by',
+            'supervisor_approved_at',
+            'manager_approved_by',
+            'manager_approved_at',
+            'approved_by',
+        ]);
+
+        // Eager load relationships
+        $query->with([
+            'employee:id,name,email,phone',
+            'approvedBy:id,name,email,phone',
+            'supervisor:id,name,email',
+            'supervisorApprovedBy:id,name,email,phone',
+            'managerApprovedBy:id,name,email,phone',
+        ]);
+
+        $requestForms = $query->orderBy('submitted_at', 'desc')
+            ->paginate($request->get('per_page', 15));
+
+        return response()->json([
+            'success' => true,
+            'data' => $requestForms,
+            'types' => RequestForm::getTypes(),
+            'statuses' => RequestForm::getStatuses(),
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request): JsonResponse
@@ -154,7 +251,7 @@ class EmpRequestFormController extends Controller
                 if ($request->hasFile($fieldName)) {
                     // Case 1: File upload (multipart/form-data)
                     $file = $request->file($fieldName);
-                    $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
+                    $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('digital_signatures', $filename, 'public');
                     $updateData[$fieldName] = $path;
                 } elseif ($request->has($fieldName) && is_string($request->input($fieldName))) {
@@ -169,8 +266,8 @@ class EmpRequestFormController extends Controller
                         $imageData = base64_decode($base64Data);
 
                         if ($imageData !== false) {
-                            $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$extension;
-                            $path = 'digital_signatures/'.$filename;
+                            $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $extension;
+                            $path = 'digital_signatures/' . $filename;
                             Storage::disk('public')->put($path, $imageData);
                             $updateData[$fieldName] = $path;
                         }
@@ -211,8 +308,8 @@ class EmpRequestFormController extends Controller
 
             // Tạo URL để xem danh sách đơn cần duyệt
             $frontendUrl = config('app.frontend_url', 'https://a7acompany.com');
-            $approvalUrlSupervisor = $frontendUrl.'/employee/request-forms';
-            $approvalUrlManager = $frontendUrl.'/request-forms';
+            $approvalUrlSupervisor = $frontendUrl . '/employee/request-forms';
+            $approvalUrlManager = $frontendUrl . '/request-forms';
 
             // Gửi email thông báo cho supervisor (nếu có)
             if ($supervisor && $supervisor->email) {
@@ -230,7 +327,7 @@ class EmpRequestFormController extends Controller
                         'approval_url' => $approvalUrlSupervisor,
                     ]);
                 } catch (\Exception $e) {
-                    Log::error('❌ Lỗi khi thêm job gửi email cho supervisor vào queue: '.$e->getMessage());
+                    Log::error('❌ Lỗi khi thêm job gửi email cho supervisor vào queue: ' . $e->getMessage());
                 }
             }
 
@@ -253,12 +350,12 @@ class EmpRequestFormController extends Controller
                     'approval_url' => $approvalUrlManager,
                 ]);
             } catch (\Exception $e) {
-                Log::error('❌ Lỗi khi thêm job gửi email cho quản lý nhà máy vào queue: '.$e->getMessage());
+                Log::error('❌ Lỗi khi thêm job gửi email cho quản lý nhà máy vào queue: ' . $e->getMessage());
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Đơn yêu cầu đã được tạo thành công'.($supervisor ? ' và đã gửi thông báo cho tổ trưởng' : ''),
+                'message' => 'Đơn yêu cầu đã được tạo thành công' . ($supervisor ? ' và đã gửi thông báo cho tổ trưởng' : ''),
                 'data' => $requestForm,
                 'supervisor_notified' => $supervisor ? [
                     'id' => $supervisor->id,
@@ -362,7 +459,7 @@ class EmpRequestFormController extends Controller
                     }
 
                     $file = $request->file($fieldName);
-                    $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$file->getClientOriginalExtension();
+                    $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $file->getClientOriginalExtension();
                     $updateData[$fieldName] = $file->storeAs('digital_signatures', $filename, 'public');
                 } elseif ($request->has($fieldName) && is_string($request->input($fieldName))) {
                     // Case 2: Base64 string (từ frontend canvas/signature pad)
@@ -380,8 +477,8 @@ class EmpRequestFormController extends Controller
                         $imageData = base64_decode($base64Data);
 
                         if ($imageData !== false) {
-                            $filename = $fieldName.'_'.Auth::id().'_'.time().'.'.$extension;
-                            $path = 'digital_signatures/'.$filename;
+                            $filename = $fieldName . '_' . Auth::id() . '_' . time() . '.' . $extension;
+                            $path = 'digital_signatures/' . $filename;
                             Storage::disk('public')->put($path, $imageData);
                             $updateData[$fieldName] = $path;
                         }
@@ -606,7 +703,7 @@ class EmpRequestFormController extends Controller
                     }
 
                     // Store new signature
-                    $filename = time().'_delegator_'.$file->getClientOriginalName();
+                    $filename = time() . '_delegator_' . $file->getClientOriginalName();
                     $path = $file->storeAs('signatures', $filename, 'public');
 
                     $updateData['digital_signature_delegator'] = $path;
@@ -626,7 +723,7 @@ class EmpRequestFormController extends Controller
                     }
 
                     // Store new signature
-                    $filename = time().'_authorized_'.$file->getClientOriginalName();
+                    $filename = time() . '_authorized_' . $file->getClientOriginalName();
                     $path = $file->storeAs('signatures', $filename, 'public');
 
                     $updateData['digital_signature_authorized'] = $path;
@@ -807,7 +904,7 @@ class EmpRequestFormController extends Controller
                 }
 
                 // Store new signature
-                $filename = time().'_authorized_'.$file->getClientOriginalName();
+                $filename = time() . '_authorized_' . $file->getClientOriginalName();
                 $path = $file->storeAs('signatures', $filename, 'public');
 
                 $updateData['digital_signature_authorized'] = $path;
