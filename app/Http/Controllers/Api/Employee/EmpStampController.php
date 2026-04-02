@@ -119,6 +119,7 @@ class EmpStampController extends Controller
                     'binCount',
                     'binStart',
                     'type',
+                    'purpose',
                     'product.name',
                     'employee.name',
                     'created_at',

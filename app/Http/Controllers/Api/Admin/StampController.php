@@ -77,6 +77,7 @@ class StampController extends BaseController
                     'binCount',
                     'binStart',
                     'type',
+                    'purpose',
                     'product.name',
                     'employee.name',
                     'created_at',
