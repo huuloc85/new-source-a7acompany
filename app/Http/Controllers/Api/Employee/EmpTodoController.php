@@ -75,7 +75,12 @@ class EmpTodoController extends Controller
                 $status = null;
             }
             $shiftInput = $request->input('shift');
-            $shift = $shiftInput == 2 ? 'Ca 2' : 'Ca 1';
+            // Hỗ trợ cả 2 format: số (1, 2) hoặc chuỗi ("Ca 1", "Ca 2")
+            if ($shiftInput === 'Ca 2' || $shiftInput == 2) {
+                $shift = 'Ca 2';
+            } else {
+                $shift = 'Ca 1';
+            }
             $date = Carbon::now();
 
             // Nếu là ca 2 và giờ hiện tại từ trừ một ngày
@@ -124,23 +129,20 @@ class EmpTodoController extends Controller
             $validatedData = $request->validate([
                 'productId' => 'required|exists:products,id',
                 'quantity' => 'required|numeric|min:1',
-                'shift' => 'nullable|in:Ca 1,Ca 2',
+                'shift' => 'required|in:Ca 1,Ca 2',
             ]);
 
             $user = Auth()->user();
             $employeeId = $user->id;
             $productId = $validatedData['productId'];
             $quantity = $validatedData['quantity'];
-            $shiftFilter = $validatedData['shift'] ?? null;
+            $shiftFilter = $validatedData['shift'];
 
-            $query = CheckEmployee::where('employee_id', $employeeId)
-                ->where('product_id', $productId);
-
-            if ($shiftFilter) {
-                $query->where('shift', $shiftFilter);
-            }
-
-            $checkEmployee = $query->orderBy('date', 'desc')
+            $checkEmployee = CheckEmployee::where('employee_id', $employeeId)
+                ->where('product_id', $productId)
+                ->where('shift', $shiftFilter)
+                ->orderBy('date', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->first();
 
             if (! $checkEmployee) {
@@ -150,11 +152,12 @@ class EmpTodoController extends Controller
                 ], 404);
             }
 
-            // Kiểm tra created_at có trong vòng 1 giờ so với hiện tại không
-            if ($checkEmployee->created_at->diffInMinutes(Carbon::now()) <= 10) {
+            // TODO: ĐỔI LẠI 10 PHÚT TRƯỚC KHI DEPLOY
+            // Kiểm tra created_at có trong vòng 1 phút so với hiện tại không (tạm giảm để test)
+            if ($checkEmployee->created_at->diffInMinutes(Carbon::now()) <= 1) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nhân viên nhập sản phẩm hoạt động chưa quá 10 phút. Cần báo cáo cho quản lý để tiếp tục hỗ trợ hoặc có thể nhập lại sau 10 phút.',
+                    'message' => 'Nhân viên nhập sản phẩm hoạt động chưa quá 1 phút. Vui lòng chờ thêm.',
                 ], 403);
             }
 
@@ -165,7 +168,7 @@ class EmpTodoController extends Controller
             // Kiểm tra điều kiện dựa trên ca làm việc
             if (
                 ($shift == 'Ca 1' && ! $date->isSameDay($today)) ||
-                ($shift == 'Ca 2' && ! ($date->isSameDay($today) || $date->addDay()->isSameDay($today)))
+                ($shift == 'Ca 2' && ! ($date->isSameDay($today) || $date->copy()->addDay()->isSameDay($today)))
             ) {
                 return response()->json([
                     'success' => false,
@@ -207,6 +210,7 @@ class EmpTodoController extends Controller
                 $dailyQuan->employee_id = Auth()->user()->id;
                 $dailyQuan->quantity = $quantity;
                 $dailyQuan->status = $status;
+                $dailyQuan->shift = $shift;
                 $dailyQuan->date = $subDate;
 
                 // cập nhật dailytotal với subDate
@@ -265,6 +269,7 @@ class EmpTodoController extends Controller
                 $dailyQuan->employee_id = Auth()->user()->id;
                 $dailyQuan->quantity = $quantity;
                 $dailyQuan->status = $status;
+                $dailyQuan->shift = $shift;
                 $dailyQuan->date = $date;
                 $dailyQuan->save();
 

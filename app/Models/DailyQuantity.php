@@ -20,6 +20,7 @@ class DailyQuantity extends Model
         'product_id',                 // ID của sản phẩm
         'quantity',                   // Số lượng cần nhập
         'status',                     // Trạng thái nhập (*)
+        'shift',                      // Ca làm việc (Ca 1, Ca 2)
         'date',                     // Ngày nhập số lượng sử dụng cột timestamp để lấy thời gian nhạp số lượng
         'employee_id',              // Người nhập số lượng
     ];
