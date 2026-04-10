@@ -74,11 +74,12 @@ class EmpTodoController extends Controller
             } else {
                 $status = null;
             }
-            $shift = $request->input('shift');
+            $shiftInput = $request->input('shift');
+            $shift = $shiftInput == 2 ? 'Ca 2' : 'Ca 1';
             $date = Carbon::now();
 
             // Nếu là ca 2 và giờ hiện tại từ trừ một ngày
-            if ($shift == 2 && $date->hour < 8) {
+            if ($shift == 'Ca 2' && $date->hour < 8) {
                 $date->subDay();
             }
 
@@ -123,16 +124,23 @@ class EmpTodoController extends Controller
             $validatedData = $request->validate([
                 'productId' => 'required|exists:products,id',
                 'quantity' => 'required|numeric|min:1',
+                'shift' => 'nullable|in:Ca 1,Ca 2',
             ]);
 
             $user = Auth()->user();
             $employeeId = $user->id;
             $productId = $validatedData['productId'];
             $quantity = $validatedData['quantity'];
+            $shiftFilter = $validatedData['shift'] ?? null;
 
-            $checkEmployee = CheckEmployee::where('employee_id', $employeeId)
-                ->where('product_id', $productId)
-                ->orderBy('date', 'desc')
+            $query = CheckEmployee::where('employee_id', $employeeId)
+                ->where('product_id', $productId);
+
+            if ($shiftFilter) {
+                $query->where('shift', $shiftFilter);
+            }
+
+            $checkEmployee = $query->orderBy('date', 'desc')
                 ->first();
 
             if (! $checkEmployee) {
