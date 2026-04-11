@@ -176,6 +176,7 @@ class StampController extends BaseController
                 'message' => $isDuplicate ? 'Phát hiện tem trùng lặp' : 'Không có tem trùng lặp',
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Validation Error',
                 'message' => 'Missing required fields',

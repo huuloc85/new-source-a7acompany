@@ -108,6 +108,7 @@ class AttendanceRecordController extends BaseController
 
                 $searchPosition += $numReturned;
             } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
                 return response()->json(['error' => 'Exception occurred', 'message' => $e->getMessage()], 500);
             }
         }

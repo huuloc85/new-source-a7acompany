@@ -42,6 +42,7 @@ class EmpStampController extends Controller
                     // Validate binStart format
                     $this->validateBinStart($stamp['binStart'], $index);
                 } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
                     $allErrors = array_merge($allErrors, $e->errors());
                 }
 
@@ -49,6 +50,7 @@ class EmpStampController extends Controller
                     // Validate purpose logic
                     $this->validatePurposeLogic($stamp, $index);
                 } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
                     $allErrors = array_merge($allErrors, $e->errors());
                 }
             }
@@ -93,6 +95,7 @@ class EmpStampController extends Controller
                 201
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -675,6 +678,7 @@ class EmpStampController extends Controller
                 'duplicates' => $duplicates,
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'errors' => $e->errors(),
             ], 422);

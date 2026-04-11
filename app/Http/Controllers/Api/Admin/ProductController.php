@@ -496,6 +496,7 @@ class ProductController extends BaseController
                 'quantities' => $addQuantity,
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -636,6 +637,7 @@ class ProductController extends BaseController
                 'totalMonth' => $totalMonth,
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             Log::error('errors: ' . $e->getMessage() . ' line: ' . $e->getLine());
 
             return response()->json([
@@ -764,6 +766,7 @@ class ProductController extends BaseController
                 'totalMonth' => $totalMonth,
             ], 201);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
             Log::error('errors: ' . $e->getMessage() . ' line: ' . $e->getLine());
 

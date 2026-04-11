@@ -92,16 +92,19 @@ class HistoryController extends Controller
                 ],
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Không tìm thấy dữ liệu.',
             ], 404);
         } catch (\Illuminate\Auth\AuthenticationException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Không được phép truy cập. Vui lòng đăng nhập.',
             ], 401);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra. Vui lòng thử lại sau.',
@@ -135,11 +138,13 @@ class HistoryController extends Controller
                 ], 404);
             }
         } catch (\Illuminate\Database\QueryException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Xung đột dữ liệu trong quá trình xóa (database conflict).',
             ], 409);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi nội bộ máy chủ khi xóa lịch sử.',
@@ -184,6 +189,7 @@ class HistoryController extends Controller
                 ],
             ], 200);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra khi lấy dữ liệu.',

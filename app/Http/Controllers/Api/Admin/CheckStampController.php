@@ -71,6 +71,7 @@ class CheckStampController extends Controller
                 ],
             ], 200);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi truy xuất dữ liệu.',

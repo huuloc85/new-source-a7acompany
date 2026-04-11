@@ -579,6 +579,7 @@ class EmployeeController extends BaseController
                 'total' => $total,
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra khi xem lịch làm việc.',
@@ -626,6 +627,7 @@ class EmployeeController extends BaseController
                 ],
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra khi lấy chi tiết lịch làm việc.',
@@ -656,6 +658,7 @@ class EmployeeController extends BaseController
                 'total' => $total,
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra khi lấy bảng lương.',
@@ -699,6 +702,7 @@ class EmployeeController extends BaseController
                 ],
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             LogHelper::saveLog('Xem chi tiết bảng lương', $e->getMessage(), $e->getLine());
 
             return response()->json([

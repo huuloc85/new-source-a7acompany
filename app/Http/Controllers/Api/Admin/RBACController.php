@@ -189,6 +189,7 @@ class RBACController extends BaseController
                 ],
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             throw $e;
         } catch (\Throwable $e) {
             Log::error('RBAC create admin user error', [
@@ -218,6 +219,7 @@ class RBACController extends BaseController
                 'permissions' => $role->permissions,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Role không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('RBAC get role permissions error', [
@@ -370,6 +372,7 @@ class RBACController extends BaseController
                 'all_permissions' => $allPermissions,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'User không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('RBAC get user permissions error', [
@@ -412,6 +415,7 @@ class RBACController extends BaseController
                 'direct_permissions_count' => $count,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'User không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('RBAC save user permissions error', [

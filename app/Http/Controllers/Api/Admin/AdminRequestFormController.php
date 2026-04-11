@@ -340,6 +340,7 @@ class AdminRequestFormController extends Controller
                 ]),
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([

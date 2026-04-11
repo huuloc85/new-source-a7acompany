@@ -71,6 +71,7 @@ class PermissionController extends BaseController
                 'permission' => $permission,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Permission không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Permission show error', [
@@ -158,6 +159,7 @@ class PermissionController extends BaseController
                 'permission' => $permission,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Permission không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Permission update error', [
@@ -195,6 +197,7 @@ class PermissionController extends BaseController
                 'message' => 'Xóa quyền thành công!'.($deletedSidebarCount > 0 ? " (đã xóa {$deletedSidebarCount} sidebar items liên quan)" : ''),
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Permission không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Permission destroy error', [
@@ -302,6 +305,7 @@ class PermissionController extends BaseController
                 'sidebar_item' => $sidebarItem,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'SidebarItem không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Update sidebar item error', [
@@ -329,6 +333,7 @@ class PermissionController extends BaseController
                 'message' => 'Xóa SidebarItem thành công!',
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'SidebarItem không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Destroy sidebar item error', [

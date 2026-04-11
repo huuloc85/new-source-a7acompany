@@ -394,6 +394,7 @@ class EmpRequestFormController extends Controller
                 'data' => $requestForm,
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -487,6 +488,7 @@ class EmpRequestFormController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -624,6 +626,7 @@ class EmpRequestFormController extends Controller
                         'approval_url' => $approvalUrlSupervisor,
                     ]);
                 } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
                     Log::error('❌ Lỗi khi thêm job gửi email cho supervisor vào queue: ' . $e->getMessage());
                 }
             }
@@ -647,6 +650,7 @@ class EmpRequestFormController extends Controller
                     'approval_url' => $approvalUrlManager,
                 ]);
             } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
                 Log::error('❌ Lỗi khi thêm job gửi email cho quản lý nhà máy vào queue: ' . $e->getMessage());
             }
 
@@ -661,6 +665,7 @@ class EmpRequestFormController extends Controller
                 ] : null,
             ], 201);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -809,6 +814,7 @@ class EmpRequestFormController extends Controller
                 'data' => $requestForm,
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi cập nhật đơn yêu cầu',
@@ -862,6 +868,7 @@ class EmpRequestFormController extends Controller
                 'message' => 'Đơn yêu cầu đã được xóa thành công',
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi xóa đơn yêu cầu',
@@ -1066,6 +1073,7 @@ class EmpRequestFormController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -1232,6 +1240,7 @@ class EmpRequestFormController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -1321,6 +1330,7 @@ class EmpRequestFormController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             DB::rollBack();
 
             return response()->json([

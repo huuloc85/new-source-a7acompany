@@ -277,6 +277,7 @@ class AuthController extends BaseController
 
             return response()->json(['message' => 'Thay đổi mật khẩu thành công'], 200);
         } catch (Throwable $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Thay đổi mật khẩu thất bại', 'error' => $e->getMessage()], 500);
         }
     }
@@ -296,6 +297,7 @@ class AuthController extends BaseController
                 'message' => 'Khôi phục mật khẩu thành công',
             ], 200);
         } catch (Throwable $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Khôi phục mật khẩu thất bại', 'error' => $e->getMessage()], 500);
         }
     }

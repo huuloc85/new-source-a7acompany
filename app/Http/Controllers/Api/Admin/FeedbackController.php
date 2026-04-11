@@ -57,6 +57,7 @@ class FeedbackController extends BaseController
 
             return response()->json($feedback);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Góp ý không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Feedback show error', ['message' => $e->getMessage()]);
@@ -98,6 +99,7 @@ class FeedbackController extends BaseController
                 'feedback' => $feedback,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Góp ý không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Feedback reply error', ['message' => $e->getMessage()]);
@@ -124,6 +126,7 @@ class FeedbackController extends BaseController
 
             return response()->json(['message' => 'Đã xóa góp ý.']);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
             return response()->json(['message' => 'Góp ý không tồn tại.'], 404);
         } catch (\Throwable $e) {
             Log::error('Feedback destroy error', ['message' => $e->getMessage()]);
