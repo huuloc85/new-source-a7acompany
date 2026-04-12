@@ -9,6 +9,7 @@ use App\Models\SalaryOfficialVVPTimekeeping;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -17,7 +18,7 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
 class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
-{
+, WithCalculatedFormulas{
     public $salaryManagerId;
 
     public $startDate;
@@ -44,7 +45,7 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
             $dateEnd = Carbon::parse($this->endDate);
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('id', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->orWhere(\Illuminate\Support\Facades\DB::raw("TRIM(LEADING '0' FROM id)"), ltrim($row[1], '0'))->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = SalaryOfficialVVP::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
                         if ($salaryManager) {
@@ -52,33 +53,37 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
                             $limit = $countDate * 3 + 13;
                             $date = $this->startDate;
 
+                            $insertTimekeepings = [];
                             // chấm công chi tiết
                             for ($i = 13; $i < $limit; $i += 3) {
-                                SalaryOfficialVVPTimekeeping::create([
+                                $insertTimekeepings[] = [
                                     'salary_official_vvp_id' => $salaryManager->id,
                                     'timekeeping_date' => $date,                          // ngày chấm công
-                                    'timekeeping_day' => $row[$i] ?? null,                // số giờ làm ngày
-                                    'timekeeping_night' => $row[$i + 1] ?? null,          // số giờ làm đêm
-                                    'timekeeping_overtime' => $row[$i + 2] ?? null,       // số giờ tăng ca
-                                ]);
+                                    'timekeeping_day' => (is_numeric($row[$i] ?? null) ? (float)$row[$i] : null),                // số giờ làm ngày
+                                    'timekeeping_night' => (is_numeric($row[$i + 1] ?? null) ? (float)$row[$i + 1] : null),          // số giờ làm đêm
+                                    'timekeeping_overtime' => (is_numeric($row[$i + 2] ?? null) ? (float)$row[$i + 2] : null),       // số giờ tăng ca
+                                    'created_at' => \Carbon\Carbon::now(),
+                                    'updated_at' => \Carbon\Carbon::now(),
+                                ];
                                 $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
                             }
+                            SalaryOfficialVVPTimekeeping::insert($insertTimekeepings);
 
                             // thông số chấm công tổng quát
-                            $salaryManager->total_day_offical = $row[4] ?? null;                           // tổng ngày
-                            $salaryManager->total_night_offical = $row[5] ?? null;                         // tổng đêm
-                            $salaryManager->total_overtime_offical = $row[6] ?? null;                      // tổng tăng ca
-                            $salaryManager->workday_count_trial = $row[7] ?? null;                         // số công ngày
-                            $salaryManager->worknight_count_trial = $row[8] ?? null;                       // số công đêm
-                            $salaryManager->overtime_day_count_trial = $row[9] ?? null;                    // số ngày tăng ca
-                            $salaryManager->allowance_rice_day_timekeeping = $row[10] ?? null;             // Phụ cấp tiền cơm ngày
-                            $salaryManager->allowance_rice_night_timekeeping = $row[11] ?? null;           // Phụ cấp tiền cơm đêm
-                            $salaryManager->allowance_overtime_timekeeping = $row[12] ?? null;             // phụ cấp tăng ca
+                            $salaryManager->total_day_offical = (is_numeric($row[4] ?? null) ? (float)$row[4] : null);                           // tổng ngày
+                            $salaryManager->total_night_offical = (is_numeric($row[5] ?? null) ? (float)$row[5] : null);                         // tổng đêm
+                            $salaryManager->total_overtime_offical = (is_numeric($row[6] ?? null) ? (float)$row[6] : null);                      // tổng tăng ca
+                            $salaryManager->workday_count_trial = (is_numeric($row[7] ?? null) ? (float)$row[7] : null);                         // số công ngày
+                            $salaryManager->worknight_count_trial = (is_numeric($row[8] ?? null) ? (float)$row[8] : null);                       // số công đêm
+                            $salaryManager->overtime_day_count_trial = (is_numeric($row[9] ?? null) ? (float)$row[9] : null);                    // số ngày tăng ca
+                            $salaryManager->allowance_rice_day_timekeeping = (is_numeric($row[10] ?? null) ? (float)$row[10] : null);             // Phụ cấp tiền cơm ngày
+                            $salaryManager->allowance_rice_night_timekeeping = (is_numeric($row[11] ?? null) ? (float)$row[11] : null);           // Phụ cấp tiền cơm đêm
+                            $salaryManager->allowance_overtime_timekeeping = (is_numeric($row[12] ?? null) ? (float)$row[12] : null);             // phụ cấp tăng ca
 
-                            $salaryManager->holidays_count = $row[106] ?? null;                             // số ngày nghĩ lễ tết
-                            $salaryManager->paid_holidays_count = $row[107] ?? null;                        // số ngày phép năm
-                            $salaryManager->daysleave_allowed_timekeeping = $row[108] ?? null;              // số ngày nghỉ có phép
-                            $salaryManager->daysleave_notallowed_timekeeping = $row[109] ?? null;           // số ngày nghỉ không phép
+                            $salaryManager->holidays_count = (is_numeric($row[106] ?? null) ? (float)$row[106] : null);                             // số ngày nghĩ lễ tết
+                            $salaryManager->paid_holidays_count = (is_numeric($row[107] ?? null) ? (float)$row[107] : null);                        // số ngày phép năm
+                            $salaryManager->daysleave_allowed_timekeeping = (is_numeric($row[108] ?? null) ? (float)$row[108] : null);              // số ngày nghỉ có phép
+                            $salaryManager->daysleave_notallowed_timekeeping = (is_numeric($row[109] ?? null) ? (float)$row[109] : null);           // số ngày nghỉ không phép
                             $salaryManager->save();
                         }
                     }
@@ -94,6 +99,7 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('id')->toArray();
+        $listCode = array_merge($listCode, array_map(function($id) { return ltrim($id, '0'); }, $listCode));
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],

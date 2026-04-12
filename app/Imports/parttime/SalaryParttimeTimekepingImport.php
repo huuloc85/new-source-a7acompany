@@ -9,6 +9,7 @@ use App\Models\SalaryParttimeTimekeeping;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -17,7 +18,7 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
 class SalaryParttimeTimekepingImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithHeadingRow, WithValidation
-{
+, WithCalculatedFormulas{
     public $salaryManagerId;
 
     public $startDate;
@@ -43,7 +44,7 @@ class SalaryParttimeTimekepingImport implements HasReferencesToOtherSheets, Skip
             $dateEnd = Carbon::parse($this->endDate);
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('id', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->orWhere(\Illuminate\Support\Facades\DB::raw("TRIM(LEADING '0' FROM id)"), ltrim($row[1], '0'))->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = SalaryParttime::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
                         if ($salaryManager) {
@@ -99,6 +100,7 @@ class SalaryParttimeTimekepingImport implements HasReferencesToOtherSheets, Skip
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('id')->toArray();
+        $listCode = array_merge($listCode, array_map(function($id) { return ltrim($id, '0'); }, $listCode));
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],

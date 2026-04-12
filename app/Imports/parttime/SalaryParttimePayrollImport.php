@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\SalaryParttime;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -15,7 +16,7 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
 class SalaryParttimePayrollImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithHeadingRow, WithValidation
-{
+, WithCalculatedFormulas{
     public $salaryManagerId;
 
     public function __construct($salaryManagerId)
@@ -33,7 +34,7 @@ class SalaryParttimePayrollImport implements HasReferencesToOtherSheets, SkipsEm
         try {
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('id', $row[1])->first();
+                    $employee = Employee::where('id', $row[1])->orWhere(\Illuminate\Support\Facades\DB::raw("TRIM(LEADING '0' FROM id)"), ltrim($row[1], '0'))->first();
                     if ($employee != null && $this->salaryManagerId != null) {
                         // bảng lương
                         SalaryParttime::create([
@@ -66,6 +67,7 @@ class SalaryParttimePayrollImport implements HasReferencesToOtherSheets, SkipsEm
     public function rules(): array
     {
         $listCode = Employee::all()->pluck('id')->toArray();
+        $listCode = array_merge($listCode, array_map(function($id) { return ltrim($id, '0'); }, $listCode));
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
