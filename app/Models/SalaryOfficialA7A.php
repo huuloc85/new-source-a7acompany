@@ -35,12 +35,13 @@ class SalaryOfficialA7A extends Model
         'allowance_rice',                               // Phụ cấp cơm trưa
         'company_insurance',                            // BHXH công ty đóng
         'insurance',                                    // BHXH người lao động đóng
+        'has_insurance',                                // toggle đóng BHXH (true/false)
 
         // /chấm công
         'total_day_offical',                             // tổng ngày
         'total_night_offical',                           // tổng đêm
         'total_overtime_offical',                        // tổng tăng ca
-        'workday_count_trail',                           // số công ngày
+        'workday_count_trial',                           // số công ngày
         'worknight_count_trial',                         // số công đêm
         'overtime_day_count_trial',                      // số ngày tăng ca
         'allowance_rice_day_timekeeping',                // Phụ cấp tiền cơm ngày
@@ -136,6 +137,7 @@ class SalaryOfficialA7A extends Model
         'kpi_subtraction',                              // trừ KPI
         'kpi_subtraction_notice',                       // trừ KPI Ghi Chú
         'actually_received',                            // thực lãnh
+        'employee_type',                                // loại nhân viên (office/worker)
         'forms_of_payment',                             // hình thức thanh toán
         'company_insurance_detail',                     // BHXH (21.5%) công ty đóng cho NLĐ
 

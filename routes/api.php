@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\RBACController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\SalaryController;
+use App\Http\Controllers\Api\Admin\SalaryWebController;
 use App\Http\Controllers\Api\Admin\ScheduleCategoryController;
 use App\Http\Controllers\Api\Admin\ScheduleController;
 use App\Http\Controllers\Api\Admin\ScheduleDetailController;
@@ -145,6 +146,47 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/', [SalaryController::class, 'addSalary']);
         Route::get('/{id}', [SalaryController::class, 'getSalary']);
         Route::delete('/{id}', [SalaryController::class, 'deleteSalary']);
+    });
+
+    // ============================================================
+    // Salary Web — Tính lương trên web (không cần import Excel)
+    // ============================================================
+    Route::middleware(['api.can:view_salary_total'])->prefix('admin/salary-web')->group(function () {
+        Route::get('/', [SalaryWebController::class, 'index']);
+
+        // Cấu hình
+        Route::get('/configs', [SalaryWebController::class, 'getAllConfigs']);
+        Route::get('/config/{company}', [SalaryWebController::class, 'getConfig']);
+        Route::put('/config/{company}', [SalaryWebController::class, 'updateConfig']);
+        Route::get('/formulas/{company}', [SalaryWebController::class, 'getFormulas']);
+
+        // Tạo bảng lương mới
+        Route::post('/create', [SalaryWebController::class, 'create']);
+
+        // Lấy dữ liệu bảng lương
+        Route::get('/{salaryManagerId}/data', [SalaryWebController::class, 'getSalaryData']);
+        Route::get('/{salaryManagerId}/payroll-summary', [SalaryWebController::class, 'getPayrollSummary']);
+
+        // Danh mục (thông tin lương cơ bản NV)
+        Route::put('/{salaryManagerId}/category/{employeeId}', [SalaryWebController::class, 'updateCategory']);
+        Route::put('/{salaryManagerId}/category-bulk', [SalaryWebController::class, 'bulkUpdateCategory']);
+
+        // Chấm công
+        Route::get('/{salaryManagerId}/timekeeping/{employeeId}', [SalaryWebController::class, 'getTimekeeping']);
+        Route::put('/{salaryManagerId}/timekeeping/{employeeId}', [SalaryWebController::class, 'updateTimekeeping']);
+        Route::put('/{salaryManagerId}/timekeeping-bulk', [SalaryWebController::class, 'bulkUpdateTimekeeping']);
+
+        // Thông tin bổ sung (nghỉ phép, tạm ứng, KPI...)
+        Route::put('/{salaryManagerId}/adjustments/{employeeId}', [SalaryWebController::class, 'updateAdjustments']);
+
+        // Đồng bộ máy chấm công
+        Route::post('/{salaryManagerId}/sync-attendance', [SalaryWebController::class, 'syncAttendance']);
+
+        // Tính lương:
+        // - Legacy: BE tự tính công thức
+        // - FE-driven: FE gửi dữ liệu đã tính, BE chỉ map/lưu DB
+        Route::post('/{salaryManagerId}/calculate/{employeeId}', [SalaryWebController::class, 'calculateOne']);
+        Route::post('/{salaryManagerId}/calculate', [SalaryWebController::class, 'calculateAll']);
     });
 
     Route::middleware(['api.can:view_schedule_categories'])->prefix('schedule-categories')->group(function () {

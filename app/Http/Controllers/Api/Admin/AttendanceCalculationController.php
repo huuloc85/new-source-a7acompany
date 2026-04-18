@@ -43,7 +43,16 @@ class AttendanceCalculationController extends BaseController
                     'employees.company',
                 ]);
 
-            $arrayDate = explode(',', $request->input('filter.date_between'));
+            $dateBetweenFilter = $request->input('filter.date_between');
+            if (is_array($dateBetweenFilter)) {
+                $arrayDate = array_values(array_filter($dateBetweenFilter, function ($date) {
+                    return $date !== null && $date !== '';
+                }));
+            } elseif (is_string($dateBetweenFilter) && trim($dateBetweenFilter) !== '') {
+                $arrayDate = array_map('trim', explode(',', $dateBetweenFilter));
+            } else {
+                $arrayDate = [];
+            }
             $originalStartDate = null;
             $originalEndDate = null;
 
@@ -65,6 +74,16 @@ class AttendanceCalculationController extends BaseController
                     'employees.name',
                     'employees.company',
                     AllowedFilter::callback('date_between', function ($query, $value) {
+                        if (is_string($value) && trim($value) !== '') {
+                            $value = array_map('trim', explode(',', $value));
+                        }
+
+                        if (is_array($value)) {
+                            $value = array_values(array_filter($value, function ($date) {
+                                return $date !== null && $date !== '';
+                            }));
+                        }
+
                         if (is_array($value) && count($value) === 2) {
                             // Extend range by 2 days on each side for calculation
                             // This ensures we have enough data for shift detection and hnhc='X' cases
