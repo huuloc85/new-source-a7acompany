@@ -23,7 +23,6 @@ class SalaryOfficialVVPManagerImport implements WithMultipleSheets
     {
         return [
             'Danh muc' => new SalaryOfficialVVPCategoryImport($this->salaryManagerId),
-            'Bang Thanh Toan Luong' => new SalaryOfficialVVPPayrollImport($this->salaryManagerId),
             'Bảng tính toán' => new SalaryOfficialVVPDetailImport($this->salaryManagerId),
             ' Bảng nhập công' => new SalaryOfficialVVPTimekepingImport($this->salaryManagerId, $this->startDate, $this->endDate),
         ];

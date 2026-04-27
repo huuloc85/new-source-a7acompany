@@ -88,6 +88,7 @@ class SalaryOfficialVVPCategoryImport implements HasReferencesToOtherSheets, Ski
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Category-VVP', $e->getMessage(), $e->getLine());
             Log::error('errors cate::: '.$e->getMessage().' getLine'.$e->getLine());
+            throw $e;
         }
     }
 

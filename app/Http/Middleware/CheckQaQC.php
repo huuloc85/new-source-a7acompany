@@ -15,7 +15,17 @@ class CheckQaQC
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth()->user()->role->role_name == 'Admin' || Auth()->user()->role->role_name == 'QA-QC' || Auth()->user()->role->role_name == 'QC' || Auth()->user()->role->role_name == 'Super Admin') {
+        $user = Auth()->user();
+        $roleName = strtolower(trim($user->role->role_name ?? ''));
+        $allowedRoles = [
+            'admin',
+            'qa-qc',
+            'qc',
+            'super admin',
+            'tổ trưởng qc',
+        ];
+
+        if (in_array($roleName, $allowedRoles, true) || $user->role_id === 23) {
             return $next($request);
         }
         toast('Bạn không có quyền truy cập!', 'error', 'top-right');

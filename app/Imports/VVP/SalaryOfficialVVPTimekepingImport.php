@@ -3,33 +3,46 @@
 namespace App\Imports\VVP;
 
 use App\Helpers\LogHelper;
-use App\Models\Employee;
+use App\Imports\Traits\OptimizesSalaryImport;
 use App\Models\SalaryOfficialVVP;
 use App\Models\SalaryOfficialVVPTimekeeping;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
-use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
-, WithCalculatedFormulas{
+class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithChunkReading, WithEvents, WithStartRow, WithValidation, WithCalculatedFormulas
+{
+    use OptimizesSalaryImport;
+
     public $salaryManagerId;
 
     public $startDate;
 
     public $endDate;
 
+    private $employeeMap = [];
+    private $salaryMap = [];
+
     public function __construct($salaryManagerId, $startDate, $endDate)
     {
         $this->salaryManagerId = $salaryManagerId;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+    }
+
+    public function chunkSize(): int
+    {
+        return 300; // Smaller chunk for timekeeping due to nested inserts
     }
 
     public function sheet(): string
@@ -39,21 +52,48 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
 
     public function array(array $rows)
     {
-        // dd($rows);
         try {
             $dateStart = Carbon::parse($this->startDate);
             $dateEnd = Carbon::parse($this->endDate);
+
+            // Preload data once before processing
+            if (empty($this->employeeMap)) {
+                $this->employeeMap = $this->getPreloadedEmployees();
+            }
+            if (empty($this->salaryMap) && $this->salaryManagerId) {
+                $this->salaryMap = $this->getPreloadedSalaryRecords(SalaryOfficialVVP::class, $this->salaryManagerId);
+            }
+
+            $insertTimekeepings = [];
+            $updates = [];
+            $now = now();
+            $updateColumns = [
+                'total_day_offical',
+                'total_night_offical',
+                'total_overtime_offical',
+                'workday_count_trial',
+                'worknight_count_trial',
+                'overtime_day_count_trial',
+                'allowance_rice_day_timekeeping',
+                'allowance_rice_night_timekeeping',
+                'allowance_overtime_timekeeping',
+                'holidays_count',
+                'paid_holidays_count',
+                'daysleave_allowed_timekeeping',
+                'daysleave_notallowed_timekeeping',
+                'updated_at',
+            ];
+
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('id', $row[1])->orWhere(\Illuminate\Support\Facades\DB::raw("TRIM(LEADING '0' FROM id)"), ltrim($row[1], '0'))->first();
+                    $employee = $this->getEmployeeFast($row[1], $this->employeeMap);
                     if ($employee != null && $this->salaryManagerId != null) {
-                        $salaryManager = SalaryOfficialVVP::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
+                        $salaryManager = $this->getSalaryRecordFast($this->salaryMap, $employee->id);
                         if ($salaryManager) {
                             $countDate = $dateEnd->diffInDays($dateStart) + 1;
                             $limit = $countDate * 3 + 13;
                             $date = $this->startDate;
 
-                            $insertTimekeepings = [];
                             // chấm công chi tiết
                             for ($i = 13; $i < $limit; $i += 3) {
                                 $insertTimekeepings[] = [
@@ -62,44 +102,52 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
                                     'timekeeping_day' => (is_numeric($row[$i] ?? null) ? (float)$row[$i] : null),                // số giờ làm ngày
                                     'timekeeping_night' => (is_numeric($row[$i + 1] ?? null) ? (float)$row[$i + 1] : null),          // số giờ làm đêm
                                     'timekeeping_overtime' => (is_numeric($row[$i + 2] ?? null) ? (float)$row[$i + 2] : null),       // số giờ tăng ca
-                                    'created_at' => \Carbon\Carbon::now(),
-                                    'updated_at' => \Carbon\Carbon::now(),
+                                    'created_at' => $now,
+                                    'updated_at' => $now,
                                 ];
                                 $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
                             }
-                            SalaryOfficialVVPTimekeeping::insert($insertTimekeepings);
 
-                            // thông số chấm công tổng quát
-                            $salaryManager->total_day_offical = (is_numeric($row[4] ?? null) ? (float)$row[4] : null);                           // tổng ngày
-                            $salaryManager->total_night_offical = (is_numeric($row[5] ?? null) ? (float)$row[5] : null);                         // tổng đêm
-                            $salaryManager->total_overtime_offical = (is_numeric($row[6] ?? null) ? (float)$row[6] : null);                      // tổng tăng ca
-                            $salaryManager->workday_count_trial = (is_numeric($row[7] ?? null) ? (float)$row[7] : null);                         // số công ngày
-                            $salaryManager->worknight_count_trial = (is_numeric($row[8] ?? null) ? (float)$row[8] : null);                       // số công đêm
-                            $salaryManager->overtime_day_count_trial = (is_numeric($row[9] ?? null) ? (float)$row[9] : null);                    // số ngày tăng ca
-                            $salaryManager->allowance_rice_day_timekeeping = (is_numeric($row[10] ?? null) ? (float)$row[10] : null);             // Phụ cấp tiền cơm ngày
-                            $salaryManager->allowance_rice_night_timekeeping = (is_numeric($row[11] ?? null) ? (float)$row[11] : null);           // Phụ cấp tiền cơm đêm
-                            $salaryManager->allowance_overtime_timekeeping = (is_numeric($row[12] ?? null) ? (float)$row[12] : null);             // phụ cấp tăng ca
-
-                            $salaryManager->holidays_count = (is_numeric($row[106] ?? null) ? (float)$row[106] : null);                             // số ngày nghĩ lễ tết
-                            $salaryManager->paid_holidays_count = (is_numeric($row[107] ?? null) ? (float)$row[107] : null);                        // số ngày phép năm
-                            $salaryManager->daysleave_allowed_timekeeping = (is_numeric($row[108] ?? null) ? (float)$row[108] : null);              // số ngày nghỉ có phép
-                            $salaryManager->daysleave_notallowed_timekeeping = (is_numeric($row[109] ?? null) ? (float)$row[109] : null);           // số ngày nghỉ không phép
-                            $salaryManager->save();
+                            $updates[] = [
+                                'id' => $salaryManager->id,
+                                'salaries_manager_id' => $salaryManager->salaries_manager_id,
+                                'employee_id' => $salaryManager->employee_id,
+                                'total_day_offical' => $this->numericValue($row[4] ?? null),
+                                'total_night_offical' => $this->numericValue($row[5] ?? null),
+                                'total_overtime_offical' => $this->numericValue($row[6] ?? null),
+                                'workday_count_trial' => $this->numericValue($row[7] ?? null),
+                                'worknight_count_trial' => $this->numericValue($row[8] ?? null),
+                                'overtime_day_count_trial' => $this->numericValue($row[9] ?? null),
+                                'allowance_rice_day_timekeeping' => $this->numericValue($row[10] ?? null),
+                                'allowance_rice_night_timekeeping' => $this->numericValue($row[11] ?? null),
+                                'allowance_overtime_timekeeping' => $this->numericValue($row[12] ?? null),
+                                'holidays_count' => $this->numericValue($row[106] ?? null),
+                                'paid_holidays_count' => $this->numericValue($row[107] ?? null),
+                                'daysleave_allowed_timekeeping' => $this->numericValue($row[108] ?? null),
+                                'daysleave_notallowed_timekeeping' => $this->numericValue($row[109] ?? null),
+                                'created_at' => $salaryManager->created_at,
+                                'updated_at' => $now,
+                            ];
                         }
                     }
                 }
             }
+
+            foreach (array_chunk($insertTimekeepings, 1000) as $chunk) {
+                SalaryOfficialVVPTimekeeping::insert($chunk);
+            }
+            $this->batchUpsertById(SalaryOfficialVVP::class, $updates, $updateColumns);
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-TimeKeeping-VVP', $e->getMessage(), $e->getLine());
             Log::error('errors time::: '.$e->getMessage().' getLine'.$e->getLine());
+            throw $e;
         }
     }
 
     // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('id')->toArray();
-        $listCode = array_merge($listCode, array_map(function($id) { return ltrim($id, '0'); }, $listCode));
+        $listCode = $this->getValidEmployeeIds();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
@@ -112,12 +160,10 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
             '10' => ['nullable', 'numeric'],
             '11' => ['nullable', 'numeric'],
             '12' => ['nullable', 'numeric'],
-            '103' => ['nullable', 'numeric'],
-            '104' => ['nullable', 'numeric'],
-            '105' => ['nullable', 'numeric'],
             '106' => ['nullable', 'numeric'],
             '107' => ['nullable', 'numeric'],
             '108' => ['nullable', 'numeric'],
+            '109' => ['nullable', 'numeric'],
         ];
     }
 
@@ -138,12 +184,10 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
             '10.numeric' => 'Phụ cấp tiền cơm ngày không đúng định dạng!',
             '11.numeric' => 'Phụ cấp tiền cơm đêm không đúng định dạng!',
             '12.numeric' => 'Phụ cấp tăng ca không đúng định dạng!',
-            '103.numeric' => 'Số ngày nghĩ lễ tết không đúng định dạng!',
-            '104.numeric' => 'Số ngày phép năm không đúng định dạng!',
-            '105.numeric' => 'Số ngày hết việc không đúng định dạng!',
-            '106.numeric' => 'Tăng cường ngày không đúng định dạng!',
-            '107.numeric' => 'Tăng cường đêm không đúng định dạng!',
-            '108.numeric' => 'Phép năm lũy kế thừa tháng này không đúng định dạng!',
+            '106.numeric' => 'Số ngày nghĩ lễ tết không đúng định dạng!',
+            '107.numeric' => 'Số ngày phép năm không đúng định dạng!',
+            '108.numeric' => 'Số ngày nghỉ có phép không đúng định dạng!',
+            '109.numeric' => 'Số ngày nghỉ không phép không đúng định dạng!',
         ];
     }
 
@@ -164,5 +208,21 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
         foreach ($failures as $key => $failure) {
             LogHelper::saveLog('Import-VVP-Chấm công', $failure->errors()[0], $failure->row());
         }
+    }
+
+    /**
+     * Register events for the import process
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterImport::class => function() {
+                $this->clearEmployeeCache();
+                if ($this->salaryManagerId) {
+                    $this->clearSalaryCache(SalaryOfficialVVP::class, $this->salaryManagerId);
+                }
+                $this->clearValidationCache();
+            },
+        ];
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Imports\A7A;
 
 use App\Helpers\LogHelper;
-use App\Models\Employee;
+use App\Imports\Traits\OptimizesSalaryImport;
 use App\Models\SalaryOfficialA7A;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
@@ -11,20 +11,33 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
+class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithChunkReading, WithEvents, WithStartRow, WithValidation
 , WithCalculatedFormulas{
+    use OptimizesSalaryImport;
+
     public $roleIgnore;
 
     public $salaryManagerId;
+
+    private $employeeMap = [];
+    private $salaryMap = [];
 
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
         $this->roleIgnore = [6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 46, 50, 52, 54, 56, 58, 60, 62, 64, 67, 69, 72, 75, 78, 81, 84, 86, 88];
+    }
+
+    public function chunkSize(): int
+    {
+        return 300;
     }
 
     public function sheet(): string
@@ -36,11 +49,21 @@ class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, Skips
     {
         // dd($rows);
         try {
+            if (empty($this->employeeMap)) {
+                $this->employeeMap = $this->getPreloadedEmployees();
+            }
+            if (empty($this->salaryMap) && $this->salaryManagerId) {
+                $this->salaryMap = $this->getPreloadedSalaryRecords(SalaryOfficialA7A::class, $this->salaryManagerId);
+            }
+
+            $updates = [];
+            $now = now();
+
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('id', $row[1])->orWhere(\Illuminate\Support\Facades\DB::raw("TRIM(LEADING '0' FROM id)"), ltrim($row[1], '0'))->first();
+                    $employee = $this->getEmployeeFast($row[1], $this->employeeMap);
                     if ($employee != null && $this->salaryManagerId != null) {
-                        $salaryManager = SalaryOfficialA7A::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
+                        $salaryManager = $this->getSalaryRecordFast($this->salaryMap, $employee->id);
                         if ($salaryManager) {
                             // detail
                             $salaryManager->number_of_work_days_trial = (is_numeric($row[4] ?? null) ? (float)$row[4] : null);                            // Số công ngày (thử việc)
@@ -129,14 +152,26 @@ class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, Skips
                             $salaryManager->actually_received = (is_numeric($row[87] ?? null) ? (float)$row[87] : null);                                          // thực lãnh
                             $salaryManager->forms_of_payment = (is_numeric($row[88] ?? null) ? (float)$row[88] : null);                                           // hình thức thanh toán
                             $salaryManager->company_insurance_detail = (is_numeric($row[89] ?? null) ? (float)$row[89] : null);                                   // BHXH (21.5%) công ty đóng cho NLĐ
-                            $salaryManager->save();
+                            $salaryManager->salary_total = $salaryManager->total_income;
+                            $salaryManager->insurance_payroll = $salaryManager->insurance_detail;
+                            $salaryManager->advance_money_payroll = $salaryManager->advance_money;
+                            $salaryManager->company_insurance_payroll = $salaryManager->company_insurance_detail;
+                            $salaryManager->KPI_Subtraction_payroll = $salaryManager->kpi_subtraction;
+                            $salaryManager->previous_period_debt_payroll = $salaryManager->previous_period_debt;
+                            $salaryManager->actually_received_payroll = $salaryManager->actually_received;
+                            $attributes = $salaryManager->getAttributes();
+                            $attributes['updated_at'] = $now;
+                            $updates[] = $attributes;
                         }
                     }
                 }
             }
+
+            $this->batchUpsertByIdUsingRecordColumns(SalaryOfficialA7A::class, $updates, 100);
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Detail-A7A', $e->getMessage(), $e->getLine());
             Log::error('errors detail-a7a::: '.$e->getMessage().' getLine'.$e->getLine());
+            throw $e;
         }
     }
 
@@ -150,8 +185,7 @@ class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, Skips
     public function rules(): array
     {
         $rules = [];
-        $listCode = Employee::all()->pluck('id')->toArray();
-        $listCode = array_merge($listCode, array_map(function($id) { return ltrim($id, '0'); }, $listCode));
+        $listCode = $this->getValidEmployeeIds();
         $rules['1'] = ['required', 'in:'.implode(',', $listCode)];
         for ($i = 4; $i <= 89; $i++) {
             if (! in_array($i, $this->roleIgnore)) {
@@ -211,5 +245,18 @@ class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, Skips
         foreach ($failures as $key => $failure) {
             LogHelper::saveLog('Import-A7A-Chi tiết', $failure->errors()[0], $failure->row());
         }
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterImport::class => function() {
+                $this->clearEmployeeCache();
+                if ($this->salaryManagerId) {
+                    $this->clearSalaryCache(SalaryOfficialA7A::class, $this->salaryManagerId);
+                }
+                $this->clearValidationCache();
+            },
+        ];
     }
 }

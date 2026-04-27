@@ -23,7 +23,6 @@ class SalaryOfficialA7AManagerImport implements WithMultipleSheets
     {
         return [
             'Danh muc' => new SalaryOfficialA7ACategoryImport($this->salaryManagerId),
-            'Bang Thanh Toan Luong' => new SalaryOfficialA7APayrollImport($this->salaryManagerId),
             'Bảng tính toán' => new SalaryOfficialA7ADetailImport($this->salaryManagerId),
             ' Bảng nhập công' => new SalaryOfficialA7ATimekepingImport($this->salaryManagerId, $this->startDate, $this->endDate),
         ];

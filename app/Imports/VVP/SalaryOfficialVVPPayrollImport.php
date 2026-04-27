@@ -3,25 +3,38 @@
 namespace App\Imports\VVP;
 
 use App\Helpers\LogHelper;
-use App\Models\Employee;
+use App\Imports\Traits\OptimizesSalaryImport;
 use App\Models\SalaryOfficialVVP;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
-use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Validators\Failure;
 
-class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
-, WithCalculatedFormulas{
+class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithChunkReading, WithEvents, WithStartRow, WithValidation, WithCalculatedFormulas
+{
+    use OptimizesSalaryImport;
+
     public $salaryManagerId;
+
+    private $employeeMap = [];
+    private $salaryMap = [];
 
     public function __construct($salaryManagerId)
     {
         $this->salaryManagerId = $salaryManagerId;
+    }
+
+    public function chunkSize(): int
+    {
+        return 500; // Process 500 rows at a time
     }
 
     public function sheet(): string
@@ -31,38 +44,78 @@ class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, Skip
 
     public function array(array $rows)
     {
-        // dd($rows);
         try {
+            // Preload data once before processing
+            if (empty($this->employeeMap)) {
+                $this->employeeMap = $this->getPreloadedEmployees();
+            }
+            if (empty($this->salaryMap) && $this->salaryManagerId) {
+                $this->salaryMap = $this->getPreloadedSalaryRecords(SalaryOfficialVVP::class, $this->salaryManagerId);
+            }
+
+            $updates = [];
+            $now = now();
+            $updateColumns = [
+                'salary_total',
+                'insurance_payroll',
+                'advance_money_payroll',
+                'company_insurance_payroll',
+                'KPI_Subtraction_payroll',
+                'previous_period_debt_payroll',
+                'actually_received_payroll',
+                'updated_at',
+            ];
+
             foreach ($rows as $row) {
                 if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('id', $row[1])->orWhere(\Illuminate\Support\Facades\DB::raw("TRIM(LEADING '0' FROM id)"), ltrim($row[1], '0'))->first();
+                    $employee = $this->getEmployeeFast($row[1], $this->employeeMap);
                     if ($employee != null && $this->salaryManagerId != null) {
-                        $salaryManager = SalaryOfficialVVP::where('salaries_manager_id', $this->salaryManagerId)->where('employee_id', $employee->id)->first();
+                        $salaryManager = $this->getSalaryRecordFast($this->salaryMap, $employee->id);
                         if ($salaryManager) {
-                            // bảng lương
-                            $salaryManager->salary_total = (is_numeric($row[4] ?? null) ? (float)$row[4] : null);                      // tổng lương
-                            $salaryManager->insurance_payroll = (is_numeric($row[5] ?? null) ? (float)$row[5] : null);                 // trừ bảo hiểm
-                            $salaryManager->advance_money_payroll = (is_numeric($row[6] ?? null) ? (float)$row[6] : null);             // tạm ứng
-                            $salaryManager->company_insurance_payroll = (is_numeric($row[7] ?? null) ? (float)$row[7] : null);         // bảo hiểm công ty đóng
-                            $salaryManager->KPI_Subtraction_payroll = (is_numeric($row[8] ?? null) ? (float)$row[8] : null);           // trừ KPI
-                            $salaryManager->previous_period_debt_payroll = (is_numeric($row[9] ?? null) ? (float)$row[9] : null);      // Nợ kỳ trước
-                            $salaryManager->actually_received_payroll = (is_numeric($row[10] ?? null) ? (float)$row[10] : null);        // thực lãnh detail
-                            $salaryManager->save();
+                            $updates[] = [
+                                'id' => $salaryManager->id,
+                                'salaries_manager_id' => $salaryManager->salaries_manager_id,
+                                'employee_id' => $salaryManager->employee_id,
+                                'salary_total' => $this->numericValue($row[4] ?? null),
+                                'insurance_payroll' => $this->numericValue($row[5] ?? null),
+                                'advance_money_payroll' => $this->numericValue($row[6] ?? null),
+                                'company_insurance_payroll' => $this->numericValue($row[7] ?? null),
+                                'KPI_Subtraction_payroll' => $this->numericValue($row[8] ?? null),
+                                'previous_period_debt_payroll' => $this->numericValue($row[9] ?? null),
+                                'actually_received_payroll' => $this->numericValue($row[10] ?? null),
+                                'created_at' => $salaryManager->created_at,
+                                'updated_at' => $now,
+                            ];
                         }
                     }
                 }
             }
+
+            $this->batchUpsertById(SalaryOfficialVVP::class, $updates, $updateColumns);
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-VVP-Bảng lương', $e->getMessage(), $e->getLine());
             Log::error('errors payroll::: '.$e->getMessage().' getLine'.$e->getLine());
+            throw $e;
         }
+    }
+
+    public function isEmptyWhen(array $row): bool
+    {
+        if (empty($row[1])) {
+            return true;
+        }
+
+        if (empty($this->employeeMap)) {
+            $this->employeeMap = $this->getPreloadedEmployees();
+        }
+
+        return $this->getEmployeeFast($row[1], $this->employeeMap) === null;
     }
 
     // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('id')->toArray();
-        $listCode = array_merge($listCode, array_map(function($id) { return ltrim($id, '0'); }, $listCode));
+        $listCode = $this->getValidEmployeeIds();
 
         return [
             '1' => ['required', 'in:'.implode(',', $listCode)],
@@ -107,7 +160,22 @@ class SalaryOfficialVVPPayrollImport implements HasReferencesToOtherSheets, Skip
     {
         foreach ($failures as $key => $failure) {
             LogHelper::saveLog('Import-VVP-Bảng lương', $failure->errors()[0], $failure->row());
-            break;
         }
+    }
+
+    /**
+     * Register events for the import process
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterImport::class => function() {
+                $this->clearEmployeeCache();
+                if ($this->salaryManagerId) {
+                    $this->clearSalaryCache(SalaryOfficialVVP::class, $this->salaryManagerId);
+                }
+                $this->clearValidationCache();
+            },
+        ];
     }
 }

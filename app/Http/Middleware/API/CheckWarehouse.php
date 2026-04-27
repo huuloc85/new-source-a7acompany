@@ -23,12 +23,16 @@ class CheckWarehouse
             'kho',
             'super admin',
             'co admin',
+            'tổ trưởng kho',
         ];
 
         if (
             $user &&
             isset($user->role) &&
-            in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true)
+            (
+                in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true) ||
+                $user->role_id === 24
+            )
         ) {
             return $next($request);
         }

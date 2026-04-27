@@ -23,12 +23,16 @@ class CheckQcQa
             'qc',
             'super admin',
             'co admin',
+            'tổ trưởng qc',
         ];
 
         if (
             $user &&
             isset($user->role) &&
-            in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true)
+            (
+                in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true) ||
+                $user->role_id === 23
+            )
         ) {
             return $next($request);
         }

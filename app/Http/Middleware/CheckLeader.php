@@ -15,7 +15,20 @@ class CheckLeader
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth()->user()->role->role_name == 'Super Admin' || Auth()->user()->role->role_name == 'Admin' || Auth()->user()->role->role_name == 'Tổ trưởng ngoại quan' || Auth()->user()->role->role_name == 'Tổ phó sản xuất' || Auth()->user()->role->role_name == 'Tổ trưởng sản xuất') {
+        $user = Auth()->user();
+        $roleName = strtolower(trim($user->role->role_name ?? ''));
+        $allowedRoles = [
+            'super admin',
+            'admin',
+            'tổ trưởng ngoại quan',
+            'tổ phó sản xuất',
+            'tổ trưởng sản xuất',
+            'tổ trưởng qc',
+            'tổ trưởng kho',
+        ];
+        $allowedRoleIds = [23, 24];
+
+        if (in_array($roleName, $allowedRoles, true) || in_array($user->role_id, $allowedRoleIds, true)) {
             return $next($request);
         }
         toast('Bạn không có quyền truy cập!', 'error', 'top-right');

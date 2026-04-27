@@ -15,7 +15,16 @@ class CheckWarehouse
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth()->user()->role->role_name == 'Admin' || Auth()->user()->role->role_name == 'Kho' || Auth()->user()->role->role_name == 'Super Admin') {
+        $user = Auth()->user();
+        $roleName = strtolower(trim($user->role->role_name ?? ''));
+        $allowedRoles = [
+            'admin',
+            'kho',
+            'super admin',
+            'tổ trưởng kho',
+        ];
+
+        if (in_array($roleName, $allowedRoles, true) || $user->role_id === 24) {
             return $next($request);
         }
         toast('Bạn không có quyền truy cập!', 'error', 'top-right');

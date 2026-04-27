@@ -25,12 +25,18 @@ class CheckLeader
             'tổ trưởng ngoại quan',
             'tổ phó sản xuất',
             'tổ trưởng sản xuất',
+            'tổ trưởng qc',
+            'tổ trưởng kho',
         ];
+        $allowedRoleIds = [23, 24];
 
         if (
             $user &&
             isset($user->role) &&
-            in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true)
+            (
+                in_array(strtolower(trim($user->role->role_name)), $allowedRoles, true) ||
+                in_array($user->role_id, $allowedRoleIds, true)
+            )
         ) {
             return $next($request);
         }

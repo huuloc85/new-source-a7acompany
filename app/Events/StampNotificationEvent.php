@@ -25,7 +25,7 @@ class StampNotificationEvent implements ShouldBroadcastNow
 
     public function broadcastAs(): string
     {
-        return 'stamp.created.'.$this->id;
+        return 'stamp.created';
     }
 
     public function broadcastWith(): array
@@ -33,6 +33,7 @@ class StampNotificationEvent implements ShouldBroadcastNow
         return [
             'message' => "Có yêu cầu in tem mới cho sản phẩm {$this->sendStamp->product->name} từ nhân viên <strong>{$this->sendStamp->employee->name}</strong>",
             'recordId' => $this->sendStamp->id,
+            'roleId' => $this->id,
             'meta' => $this->sendStamp,
             'sent_at' => now()->toISOString(),
         ];

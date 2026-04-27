@@ -88,6 +88,7 @@ class SalaryOfficialA7ACategoryImport implements HasReferencesToOtherSheets, Ski
         } catch (\Exception $e) {
             LogHelper::saveLog('Import-Category-A7A', $e->getMessage(), $e->getLine());
             Log::error('errors cate-a7a::: '.$e->getMessage().' getLine'.$e->getLine());
+            throw $e;
         }
     }
 
