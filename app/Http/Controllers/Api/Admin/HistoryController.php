@@ -43,7 +43,18 @@ class HistoryController extends Controller
             }
 
             $totalHistoryCurrentPage = $loginHistoryQuery->sum('login_count');
-            $loginHistory = $loginHistoryQuery->paginate(LoginHistory::paginate);
+            $loginHistory = $loginHistoryQuery
+                ->latest('updated_at')
+                ->paginate(LoginHistory::paginate)
+                ->through(function (LoginHistory $history) {
+                    $lastActivityAt = $history->updated_at ?: $history->created_at;
+
+                    $history->last_activity_at = $lastActivityAt?->format('Y-m-d H:i:s');
+                    $history->last_activity_date = $lastActivityAt?->format('d/m/Y');
+                    $history->last_activity_time = $lastActivityAt?->format('H:i:s');
+
+                    return $history;
+                });
             $totalHistoryOverall = LoginHistory::sum('login_count');
 
             $activityTypes = LoginHistory::distinct()->pluck('activity_type');

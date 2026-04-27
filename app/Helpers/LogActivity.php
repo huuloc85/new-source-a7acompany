@@ -7,6 +7,12 @@ use Carbon\Carbon;
 
 class LogActivity
 {
+    private static function touchExistingHistory(LoginHistory $loginHistory): void
+    {
+        LoginHistory::whereKey($loginHistory->getKey())
+            ->increment('login_count', 1, ['updated_at' => Carbon::now()]);
+    }
+
     public static function logViewActivity($user, $activityType, $description)
     {
         $date = Carbon::now()->format('Y-m-d');
@@ -17,7 +23,7 @@ class LogActivity
             ->first();
 
         if ($loginHistory) {
-            $loginHistory->increment('login_count');
+            self::touchExistingHistory($loginHistory);
         } else {
             LoginHistory::create([
                 'employee_id' => $user->id,
@@ -59,7 +65,7 @@ class LogActivity
             ->first();
 
         if ($loginHistory) {
-            $loginHistory->increment('login_count');
+            self::touchExistingHistory($loginHistory);
         } else {
             LoginHistory::create([
                 'employee_id' => $user->id,
