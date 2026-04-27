@@ -148,6 +148,17 @@ trait OptimizesSalaryImport
         return is_numeric($value ?? null) ? (float) $value : null;
     }
 
+    protected function stringValue($value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+
+        return $value !== '' ? $value : null;
+    }
+
     /**
      * Get valid employee IDs for validation (cached)
      */

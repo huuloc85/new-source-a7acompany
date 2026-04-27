@@ -150,7 +150,7 @@ class SalaryOfficialA7ADetailImport implements HasReferencesToOtherSheets, Skips
                             $salaryManager->kpi_subtraction = (is_numeric($row[85] ?? null) ? (float)$row[85] : null);                                           // trừ KPI
                             $salaryManager->kpi_subtraction_notice = (is_numeric($row[86] ?? null) ? (float)$row[86] : null);                                    // trừ KPI Ghi Chú
                             $salaryManager->actually_received = (is_numeric($row[87] ?? null) ? (float)$row[87] : null);                                          // thực lãnh
-                            $salaryManager->forms_of_payment = (is_numeric($row[88] ?? null) ? (float)$row[88] : null);                                           // hình thức thanh toán
+                            $salaryManager->forms_of_payment = $this->stringValue($row[88] ?? null);                                                               // hình thức thanh toán
                             $salaryManager->company_insurance_detail = (is_numeric($row[89] ?? null) ? (float)$row[89] : null);                                   // BHXH (21.5%) công ty đóng cho NLĐ
                             $salaryManager->salary_total = $salaryManager->total_income;
                             $salaryManager->insurance_payroll = $salaryManager->insurance_detail;
