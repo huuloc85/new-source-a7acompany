@@ -20,6 +20,7 @@ class DailyQuantityPO extends Model
         'employee_id',                 // Người nhập số lượng
         'batch_id',                   // UUID nhóm các record import cùng 1 lần
         'file_name',                  // Tên file gốc mà user upload
+        'note',                       // Ghi chú cho lần nhập PO
     ];
 
     // relationship employee

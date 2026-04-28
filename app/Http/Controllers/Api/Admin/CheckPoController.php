@@ -132,6 +132,7 @@ class CheckPoController extends Controller
                         'date' => $batch['date'],
                         'batch_id' => $batchId,
                         'file_name' => $batch['fileName'],
+                        'note' => $batch['note'] ?? null,
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
@@ -213,6 +214,7 @@ class CheckPoController extends Controller
                 'batches' => 'required|array|min:1',
                 'batches.*.date' => 'required|date_format:Y-m-d',
                 'batches.*.fileName' => 'required|string',
+                'batches.*.note' => 'nullable|string',
                 'batches.*.products' => 'required|array|min:1',
                 'batches.*.products.*.quantity' => 'required|integer|min:1',
                 'batches.*.products.*.productId' => 'required|integer|exists:products,id',
@@ -224,6 +226,7 @@ class CheckPoController extends Controller
         $validate = $request->validate([
             'date' => 'required|date_format:Y-m-d',
             'fileName' => 'required|string',
+            'note' => 'nullable|string',
             'products' => 'required|array|min:1',
             'products.*.quantity' => 'required|integer|min:1',
             'products.*.productId' => 'required|integer|exists:products,id',
@@ -232,6 +235,7 @@ class CheckPoController extends Controller
         return [[
             'date' => $validate['date'],
             'fileName' => $validate['fileName'],
+            'note' => $validate['note'] ?? null,
             'products' => $validate['products'],
         ]];
     }
