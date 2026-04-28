@@ -3,11 +3,9 @@
 namespace App\Imports\Celender;
 
 use App\Helpers\LogHelper;
+use App\Imports\Traits\OptimizesCelenderImport;
 use App\Models\CelenderDetailWC;
-use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\HasReferencesToOtherSheets;
-use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -15,76 +13,60 @@ use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Validators\Failure;
 
-class CelenderWCImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
-, WithCalculatedFormulas{
-    public $celenderId;
+class CelenderWCImport implements SkipsEmptyRows, SkipsOnFailure, ToArray, WithStartRow, WithValidation
+{
+    use OptimizesCelenderImport;
 
-    public function __construct($celenderId)
-    {
-        $this->celenderId = $celenderId;
-    }
+    public function __construct(public int $celenderId) {}
 
     public function sheet(): string
     {
-        return 'ĐỔ RÁC WC'; // Đặt tên sheet ở đây
+        return 'ĐỔ RÁC WC';
     }
 
     public function array(array $rows)
     {
         try {
+            $existing = $this->getExistingEmployeeSet(CelenderDetailWC::class, $this->celenderId);
+            $now = now();
+            $insertRows = [];
+
             foreach ($rows as $row) {
-                if ($row[1] != null && $row[1] != '') {
-                    $employee = Employee::where('id', $row[1])->first();
-                    if ($employee != null) {
-                        $checkCelenderDetailWC = CelenderDetailWC::where('celender_id', $this->celenderId)->where('employee_id', $employee->id)->first();
-                        if ($checkCelenderDetailWC == null) {
-                            CelenderDetailWC::create([
-                                'celender_id' => $this->celenderId,
-                                'employee_id' => $employee->id,
-                                'day1' => $row['3'] ?? null,
-                                'day2' => $row['4'] ?? null,
-                                'day3' => $row['5'] ?? null,
-                                'day4' => $row['6'] ?? null,
-                                'day5' => $row['7'] ?? null,
-                            ]);
-                        }
-                    }
+                $employeeId = $this->normalizeEmployeeId($row[1] ?? null);
+                if ($employeeId === null || isset($existing[$employeeId])) {
+                    continue;
                 }
+
+                $insertRows[] = array_merge([
+                    'celender_id' => $this->celenderId,
+                    'employee_id' => $employeeId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ], $this->extractDays($row, 3, 5));
+
+                $existing[$employeeId] = true;
             }
-        } catch (\Exception $e) {
+
+            $this->batchInsert(CelenderDetailWC::class, $insertRows);
+        } catch (\Throwable $e) {
             LogHelper::saveLog('Import-Celender-WC', $e->getMessage(), $e->getLine());
-            Log::error('errors cate::: '.$e->getMessage().' getLine'.$e->getLine());
+            Log::error('Import Celender WC error: '.$e->getMessage().' line '.$e->getLine());
+            throw $e;
         }
     }
 
-    // validate
     public function rules(): array
     {
-        $listCode = Employee::all()->pluck('id')->toArray();
-
         return [
-            '1' => ['required', 'in:'.implode(',', $listCode)],
-            '3' => ['nullable', 'string'],
-            '4' => ['nullable', 'string'],
-            '5' => ['nullable', 'string'],
-            '6' => ['nullable', 'string'],
-            '7' => ['nullable', 'string'],
+            '1' => ['required', 'in:'.implode(',', $this->getValidEmployeeIds())],
         ];
     }
 
-    /**
-     * @return array
-     */
     public function customValidationMessages()
     {
         return [
             '1.required' => 'Mã nhân viên không được để trống!',
             '1.in' => 'Mã nhân viên không tồn tại!',
-            '3.string' => 'Kí hiệu phải là định dạng chuỗi',
-            '4.string' => 'Kí hiệu phải là định dạng chuỗi',
-            '5.string' => 'Kí hiệu phải là định dạng chuỗi',
-            '6.string' => 'Kí hiệu phải là định dạng chuỗi',
-            '7.string' => 'Kí hiệu phải là định dạng chuỗi',
         ];
     }
 
@@ -93,12 +75,9 @@ class CelenderWCImport implements HasReferencesToOtherSheets, SkipsEmptyRows, Sk
         return 7;
     }
 
-    /**
-     * @param  Failure[]  $failures
-     */
     public function onFailure(Failure ...$failures)
     {
-        foreach ($failures as $key => $failure) {
+        foreach ($failures as $failure) {
             LogHelper::saveLog('Import-Celender-WC', $failure->errors()[0], $failure->row());
         }
     }

@@ -53,8 +53,13 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
     public function array(array $rows)
     {
         try {
-            $dateStart = Carbon::parse($this->startDate);
-            $dateEnd = Carbon::parse($this->endDate);
+            $dateStart = Carbon::parse($this->startDate)->startOfDay();
+            $countDate = Carbon::parse($this->endDate)->startOfDay()->diffInDays($dateStart) + 1;
+            $limit = $countDate * 3 + 13;
+            $dateList = [];
+            for ($offset = 0; $offset < $countDate; $offset++) {
+                $dateList[] = $dateStart->copy()->addDays($offset)->format('Y-m-d');
+            }
 
             // Preload data once before processing
             if (empty($this->employeeMap)) {
@@ -90,22 +95,17 @@ class SalaryOfficialVVPTimekepingImport implements HasReferencesToOtherSheets, S
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = $this->getSalaryRecordFast($this->salaryMap, $employee->id);
                         if ($salaryManager) {
-                            $countDate = $dateEnd->diffInDays($dateStart) + 1;
-                            $limit = $countDate * 3 + 13;
-                            $date = $this->startDate;
-
                             // chấm công chi tiết
-                            for ($i = 13; $i < $limit; $i += 3) {
+                            for ($dayIndex = 0, $i = 13; $i < $limit; $i += 3, $dayIndex++) {
                                 $insertTimekeepings[] = [
                                     'salary_official_vvp_id' => $salaryManager->id,
-                                    'timekeeping_date' => $date,                          // ngày chấm công
+                                    'timekeeping_date' => $dateList[$dayIndex],                          // ngày chấm công
                                     'timekeeping_day' => (is_numeric($row[$i] ?? null) ? (float)$row[$i] : null),                // số giờ làm ngày
                                     'timekeeping_night' => (is_numeric($row[$i + 1] ?? null) ? (float)$row[$i + 1] : null),          // số giờ làm đêm
                                     'timekeeping_overtime' => (is_numeric($row[$i + 2] ?? null) ? (float)$row[$i + 2] : null),       // số giờ tăng ca
                                     'created_at' => $now,
                                     'updated_at' => $now,
                                 ];
-                                $date = date('Y-m-d', strtotime('+1 day', strtotime($date)));
                             }
 
                             $updates[] = [

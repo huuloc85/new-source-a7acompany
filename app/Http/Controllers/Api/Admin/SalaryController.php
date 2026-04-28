@@ -258,8 +258,6 @@ class SalaryController extends BaseController
 
     public function addSalary(Request $request)
     {
-        set_time_limit(0);
-        ini_set('memory_limit', '-1');
         DB::beginTransaction();
         try {
             $validated = $request->validate(
