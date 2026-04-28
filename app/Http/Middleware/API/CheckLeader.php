@@ -27,8 +27,9 @@ class CheckLeader
             'tổ trưởng sản xuất',
             'tổ trưởng qc',
             'tổ trưởng kho',
+            'tổ trưởng khuôn',
         ];
-        $allowedRoleIds = [23, 24];
+        $allowedRoleIds = [23, 24, 25];
 
         if (
             $user &&

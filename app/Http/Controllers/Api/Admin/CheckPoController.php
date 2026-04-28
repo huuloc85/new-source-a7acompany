@@ -324,43 +324,74 @@ class CheckPoController extends Controller
 
     public function deleteBatch(string $batchId)
     {
+        DB::beginTransaction();
         try {
             $records = DailyQuantityPO::where('batch_id', $batchId)->get();
             $count = $records->count();
 
             if ($count === 0) {
+                DB::rollBack();
+
                 return response()->json(['message' => 'Batch không tồn tại'], 404);
             }
 
             // Collect affected dates for recalculating totals
-            $affectedDates = $records->pluck('date')->unique();
+            $affectedDates = $records->pluck('date')->unique()->values()->all();
 
             // Delete all records in the batch
             DailyQuantityPO::where('batch_id', $batchId)->delete();
 
             // Update TotalDailyQuantityPO for each affected date
-            foreach ($affectedDates as $date) {
-                $totalDailyQuantities = TotalDailyQuantityPO::where('date', $date)->get();
-                foreach ($totalDailyQuantities as $totalDailyQuantity) {
-                    $remainingQuantity = DailyQuantityPO::where('product_id', $totalDailyQuantity->product_id)
-                        ->whereDate('date', $date)
-                        ->sum('quantity');
-                    $totalDailyQuantity->totalQuan = $remainingQuantity;
-                    $totalDailyQuantity->save();
-                }
-            }
+            $this->syncTotalDailyPO($affectedDates);
+
+            DB::commit();
 
             return response()->json([
-                'message' => "Đã xóa {$count} records trong batch",
+                'message' => "Đã xóa {$count} PO trong file import",
                 'deleted_count' => $count,
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return HandleError::handle($th);
+        }
+    }
+
+    public function deleteAll()
+    {
+        DB::beginTransaction();
+        try {
+            $affectedDates = DailyQuantityPO::select('date')->distinct()->pluck('date')->all();
+            $count = DailyQuantityPO::count();
+
+            if ($count === 0) {
+                DB::rollBack();
+
+                return response()->json([
+                    'message' => 'Hiện tại không có PO để xoá',
+                    'deleted_count' => 0,
+                ], 200);
+            }
+
+            DailyQuantityPO::query()->delete();
+            $this->syncTotalDailyPO($affectedDates);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => "Đã xóa tất cả {$count} PO",
+                'deleted_count' => $count,
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
             return HandleError::handle($th);
         }
     }
 
     public function deletePO($id)
     {
+        DB::beginTransaction();
         try {
             // Find and get the record in DailyQuantityPO to delete
             $dailyQuantity = DailyQuantityPO::findOrFail($id);
@@ -370,22 +401,33 @@ class CheckPoController extends Controller
             $dailyQuantity->delete();
 
             // Update the records in TotalDailyQuantityPo for the specified date
-            $totalDailyQuantities = TotalDailyQuantityPO::where('date', $date)->get();
-            foreach ($totalDailyQuantities as $totalDailyQuantity) {
-                $remainingDailyQuantities = DailyQuantityPO::where('product_id', $totalDailyQuantity->product_id)
-                    ->whereDate('date', $date)
-                    ->get();
-                $totalQuantity = $remainingDailyQuantities->sum('quantity');
-                $totalDailyQuantity->totalQuan = $totalQuantity;
-                $totalDailyQuantity->save();
-            }
+            $this->syncTotalDailyPO([$date]);
+
+            DB::commit();
 
             return response()->json([
                 'message' => 'Đã xoá thành công sản lượng PO và cập nhật lại tổng sản lượng.',
                 'success' => true,
             ], 200);
         } catch (\Throwable $th) {
+            DB::rollBack();
+
             return HandleError::handle($th);
+        }
+    }
+
+    private function syncTotalDailyPO(array $dates): void
+    {
+        foreach (array_filter($dates) as $date) {
+            $totalDailyQuantities = TotalDailyQuantityPO::whereDate('date', $date)->get();
+
+            foreach ($totalDailyQuantities as $totalDailyQuantity) {
+                $totalDailyQuantity->totalQuan = DailyQuantityPO::where('product_id', $totalDailyQuantity->product_id)
+                    ->where('status', $totalDailyQuantity->status)
+                    ->whereDate('date', $date)
+                    ->sum('quantity');
+                $totalDailyQuantity->save();
+            }
         }
     }
 }

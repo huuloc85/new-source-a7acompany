@@ -302,6 +302,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/inventory', [CheckPoController::class, 'addStockQuantityInventory']);
         Route::get('/history', [CheckPoController::class, 'getPoHistory']);
         Route::put('/', [CheckPoController::class, 'updatePO']);
+        Route::delete('/all', [CheckPoController::class, 'deleteAll']);
         Route::delete('/batch/{batchId}', [CheckPoController::class, 'deleteBatch']);
         Route::delete('/{id}', [CheckPoController::class, 'deletePO']);
     });
