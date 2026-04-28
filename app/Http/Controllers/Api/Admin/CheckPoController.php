@@ -109,67 +109,89 @@ class CheckPoController extends Controller
     {
         DB::beginTransaction();
         try {
-            $validate = $request->validate([
-                'date' => 'required|date_format:Y-m-d',
-                'fileName' => 'required|string',
-                'products' => 'required|array',
-                'products.*.quantity' => 'required|integer|min:1',
-                'products.*.productId' => 'required|integer|exists:products,id',
-            ]);
-
-            $date = $validate['date'];
-            $fileName = $validate['fileName'];
+            $batches = $this->validatePoExportBatches($request);
             $status = 8;
             $employeeId = Auth::id();
 
-            // Tạo batch_id chung cho tất cả records trong request này
+            // Tạo batch_id chung cho tất cả records trong request này, kể cả bulk import.
             $batchId = Str::uuid()->toString();
+            $now = Carbon::now();
+            $dailyRows = [];
+            $totalIncrements = [];
 
-            $results = collect($validate['products'])->map(function ($product) use ($date, $status, $employeeId, $batchId, $fileName) {
-                $productId = $product['productId'];
-                $quantity = $product['quantity'];
+            foreach ($batches as $batch) {
+                foreach ($batch['products'] as $product) {
+                    $productId = $product['productId'];
+                    $quantity = $product['quantity'];
 
-                // Always create a new DailyQuantityPO record
-                $dailyPo = DailyQuantityPO::create([
-                    'product_id' => $productId,
-                    'employee_id' => $employeeId,
-                    'quantity' => $quantity,
-                    'status' => $status,
-                    'date' => $date,
-                    'batch_id' => $batchId,
-                    'file_name' => $fileName,
-                ]);
-
-                // Update or create total daily PO
-                $totalDailyPO = TotalDailyQuantityPO::where('product_id', $productId)
-                    ->where('date', $date)
-                    ->where('status', $status)
-                    ->first();
-
-                if ($totalDailyPO) {
-                    $totalDailyPO->totalQuan += $quantity;
-                    $totalDailyPO->save();
-                } else {
-                    $totalDailyPO = TotalDailyQuantityPO::create([
+                    $dailyRows[] = [
                         'product_id' => $productId,
-                        'date' => $date,
+                        'employee_id' => $employeeId,
+                        'quantity' => $quantity,
                         'status' => $status,
-                        'totalQuan' => $quantity,
-                    ]);
+                        'date' => $batch['date'],
+                        'batch_id' => $batchId,
+                        'file_name' => $batch['fileName'],
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+
+                    $totalKey = $this->poTotalKey($productId, $batch['date'], $status);
+                    $totalIncrements[$totalKey] ??= [
+                        'product_id' => $productId,
+                        'date' => $batch['date'],
+                        'status' => $status,
+                        'totalQuan' => 0,
+                    ];
+                    $totalIncrements[$totalKey]['totalQuan'] += $quantity;
+                }
+            }
+
+            collect($dailyRows)->chunk(500)->each(function ($rows) {
+                DailyQuantityPO::insert($rows->all());
+            });
+
+            $dates = collect($totalIncrements)->pluck('date')->unique()->values();
+            $productIds = collect($totalIncrements)->pluck('product_id')->unique()->values();
+            $existingTotals = TotalDailyQuantityPO::where('status', $status)
+                ->whereIn('date', $dates)
+                ->whereIn('product_id', $productIds)
+                ->lockForUpdate()
+                ->get()
+                ->keyBy(fn ($total) => $this->poTotalKey($total->product_id, $total->date, $total->status));
+
+            $newTotalRows = [];
+            foreach ($totalIncrements as $key => $increment) {
+                $existingTotal = $existingTotals->get($key);
+
+                if ($existingTotal) {
+                    $existingTotal->totalQuan += $increment['totalQuan'];
+                    $existingTotal->save();
+
+                    continue;
                 }
 
-                return [
-                    'dailyPO' => $dailyPo,
-                    'totalDailyPO' => $totalDailyPO,
+                $newTotalRows[] = [
+                    'product_id' => $increment['product_id'],
+                    'date' => $increment['date'],
+                    'status' => $increment['status'],
+                    'totalQuan' => $increment['totalQuan'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
                 ];
+            }
+
+            collect($newTotalRows)->chunk(500)->each(function ($rows) {
+                TotalDailyQuantityPO::insert($rows->all());
             });
 
             DB::commit();
 
             return response()->json([
                 'message' => 'Cập nhật số lượng thành công!',
-                'count' => $results->count(),
-                'data' => $results,
+                'count' => count($dailyRows),
+                'batch_count' => count($batches),
+                'total_count' => count($totalIncrements),
                 'batch_id' => $batchId,
             ], 200);
         } catch (\Throwable $th) {
@@ -177,6 +199,41 @@ class CheckPoController extends Controller
 
             return HandleError::handle($th);
         }
+    }
+
+    private function poTotalKey(int $productId, string $date, int $status): string
+    {
+        return "{$productId}|{$date}|{$status}";
+    }
+
+    private function validatePoExportBatches(Request $request): array
+    {
+        if ($request->has('batches')) {
+            $validate = $request->validate([
+                'batches' => 'required|array|min:1',
+                'batches.*.date' => 'required|date_format:Y-m-d',
+                'batches.*.fileName' => 'required|string',
+                'batches.*.products' => 'required|array|min:1',
+                'batches.*.products.*.quantity' => 'required|integer|min:1',
+                'batches.*.products.*.productId' => 'required|integer|exists:products,id',
+            ]);
+
+            return $validate['batches'];
+        }
+
+        $validate = $request->validate([
+            'date' => 'required|date_format:Y-m-d',
+            'fileName' => 'required|string',
+            'products' => 'required|array|min:1',
+            'products.*.quantity' => 'required|integer|min:1',
+            'products.*.productId' => 'required|integer|exists:products,id',
+        ]);
+
+        return [[
+            'date' => $validate['date'],
+            'fileName' => $validate['fileName'],
+            'products' => $validate['products'],
+        ]];
     }
 
     public function addStockQuantityInventory(Request $request)
