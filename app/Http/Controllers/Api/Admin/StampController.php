@@ -93,6 +93,26 @@ class StampController extends BaseController
         }
     }
 
+    public function deleteStampHistory($id)
+    {
+        DB::beginTransaction();
+        try {
+            $stamp = SendStamp::findOrFail($id);
+            $stamp->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Stamp history deleted successfully',
+            ], 200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return HandleError::handle($e);
+        }
+    }
+
     public function rejectPrint($id)
     {
         DB::beginTransaction();
@@ -158,7 +178,7 @@ class StampController extends BaseController
                 // Find overlapping stamps
                 $overlappingStamps = array_intersect($requestStamps, $existingStampRange);
 
-                if (!empty($overlappingStamps)) {
+                if (! empty($overlappingStamps)) {
                     $duplicates[] = [
                         'id' => $existingStamp->id,
                         'binStart' => $existingStamp->binStart,
@@ -168,7 +188,7 @@ class StampController extends BaseController
                 }
             }
 
-            $isDuplicate = !empty($duplicates);
+            $isDuplicate = ! empty($duplicates);
 
             return response()->json([
                 'isDuplicate' => $isDuplicate,
@@ -176,7 +196,8 @@ class StampController extends BaseController
                 'message' => $isDuplicate ? 'Phát hiện tem trùng lặp' : 'Không có tem trùng lặp',
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
+
             return response()->json([
                 'error' => 'Validation Error',
                 'message' => 'Missing required fields',
@@ -197,10 +218,6 @@ class StampController extends BaseController
 
     /**
      * Get stamp range from binStart and binCount
-     * 
-     * @param string $binStart
-     * @param int $binCount
-     * @return array
      */
     private function getStampRange(string $binStart, int $binCount): array
     {

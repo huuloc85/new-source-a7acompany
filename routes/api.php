@@ -134,7 +134,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::get('/', [LogController::class, 'index']);
         Route::delete('/{id}', [LogController::class, 'delete']);
         Route::post('/delete-all', [LogController::class, 'deleteAll']);
-        
+
         // System Logs from laravel.log
         Route::get('/system', [LogController::class, 'getSystemLogs']);
         Route::delete('/system/clear', [LogController::class, 'clearSystemLogs']);
@@ -203,6 +203,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/check-duplicate', [StampController::class, 'checkDuplicate']);
         Route::put('/savePrint', [StampController::class, 'savePrint']);
         Route::get('/history', [StampController::class, 'getStampHistory']);
+        Route::middleware(['api.permission'])->delete('/history/{id}', [StampController::class, 'deleteStampHistory']);
         Route::post('/reject/{id}', [StampController::class, 'rejectPrint']);
     });
 
