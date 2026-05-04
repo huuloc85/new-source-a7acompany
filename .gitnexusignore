@@ -1,0 +1,12 @@
+# This backend is API-first; exclude legacy Blade/frontend assets from GitNexus.
+resources/views/
+resources/js/
+resources/css/
+resources/sass/
+public/vendor/
+public/build/
+public/img/
+public/music/
+
+# Keep Laravel entrypoints and backend code indexed.
+!public/index.php

@@ -1,0 +1,30 @@
+{
+    "name": "gitnexus",
+    "version": "1.0.0",
+    "description": "GitNexus MCP integration for local codebase indexing and graph search.",
+    "author": {
+        "name": "GitNexus",
+        "url": "https://github.com/abhigyanpatwari/GitNexus"
+    },
+    "homepage": "https://github.com/abhigyanpatwari/GitNexus",
+    "repository": "https://github.com/abhigyanpatwari/GitNexus",
+    "license": "PolyForm-Noncommercial-1.0.0",
+    "keywords": ["mcp", "code-intelligence", "knowledge-graph"],
+    "skills": "./skills/",
+    "mcpServers": "./.mcp.json",
+    "interface": {
+        "displayName": "GitNexus",
+        "shortDescription": "Index and query this repo through GitNexus MCP.",
+        "longDescription": "Provides a local GitNexus MCP server for repository graph search, symbol context, impact analysis, and change detection.",
+        "developerName": "GitNexus",
+        "category": "Developer Tools",
+        "capabilities": ["Interactive", "Code Intelligence"],
+        "websiteURL": "https://github.com/abhigyanpatwari/GitNexus",
+        "defaultPrompt": [
+            "Use GitNexus to explain the auth flow.",
+            "Check impact before editing this symbol.",
+            "Query the repo graph for stock code."
+        ],
+        "brandColor": "#2563EB"
+    }
+}

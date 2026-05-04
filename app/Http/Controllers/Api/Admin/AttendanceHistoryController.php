@@ -367,6 +367,11 @@ class AttendanceHistoryController extends BaseController
     private function calculateAttendances($data)
     {
         $result = [];
+        $attendanceByEmployeeAndDate = [];
+
+        foreach ($data as $attendance) {
+            $attendanceByEmployeeAndDate[$attendance['employee_id']][$attendance['date']] = $attendance;
+        }
 
         foreach ($data as $attendance) {
             $employee_id = $attendance['employee_id'];
@@ -389,9 +394,7 @@ class AttendanceHistoryController extends BaseController
 
             // Get yesterday's schedule and attendance info
             $yesterday = Carbon::parse($date)->subDay()->format('Y-m-d');
-            $yesterdayEntries = array_filter($data, function ($item) use ($employee_id, $yesterday) {
-                return $item['employee_id'] === $employee_id && $item['date'] === $yesterday;
-            });
+            $yesterdayEntry = $attendanceByEmployeeAndDate[$employee_id][$yesterday] ?? null;
 
             $shift = 0;
             $isScheduleChange = false;
@@ -400,8 +403,8 @@ class AttendanceHistoryController extends BaseController
             if (($hnhc === 'X' || empty($hnhc) || $hnhc === null) && count($todayRecords) > 0) {
                 // Check if yesterday was night shift (shift 2)
                 $yesterdayWasNightShift = false;
-                if (count($yesterdayEntries) > 0) {
-                    $yesterdayHnhc = array_values($yesterdayEntries)[0]['hnhc'];
+                if ($yesterdayEntry) {
+                    $yesterdayHnhc = $yesterdayEntry['hnhc'];
                     $yesterdayWasNightShift = ($yesterdayHnhc === 'D' || $yesterdayHnhc === 'TC');
                 }
 
@@ -434,8 +437,8 @@ class AttendanceHistoryController extends BaseController
                 // Otherwise, it's a real schedule change
                 $isScheduleChange = true;
                 // Determine shift based on yesterday's work pattern or time of attendance
-                if (count($yesterdayEntries) > 0) {
-                    $yesterdayHnhc = array_values($yesterdayEntries)[0]['hnhc'];
+                if ($yesterdayEntry) {
+                    $yesterdayHnhc = $yesterdayEntry['hnhc'];
                     if ($yesterdayHnhc === 'N' || $yesterdayHnhc === 'LN') {
                         $shift = 1; // Yesterday was day shift, likely day shift today
                     } elseif ($yesterdayHnhc === 'D' || $yesterdayHnhc === 'TC') {
