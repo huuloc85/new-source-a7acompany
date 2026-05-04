@@ -8,8 +8,10 @@ use App\Helpers\LogActivity;
 use App\Models\CelenderDetailHNHC;
 use App\Models\CheckEmployee;
 use App\Models\DailyQuantity;
+use App\Models\DailyQuantityPO;
 use App\Models\Product;
 use App\Models\TotalDailyQuantity;
+use App\Models\TotalDailyQuantityPO;
 use App\Models\TotalMonthQuantity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -40,7 +42,7 @@ class ProductController extends BaseController
                 'limit' => 'nullable|integer|min:0',
                 'page' => 'nullable|integer|min:1',
                 'month' => 'nullable|date_format:Y-m',
-                'status' => 'nullable|integer|min:1|max:7',
+                'status' => 'nullable|integer|min:1|max:8',
                 'date' => 'nullable|date_format:Y-m-d',
             ]);
 
@@ -94,7 +96,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantities', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                         }
                         if ($date) {
                             $query->where('date', $date);
@@ -105,7 +107,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('dailyquantities', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                         }
                         if ($date) {
                             $query->where('date', $date);
@@ -116,7 +118,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('dailyQuantitiesPo', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -127,7 +129,7 @@ class ProductController extends BaseController
                     }),
                     AllowedInclude::callback('totaldailyquantitiespo', function ($query) use ($currentMonth, $status, $date) {
                         if ($currentMonth) {
-                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-') . '%');
+                            $query->where('date', 'like', Carbon::parse($currentMonth)->format('Y-m-').'%');
                         }
                         if ($status) {
                             $query->where('status', $status);
@@ -264,7 +266,7 @@ class ProductController extends BaseController
             $product = Product::findOrFail($id);
 
             $validated = $request->validate([
-                'code' => 'sometimes|string|unique:products,code,' . $id,
+                'code' => 'sometimes|string|unique:products,code,'.$id,
                 'name' => 'sometimes|string',
                 'moldSize' => 'sometimes|string',
                 'CAV' => 'sometimes|numeric',
@@ -457,7 +459,7 @@ class ProductController extends BaseController
 
             $date = Carbon::now()->format('d');
             $date = $this->convertDate($date); // Chuyển đổi nếu cần
-            $column = 'day' . $date;
+            $column = 'day'.$date;
 
             if (! isset($calendar->$column)) {
                 return response()->json([
@@ -496,7 +498,7 @@ class ProductController extends BaseController
                 'quantities' => $addQuantity,
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
             DB::rollBack();
 
             return response()->json([
@@ -544,9 +546,9 @@ class ProductController extends BaseController
                 ->orderBy('id', 'DESC')
                 ->get();
 
-            $status3 = DailyQuantity::with('employee:id,name')
+            $status8 = DailyQuantityPO::with('employee:id,name')
                 ->where('product_id', $id)
-                ->where('status', 3)
+                ->where('status', 8)
                 ->whereYear('date', $year)
                 ->whereMonth('date', $month)
                 ->orderBy('id', 'DESC')
@@ -564,7 +566,7 @@ class ProductController extends BaseController
                 'product' => $product,
                 'status1' => $status1,
                 'status2' => $status2,
-                'status3' => $status3,
+                'status8' => $status8,
                 'status6' => $status6,
                 'listMonth' => $listMonth,
                 'monthNearly' => $monthNearly,
@@ -584,6 +586,10 @@ class ProductController extends BaseController
         }
 
         try {
+            if ((int) $request->status === 8) {
+                return $this->updatePoDetailProduct($request);
+            }
+
             $month = Carbon::now()->format('m');
             $year = Carbon::now()->format('Y');
             $monthYear = Carbon::now()->format('m-Y');
@@ -637,8 +643,8 @@ class ProductController extends BaseController
                 'totalMonth' => $totalMonth,
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
-            Log::error('errors: ' . $e->getMessage() . ' line: ' . $e->getLine());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
+            Log::error('errors: '.$e->getMessage().' line: '.$e->getLine());
 
             return response()->json([
                 'message' => 'Cập nhật số lượng sản phẩm không thành công!',
@@ -648,10 +654,14 @@ class ProductController extends BaseController
     }
 
     // delete detail product
-    public function deleteDetailProduct($id)
+    public function deleteDetailProduct($id, Request $request)
     {
         DB::beginTransaction();
         try {
+            if ((int) $request->status === 8) {
+                return $this->deletePoDetailProduct($id);
+            }
+
             $detail = DailyQuantity::findOrFail($id);
 
             $monthYear = Carbon::now()->format('m-Y');
@@ -699,6 +709,86 @@ class ProductController extends BaseController
 
             return HandleError::handle($th);
         }
+    }
+
+    private function updatePoDetailProduct(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $daily = DailyQuantityPO::with('employee:id,name')->find($request->dailyId);
+            if (! $daily) {
+                DB::rollBack();
+
+                return response()->json([
+                    'message' => 'Không tìm thấy bản ghi PO!',
+                ], 404);
+            }
+
+            $daily->quantity = $request->quantity;
+            $daily->employee_id = auth()->id();
+            $daily->save();
+
+            $totalDaily = $this->syncTotalDailyQuantityPO($daily->product_id, $daily->date, $daily->status);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Cập nhật sản lượng PO thành công!',
+                'daily' => $daily,
+                'totalDaily' => $totalDaily,
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return HandleError::handle($th);
+        }
+    }
+
+    private function deletePoDetailProduct($id)
+    {
+        $detail = DailyQuantityPO::findOrFail($id);
+        $date = $detail->date;
+        $productId = $detail->product_id;
+        $status = $detail->status;
+
+        $detail->delete();
+        $this->syncTotalDailyQuantityPO($productId, $date, $status);
+
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Xóa sản lượng PO thành công!',
+            'data' => [
+                'id' => $id,
+                'deleted' => true,
+            ],
+        ]);
+    }
+
+    private function syncTotalDailyQuantityPO(int $productId, string $date, int $status)
+    {
+        $sumDaily = DailyQuantityPO::where('product_id', $productId)
+            ->where('date', $date)
+            ->where('status', $status)
+            ->sum('quantity');
+
+        if ($sumDaily > 0) {
+            return TotalDailyQuantityPO::updateOrCreate(
+                [
+                    'product_id' => $productId,
+                    'date' => $date,
+                    'status' => $status,
+                ],
+                ['totalQuan' => $sumDaily]
+            );
+        }
+
+        TotalDailyQuantityPO::where('product_id', $productId)
+            ->where('date', $date)
+            ->where('status', $status)
+            ->delete();
+
+        return null;
     }
 
     // addQuantityDetailProduct
@@ -766,9 +856,9 @@ class ProductController extends BaseController
                 'totalMonth' => $totalMonth,
             ], 201);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
             DB::rollBack();
-            Log::error('errors: ' . $e->getMessage() . ' line: ' . $e->getLine());
+            Log::error('errors: '.$e->getMessage().' line: '.$e->getLine());
 
             return response()->json([
                 'message' => 'Thêm sản lượng không thành công!',

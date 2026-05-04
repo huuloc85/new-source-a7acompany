@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Helpers\HandleError;
 use App\Models\DailyQuantity;
 use App\Models\TotalDailyQuantity;
+use App\Models\TotalDailyQuantityPO;
 use App\Models\TotalMonthQuantity;
 use Carbon\Carbon;
 use DB;
@@ -16,6 +17,10 @@ class TotalQuantityController extends BaseController
     public function getMonthly(Request $request)
     {
         try {
+            if ((int) $request->input('status') === 8) {
+                return response()->json($this->getMonthlyPoExports($request));
+            }
+
             $totalMonthlyQuantities = QueryBuilder::for(TotalMonthQuantity::class)
                 ->allowedSorts([
                     'id',
@@ -55,6 +60,40 @@ class TotalQuantityController extends BaseController
         } catch (\Throwable $e) {
             return HandleError::handle($e);
         }
+    }
+
+    private function getMonthlyPoExports(Request $request)
+    {
+        $query = TotalDailyQuantityPO::query()
+            ->select([
+                'product_id',
+                'status',
+                DB::raw("DATE_FORMAT(date, '%m-%Y') as month"),
+                DB::raw('SUM(totalQuan) as totalQuan'),
+            ])
+            ->where('status', 8)
+            ->groupBy('product_id', 'status', DB::raw("DATE_FORMAT(date, '%m-%Y')"));
+
+        if (! is_null($request['month'])) {
+            $month = Carbon::createFromFormat('m-Y', $request['month']);
+            $query->whereYear('date', $month->year)
+                ->whereMonth('date', $month->month);
+        }
+
+        if ($request['productId']) {
+            $query->where('product_id', $request['productId']);
+        }
+
+        if (str_contains((string) $request->input('include'), 'product')) {
+            $query->with('product');
+        }
+
+        $limit = $request->limit;
+        if (! is_null($limit) && (int) $limit === 0) {
+            $limit = $query->get()->count();
+        }
+
+        return $query->paginate($limit ?? 10);
     }
 
     public function updateMonthQuantity(Request $request)

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Product;
+use App\Models\TotalDailyQuantityPO;
 use App\Models\TotalMonthQuantity;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -58,11 +59,7 @@ class UpdateStockQuantity extends Command
                         ->whereYear('created_at', $previousMonth->year)
                         ->value('totalQuan');
 
-                    $laseTotalExport = TotalMonthQuantity::where('product_id', $productId)
-                        ->where('status', 3)
-                        ->whereMonth('created_at', $previousMonth->month)
-                        ->whereYear('created_at', $previousMonth->year)
-                        ->value('totalQuan');
+                    $laseTotalExport = $this->previousMonthPoExportQuantity($productId, $previousMonth);
                     // dd($laseTotalChecked, $laseTotalChecked, $laseTotalExport);
                     $newStockQuan200 = new TotalMonthQuantity;
                     $newStockQuan200->product_id = $productId;
@@ -88,11 +85,7 @@ class UpdateStockQuantity extends Command
                         ->whereYear('created_at', $previousMonth->year)
                         ->value('totalQuan');
 
-                    $laseTotalExport = TotalMonthQuantity::where('product_id', $productId)
-                        ->where('status', 3)  // xuất tháng gần nhất
-                        ->whereMonth('created_at', $previousMonth->month)
-                        ->whereYear('created_at', $previousMonth->year)
-                        ->value('totalQuan');
+                    $laseTotalExport = $this->previousMonthPoExportQuantity($productId, $previousMonth);
                     $stockEndQuan = ($oldStockQuan + $prorealityQuan) - $laseTotalExport; // tồn cuối kỳ gần nhất
 
                     $newStockQuan = new TotalMonthQuantity;
@@ -123,5 +116,14 @@ class UpdateStockQuantity extends Command
             DB::rollBack();
             Log::error('errors'.$e->getMessage().' getLine'.$e->getLine());
         }
+    }
+
+    private function previousMonthPoExportQuantity(int $productId, Carbon $previousMonth): int
+    {
+        return (int) TotalDailyQuantityPO::where('product_id', $productId)
+            ->where('status', 8)
+            ->whereMonth('date', $previousMonth->month)
+            ->whereYear('date', $previousMonth->year)
+            ->sum('totalQuan');
     }
 }
