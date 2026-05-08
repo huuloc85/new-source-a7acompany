@@ -69,6 +69,7 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         return;
     }
     Route::post('/auth/check', [AuthController::class, 'authCheck']);
+    Route::post('/auth/confirm-login', [AuthController::class, 'authConfirmLogin']);
     Route::get('/birthday', [AuthController::class, 'getBirthdayEmployees']);
 
     // Login, Dashboard, Change Profile (Quản Lý Đăng Nhập và Trang Chủ)

@@ -17,6 +17,10 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
+Broadcast::channel('auth.user.{channelKey}', function ($user, $channelKey) {
+    return hash('sha256', (string) $user->id) === (string) $channelKey;
+});
+
 Broadcast::channel('send-stamp-channel', function ($user) {
     if ($user) {
         return true;

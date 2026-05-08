@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Events\AuthSessionRevoked;
 use App\Helpers\HandleError;
 use App\Helpers\LogActivity;
 use App\Helpers\UploadHelper;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
 use Throwable;
 
 class AuthController extends BaseController
@@ -84,12 +87,20 @@ class AuthController extends BaseController
         // Nhận giá trị expiresInMins từ request, mặc định 60 phút
         $expiresInMins = $request->input('expiresInMins', 60);
         $expiresAt = now()->addMinutes($expiresInMins);
+        $sessionId = (string) Str::uuid();
+        $loggedInElsewhere = $user->tokens()
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->exists();
 
         // Tạo token với thời gian hết hạn
         $tokenResult = $user->createToken('auth_token', ['*'], $expiresAt);
 
         // Lưu expires_at vào token
         $tokenResult->accessToken->expires_at = $expiresAt;
+        $tokenResult->accessToken->session_id = $sessionId;
         $tokenResult->accessToken->save();
         $permissionSelect = ['permissions.id', 'permissions.key', 'permissions.name', 'permissions.type', 'permissions.display_area', 'permissions.icon', 'permissions.url', 'permissions.sort_order'];
         $sidebarEager = [
@@ -138,14 +149,53 @@ class AuthController extends BaseController
             'birthday_employees' => $birthdayEmployees,
             'cleaning_duties' => $upcomingDuties,
             'token' => $tokenResult->plainTextToken,
+            'session_id' => $sessionId,
+            'auth_channel_name' => AuthSessionRevoked::channelNameFor($user),
+            'logged_in_elsewhere' => $loggedInElsewhere,
+            'login_conflict_message' => $loggedInElsewhere
+                ? 'Tài khoản này đang được đăng nhập ở một nơi khác.'
+                : null,
             'permissions' => $permissions,
         ])->cookie('auth_token', $tokenResult->plainTextToken, $expiresInMins, null, null, false, true);
     }
 
-    public function authLogout()
+    public function authLogout(Request $request)
     {
+        $token = $request->bearerToken();
+        if ($token) {
+            PersonalAccessToken::findToken($token)?->delete();
+        }
+
         return response()->json(['message' => 'Đăng xuất thành công'])
             ->cookie('auth_token', null, -1, null, null, true, true);
+    }
+
+    public function authConfirmLogin(Request $request)
+    {
+        $user = Auth::user();
+        $token = $user?->currentAccessToken();
+
+        if (! $user || ! ($token instanceof PersonalAccessToken)) {
+            return response()->json(['message' => 'Token không hợp lệ'], 401);
+        }
+
+        $sessionId = $token->session_id;
+
+        if (! $sessionId) {
+            $sessionId = (string) Str::uuid();
+            $token->forceFill(['session_id' => $sessionId])->save();
+        }
+
+        $user->tokens()
+            ->where('id', '!=', $token->id)
+            ->delete();
+
+        event(new AuthSessionRevoked($user, $sessionId));
+
+        return response()->json([
+            'message' => 'Đăng nhập tiếp tục thành công',
+            'session_id' => $sessionId,
+        ]);
     }
 
     public function authCheck()
@@ -153,11 +203,21 @@ class AuthController extends BaseController
         $user = Auth::user();
 
         if ($user) {
+            $token = $user->currentAccessToken();
+            $sessionId = $token instanceof PersonalAccessToken ? $token->session_id : null;
+
+            if ($token instanceof PersonalAccessToken && ! $sessionId) {
+                $sessionId = (string) Str::uuid();
+                $token->forceFill(['session_id' => $sessionId])->save();
+            }
+
             return response()->json([
                 'role_id' => $user->role_id,
                 'role_name' => $user->role->role_name,
                 'name' => $user->name,
                 'image' => $user->photo,
+                'session_id' => $sessionId,
+                'auth_channel_name' => AuthSessionRevoked::channelNameFor($user),
             ], 200);
         } else {
             return response()->json([
@@ -277,7 +337,8 @@ class AuthController extends BaseController
 
             return response()->json(['message' => 'Thay đổi mật khẩu thành công'], 200);
         } catch (Throwable $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
+
             return response()->json(['message' => 'Thay đổi mật khẩu thất bại', 'error' => $e->getMessage()], 500);
         }
     }
@@ -297,7 +358,8 @@ class AuthController extends BaseController
                 'message' => 'Khôi phục mật khẩu thành công',
             ], 200);
         } catch (Throwable $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
+
             return response()->json(['message' => 'Khôi phục mật khẩu thất bại', 'error' => $e->getMessage()], 500);
         }
     }
