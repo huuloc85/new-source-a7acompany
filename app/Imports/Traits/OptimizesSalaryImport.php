@@ -148,6 +148,38 @@ trait OptimizesSalaryImport
         return is_numeric($value ?? null) ? (float) $value : null;
     }
 
+    protected function normalizeNumericInput($value)
+    {
+        if ($value === null || $value === '' || is_numeric($value)) {
+            return $value;
+        }
+
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        $normalized = preg_replace('/[\s\x{00A0}]+/u', '', trim($value));
+        if (is_numeric($normalized)) {
+            return $normalized;
+        }
+
+        if (preg_match('/^-?\d{1,3}([,.]\d{3})+$/', $normalized)) {
+            return str_replace([',', '.'], '', $normalized);
+        }
+
+        $decimalNormalized = str_replace(',', '.', $normalized);
+        if (substr_count($decimalNormalized, '.') === 1 && is_numeric($decimalNormalized)) {
+            return $decimalNormalized;
+        }
+
+        $withoutSeparators = str_replace([',', '.'], '', $normalized);
+        if (is_numeric($withoutSeparators)) {
+            return $withoutSeparators;
+        }
+
+        return $value;
+    }
+
     protected function stringValue($value): ?string
     {
         if ($value === null) {
@@ -172,7 +204,7 @@ trait OptimizesSalaryImport
         }
 
         $listCode = Employee::all()->pluck('id')->toArray();
-        $listCode = array_merge($listCode, array_map(function($id) {
+        $listCode = array_merge($listCode, array_map(function ($id) {
             return ltrim($id, '0');
         }, $listCode));
 
@@ -188,5 +220,35 @@ trait OptimizesSalaryImport
     {
         Cache::forget('employee_ids_valid_list');
         Cache::forget($this->getEmployeeCacheKey());
+    }
+
+    protected function formatImportFailure(string $sheet, $failure): string
+    {
+        $column = $failure->attribute();
+        $values = $failure->values();
+        $rawValue = $values[$column] ?? null;
+
+        return sprintf(
+            '%s Sheet: %s | Row: %s | Column: %s | Raw value: %s',
+            $failure->errors()[0],
+            $sheet,
+            $failure->row(),
+            $this->excelColumnName((int) $column).' ('.$column.')',
+            $rawValue === null ? 'null' : (string) $rawValue
+        );
+    }
+
+    protected function excelColumnName(int $zeroBasedColumn): string
+    {
+        $column = '';
+        $number = $zeroBasedColumn + 1;
+
+        while ($number > 0) {
+            $number--;
+            $column = chr(65 + ($number % 26)).$column;
+            $number = intdiv($number, 26);
+        }
+
+        return $column;
     }
 }

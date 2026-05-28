@@ -337,7 +337,6 @@ class StockTransactionController extends Controller
      */
     public function scanIn(Request $request): JsonResponse
     {
-        DB::beginTransaction();
         try {
             $request->validate(['barcode' => 'required|string']);
 
@@ -363,13 +362,17 @@ class StockTransactionController extends Controller
                 ], 409);
             }
 
-            $product = Product::findOrFail($barcodeData['product_id']);
+            $product = Product::select('id', 'code', 'name', 'quanEntityBin')->findOrFail($barcodeData['product_id']);
             $quantity = $request->input('quantity', $product->quanEntityBin ?? 0);
+            $employee = auth()->user();
+
+            DB::beginTransaction();
 
             $storageProduct = StorageProduct::firstOrCreate(
                 ['product_id' => $barcodeData['product_id'], 'lot' => $lotCode, 'bin' => $barcodeData['bin_number']],
                 ['barcode' => $request->barcode, 'quantity' => 0, 'employee_id' => auth()->id()]
             );
+            $newQuantity = (int) $storageProduct->quantity + (int) $quantity;
 
             $transaction = StockTransaction::create([
                 'storage_product_id' => $storageProduct->id,
@@ -382,11 +385,36 @@ class StockTransactionController extends Controller
 
             DB::commit();
 
-            $transaction->load(['storageProduct.product', 'employee']);
-
-            return response()->json($transaction, 201);
+            return response()->json([
+                'id' => $transaction->id,
+                'storage_product_id' => $transaction->storage_product_id,
+                'type' => $transaction->type,
+                'quantity' => $transaction->quantity,
+                'employee_id' => $transaction->employee_id,
+                'created_at' => $transaction->created_at,
+                'updated_at' => $transaction->updated_at,
+                'storage_product' => [
+                    'id' => $storageProduct->id,
+                    'product_id' => $storageProduct->product_id,
+                    'lot' => $storageProduct->lot,
+                    'bin' => $storageProduct->bin,
+                    'quantity' => $newQuantity,
+                    'barcode' => $storageProduct->barcode,
+                    'product' => [
+                        'id' => $product->id,
+                        'code' => $product->code,
+                        'name' => $product->name,
+                    ],
+                ],
+                'employee' => $employee ? [
+                    'id' => $employee->id,
+                    'name' => $employee->name,
+                ] : null,
+            ], 201);
         } catch (\Throwable $th) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
 
             return HandleError::handle($th);
         }
@@ -397,7 +425,6 @@ class StockTransactionController extends Controller
      */
     public function scanOut(Request $request): JsonResponse
     {
-        DB::beginTransaction();
         try {
             $request->validate(['barcode' => 'required|string']);
 
@@ -409,14 +436,20 @@ class StockTransactionController extends Controller
             }
 
             $lotCode = $this->generateLotCode($barcodeData['date'], $barcodeData['shift'], $barcodeData['separator']);
+            $employee = auth()->user();
+
+            DB::beginTransaction();
 
             $storageProduct = StorageProduct::where('product_id', $barcodeData['product_id'])
+                ->select('id', 'product_id', 'lot', 'bin', 'quantity', 'barcode')
+                ->with('product:id,code,name')
                 ->where('lot', $lotCode)
                 ->where('bin', $barcodeData['bin_number'])
                 ->where('quantity', '>', 0)
                 ->firstOrFail();
 
             $quantityOut = $request->input('quantity', $storageProduct->quantity);
+            $remainingQuantity = max(0, (int) $storageProduct->quantity - (int) $quantityOut);
 
             $transaction = StockTransaction::create([
                 'storage_product_id' => $storageProduct->id,
@@ -425,15 +458,40 @@ class StockTransactionController extends Controller
                 'employee_id' => auth()->id(),
             ]);
 
-            $storageProduct->update(['quantity' => max(0, $storageProduct->quantity - $quantityOut)]);
+            $storageProduct->update(['quantity' => $remainingQuantity]);
 
             DB::commit();
 
-            $transaction->load(['storageProduct.product', 'employee']);
-
-            return response()->json($transaction, 201);
+            return response()->json([
+                'id' => $transaction->id,
+                'storage_product_id' => $transaction->storage_product_id,
+                'type' => $transaction->type,
+                'quantity' => $transaction->quantity,
+                'employee_id' => $transaction->employee_id,
+                'created_at' => $transaction->created_at,
+                'updated_at' => $transaction->updated_at,
+                'storage_product' => [
+                    'id' => $storageProduct->id,
+                    'product_id' => $storageProduct->product_id,
+                    'lot' => $storageProduct->lot,
+                    'bin' => $storageProduct->bin,
+                    'quantity' => $remainingQuantity,
+                    'barcode' => $storageProduct->barcode,
+                    'product' => $storageProduct->product ? [
+                        'id' => $storageProduct->product->id,
+                        'code' => $storageProduct->product->code,
+                        'name' => $storageProduct->product->name,
+                    ] : null,
+                ],
+                'employee' => $employee ? [
+                    'id' => $employee->id,
+                    'name' => $employee->name,
+                ] : null,
+            ], 201);
         } catch (\Throwable $th) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
 
             return HandleError::handle($th);
         }
