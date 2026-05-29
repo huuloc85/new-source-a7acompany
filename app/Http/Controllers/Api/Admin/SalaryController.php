@@ -109,12 +109,17 @@ class SalaryController extends BaseController
                 'number_of_hours_worked',
                 'allowance_diligence_detail',
                 'allowance_diligence_detail_notice',
+                'allowance_professional_detail',
+                'allowance_professional_detail_notice',
                 'number_of_jobs',
                 'allowance_responsibility_detail',
                 'allowance_responsibility_detail_notice',
                 'overtime_hours_detail',
                 'overtime_salary',
                 'overtime_salary_notice',
+                'reinforcement_hours_detail',
+                'reinforcement_salary',
+                'reinforcement_salary_notice',
                 'number_of_work_days',
                 'allowance_rice_detail',
                 'allowance_rice_detail_notice',
@@ -144,6 +149,8 @@ class SalaryController extends BaseController
                 'allowance_diffrent_notice',
                 'bonuses_for_attendance',
                 'bonuses_for_attendance_notice',
+                'previous_month_kpi_refund',
+                'previous_month_kpi_refund_notice',
                 'sickness',
                 'sickness_notice',
                 'funeral',
@@ -157,18 +164,24 @@ class SalaryController extends BaseController
                 'insurance_detail_notice',
                 'advance_money',
                 'advance_money_notice',
+                'union_fee',
+                'union_fee_notice',
                 'number_of_violations',
 
                 'daysleave_allowed',
+                'daysleave_allowed_notice',
                 'subtract_daysleave_allowed',
                 'subtract_daysleave_allowed_notice',
                 'daysleave_notallowed',
+                'daysleave_notallowed_notice',
                 'subtract_daysleave_notallowed',
                 'subtract_daysleave_notallowed_notice',
                 'error_serious',
+                'error_serious_notice',
                 'subtract_error_serious',
                 'subtract_error_serious_notice',
                 'error_minor',
+                'error_minor_notice',
                 'subtract_error_minor',
                 'subtract_error_minor_notice',
                 'kpi_subtraction',
@@ -236,6 +249,10 @@ class SalaryController extends BaseController
 
                 $categoryData = $companyData->get($categoryFields);
                 $salaryData = $companyData->get($salaryFields);
+                $salaryDetailFields = array_merge($salaryDetailFields, [
+                    'subtract_of_violations',
+                    'subtract_of_violations_notice',
+                ]);
                 $salaryDetailData = $companyData->get($salaryDetailFields);
                 $attendanceData = $companyData
                     ->with('SalaryOfficialA7ATimekeepings:id,salary_official_a7a_id,timekeeping_date,timekeeping_day,timekeeping_night,timekeeping_overtime')

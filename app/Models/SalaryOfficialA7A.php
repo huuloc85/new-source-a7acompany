@@ -70,12 +70,17 @@ class SalaryOfficialA7A extends Model
         'number_of_hours_worked',
         'allowance_diligence_detail',                   // chuyên cần detail
         'allowance_diligence_detail_notice',            // chuyên cần detail Ghi Chú
+        'allowance_professional_detail',                // chuyên môn detail
+        'allowance_professional_detail_notice',         // chuyên môn detail Ghi Chú
         'number_of_jobs',                               // Số công làm
         'allowance_responsibility_detail',              // trách nhiệm detail
         'allowance_responsibility_detail_notice',       // trách nhiệm detail Ghi Chú
         'overtime_hours_detail',                        // số giờ tăng ca
         'overtime_salary',                              // lương tăng ca
         'overtime_salary_notice',                       // lương tăng ca Ghi Chú
+        'reinforcement_hours_detail',                   // số giờ tăng cường
+        'reinforcement_salary',                         // lương tăng cường
+        'reinforcement_salary_notice',                  // lương tăng cường Ghi Chú
         'number_of_work_days',                          // Số công ngày
         'allowance_rice_detail',                        // phụ cấp cơm ca ngày
         'allowance_rice_detail_notice',                 // phụ cấp cơm ca ngày Ghi Chú
@@ -105,6 +110,8 @@ class SalaryOfficialA7A extends Model
         'allowance_diffrent_notice',                    // phụ cấp khác Ghi Chú
         'bonuses_for_attendance',                       // Tiền thưởng đạt chuyên cần
         'bonuses_for_attendance_notice',                // Tiền thưởng đạt chuyên cần Ghi Chú
+        'previous_month_kpi_refund',                    // Hoàn tiền KPI tháng trước
+        'previous_month_kpi_refund_notice',             // Hoàn tiền KPI tháng trước Ghi Chú
         'sickness',                                     // Ốm đau
         'sickness_notice',                              // Ốm đau Ghi Chú
         'funeral',                                      // Ma chay
@@ -118,19 +125,25 @@ class SalaryOfficialA7A extends Model
         'insurance_detail_notice',                      // Khấu trừ BHXH 10.5% Ghi Chú
         'advance_money',                                // tạm ứng
         'advance_money_notice',                         // tạm ứng Ghi Chú
+        'union_fee',                                    // Phí công đoàn 0.5%
+        'union_fee_notice',                             // Phí công đoàn 0.5% Ghi Chú
         'number_of_violations',                         // Số lần vi phạm
         'subtract_of_violations',                       // Trừ vi phạm
         'subtract_of_violations_notice',                // Trừ vi phạm Ghi Chú
         'daysleave_allowed',                            // số ngày nghỉ có phép
+        'daysleave_allowed_notice',                     // số ngày nghỉ có phép Ghi Chú
         'subtract_daysleave_allowed',                   // Trừ tiền nghỉ có phép
         'subtract_daysleave_allowed_notice',            // Trừ tiền nghỉ có phép Ghi Chú
         'daysleave_notallowed',                         // số ngày nghĩ không phép
+        'daysleave_notallowed_notice',                  // số ngày nghỉ không phép Ghi Chú
         'subtract_daysleave_notallowed',                // Trừ tiền nghỉ không phép
         'subtract_daysleave_notallowed_notice',         // Trừ tiền nghỉ không phép Ghi Chú
         'error_serious',                                // số lỗi nặng
+        'error_serious_notice',                         // số lỗi nặng Ghi Chú
         'subtract_error_serious',                       // Trừ tiền số lỗi nặng
         'subtract_error_serious_notice',                // Trừ tiền số lỗi nặng Ghi Chú
         'error_minor',                                  // số lỗi nhẹ
+        'error_minor_notice',                           // số lỗi nhẹ Ghi Chú
         'subtract_error_minor',                         // Trừ tiền số lỗi nhẹ
         'subtract_error_minor_notice',                  // Trừ tiền số lỗi nhẹ Ghi Chú
         'kpi_subtraction',                              // trừ KPI

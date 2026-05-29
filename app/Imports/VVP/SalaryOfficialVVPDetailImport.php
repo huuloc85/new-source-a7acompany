@@ -16,11 +16,14 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Validators\Failure;
 
 class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, SkipsEmptyRows, SkipsOnFailure, ToArray, WithCalculatedFormulas, WithChunkReading, WithEvents, WithStartRow, WithValidation
 {
     use OptimizesSalaryImport;
+
+    private const DETAIL_HEADER_ROW = 7;
 
     public $roleIgnore;
 
@@ -29,6 +32,10 @@ class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, Skips
     private $employeeMap = [];
 
     private $salaryMap = [];
+
+    private $headerColumns = [];
+
+    private $headersByColumn = [];
 
     public function __construct($salaryManagerId)
     {
@@ -61,98 +68,13 @@ class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, Skips
             $now = now();
 
             foreach ($rows as $row) {
-                if ($row[1] != null && $row[1] != '') {
-                    $employee = $this->getEmployeeFast($row[1], $this->employeeMap);
+                $employeeColumn = $this->headerColumn('Mã NV') ?? 1;
+                if (($row[$employeeColumn] ?? null) != null && ($row[$employeeColumn] ?? null) != '') {
+                    $employee = $this->getEmployeeFast($row[$employeeColumn], $this->employeeMap);
                     if ($employee != null && $this->salaryManagerId != null) {
                         $salaryManager = $this->getSalaryRecordFast($this->salaryMap, $employee->id);
                         if ($salaryManager) {
-                            // detail
-                            $salaryManager->number_of_work_days_trial = (is_numeric($row[4] ?? null) ? (float) $row[4] : null);                            // Số công ngày (thử việc)
-                            $salaryManager->day_shift_salary_trial = (is_numeric($row[5] ?? null) ? (float) $row[5] : null);                             // Lương ca ngày (thử việc)
-                            $salaryManager->day_shift_salary_trial_notice = (is_numeric($row[6] ?? null) ? (float) $row[6] : null);                      // Lương ca ngày (thử việc) Ghi Chú
-                            $salaryManager->number_of_work_nights_trial = (is_numeric($row[7] ?? null) ? (float) $row[7] : null);                        // Số công đêm (thử việc)
-                            $salaryManager->night_shift_salary_trial = (is_numeric($row[8] ?? null) ? (float) $row[8] : null);                            // Lương ca đêm (thử việc)
-                            $salaryManager->night_shift_salary_trial_notice = (is_numeric($row[9] ?? null) ? (float) $row[9] : null);                     // Lương ca đêm (thử việc) Ghi Chú
-                            $salaryManager->overtime_hours_trial = (is_numeric($row[10] ?? null) ? (float) $row[10] : null);                               // Số giờ tăng ca ( thử việc)
-                            $salaryManager->overtime_salary_trial = (is_numeric($row[11] ?? null) ? (float) $row[11] : null);                              // Lương tăng ca (thử việc)
-                            $salaryManager->overtime_salary_trial_notice = (is_numeric($row[12] ?? null) ? (float) $row[12] : null);                       // Lương tăng ca (thử vifệc) Ghi Chú
-                            $salaryManager->number_of_work = (is_numeric($row[13] ?? null) ? (float) $row[13] : null);                                     // Số Công
-                            $salaryManager->allowance_apprentice_detail = (is_numeric($row[14] ?? null) ? (float) $row[14] : null);                        // phụ cấp học việc detail
-                            $salaryManager->allowance_apprentice_detail_notice = (is_numeric($row[15] ?? null) ? (float) $row[15] : null);                 // phụ cấp học việc detail Ghi Chú
-                            $salaryManager->core_hours = (is_numeric($row[16] ?? null) ? (float) $row[16] : null);                                         // số giờ chính detail
-                            $salaryManager->official_salary = (is_numeric($row[17] ?? null) ? (float) $row[17] : null);                                    // lương chính thức
-                            $salaryManager->official_salary_notice = (is_numeric($row[18] ?? null) ? (float) $row[18] : null);                              // lương chính thức Ghi Chú
-                            $salaryManager->number_of_hours_worked = (is_numeric($row[19] ?? null) ? (float) $row[19] : null);                              // số công làm
-                            $salaryManager->allowance_diligence_detail = (is_numeric($row[20] ?? null) ? (float) $row[20] : null);                          // chuyên cần detail
-                            $salaryManager->allowance_diligence_detail_notice = (is_numeric($row[21] ?? null) ? (float) $row[21] : null);                   // chuyên cần detail Ghi Chú
-                            $salaryManager->number_of_jobs = (is_numeric($row[22] ?? null) ? (float) $row[22] : null);                                      // Số công làm
-                            $salaryManager->allowance_responsibility_detail = (is_numeric($row[23] ?? null) ? (float) $row[23] : null);                     // trách nhiệm detail
-                            $salaryManager->allowance_responsibility_detail_notice = (is_numeric($row[24] ?? null) ? (float) $row[24] : null);              // trách nhiệm detail Ghi Chú
-                            $salaryManager->overtime_hours_detail = (is_numeric($row[25] ?? null) ? (float) $row[25] : null);                               // số giờ tăng ca
-                            $salaryManager->overtime_salary = (is_numeric($row[26] ?? null) ? (float) $row[26] : null);                                     // lương tăng ca
-                            $salaryManager->overtime_salary_notice = (is_numeric($row[27] ?? null) ? (float) $row[27] : null);                              // lương tăng ca Ghi Chú
-                            $salaryManager->number_of_work_days = (is_numeric($row[28] ?? null) ? (float) $row[28] : null);                                 // Số công ngày
-                            $salaryManager->allowance_rice_detail = (is_numeric($row[29] ?? null) ? (float) $row[29] : null);                               // phụ cấp cơm ca ngày
-                            $salaryManager->allowance_rice_detail_notice = (is_numeric($row[30] ?? null) ? (float) $row[30] : null);                        // phụ cấp cơm ca ngày Ghi Chú
-                            $salaryManager->number_of_work_nights = (is_numeric($row[31] ?? null) ? (float) $row[31] : null);                               // Số công đêm
-                            $salaryManager->allowance_shift_night = (is_numeric($row[32] ?? null) ? (float) $row[32] : null);                               // phụ cấp ca đêm
-                            $salaryManager->allowance_shift_night_notice = (is_numeric($row[33] ?? null) ? (float) $row[33] : null);                        // phụ cấp ca đêm Ghi Chú
-                            $salaryManager->overtime_day_count_detail = (is_numeric($row[34] ?? null) ? (float) $row[34] : null);                            // số ngày tăng ca
-                            $salaryManager->allowance_overtime_detail = (is_numeric($row[35] ?? null) ? (float) $row[35] : null);                            // phụ cấp tăng ca
-                            $salaryManager->allowance_overtime_detail_notice = (is_numeric($row[36] ?? null) ? (float) $row[36] : null);                     // phụ cấp tăng ca Ghi Chú
-                            $salaryManager->holidays_count_detail = (is_numeric($row[37] ?? null) ? (float) $row[37] : null);                                // số ngày lễ tết
-                            $salaryManager->holidays_money = (is_numeric($row[38] ?? null) ? (float) $row[38] : null);                                       // tiền lễ tết
-                            $salaryManager->holidays_money_notice = (is_numeric($row[39] ?? null) ? (float) $row[39] : null);                                // tiền lễ tết Ghi Chú
-                            $salaryManager->paid_holidays_count_detail = (is_numeric($row[40] ?? null) ? (float) $row[40] : null);                           // số ngày phép năm
-                            $salaryManager->paid_holidays_money = (is_numeric($row[41] ?? null) ? (float) $row[41] : null);                                  // số tiền phép năm
-                            $salaryManager->paid_holidays_money_notice = (is_numeric($row[42] ?? null) ? (float) $row[42] : null);                      // Số tiền phép năm Ghi Chú
-                            $salaryManager->business_travel_hours = (is_numeric($row[43] ?? null) ? (float) $row[43] : null);                                // Số giờ đi công tác
-                            $salaryManager->business_travel_unit_price_hour = (is_numeric($row[44] ?? null) ? (float) $row[44] : null);                      // Đơn giá đi công tác/ giờ
-                            $salaryManager->gcn_business_travel_salary = (is_numeric($row[45] ?? null) ? (float) $row[45] : null);                           // Lương đi công tác GCN
-                            $salaryManager->gcn_business_travel_salary_notice = (is_numeric($row[46] ?? null) ? (float) $row[46] : null);                    // Lương đi công tác GCN Ghi Chú
-                            $salaryManager->number_of_business_trips = (is_numeric($row[47] ?? null) ? (float) $row[47] : null);                             // Số lần đi công tác
-                            $salaryManager->business_fuel_unit_price_day = (is_numeric($row[48] ?? null) ? (float) $row[48] : null);                         // Đơn giá xăng công tác/ ngày
-                            $salaryManager->allowance_gcn_business_fuel = (is_numeric($row[49] ?? null) ? (float) $row[49] : null);                          // Phụ cấp xăng đi GCN
-                            $salaryManager->allowance_gcn_business_fuel_notice = (is_numeric($row[50] ?? null) ? (float) $row[50] : null);                   // Phụ cấp xăng đi GCN Ghi Chú
-                            $salaryManager->money_referral_people = (is_numeric($row[51] ?? null) ? (float) $row[51] : null);                                 // Tiền giới thiệu người
-                            $salaryManager->money_referral_people_notice = (is_numeric($row[52] ?? null) ? (float) $row[52] : null);                          // Tiền giới thiệu người Ghi Chú
-                            $salaryManager->allowance_diffrent = (is_numeric($row[53] ?? null) ? (float) $row[53] : null);                                    // phụ cấp khác
-                            $salaryManager->allowance_diffrent_notice = (is_numeric($row[54] ?? null) ? (float) $row[54] : null);                             // phụ cấp khác Ghi Chú
-                            $salaryManager->bonuses_for_attendance = (is_numeric($row[55] ?? null) ? (float) $row[55] : null);                                // Tiền thưởng đạt chuyên cần
-                            $salaryManager->bonuses_for_attendance_notice = (is_numeric($row[56] ?? null) ? (float) $row[56] : null);                        // Tiền thưởng đạt chuyên cần Ghi Chú
-                            $salaryManager->sickness = (is_numeric($row[57] ?? null) ? (float) $row[57] : null);                                              // Ốm đau
-                            $salaryManager->sickness_notice = (is_numeric($row[58] ?? null) ? (float) $row[58] : null);                                       // Ốm đau Ghi Chú
-                            $salaryManager->funeral = (is_numeric($row[59] ?? null) ? (float) $row[59] : null);                                               // Ma chay
-                            $salaryManager->funeral_notice = (is_numeric($row[60] ?? null) ? (float) $row[60] : null);                                        // Ma chay Ghi Chú
-                            $salaryManager->birthday_money = (is_numeric($row[61] ?? null) ? (float) $row[61] : null);                                         // Tiền sinh nhật
-                            $salaryManager->birthday_money_notice = (is_numeric($row[62] ?? null) ? (float) $row[62] : null);                                  // Tiền sinh nhật Ghi Chú
-                            $salaryManager->previous_period_debt = (is_numeric($row[63] ?? null) ? (float) $row[63] : null);                                   // Tiền lương tháng trước bị thiếu
-                            $salaryManager->previous_period_debt_notice = (is_numeric($row[64] ?? null) ? (float) $row[64] : null);                            // Tiền lương tháng trước bị thiếu Ghi Chú
-                            $salaryManager->total_income = (is_numeric($row[65] ?? null) ? (float) $row[65] : null);                                           // Tổng thu nhập
-                            $salaryManager->insurance_detail = (is_numeric($row[66] ?? null) ? (float) $row[66] : null);                                       // Khấu trừ BHXH 10.5%
-                            $salaryManager->insurance_detail_notice = (is_numeric($row[67] ?? null) ? (float) $row[67] : null);                                // Khấu trừ BHXH 10.5% Ghi Chú
-                            $salaryManager->advance_money = (is_numeric($row[68] ?? null) ? (float) $row[68] : null);                                          // tạm ứng
-                            $salaryManager->advance_money_notice = (is_numeric($row[69] ?? null) ? (float) $row[69] : null);                                   // tạm ứng Ghi Chú
-                            $salaryManager->number_of_violations = (is_numeric($row[70] ?? null) ? (float) $row[70] : null);                                    // Số lần vi phạm
-                            $salaryManager->unicon_deduction = (is_numeric($row[71] ?? null) ? (float) $row[71] : null);                                        // Trừ vi phạm
-                            $salaryManager->unicon_deduction_notice = (is_numeric($row[72] ?? null) ? (float) $row[72] : null);                                 // Trừ vi phạm Ghi Chú
-                            $salaryManager->daysleave_allowed = (is_numeric($row[73] ?? null) ? (float) $row[73] : null);                                       // số ngày nghỉ có phép
-                            $salaryManager->subtract_daysleave_allowed = (is_numeric($row[74] ?? null) ? (float) $row[74] : null);                              // Trừ tiền nghỉ có phép
-                            $salaryManager->subtract_daysleave_allowed_notice = (is_numeric($row[75] ?? null) ? (float) $row[75] : null);                       // Trừ tiền nghỉ có phép Ghi Chú
-                            $salaryManager->daysleave_notallowed = (is_numeric($row[76] ?? null) ? (float) $row[76] : null);                                    // số ngày nghĩ không phép
-                            $salaryManager->subtract_daysleave_notallowed = (is_numeric($row[77] ?? null) ? (float) $row[77] : null);                           // Trừ tiền nghỉ không phép
-                            $salaryManager->subtract_daysleave_notallowed_notice = (is_numeric($row[78] ?? null) ? (float) $row[78] : null);                    // Trừ tiền nghỉ không phép Ghi Chú
-                            $salaryManager->error_serious = (is_numeric($row[79] ?? null) ? (float) $row[79] : null);                                          // số lỗi nặng
-                            $salaryManager->subtract_error_serious = (is_numeric($row[80] ?? null) ? (float) $row[80] : null);                                  // Trừ tiền số lỗi nặng
-                            $salaryManager->subtract_error_serious_notice = (is_numeric($row[81] ?? null) ? (float) $row[81] : null);                           // Trừ tiền số lỗi nặng Ghi Chú
-                            $salaryManager->error_minor = (is_numeric($row[82] ?? null) ? (float) $row[82] : null);                                             // số lỗi nhẹ
-                            $salaryManager->subtract_error_minor = (is_numeric($row[83] ?? null) ? (float) $row[83] : null);                                     // Trừ tiền số lỗi nhẹ
-                            $salaryManager->subtract_error_minor_notice = (is_numeric($row[84] ?? null) ? (float) $row[84] : null);                              // Trừ tiền số lỗi nhẹ Ghi Chú
-                            $salaryManager->kpi_subtraction = (is_numeric($row[85] ?? null) ? (float) $row[85] : null);                                           // trừ KPI
-                            $salaryManager->kpi_subtraction_notice = null;                                                                                          // trừ KPI Ghi Chú
-                            $salaryManager->actually_received = $this->numericValue($row[86] ?? null);                                                              // thực lãnh
-                            $salaryManager->forms_of_payment = $this->stringValue($row[87] ?? null);                                                               // hình thức thanh toán
-                            $salaryManager->company_insurance_detail = (is_numeric($row[88] ?? null) ? (float) $row[88] : null);                                   // BHXH (21.5%) công ty đóng cho NLĐ
+                            $this->fillDetailAttributes($salaryManager, $row);
                             $salaryManager->salary_total = $salaryManager->total_income;
                             $salaryManager->insurance_payroll = $salaryManager->insurance_detail;
                             $salaryManager->advance_money_payroll = $salaryManager->advance_money;
@@ -182,9 +104,219 @@ class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, Skips
         return 8; // Start importing from row 8
     }
 
+    private function fillDetailAttributes(SalaryOfficialVVP $salaryManager, array $row): void
+    {
+        foreach ($this->detailFields() as $field) {
+            $value = $this->valueForField($row, $field);
+            $salaryManager->{$field['attribute']} = ($field['type'] ?? 'numeric') === 'string'
+                ? $this->stringValue($value)
+                : $this->numericValue($value);
+        }
+    }
+
+    private function detailFields(): array
+    {
+        return [
+            ['attribute' => 'number_of_work_days_trial', 'header' => 'Số công ngày', 'occurrence' => 1, 'fallback' => 4, 'type' => 'numeric'],
+            ['attribute' => 'day_shift_salary_trial', 'header' => 'Lương ca ngày (thử việc)', 'fallback' => 5, 'type' => 'numeric'],
+            ['attribute' => 'day_shift_salary_trial_notice', 'noticeAfter' => 'Lương ca ngày (thử việc)', 'fallback' => 6, 'type' => 'string'],
+            ['attribute' => 'number_of_work_nights_trial', 'header' => 'Số công đêm', 'occurrence' => 1, 'fallback' => 7, 'type' => 'numeric'],
+            ['attribute' => 'night_shift_salary_trial', 'header' => 'Lương ca đêm (thử việc)', 'fallback' => 8, 'type' => 'numeric'],
+            ['attribute' => 'night_shift_salary_trial_notice', 'noticeAfter' => 'Lương ca đêm (thử việc)', 'fallback' => 9, 'type' => 'string'],
+            ['attribute' => 'overtime_hours_trial', 'header' => 'Số giờ tăng ca ( thử việc)', 'fallback' => 10, 'type' => 'numeric'],
+            ['attribute' => 'overtime_salary_trial', 'header' => 'Lương tăng ca (thử việc)', 'fallback' => 11, 'type' => 'numeric'],
+            ['attribute' => 'overtime_salary_trial_notice', 'noticeAfter' => 'Lương tăng ca (thử việc)', 'fallback' => 12, 'type' => 'string'],
+            ['attribute' => 'number_of_work', 'header' => 'Số công', 'fallback' => 13, 'type' => 'numeric'],
+            ['attribute' => 'allowance_apprentice_detail', 'header' => 'Phụ cấp học việc', 'fallback' => 14, 'type' => 'numeric'],
+            ['attribute' => 'allowance_apprentice_detail_notice', 'noticeAfter' => 'Phụ cấp học việc', 'fallback' => 15, 'type' => 'string'],
+            ['attribute' => 'core_hours', 'header' => 'Số giờ chính', 'fallback' => 16, 'type' => 'numeric'],
+            ['attribute' => 'official_salary', 'header' => 'Lương căn bản', 'fallback' => 17, 'type' => 'numeric'],
+            ['attribute' => 'official_salary_notice', 'noticeAfter' => 'Lương căn bản', 'fallback' => 18, 'type' => 'string'],
+            ['attribute' => 'number_of_hours_worked', 'header' => 'Số công làm', 'occurrence' => 1, 'fallback' => 19, 'type' => 'numeric'],
+            ['attribute' => 'allowance_diligence_detail', 'header' => 'Chuyên cần', 'fallback' => 20, 'type' => 'numeric'],
+            ['attribute' => 'allowance_diligence_detail_notice', 'noticeAfter' => 'Chuyên cần', 'fallback' => 21, 'type' => 'string'],
+            ['attribute' => 'allowance_professional_detail', 'header' => 'Chuyên môn', 'fallback' => 23, 'type' => 'numeric'],
+            ['attribute' => 'allowance_professional_detail_notice', 'noticeAfter' => 'Chuyên môn', 'fallback' => 24, 'type' => 'string'],
+            ['attribute' => 'number_of_jobs', 'header' => 'Số công làm', 'occurrence' => 2, 'fallback' => 22, 'type' => 'numeric'],
+            ['attribute' => 'allowance_responsibility_detail', 'header' => 'Trách nhiệm', 'fallback' => 23, 'type' => 'numeric'],
+            ['attribute' => 'allowance_responsibility_detail_notice', 'noticeAfter' => 'Trách nhiệm', 'fallback' => 24, 'type' => 'string'],
+            ['attribute' => 'overtime_hours_detail', 'header' => 'Số giờ tăng ca', 'fallback' => 25, 'type' => 'numeric'],
+            ['attribute' => 'overtime_salary', 'header' => 'Lương tăng ca', 'fallback' => 26, 'type' => 'numeric'],
+            ['attribute' => 'overtime_salary_notice', 'noticeAfter' => 'Lương tăng ca', 'fallback' => 27, 'type' => 'string'],
+            ['attribute' => 'reinforcement_hours_detail', 'header' => 'Số giờ tăng cường', 'fallback' => 31, 'type' => 'numeric'],
+            ['attribute' => 'reinforcement_salary', 'header' => 'Lương tăng cường', 'fallback' => 32, 'type' => 'numeric'],
+            ['attribute' => 'reinforcement_salary_notice', 'noticeAfter' => 'Lương tăng cường', 'fallback' => 33, 'type' => 'string'],
+            ['attribute' => 'number_of_work_days', 'header' => 'Số công ngày', 'occurrence' => 2, 'fallback' => 28, 'type' => 'numeric'],
+            ['attribute' => 'allowance_rice_detail', 'header' => 'Phụ cấp cơm ca ngày', 'fallback' => 29, 'type' => 'numeric'],
+            ['attribute' => 'allowance_rice_detail_notice', 'noticeAfter' => 'Phụ cấp cơm ca ngày', 'fallback' => 30, 'type' => 'string'],
+            ['attribute' => 'number_of_work_nights', 'header' => 'Số công đêm', 'occurrence' => 2, 'fallback' => 31, 'type' => 'numeric'],
+            ['attribute' => 'allowance_shift_night', 'header' => 'Phụ cấp ca đêm', 'fallback' => 32, 'type' => 'numeric'],
+            ['attribute' => 'allowance_shift_night_notice', 'noticeAfter' => 'Phụ cấp ca đêm', 'fallback' => 33, 'type' => 'string'],
+            ['attribute' => 'overtime_day_count_detail', 'header' => 'Số ngày tăng ca', 'fallback' => 34, 'type' => 'numeric'],
+            ['attribute' => 'allowance_overtime_detail', 'header' => 'Phụ cấp tăng ca', 'fallback' => 35, 'type' => 'numeric'],
+            ['attribute' => 'allowance_overtime_detail_notice', 'noticeAfter' => 'Phụ cấp tăng ca', 'fallback' => 36, 'type' => 'string'],
+            ['attribute' => 'holidays_count_detail', 'header' => 'Số ngày lễ tết', 'fallback' => 37, 'type' => 'numeric'],
+            ['attribute' => 'holidays_money', 'header' => 'Tiền lễ tết', 'fallback' => 38, 'type' => 'numeric'],
+            ['attribute' => 'holidays_money_notice', 'noticeAfter' => 'Tiền lễ tết', 'fallback' => 39, 'type' => 'string'],
+            ['attribute' => 'paid_holidays_count_detail', 'header' => 'Phép năm', 'fallback' => 40, 'type' => 'numeric'],
+            ['attribute' => 'paid_holidays_money', 'header' => 'Tiền phép năm', 'fallback' => 41, 'type' => 'numeric'],
+            ['attribute' => 'paid_holidays_money_notice', 'noticeAfter' => 'Tiền phép năm', 'fallback' => 42, 'type' => 'string'],
+            ['attribute' => 'business_travel_hours', 'header' => 'Số giờ đi công tác', 'fallback' => 43, 'type' => 'numeric'],
+            ['attribute' => 'business_travel_unit_price_hour', 'header' => 'Đơn giá đi công tác/ giờ', 'fallback' => 44, 'type' => 'numeric'],
+            ['attribute' => 'gcn_business_travel_salary', 'header' => 'Lương đi công tác GCN', 'fallback' => 45, 'type' => 'numeric'],
+            ['attribute' => 'gcn_business_travel_salary_notice', 'noticeAfter' => 'Lương đi công tác GCN', 'fallback' => 46, 'type' => 'string'],
+            ['attribute' => 'number_of_business_trips', 'header' => 'Số lần đi công tác', 'fallback' => 47, 'type' => 'numeric'],
+            ['attribute' => 'business_fuel_unit_price_day', 'header' => 'Đơn giá xăng công tác/ ngày', 'fallback' => 48, 'type' => 'numeric'],
+            ['attribute' => 'allowance_gcn_business_fuel', 'header' => 'Phụ cấp xăng đi GCN', 'fallback' => 49, 'type' => 'numeric'],
+            ['attribute' => 'allowance_gcn_business_fuel_notice', 'noticeAfter' => 'Phụ cấp xăng đi GCN', 'fallback' => 50, 'type' => 'string'],
+            ['attribute' => 'money_referral_people', 'header' => 'Tiền giới thiệu người', 'fallback' => 51, 'type' => 'numeric'],
+            ['attribute' => 'money_referral_people_notice', 'noticeAfter' => 'Tiền giới thiệu người', 'fallback' => 52, 'type' => 'string'],
+            ['attribute' => 'allowance_diffrent', 'header' => 'Phụ cấp khác', 'fallback' => 53, 'type' => 'numeric'],
+            ['attribute' => 'allowance_diffrent_notice', 'noticeAfter' => 'Phụ cấp khác', 'fallback' => 54, 'type' => 'string'],
+            ['attribute' => 'bonuses_for_attendance', 'header' => 'Tiền thưởng đạt chuyên cần', 'fallback' => 55, 'type' => 'numeric'],
+            ['attribute' => 'bonuses_for_attendance_notice', 'noticeAfter' => 'Tiền thưởng đạt chuyên cần', 'fallback' => 56, 'type' => 'string'],
+            ['attribute' => 'previous_month_kpi_refund', 'header' => 'Hoàn tiền KPI tháng trước', 'fallback' => 63, 'type' => 'numeric'],
+            ['attribute' => 'previous_month_kpi_refund_notice', 'noticeAfter' => 'Hoàn tiền KPI tháng trước', 'fallback' => 64, 'type' => 'string'],
+            ['attribute' => 'sickness', 'header' => 'Ốm đau', 'fallback' => 57, 'type' => 'numeric'],
+            ['attribute' => 'sickness_notice', 'noticeAfter' => 'Ốm đau', 'fallback' => 58, 'type' => 'string'],
+            ['attribute' => 'funeral', 'header' => 'Ma chay', 'fallback' => 59, 'type' => 'numeric'],
+            ['attribute' => 'funeral_notice', 'noticeAfter' => 'Ma chay', 'fallback' => 60, 'type' => 'string'],
+            ['attribute' => 'birthday_money', 'header' => 'Tiền sinh nhật', 'fallback' => 61, 'type' => 'numeric'],
+            ['attribute' => 'birthday_money_notice', 'noticeAfter' => 'Tiền sinh nhật', 'fallback' => 62, 'type' => 'string'],
+            ['attribute' => 'previous_period_debt', 'header' => 'Tiền lương tháng trước bị thiếu', 'fallback' => 63, 'type' => 'numeric'],
+            ['attribute' => 'previous_period_debt_notice', 'noticeAfter' => 'Tiền lương tháng trước bị thiếu', 'fallback' => 64, 'type' => 'string'],
+            ['attribute' => 'total_income', 'header' => 'Tổng thu nhập', 'fallback' => 65, 'type' => 'numeric'],
+            ['attribute' => 'insurance_detail', 'header' => 'Khấu trừ BHXH 10.5%', 'fallback' => 66, 'type' => 'numeric'],
+            ['attribute' => 'insurance_detail_notice', 'noticeAfter' => 'Khấu trừ BHXH 10.5%', 'fallback' => 67, 'type' => 'string'],
+            ['attribute' => 'advance_money', 'header' => 'Tạm ứng', 'fallback' => 68, 'type' => 'numeric'],
+            ['attribute' => 'advance_money_notice', 'noticeAfter' => 'Tạm ứng', 'fallback' => 69, 'type' => 'string'],
+            ['attribute' => 'number_of_violations', 'header' => 'Số lần vi phạm', 'fallback' => 70, 'type' => 'numeric'],
+            ['attribute' => 'unicon_deduction', 'header' => 'Phí công đoàn 0.5%', 'fallback' => 71, 'type' => 'numeric'],
+            ['attribute' => 'unicon_deduction_notice', 'noticeAfter' => 'Phí công đoàn 0.5%', 'fallback' => 72, 'type' => 'string'],
+            ['attribute' => 'union_fee', 'header' => 'Phí công đoàn 0.5%', 'fallback' => 74, 'type' => 'numeric'],
+            ['attribute' => 'union_fee_notice', 'noticeAfter' => 'Phí công đoàn 0.5%', 'fallback' => 75, 'type' => 'string'],
+            ['attribute' => 'daysleave_allowed', 'header' => 'Số nghỉ có phép', 'fallback' => 73, 'type' => 'numeric'],
+            ['attribute' => 'daysleave_allowed_notice', 'noticeAfter' => 'Số nghỉ có phép', 'fallback' => 77, 'type' => 'string'],
+            ['attribute' => 'subtract_daysleave_allowed', 'header' => 'Trừ tiền nghỉ có phép', 'fallback' => 74, 'type' => 'numeric'],
+            ['attribute' => 'subtract_daysleave_allowed_notice', 'noticeAfter' => 'Trừ tiền nghỉ có phép', 'fallback' => 75, 'type' => 'string'],
+            ['attribute' => 'daysleave_notallowed', 'header' => 'Số nghỉ không có phép', 'fallback' => 76, 'type' => 'numeric'],
+            ['attribute' => 'daysleave_notallowed_notice', 'noticeAfter' => 'Số nghỉ không có phép', 'fallback' => 79, 'type' => 'string'],
+            ['attribute' => 'subtract_daysleave_notallowed', 'header' => 'Trừ tiền nghỉ không phép', 'fallback' => 77, 'type' => 'numeric'],
+            ['attribute' => 'subtract_daysleave_notallowed_notice', 'noticeAfter' => 'Trừ tiền nghỉ không phép', 'fallback' => 78, 'type' => 'string'],
+            ['attribute' => 'error_serious', 'header' => 'Số lỗi nặng', 'fallback' => 79, 'type' => 'numeric'],
+            ['attribute' => 'error_serious_notice', 'noticeAfter' => 'Số lỗi nặng', 'fallback' => 81, 'type' => 'string'],
+            ['attribute' => 'subtract_error_serious', 'header' => 'Trừ tiền số lỗi nặng', 'fallback' => 80, 'type' => 'numeric'],
+            ['attribute' => 'subtract_error_serious_notice', 'noticeAfter' => 'Trừ tiền số lỗi nặng', 'fallback' => 81, 'type' => 'string'],
+            ['attribute' => 'error_minor', 'header' => 'Số lỗi nhẹ', 'fallback' => 82, 'type' => 'numeric'],
+            ['attribute' => 'error_minor_notice', 'noticeAfter' => 'Số lỗi nhẹ', 'fallback' => 83, 'type' => 'string'],
+            ['attribute' => 'subtract_error_minor', 'header' => 'Trừ tiền số lỗi nhẹ', 'fallback' => 83, 'type' => 'numeric'],
+            ['attribute' => 'subtract_error_minor_notice', 'noticeAfter' => 'Trừ tiền số lỗi nhẹ', 'fallback' => 84, 'type' => 'string'],
+            ['attribute' => 'kpi_subtraction', 'header' => 'Bị trừ KPI tháng này', 'fallback' => 85, 'type' => 'numeric'],
+            ['attribute' => 'kpi_subtraction_notice', 'noticeAfter' => 'Bị trừ KPI tháng này', 'fallback' => 85, 'type' => 'string'],
+            ['attribute' => 'actually_received', 'header' => 'Thực lãnh', 'fallback' => 86, 'type' => 'numeric'],
+            ['attribute' => 'forms_of_payment', 'header' => 'Hình thức thanh toán', 'fallback' => 87, 'type' => 'string'],
+            ['attribute' => 'company_insurance_detail', 'header' => 'BHXH (21.5%) công ty đóng cho NLĐ', 'fallback' => 88, 'type' => 'numeric'],
+        ];
+    }
+
+    private function valueForField(array $row, array $field)
+    {
+        $column = $this->columnForField($field);
+
+        return $column !== null ? ($row[$column] ?? null) : null;
+    }
+
+    private function columnForField(array $field): ?int
+    {
+        if (! empty($this->headerColumns)) {
+            if (isset($field['noticeAfter'])) {
+                return $this->noticeColumnAfter($field['noticeAfter'], $field['occurrence'] ?? 1);
+            }
+
+            return $this->headerColumn($field['header'], $field['occurrence'] ?? 1);
+        }
+
+        return $field['fallback'] ?? null;
+    }
+
+    private function headerColumn(string $header, int $occurrence = 1): ?int
+    {
+        $columns = $this->headerColumns[$this->normalizeHeader($header)] ?? [];
+
+        return $columns[$occurrence - 1] ?? null;
+    }
+
+    private function noticeColumnAfter(string $header, int $occurrence = 1): ?int
+    {
+        $column = $this->headerColumn($header, $occurrence);
+        if ($column === null) {
+            return null;
+        }
+
+        $noticeColumn = $column + 1;
+
+        return ($this->headersByColumn[$noticeColumn] ?? null) === $this->normalizeHeader('Ghi chú')
+            ? $noticeColumn
+            : null;
+    }
+
+    private function fieldByAttribute(string $attribute): ?array
+    {
+        foreach ($this->detailFields() as $field) {
+            if ($field['attribute'] === $attribute) {
+                return $field;
+            }
+        }
+
+        return null;
+    }
+
+    private function captureDetailHeaders($worksheet): void
+    {
+        $highestColumn = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($worksheet->getHighestColumn());
+        $this->headerColumns = [];
+        $this->headersByColumn = [];
+
+        for ($column = 1; $column <= $highestColumn; $column++) {
+            $header = $this->normalizeHeader($worksheet->getCellByColumnAndRow($column, self::DETAIL_HEADER_ROW)->getValue());
+            if ($header === '') {
+                continue;
+            }
+
+            $rowIndex = $column - 1;
+            $this->headersByColumn[$rowIndex] = $header;
+            $this->headerColumns[$header][] = $rowIndex;
+        }
+    }
+
+    private function normalizeHeader($value): string
+    {
+        $value = preg_replace('/[\s\x{00A0}]+/u', ' ', trim((string) $value));
+
+        return mb_strtolower($value ?? '');
+    }
+
+    public function isEmptyWhen(array $row): bool
+    {
+        $employeeColumn = $this->headerColumn('Mã NV') ?? 1;
+        if (empty($row[$employeeColumn])) {
+            return true;
+        }
+
+        if (empty($this->employeeMap)) {
+            $this->employeeMap = $this->getPreloadedEmployees();
+        }
+
+        return $this->getEmployeeFast((string) $row[$employeeColumn], $this->employeeMap) === null;
+    }
+
     public function prepareForValidation(array $row, int $index): array
     {
-        $row[86] = $this->normalizeNumericInput($row[86] ?? null);
+        $field = $this->fieldByAttribute('actually_received');
+        $column = $field ? $this->columnForField($field) : null;
+        if ($column !== null) {
+            $row[$column] = $this->normalizeNumericInput($row[$column] ?? null);
+        }
 
         return $row;
     }
@@ -194,12 +326,17 @@ class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, Skips
     {
         $rules = [];
         $listCode = $this->getValidEmployeeIds();
-        $rules['1'] = ['required', 'in:'.implode(',', $listCode)];
-        for ($i = 4; $i <= 88; $i++) {
-            if (! in_array($i, $this->roleIgnore)) {
-                $rules[$i] = ['nullable', 'numeric'];
-            } else {
-                $rules[$i] = ['nullable'];
+        $employeeColumn = $this->headerColumn('Mã NV') ?? 1;
+        $rules[(string) $employeeColumn] = ['required', 'in:'.implode(',', $listCode)];
+
+        foreach ($this->detailFields() as $field) {
+            if (($field['type'] ?? 'numeric') !== 'numeric') {
+                continue;
+            }
+
+            $column = $this->columnForField($field);
+            if ($column !== null) {
+                $rules[(string) $column] = ['nullable', 'numeric'];
             }
         }
 
@@ -209,99 +346,18 @@ class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, Skips
     public function customValidationMessages()
     {
         $messages = [];
-        $validations[1 .'required'] = 'Mã nhân viên không được để trống!';
-        $validations[1 .'in'] = 'Mã nhân viên không tồn tại!';
-        $role = [
-            'Số công ngày (thử việc)',
-            'Lương ca ngày (thử việc)',
-            'Lương ca ngày (thử việc) Ghi Chú',
-            'Số công đêm (thử việc)',
-            'Lương ca đêm (thử việc)',
-            'Lương ca đêm (thử việc) Ghi Chú',
-            'Số giờ tăng ca ( thử việc)',
-            'Lương tăng ca (thử việc)',
-            'Lương tăng ca (thử vifệc) Ghi Chú',
-            'Số Công',
-            'phụ cấp học việc detail',
-            'phụ cấp học việc detail Ghi Chú',
-            'số giờ chính detail',
-            'lương chính thức',
-            'lương chính thức Ghi Chú',
-            'số công làm',
-            'chuyên cần detail',
-            'chuyên cần detail Ghi Chú',
-            'Số công làm',
-            'trách nhiệm detail',
-            'trách nhiệm detail Ghi Chú',
-            'số giờ tăng ca',
-            'lương tăng ca',
-            'lương tăng ca Ghi Chú',
-            'Số công ngày',
-            'phụ cấp cơm ca ngày',
-            'phụ cấp cơm ca ngày Ghi Chú',
-            'Số công đêm',
-            'phụ cấp ca đêm',
-            'phụ cấp ca đêm Ghi Chú',
-            'số ngày tăng ca',
-            'phụ cấp tăng ca',
-            'phụ cấp tăng ca Ghi Chú',
-            'số ngày lễ tết',
-            'tiền lễ tết',
-            'tiền lễ tết Ghi Chú',
-            'số ngày phép năm',
-            'số tiền phép năm',
-            'Số tiền phép năm Ghi Chú',
-            'Số giờ đi công tác',
-            'Đơn giá đi công tác/ giờ',
-            'Lương đi công tác GCN',
-            'Lương đi công tác GCN Ghi Chú',
-            'Số lần đi công tác',
-            'Đơn giá xăng công tác/ ngày',
-            'Phụ cấp xăng đi GCN',
-            'Phụ cấp xăng đi GCN Ghi Chú',
-            'Tiền giới thiệu người',
-            'Tiền giới thiệu người Ghi Chú',
-            'phụ cấp khác',
-            'phụ cấp khác Ghi Chú',
-            'Tiền thưởng đạt chuyên cần',
-            'Tiền thưởng đạt chuyên cần Ghi Chú',
-            'Ốm đau',
-            'Ốm đau Ghi Chú',
-            'Ma chay',
-            'Ma chay Ghi Chú',
-            'Tiền sinh nhật',
-            'Tiền sinh nhật Ghi Chú',
-            'Tiền lương tháng trước bị thiếu',
-            'Tiền lương tháng trước bị thiếu Ghi Chú',
-            'Tổng thu nhập',
-            'Khấu trừ BHXH 10.5%',
-            'Khấu trừ BHXH 10.5% Ghi Chú',
-            'tạm ứng',
-            'tạm ứng Ghi Chú',
-            'Số lần vi phạm',
-            'Trừ vi phạm',
-            'Trừ vi phạm Ghi Chú',
-            'số ngày nghỉ có phép',
-            'Trừ tiền nghỉ có phép',
-            'Trừ tiền nghỉ có phép Ghi Chú',
-            'số ngày nghĩ không phép',
-            'Trừ tiền nghỉ không phép',
-            'Trừ tiền nghỉ không phép Ghi Chú',
-            'số lỗi nặng',
-            'Trừ tiền số lỗi nặng',
-            'Trừ tiền số lỗi nặng Ghi Chú',
-            'số lỗi nhẹ',
-            'Trừ tiền số lỗi nhẹ',
-            'Trừ tiền số lỗi nhẹ Ghi Chú',
-            'trừ KPI',
-            'thực lãnh',
-            'hình thức thanh toán',
-            'BHXH (21.5%) công ty đóng cho NLĐ',
-        ];
+        $employeeColumn = $this->headerColumn('Mã NV') ?? 1;
+        $messages[$employeeColumn.'.required'] = 'Mã nhân viên không được để trống!';
+        $messages[$employeeColumn.'.in'] = 'Mã nhân viên không tồn tại!';
 
-        for ($i = 4; $i <= 88; $i++) {
-            if (! in_array($i, $this->roleIgnore)) {
-                $messages[$i.'.numeric'] = 'Trường '.$role[$i - 4].' không đúng định dạng!';
+        foreach ($this->detailFields() as $field) {
+            if (($field['type'] ?? 'numeric') !== 'numeric') {
+                continue;
+            }
+
+            $column = $this->columnForField($field);
+            if ($column !== null) {
+                $messages[$column.'.numeric'] = 'Trường '.($field['header'] ?? $field['noticeAfter']).' không đúng định dạng!';
             }
         }
 
@@ -324,6 +380,9 @@ class SalaryOfficialVVPDetailImport implements HasReferencesToOtherSheets, Skips
     public function registerEvents(): array
     {
         return [
+            BeforeSheet::class => function (BeforeSheet $event) {
+                $this->captureDetailHeaders($event->sheet->getDelegate());
+            },
             AfterImport::class => function () {
                 $this->clearEmployeeCache();
                 if ($this->salaryManagerId) {
