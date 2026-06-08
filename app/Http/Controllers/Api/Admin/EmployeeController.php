@@ -216,7 +216,7 @@ class EmployeeController extends BaseController
                 'password' => bcrypt($validated['id']),
             ]);
 
-            // $this->addAcs($employee);
+            $this->addAcs($employee);
 
             DB::commit();
 
@@ -231,11 +231,15 @@ class EmployeeController extends BaseController
         }
     }
 
-    public function addAcs($employee)
+    public function addAcs($employee): void
     {
         $deviceIp = config('acs.device_ip');
         $username = config('acs.username');
         $password = config('acs.password');
+
+        if (! $deviceIp || ! $username || ! $password) {
+            throw new \RuntimeException('ACS device configuration is missing.');
+        }
 
         $url = "http://{$deviceIp}/ISAPI/AccessControl/UserInfo/Record?format=json";
 
@@ -243,15 +247,13 @@ class EmployeeController extends BaseController
             'UserInfo' => [
                 'employeeNo' => $employee->id,
                 'name' => $employee->name,
-                'gender' => $employee->gender,
                 'userType' => 'normal',
                 'Valid' => [
                     'enable' => true,
-                    'beginTime' => '2024-01-01T00:00:00',
-                    'endTime' => '2030-12-31T23:59:59',
+                    'beginTime' => '2026-01-01T00:00:00',
+                    'endTime' => '2036-01-01T23:59:59',
                     'timeType' => 'local',
                 ],
-                // "userVerifyMode" => "faceOrFpOrCardOrPw"
             ],
         ];
 
@@ -260,10 +262,12 @@ class EmployeeController extends BaseController
             ->post($url, $payload);
 
         if (! $response->successful()) {
-            return response()->json([
-                'error' => 'Request failed',
-                'details' => $response->body(),
-            ], $response->status());
+            Log::error("ACS user [{$employee->id}] add failed.", [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            throw new \RuntimeException('Failed to add employee to ACS device.');
         }
 
         Log::info("ACS user [{$employee->id}] added successfully.");
@@ -579,7 +583,8 @@ class EmployeeController extends BaseController
                 'total' => $total,
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra khi xem lịch làm việc.',
@@ -627,7 +632,8 @@ class EmployeeController extends BaseController
                 ],
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra khi lấy chi tiết lịch làm việc.',
@@ -658,7 +664,8 @@ class EmployeeController extends BaseController
                 'total' => $total,
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Có lỗi xảy ra khi lấy bảng lương.',
@@ -702,7 +709,7 @@ class EmployeeController extends BaseController
                 ],
             ]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(basename(__FILE__) . ' - ' . __FUNCTION__ . ' - Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error(basename(__FILE__).' - '.__FUNCTION__.' - Error: '.$e->getMessage());
             LogHelper::saveLog('Xem chi tiết bảng lương', $e->getMessage(), $e->getLine());
 
             return response()->json([
