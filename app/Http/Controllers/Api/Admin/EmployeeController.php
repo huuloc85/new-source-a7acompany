@@ -19,7 +19,6 @@ use App\Models\SalaryOfficialA7A;
 use App\Models\SalaryOfficialVVP;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -216,8 +215,6 @@ class EmployeeController extends BaseController
                 'password' => bcrypt($validated['id']),
             ]);
 
-            $this->addAcs($employee);
-
             DB::commit();
 
             return response()->json([
@@ -229,48 +226,6 @@ class EmployeeController extends BaseController
 
             return HandleError::handle($e);
         }
-    }
-
-    public function addAcs($employee): void
-    {
-        $deviceIp = config('acs.device_ip');
-        $username = config('acs.username');
-        $password = config('acs.password');
-
-        if (! $deviceIp || ! $username || ! $password) {
-            throw new \RuntimeException('ACS device configuration is missing.');
-        }
-
-        $url = "http://{$deviceIp}/ISAPI/AccessControl/UserInfo/Record?format=json";
-
-        $payload = [
-            'UserInfo' => [
-                'employeeNo' => $employee->id,
-                'name' => $employee->name,
-                'userType' => 'normal',
-                'Valid' => [
-                    'enable' => true,
-                    'beginTime' => '2026-01-01T00:00:00',
-                    'endTime' => '2036-01-01T23:59:59',
-                    'timeType' => 'local',
-                ],
-            ],
-        ];
-
-        $response = Http::withDigestAuth($username, $password)
-            ->timeout(10)
-            ->post($url, $payload);
-
-        if (! $response->successful()) {
-            Log::error("ACS user [{$employee->id}] add failed.", [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            throw new \RuntimeException('Failed to add employee to ACS device.');
-        }
-
-        Log::info("ACS user [{$employee->id}] added successfully.");
     }
 
     public function updateEmployee(Request $request, $id)
