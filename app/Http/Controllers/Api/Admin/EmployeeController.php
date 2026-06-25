@@ -19,7 +19,6 @@ use App\Models\SalaryOfficialA7A;
 use App\Models\SalaryOfficialVVP;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -218,83 +217,14 @@ class EmployeeController extends BaseController
 
             DB::commit();
 
-            $attendanceDeviceSync = $this->syncEmployeeToAttendanceDevice($employee);
-
             return response()->json([
                 'message' => 'Employee created successfully!',
                 'data' => $employee,
-                'attendance_device_sync' => $attendanceDeviceSync,
             ], 201);
         } catch (\Throwable $e) {
             DB::rollBack();
 
             return HandleError::handle($e);
-        }
-    }
-
-    private function syncEmployeeToAttendanceDevice(Employee $employee): array
-    {
-        $deviceIp = config('acs.device_ip');
-        $username = config('acs.username');
-        $password = config('acs.password');
-
-        if (! $deviceIp || ! $username || ! $password) {
-            return [
-                'success' => false,
-                'skipped' => true,
-                'message' => 'Thiếu cấu hình ACS_DEVICE_IP, ACS_USERNAME hoặc ACS_PASSWORD.',
-            ];
-        }
-
-        $url = "http://{$deviceIp}/ISAPI/AccessControl/UserInfo/Record?format=json";
-
-        try {
-            $response = Http::withDigestAuth($username, $password)
-                ->timeout(10)
-                ->post($url, [
-                    'UserInfo' => [
-                        'employeeNo' => (string) $employee->id,
-                        'name' => $employee->name,
-                        'userType' => 'normal',
-                        'Valid' => [
-                            'enable' => true,
-                            'beginTime' => '2026-01-01T00:00:00',
-                            'endTime' => '2036-01-01T23:59:59',
-                            'timeType' => 'local',
-                        ],
-                    ],
-                ]);
-
-            if (! $response->successful()) {
-                Log::warning('Attendance device employee sync failed', [
-                    'employee_id' => $employee->id,
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                ]);
-
-                return [
-                    'success' => false,
-                    'status' => $response->status(),
-                    'message' => 'Đồng bộ nhân viên vào máy chấm công thất bại.',
-                    'details' => $response->body(),
-                ];
-            }
-
-            return [
-                'success' => true,
-                'message' => 'Đã đồng bộ nhân viên vào máy chấm công.',
-            ];
-        } catch (\Throwable $e) {
-            Log::error('Attendance device employee sync exception', [
-                'employee_id' => $employee->id,
-                'message' => $e->getMessage(),
-            ]);
-
-            return [
-                'success' => false,
-                'message' => 'Không kết nối được máy chấm công.',
-                'details' => $e->getMessage(),
-            ];
         }
     }
 
