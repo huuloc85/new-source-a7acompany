@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class SyncAttendanceDeviceEmployees extends Command
 {
-    protected $signature = 'attendance:sync-employees {--limit=}';
+    protected $signature = 'attendance:sync-employees
+        {--limit= : Giới hạn số nhân viên xử lý mỗi lần}';
 
     protected $description = 'Đồng bộ nhân viên trong DB local vào máy chấm công nội bộ';
 
@@ -101,27 +102,26 @@ class SyncAttendanceDeviceEmployees extends Command
     private function syncDeletedEmployees(int $limit): array
     {
         $stats = ['synced' => 0, 'skipped' => 0, 'failed' => 0];
-        $lastSyncedDeletedAt = $this->getOrInitializeSyncPoint(
-            self::LAST_DELETE_SYNC_CACHE_KEY,
-            'deleted_at',
-            'Khởi tạo mốc xóa nhân viên. Lần chạy sau sẽ chỉ xóa nhân viên mới bị xóa.'
-        );
+        $lastSyncedDeletedAt = Cache::get(self::LAST_DELETE_SYNC_CACHE_KEY);
 
         if (! $lastSyncedDeletedAt) {
+            $this->syncLatestDeletedEmployee($stats);
+
             return $stats;
         }
 
         $query = Employee::onlyTrashed()
             ->select(['id', 'name', 'deleted_at'])
-            ->whereNotIn('role_id', [15, 21, 22, 1])
             ->where('deleted_at', '>', $lastSyncedDeletedAt)
             ->orderBy('deleted_at')
             ->orderBy('id');
 
         $latestDeletedAt = $lastSyncedDeletedAt;
+        $processed = false;
 
-        $handleEmployees = function ($employees) use (&$latestDeletedAt, &$stats) {
+        $handleEmployees = function ($employees) use (&$latestDeletedAt, &$stats, &$processed) {
             foreach ($employees as $employee) {
+                $processed = true;
                 $result = $this->deleteEmployee($employee->toArray());
 
                 if ($result === 'synced') {
@@ -149,11 +149,64 @@ class SyncAttendanceDeviceEmployees extends Command
             });
         }
 
+        if (! $processed) {
+            $this->syncLatestDeletedEmployee($stats, $lastSyncedDeletedAt);
+        }
+
         if ($latestDeletedAt !== $lastSyncedDeletedAt) {
             Cache::forever(self::LAST_DELETE_SYNC_CACHE_KEY, $latestDeletedAt);
         }
 
         return $stats;
+    }
+
+    private function syncLatestDeletedEmployee(array &$stats, ?string $notAfter = null): void
+    {
+        $query = Employee::onlyTrashed()
+            ->select(['id', 'name', 'deleted_at'])
+            ->orderByDesc('deleted_at')
+            ->orderByDesc('id');
+
+        if ($notAfter) {
+            $query->where('deleted_at', '<=', $notAfter);
+        }
+
+        $employee = $query->first();
+
+        if (! $employee) {
+            if (! $notAfter) {
+                Cache::forever(self::LAST_DELETE_SYNC_CACHE_KEY, now()->toDateTimeString());
+                $this->info('Khởi tạo mốc xóa nhân viên. Chưa có nhân viên nào trong thùng rác.');
+            }
+
+            return;
+        }
+
+        if ($this->isEmployeeDeleteCached($employee->toArray())) {
+            if (! $notAfter) {
+                Cache::forever(self::LAST_DELETE_SYNC_CACHE_KEY, $employee->deleted_at?->toDateTimeString() ?: now()->toDateTimeString());
+                $this->info('Khởi tạo mốc xóa nhân viên từ nhân viên vừa bị xóa gần nhất.');
+            }
+
+            return;
+        }
+
+        $result = $this->deleteEmployee($employee->toArray());
+
+        if ($result === 'synced') {
+            $stats['synced']++;
+        } elseif ($result === 'failed') {
+            $stats['failed']++;
+
+            return;
+        } else {
+            $stats['skipped']++;
+        }
+
+        if (! $notAfter) {
+            Cache::forever(self::LAST_DELETE_SYNC_CACHE_KEY, $employee->deleted_at?->toDateTimeString() ?: now()->toDateTimeString());
+            $this->info('Khởi tạo mốc xóa nhân viên từ nhân viên vừa bị xóa gần nhất.');
+        }
     }
 
     private function getOrInitializeSyncPoint(string $cacheKey, string $column, string $message): ?string
@@ -246,6 +299,22 @@ class SyncAttendanceDeviceEmployees extends Command
 
             return 'failed';
         }
+    }
+
+    private function isEmployeeDeleteCached(array $employee): bool
+    {
+        $employeeId = $employee['id'] ?? null;
+
+        if (! $employeeId) {
+            return false;
+        }
+
+        $payloadHash = sha1(json_encode([
+            'id' => (string) $employeeId,
+            'deleted_at' => $employee['deleted_at'] ?? null,
+        ]));
+
+        return Cache::get('acs_employee_deleted:'.(string) $employeeId) === $payloadHash;
     }
 
     private function postEmployeeToDevice(string $employeeId, string $employeeName): void
